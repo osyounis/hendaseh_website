@@ -74,6 +74,15 @@ web_modules/
 .cache
 .parcel-cache
 
+# Next.js
+.next/
+out/
+build/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
 # Next.js build output
 .next
 out
@@ -137,3 +146,19 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# IDE
+.vscode/
+.idea/
+
+# Vercel
+.vercel
+
+# Misc
+.DS_Store
+*.pem
+
+# Claude AI File/Directories to ignore
+.claude/
+CLAUDE.md
+claude_plan.md
