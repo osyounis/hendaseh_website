@@ -1,0 +1,121 @@
+{
+  "projects": [
+    {
+      "id": "ios-app",
+      "title": "Nahtadi - Islamic Prayer Times",
+      "description": "iOS application that calculates the five daily Islamic prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) and provides the Qibla direction. Built with SwiftUI and SwiftData. Features multiple calculation methods, Hijri calendar, prayer notifications, and offline capability.",
+      "technologies": ["Swift", "SwiftUI", "SwiftData", "iOS"],
+      "githubUrl": null,
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": true,
+      "stats": "v0.1.0 • In Development",
+      "category": "mobile",
+      "hasDetailPage": true
+    },
+    {
+      "id": "islamic-prayer-time",
+      "title": "Islamic Prayer Time App",
+      "description": "Pure Python library for calculating Muslim prayer times and Qibla direction using astronomical algorithms. Supports multiple calculation methods, DST handling, and works for any location worldwide. Features 105 comprehensive unit tests and modular architecture.",
+      "technologies": ["Python", "Astronomical Algorithms", "Unit Testing"],
+      "githubUrl": "https://github.com/osyounis/islamic_prayer_time_app",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": true,
+      "stats": "33 commits • GPL-3.0",
+      "category": "scientific-computing",
+      "hasDetailPage": false
+    },
+    {
+      "id": "collision-avoidance-radar",
+      "title": "Collision Avoidance Radar Plotting App",
+      "description": "Educational Python application for maritime navigators to train in collision avoidance calculations using radar plotting techniques. Computes Closest Point of Approach (CPA) and determines required course/speed changes. Built for Coast Guard Auxiliary training.",
+      "technologies": ["Python", "Streamlit", "Matplotlib", "NumPy", "Pytest"],
+      "githubUrl": "https://github.com/osyounis/collision_avoidance_radar_plotting_app",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": true,
+      "stats": "19 commits • GPL-3.0",
+      "category": "data-tools",
+      "hasDetailPage": true
+    },
+    {
+      "id": "cycloidal-drive-creator",
+      "title": "Cycloidal Drive Creator",
+      "description": "Python application that generates parametric equations for cycloidal drive rotors (mechanical speed reducers). Creates rotor profiles that can be directly imported into SolidWorks CAD software via \"Equation Driven Curve\" feature.",
+      "technologies": ["Python", "Tkinter", "NumPy", "Matplotlib"],
+      "githubUrl": "https://github.com/osyounis/cycloidal_drive_creator",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": true,
+      "stats": "29 commits • 22 stars • MIT",
+      "category": "engineering-tools",
+      "hasDetailPage": false
+    },
+    {
+      "id": "image-watermark-remover",
+      "title": "Image Watermark Remover",
+      "description": "Machine learning project implementing a Pix2Pix generative adversarial network using PyTorch to automatically eliminate watermarks from digital images. Trained on ~16,700 watermarked images from Unsplash dataset.",
+      "technologies": ["Python", "PyTorch", "Pix2Pix", "Deep Learning"],
+      "githubUrl": "https://github.com/osyounis/image_watermark_remover",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": true,
+      "stats": "10 stars • MIT",
+      "category": "machine-learning",
+      "hasDetailPage": false
+    },
+    {
+      "id": "coast-guard-pilot-tracker",
+      "title": "Coast Guard Pilot Training Tracker",
+      "description": "Productivity tool for accessing and summarizing training data for Coast Guard pilots. Adopted across ALL Coast Guard Air Stations nationwide. Reduced summarizing time from one week to 3 minutes. Received Coast Guard Auxiliary Achievement Medal.",
+      "technologies": ["Python", "Excel", "pandas", "numpy", "VBA"],
+      "githubUrl": null,
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": true,
+      "stats": "Fleet-wide deployment • USCG Achievement Medal",
+      "category": "data-tools",
+      "hasDetailPage": false
+    },
+    {
+      "id": "coast-guard-inventory",
+      "title": "Coast Guard Helicopter Inventory System",
+      "description": "Efficient inventory system and database to enhance Coast Guard helicopter maintenance operations. Resulted in 85% reduction in search time. Currently in operation at Coast Guard Air Station San Diego.",
+      "technologies": ["Python", "Excel", "pandas", "numpy"],
+      "githubUrl": null,
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "In production at USCG San Diego",
+      "category": "data-tools",
+      "hasDetailPage": false
+    },
+    {
+      "id": "asl-detector",
+      "title": "American Sign Language Letter Detector",
+      "description": "Lightweight Python app that detects ASL letters from images or video to help students practice hand positions. Uses a retrained YOLOv5 model for real-time detection.",
+      "technologies": ["Python", "Streamlit", "YOLOv5", "Computer Vision"],
+      "githubUrl": "https://github.com/osyounis/asl_letter_detector",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "Object Detection",
+      "category": "machine-learning",
+      "hasDetailPage": false
+    },
+    {
+      "id": "wildfire-predictor",
+      "title": "California Wildfire Likelihood Predictor",
+      "description": "Predictive model to determine the likelihood of California wildfires based on weather and historical data. Uses TensorFlow for model training and API for data retrieval.",
+      "technologies": ["Python", "TensorFlow", "Scikit-Learn", "Seaborn"],
+      "githubUrl": null,
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "ML Classification",
+      "category": "machine-learning",
+      "hasDetailPage": false
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { getFeaturedProjects } from '@/lib/projects';
 
 export default function Home() {
+  const featuredProjects = getFeaturedProjects().slice(0, 3); // Show first 3 featured projects
   return (
     <div className="max-w-6xl mx-auto px-4">
       {/* Hero Section */}
@@ -49,21 +51,21 @@ export default function Home() {
       <section className="py-16 border-t border-gray-200">
         <h2 className="text-3xl font-bold text-gray-900 mb-8">What I Do</h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="p-6 bg-gray-50 rounded-lg">
+          <div className="p-6 bg-white border border-gray-200 rounded-lg">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Data Engineering</h3>
             <p className="text-gray-700">
               Building ETL pipelines on AWS processing millions of data points. Creating
               data infrastructure for ML teams and analytics.
             </p>
           </div>
-          <div className="p-6 bg-gray-50 rounded-lg">
+          <div className="p-6 bg-white border border-gray-200 rounded-lg">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Machine Learning</h3>
             <p className="text-gray-700">
               Developing ML applications with PyTorch and TensorFlow. Computer vision,
               NLP, and predictive modeling for real-world problems.
             </p>
           </div>
-          <div className="p-6 bg-gray-50 rounded-lg">
+          <div className="p-6 bg-white border border-gray-200 rounded-lg">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Scientific Computing</h3>
             <p className="text-gray-700">
               Creating computational tools using Python. Astronomical algorithms,
@@ -85,46 +87,29 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="border border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-colors">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Coast Guard Pilot Training Tracker
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Deployed fleet-wide across all US Coast Guard Air Stations. Reduced training
-              data summarization from 1 week to 3 minutes.
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Python</span>
-              <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">pandas</span>
-              <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full">Fleet-wide</span>
+          {featuredProjects.map((project) => (
+            <div
+              key={project.id}
+              className="border border-gray-300 rounded-lg p-6 hover:border-blue-500 hover:shadow-md transition-all"
+            >
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {project.title}
+              </h3>
+              <p className="text-gray-600 mb-4 line-clamp-3">
+                {project.description}
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                {project.technologies.slice(0, 3).map((tech) => (
+                  <span
+                    key={tech}
+                    className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="border border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-colors">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Islamic Prayer Time Calculator
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Pure Python library using astronomical algorithms for prayer times and Qibla direction.
-              105 comprehensive unit tests.
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Python</span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">Astronomy</span>
-            </div>
-          </div>
-          <div className="border border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-colors">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Image Watermark Remover
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Pix2Pix GAN using PyTorch to remove watermarks from images. Trained on
-              16,700+ images from Unsplash dataset.
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              <span className="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full">PyTorch</span>
-              <span className="px-3 py-1 bg-pink-100 text-pink-800 text-sm rounded-full">Deep Learning</span>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </div>

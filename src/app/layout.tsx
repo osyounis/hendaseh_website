@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: 'Omar Younis | Software Engineer',
     description: 'Software Engineer specializing in data engineering, machine learning, and scientific computing',
     url: 'https://hendaseh.com',
-    siteName: 'Hendasah',
+    siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'website',
   },

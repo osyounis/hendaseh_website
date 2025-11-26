@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
+import { HiMail, HiDocument } from 'react-icons/hi';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 export const metadata: Metadata = {
   title: 'About | Omar Younis',
@@ -8,7 +11,23 @@ export const metadata: Metadata = {
 export default function About() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
-      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">About Me</h1>
+      {/* Hero section with profile image */}
+      <div className="flex flex-col md:flex-row gap-8 items-center md:items-start mb-12">
+        <Image
+          src="/profile.jpg"
+          alt="Omar Younis - Software Engineer"
+          width={300}
+          height={300}
+          className="rounded-2xl"
+          priority
+        />
+        <div className="flex-1 text-center md:text-left">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">About Me</h1>
+          <p className="text-xl text-gray-600">
+            Software Engineer specializing in data engineering, machine learning, and scientific computing
+          </p>
+        </div>
+      </div>
 
       <div className="prose prose-lg max-w-none">
         <section className="mb-12">
@@ -34,7 +53,7 @@ export default function About() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Technical Skills</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-gray-50 p-6 rounded-lg">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg">
               <h3 className="text-xl font-bold text-gray-900 mb-3">Core Expertise</h3>
               <ul className="space-y-2 text-gray-700">
                 <li>• Data Engineering & ETL Pipelines</li>
@@ -43,7 +62,7 @@ export default function About() {
                 <li>• Computer Vision (OpenCV, YOLO)</li>
               </ul>
             </div>
-            <div className="bg-gray-50 p-6 rounded-lg">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg">
               <h3 className="text-xl font-bold text-gray-900 mb-3">Technologies</h3>
               <ul className="space-y-2 text-gray-700">
                 <li>• Python, C++/C, Java, SQL</li>
@@ -120,31 +139,67 @@ export default function About() {
           </p>
         </section>
 
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Get in Touch</h2>
-          <p className="text-gray-700 mb-4 leading-relaxed">
+        <section className="mt-16 pt-12 border-t border-gray-200">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Get in Touch</h2>
+          <p className="text-gray-700 mb-8 leading-relaxed">
             I'm seeking software engineering opportunities in data engineering, machine learning,
-            or scientific computing. If you'd like to discuss potential roles or collaboration,
-            reach out via{' '}
+            or scientific computing. Feel free to reach out through any of the channels below.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Email */}
+            <a
+              href="mailto:osyounis@csu.fullerton.edu"
+              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+            >
+              <HiMail className="w-8 h-8 text-blue-600 flex-shrink-0" />
+              <div>
+                <div className="font-semibold text-gray-900">Email</div>
+                <div className="text-sm text-gray-600">osyounis@csu.fullerton.edu</div>
+              </div>
+            </a>
+
+            {/* LinkedIn */}
             <a
               href="https://www.linkedin.com/in/omar-younis/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
             >
-              LinkedIn
-            </a>{' '}
-            or{' '}
+              <FaLinkedin className="w-8 h-8 text-blue-600 flex-shrink-0" />
+              <div>
+                <div className="font-semibold text-gray-900">LinkedIn</div>
+                <div className="text-sm text-gray-600">linkedin.com/in/omar-younis</div>
+              </div>
+            </a>
+
+            {/* GitHub */}
             <a
               href="https://github.com/osyounis"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
             >
-              GitHub
+              <FaGithub className="w-8 h-8 text-gray-900 flex-shrink-0" />
+              <div>
+                <div className="font-semibold text-gray-900">GitHub</div>
+                <div className="text-sm text-gray-600">github.com/osyounis</div>
+              </div>
             </a>
-            .
-          </p>
+
+            {/* Resume Download */}
+            <a
+              href="/resume.pdf"
+              download="Omar_Younis_Resume.pdf"
+              className="flex items-center gap-4 p-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <HiDocument className="w-8 h-8 flex-shrink-0" />
+              <div>
+                <div className="font-semibold">Download Resume</div>
+                <div className="text-sm text-blue-100">PDF Format</div>
+              </div>
+            </a>
+          </div>
         </section>
       </div>
     </div>

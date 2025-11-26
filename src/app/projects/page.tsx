@@ -1,103 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { getAllProjects } from '@/lib/projects';
 
 export const metadata: Metadata = {
   title: 'Projects | Omar Younis',
   description: 'Software engineering projects - data engineering tools, machine learning applications, scientific computing, and engineering software',
 };
 
-const projects = [
-  {
-    id: 'islamic-prayer-time',
-    title: 'Islamic Prayer Time App',
-    description:
-      'Pure Python library for calculating Muslim prayer times and Qibla direction using astronomical algorithms. Supports multiple calculation methods, DST handling, and works for any location worldwide. Features 105 comprehensive unit tests and modular architecture.',
-    technologies: ['Python', 'Astronomical Algorithms', 'Unit Testing'],
-    githubUrl: 'https://github.com/osyounis/islamic_prayer_time_app',
-    liveUrl: null,
-    featured: true,
-    stats: '33 commits • GPL-3.0',
-  },
-  {
-    id: 'collision-avoidance-radar',
-    title: 'Collision Avoidance Radar Plotting App',
-    description:
-      'Educational Python application for maritime navigators to train in collision avoidance calculations using radar plotting techniques. Computes Closest Point of Approach (CPA) and determines required course/speed changes. Built for Coast Guard Auxiliary training.',
-    technologies: ['Python', 'Streamlit', 'Matplotlib', 'NumPy', 'Pytest'],
-    githubUrl: 'https://github.com/osyounis/collision_avoidance_radar_plotting_app',
-    liveUrl: null, // Will be added when deployed
-    featured: true,
-    stats: '19 commits • GPL-3.0',
-  },
-  {
-    id: 'cycloidal-drive-creator',
-    title: 'Cycloidal Drive Creator',
-    description:
-      'Python application that generates parametric equations for cycloidal drive rotors (mechanical speed reducers). Creates rotor profiles that can be directly imported into SolidWorks CAD software via "Equation Driven Curve" feature.',
-    technologies: ['Python', 'Tkinter', 'NumPy', 'Matplotlib'],
-    githubUrl: 'https://github.com/osyounis/cycloidal_drive_creator',
-    liveUrl: null,
-    featured: true,
-    stats: '29 commits • 22 stars • MIT',
-  },
-  {
-    id: 'image-watermark-remover',
-    title: 'Image Watermark Remover',
-    description:
-      'Machine learning project implementing a Pix2Pix generative adversarial network using PyTorch to automatically eliminate watermarks from digital images. Trained on ~16,700 watermarked images from Unsplash dataset.',
-    technologies: ['Python', 'PyTorch', 'Pix2Pix', 'Deep Learning'],
-    githubUrl: 'https://github.com/osyounis/image_watermark_remover',
-    liveUrl: null,
-    featured: true,
-    stats: '10 stars • MIT',
-  },
-  {
-    id: 'coast-guard-pilot-tracker',
-    title: 'Coast Guard Pilot Training Tracker',
-    description:
-      'Productivity tool for accessing and summarizing training data for Coast Guard pilots. Adopted across ALL Coast Guard Air Stations nationwide. Reduced summarizing time from one week to 3 minutes. Received Coast Guard Auxiliary Achievement Medal.',
-    technologies: ['Python', 'Excel', 'pandas', 'numpy', 'VBA'],
-    githubUrl: null,
-    liveUrl: null,
-    featured: true,
-    stats: 'Fleet-wide deployment • USCG Achievement Medal',
-  },
-  {
-    id: 'coast-guard-inventory',
-    title: 'Coast Guard Helicopter Inventory System',
-    description:
-      'Efficient inventory system and database to enhance Coast Guard helicopter maintenance operations. Resulted in 85% reduction in search time. Currently in operation at Coast Guard Air Station San Diego.',
-    technologies: ['Python', 'Excel', 'pandas', 'numpy'],
-    githubUrl: null,
-    liveUrl: null,
-    featured: false,
-    stats: 'In production at USCG San Diego',
-  },
-  {
-    id: 'asl-detector',
-    title: 'American Sign Language Letter Detector',
-    description:
-      'Lightweight Python app that detects ASL letters from images or video to help students practice hand positions. Uses a retrained YOLOv5 model for real-time detection.',
-    technologies: ['Python', 'Streamlit', 'YOLOv5', 'Computer Vision'],
-    githubUrl: 'https://github.com/osyounis/asl_letter_detector',
-    liveUrl: null,
-    featured: false,
-    stats: 'Object Detection',
-  },
-  {
-    id: 'wildfire-predictor',
-    title: 'California Wildfire Likelihood Predictor',
-    description:
-      'Predictive model to determine the likelihood of California wildfires based on weather and historical data. Uses TensorFlow for model training and API for data retrieval.',
-    technologies: ['Python', 'TensorFlow', 'Scikit-Learn', 'Seaborn'],
-    githubUrl: null,
-    liveUrl: null,
-    featured: false,
-    stats: 'ML Classification',
-  },
-];
-
 export default function Projects() {
+  const projects = getAllProjects();
   return (
     <div className="max-w-6xl mx-auto px-4 py-16">
       <div className="mb-12">
@@ -112,7 +23,7 @@ export default function Projects() {
         {projects.map((project) => (
           <div
             key={project.id}
-            className="border border-gray-200 rounded-lg p-8 hover:border-gray-400 transition-colors"
+            className="border border-gray-300 rounded-lg p-8 hover:border-blue-500 hover:shadow-md transition-all"
           >
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-2xl font-bold text-gray-900">{project.title}</h2>
@@ -133,7 +44,7 @@ export default function Projects() {
               {project.technologies.map((tech) => (
                 <span
                   key={tech}
-                  className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full"
+                  className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full"
                 >
                   {tech}
                 </span>
@@ -141,6 +52,14 @@ export default function Projects() {
             </div>
 
             <div className="flex gap-4">
+              {project.hasDetailPage && (
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  View Details →
+                </Link>
+              )}
               {project.githubUrl && (
                 <a
                   href={project.githubUrl}
@@ -161,7 +80,7 @@ export default function Projects() {
                   Live Demo →
                 </a>
               )}
-              {!project.githubUrl && !project.liveUrl && (
+              {!project.githubUrl && !project.liveUrl && !project.hasDetailPage && (
                 <span className="px-6 py-2 text-gray-500 italic">
                   Internal/Private Project
                 </span>
