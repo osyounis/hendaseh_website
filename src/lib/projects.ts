@@ -12,6 +12,7 @@ export interface Project {
   stats: string;
   category: string;
   hasDetailPage?: boolean;
+  buttonText?: string;
 }
 
 export function getAllProjects(): Project[] {
