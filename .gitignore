@@ -158,6 +158,10 @@ vite.config.ts.timestamp-*
 .DS_Store
 *.pem
 
+# Test reports
+playwright-report/
+test-results/
+
 # Claude AI File/Directories to ignore
 .claude/
 CLAUDE.md
