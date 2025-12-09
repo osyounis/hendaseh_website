@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { HiMail, HiDocument } from 'react-icons/hi';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { HiMail } from 'react-icons/hi';
+import { FaGithub, FaLinkedin, FaFilePdf } from 'react-icons/fa';
 
 export const metadata: Metadata = {
   title: 'About - Omar Younis | Software Engineer',
@@ -296,7 +296,7 @@ export default function About() {
               download="Omar_Younis_Resume.pdf"
               className="flex items-center gap-4 p-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              <HiDocument className="w-8 h-8 flex-shrink-0" />
+              <FaFilePdf className="w-8 h-8 flex-shrink-0" />
               <div>
                 <div className="font-semibold">Download Resume</div>
                 <div className="text-sm text-blue-100">PDF Format</div>
