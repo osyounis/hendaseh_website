@@ -8,69 +8,90 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-20 md:py-32">
         <div className="max-w-4xl">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Hi, I'm{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Omar Younis
-            </span>
-          </h1>
+          <div className="mb-6">
+            <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-2">
+              Hendaseh
+            </h1>
+            <p className="text-2xl md:text-3xl font-semibold text-gray-700">
+              Software Engineering & Product Development
+            </p>
+          </div>
           <p className="text-xl md:text-2xl text-gray-700 mb-4 leading-relaxed">
-            Software Engineer specializing in data engineering, machine learning, and
-            scientific computing.
+            Building intelligent software solutions—from iOS applications to enterprise
+            data infrastructure.
           </p>
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-            MS in Computer Science student at Cal State Fullerton (graduating May 2026).
-            Former Software Engineer Intern at Qualcomm. Mechanical Engineer with 7 years of experience.
+            Available for full-time opportunities and contract engagements.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
               href="/projects"
-              className="px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+              className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
             >
-              View Projects
+              View My Work
             </Link>
+            <a
+              href="mailto:osyounis@csu.fullerton.edu"
+              className="px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-sm"
+            >
+              Let's Talk
+            </a>
             <Link
               href="/about"
               className="px-8 py-3 border-2 border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
-              About Me
+              About
             </Link>
-            <a
-              href="https://github.com/osyounis"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-            >
-              GitHub →
-            </a>
           </div>
         </div>
       </section>
 
-      {/* Background Summary */}
+      {/* Capabilities */}
       <section className="py-16 border-t border-gray-200">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">What I Do</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">What I Can Do</h2>
+        <p className="text-lg text-gray-600 mb-12 max-w-3xl">
+          I build practical software solutions—from custom enterprise systems to consumer iOS applications.
+          Available for full-time opportunities and contract engagements.
+        </p>
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="p-6 bg-white border border-gray-200 rounded-lg">
+          <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Custom Software Development</h3>
+            <p className="text-gray-700 mb-4">
+              Internal tools, productivity applications, and API integrations. Deployed solutions
+              used across federal operations with measurable impact.
+            </p>
+            <Link
+              href="/capabilities"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Learn more →
+            </Link>
+          </div>
+          <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Data Engineering</h3>
-            <p className="text-gray-700">
-              Building ETL pipelines on AWS processing millions of data points. Creating
-              data infrastructure for ML teams and analytics.
+            <p className="text-gray-700 mb-4">
+              ETL pipelines processing millions of data points, cloud infrastructure,
+              and big data solutions for ML teams and analytics platforms.
             </p>
+            <Link
+              href="/capabilities"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Learn more →
+            </Link>
           </div>
-          <div className="p-6 bg-white border border-gray-200 rounded-lg">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Machine Learning</h3>
-            <p className="text-gray-700">
-              Developing ML applications with PyTorch and TensorFlow. Computer vision,
-              NLP, and predictive modeling for real-world problems.
+          <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Mobile App Development</h3>
+            <p className="text-gray-700 mb-4">
+              iOS applications built with Swift and SwiftUI. From concept to App Store
+              launch, delivering polished products users love.
             </p>
-          </div>
-          <div className="p-6 bg-white border border-gray-200 rounded-lg">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Scientific Computing</h3>
-            <p className="text-gray-700">
-              Creating computational tools using Python. Astronomical algorithms,
-              engineering simulations, and mathematical modeling.
-            </p>
+            <Link
+              href="/capabilities"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Learn more →
+            </Link>
           </div>
         </div>
       </section>
@@ -110,6 +131,34 @@ export default function Home() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Dual CTAs - Ready to Collaborate */}
+      <section className="py-16 border-t border-gray-200">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Ready to Collaborate?
+          </h2>
+          <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+            Whether you're looking to hire for a full-time position or need custom software solutions,
+            I'd love to discuss how we can work together.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/capabilities"
+              className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md text-lg"
+            >
+              See What I Can Do
+            </Link>
+            <a
+              href="/resume.pdf"
+              download="Omar_Younis_Resume.pdf"
+              className="px-8 py-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-md text-lg"
+            >
+              View Resume
+            </a>
+          </div>
         </div>
       </section>
     </div>

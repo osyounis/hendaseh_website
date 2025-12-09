@@ -4,8 +4,8 @@ import { HiMail, HiDocument } from 'react-icons/hi';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'About | Omar Younis',
-  description: 'Learn about Omar Younis - transitioning from 10 years in Mechanical Engineering to Software Engineering',
+  title: 'About - Omar Younis | Software Engineer',
+  description: 'Meet Omar Younis, software engineer specializing in data engineering, ML, and custom software solutions.',
 };
 
 export default function About() {
@@ -22,31 +22,89 @@ export default function About() {
           priority
         />
         <div className="flex-1 text-center md:text-left">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">About Me</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Omar Younis</h1>
+          <p className="text-2xl text-blue-600 font-semibold mb-4">Software Engineer</p>
           <p className="text-xl text-gray-600">
-            Software Engineer specializing in data engineering, machine learning, and scientific computing
+            Software engineer with a unique perspective—combining 7 years of mechanical engineering
+            experience with modern software development expertise.
           </p>
         </div>
       </div>
 
       <div className="prose prose-lg max-w-none">
+        {/* Professional Credentials */}
+        <section className="mb-12 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Qualifications</h2>
+          <div className="grid md:grid-cols-2 gap-4 text-gray-700">
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong>MS in Computer Science</strong>
+                <p className="text-gray-600 text-base">California State University, Fullerton (2026)</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong>BS in Mechanical Engineering</strong>
+                <p className="text-gray-600 text-base">Minor in Aerospace Engineering, Worcester Polytechnic Institute (2016)</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong>Software Engineer Intern at Qualcomm</strong>
+                <p className="text-gray-600 text-base">Data engineering & ETL pipelines (2024)</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong>7 Years Engineering Experience</strong>
+                <p className="text-gray-600 text-base">D&K Engineering, Cobham, and others</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong>Coast Guard Achievement Medal</strong>
+                <p className="text-gray-600 text-base">Recognition for fleet-wide tool deployment</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong>Deployed Software in Federal Operations</strong>
+                <p className="text-gray-600 text-base">Tools used across all US Coast Guard Air Stations</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong>Proven Impact & Results</strong>
+                <p className="text-gray-600 text-base">85% efficiency improvements, measurable outcomes</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Background</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">My Journey</h2>
           <p className="text-gray-700 mb-4 leading-relaxed">
-            I'm Omar Younis, a Software Engineer with a unique journey. After 7 years as a
-            Mechanical Engineer working on everything from military defense systems to medical devices,
-            I discovered my passion for software development and made the leap into tech.
+            After 7 years in mechanical engineering working across military defense systems, medical devices,
+            and precision manufacturing, I discovered my passion for software development and made the
+            transition to tech.
           </p>
           <p className="text-gray-700 mb-4 leading-relaxed">
-            I'm currently pursuing my Master's degree in Computer Science at California State
-            University, Fullerton (graduating May 2026). I recently completed a Software Engineer
-            internship at Qualcomm, where I worked on data engineering and ETL pipelines.
+            I'm currently pursuing my Master's in Computer Science at California State University, Fullerton
+            (graduating May 2026), with recent experience as a Software Engineer Intern at Qualcomm working
+            on data engineering and ETL pipelines.
           </p>
           <p className="text-gray-700 mb-4 leading-relaxed">
-            I specialize in data engineering, machine learning, and scientific computing—building
-            practical tools that solve real-world problems with measurable impact. My projects have
-            been deployed fleet-wide across Coast Guard operations, reducing workflow times from
-            weeks to minutes.
+            I specialize in data engineering, machine learning, and scientific computing—creating practical
+            tools that solve real-world problems with measurable impact. My projects have been deployed
+            fleet-wide across Coast Guard operations, reducing workflow times from weeks to minutes and
+            delivering quantifiable efficiency improvements.
           </p>
         </section>
 
@@ -78,21 +136,24 @@ export default function About() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Career Highlights</h2>
           <div className="space-y-4">
             <div className="border-l-4 border-blue-600 pl-4">
-              <h3 className="font-bold text-gray-900">Qualcomm (May 2024 - Aug 2024)</h3>
+              <h3 className="font-bold text-gray-900">Software Engineer Intern - Qualcomm</h3>
+              <p className="text-gray-600 text-sm mb-2">May 2024 - August 2024</p>
               <p className="text-gray-700">
                 Built ETL pipelines processing 1M+ data points per minute for ML teams.
                 Improved development efficiency by 40% through logging and monitoring solutions.
               </p>
             </div>
             <div className="border-l-4 border-blue-600 pl-4">
-              <h3 className="font-bold text-gray-900">Coast Guard Auxiliary</h3>
+              <h3 className="font-bold text-gray-900">Flotilla Staff Officer - US Coast Guard Auxiliary</h3>
+              <p className="text-gray-600 text-sm mb-2">May 2015 - Present</p>
               <p className="text-gray-700">
                 Developed productivity tools deployed fleet-wide across all US Coast Guard Air Stations.
                 Received Coast Guard Auxiliary Achievement Medal for measurable impact.
               </p>
             </div>
             <div className="border-l-4 border-blue-600 pl-4">
-              <h3 className="font-bold text-gray-900">Lead Mechanical Engineer</h3>
+              <h3 className="font-bold text-gray-900">Lead Mechanical Engineer - D&K Engineering</h3>
+              <p className="text-gray-600 text-sm mb-2">February 2019 - May 2021</p>
               <p className="text-gray-700">
                 Led team of 20 engineers in developing ecoATMs, earning $1M contract extension.
                 Accelerated project timelines 4x through technical leadership.
@@ -139,11 +200,53 @@ export default function About() {
           </p>
         </section>
 
+        {/* Why Choose Hendaseh */}
+        <section className="mb-12 p-8 border-2 border-blue-600 rounded-lg">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Why Work With Me</h2>
+          <div className="space-y-4 text-gray-700">
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong className="text-gray-900">Cross-Disciplinary Expertise</strong>
+                <p className="text-base">Unique blend of mechanical engineering rigor and modern software development practices</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong className="text-gray-900">Proven Impact</strong>
+                <p className="text-base">Fleet-wide deployments with measurable results: 85% efficiency gains, week-to-minutes time reductions</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong className="text-gray-900">Modern Tech Stack</strong>
+                <p className="text-base">Latest frameworks and industry best practices: Python, AWS, PyTorch, Swift, Apache Spark</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong className="text-gray-900">Reliable Delivery</strong>
+                <p className="text-base">Strong academic and professional track record with successful project completions</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-xl">✓</span>
+              <div>
+                <strong className="text-gray-900">Clear Communication</strong>
+                <p className="text-base">Engineering background enables effective technical communication with stakeholders</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="mt-16 pt-12 border-t border-gray-200">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Get in Touch</h2>
           <p className="text-gray-700 mb-8 leading-relaxed">
-            I'm seeking software engineering opportunities in data engineering, machine learning,
-            or scientific computing. Feel free to reach out through any of the channels below.
+            Available for full-time software engineering opportunities and contract engagements.
+            Feel free to reach out through any of the channels below.
           </p>
 
           <div className="grid md:grid-cols-2 gap-6">

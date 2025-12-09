@@ -1,7 +1,7 @@
 {
   "projects": [
     {
-      "id": "ios-app",
+      "id": "nahtadi",
       "title": "Nahtadi - Islamic Prayer Times",
       "description": "iOS application that calculates the five daily Islamic prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) and provides the Qibla direction. Built with SwiftUI and SwiftData. Features multiple calculation methods, Hijri calendar, prayer notifications, and offline capability.",
       "technologies": ["Swift", "SwiftUI", "SwiftData", "iOS"],

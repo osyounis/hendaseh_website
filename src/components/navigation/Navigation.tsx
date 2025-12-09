@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HiMail } from 'react-icons/hi';
 
 export default function Navigation() {
   return (
@@ -24,6 +25,12 @@ export default function Navigation() {
               About
             </Link>
             <Link
+              href="/capabilities"
+              className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
+            >
+              Capabilities
+            </Link>
+            <Link
               href="/projects"
               className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
             >
@@ -36,6 +43,14 @@ export default function Navigation() {
               className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
             >
               GitHub
+            </a>
+            <a
+              href="mailto:osyounis@csu.fullerton.edu"
+              className="text-gray-700 hover:text-gray-900 transition-colors"
+              aria-label="Email Omar Younis"
+              title="Email me"
+            >
+              <HiMail className="w-6 h-6" />
             </a>
           </div>
         </div>
