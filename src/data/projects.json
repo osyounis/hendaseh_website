@@ -49,7 +49,7 @@
       "githubUrl": "https://github.com/osyounis/cycloidal_drive_creator",
       "liveUrl": null,
       "embedUrl": null,
-      "featured": true,
+      "featured": false,
       "stats": "29 commits • 22 stars • MIT",
       "category": "engineering-tools",
       "hasDetailPage": false
@@ -62,7 +62,7 @@
       "githubUrl": "https://github.com/osyounis/image_watermark_remover",
       "liveUrl": null,
       "embedUrl": null,
-      "featured": true,
+      "featured": false,
       "stats": "10 stars • MIT",
       "category": "machine-learning",
       "hasDetailPage": false
@@ -75,7 +75,7 @@
       "githubUrl": null,
       "liveUrl": null,
       "embedUrl": null,
-      "featured": true,
+      "featured": false,
       "stats": "Fleet-wide deployment • USCG Achievement Medal",
       "category": "data-tools",
       "hasDetailPage": false

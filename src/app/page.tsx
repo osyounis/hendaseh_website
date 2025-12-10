@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getFeaturedProjects } from '@/lib/projects';
 
 export default function Home() {
-  const featuredProjects = getFeaturedProjects().slice(0, 3); // Show first 3 featured projects
+  const featuredProjects = getFeaturedProjects(); // All featured projects appear on homepage
   return (
     <div className="max-w-6xl mx-auto px-4">
       {/* Hero Section */}
