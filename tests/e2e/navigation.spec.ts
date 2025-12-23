@@ -30,7 +30,7 @@ test.describe('Site Navigation', () => {
     await page.goto('/')
 
     // Check email link exists
-    const emailLink = page.locator('a[href="mailto:osyounis@csu.fullerton.edu"]').first()
+    const emailLink = page.locator('a[href="mailto:omar@hendaseh.com"]').first()
     await expect(emailLink).toBeVisible()
   })
 

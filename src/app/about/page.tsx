@@ -252,13 +252,13 @@ export default function About() {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Email */}
             <a
-              href="mailto:osyounis@csu.fullerton.edu"
+              href="mailto:omar@hendaseh.com"
               className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
             >
               <HiMail className="w-8 h-8 text-blue-600 flex-shrink-0" />
               <div>
                 <div className="font-semibold text-gray-900">Email</div>
-                <div className="text-sm text-gray-600">osyounis@csu.fullerton.edu</div>
+                <div className="text-sm text-gray-600">omar@hendaseh.com</div>
               </div>
             </a>
 

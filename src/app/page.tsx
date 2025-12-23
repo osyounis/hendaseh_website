@@ -31,7 +31,7 @@ export default function Home() {
               View My Work
             </Link>
             <a
-              href="mailto:osyounis@csu.fullerton.edu"
+              href="mailto:omar@hendaseh.com"
               className="px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-sm"
             >
               Let's Talk
