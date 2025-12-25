@@ -34,7 +34,7 @@
       "technologies": ["Python", "Streamlit", "Matplotlib", "NumPy", "Pytest"],
       "githubUrl": "https://github.com/osyounis/collision_avoidance_radar_plotting_app",
       "liveUrl": null,
-      "embedUrl": null,
+      "embedUrl": "https://collision-avoidance-radar-plotting-app.streamlit.app/?embed=true",
       "featured": true,
       "stats": "19 commits • GPL-3.0",
       "category": "data-tools",
