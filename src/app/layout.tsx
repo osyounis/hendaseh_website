@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Navigation from '@/components/navigation/Navigation';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: 'Omar Younis | Software Engineer',
@@ -32,6 +33,7 @@ export default function RootLayout({
             <p>&copy; {new Date().getFullYear()} Omar Younis. All rights reserved.</p>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );

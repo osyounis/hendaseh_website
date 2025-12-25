@@ -51,7 +51,7 @@ export default function Navigation() {
               GitHub
             </a>
             <a
-              href="mailto:osyounis@csu.fullerton.edu"
+              href="mailto:omar@hendaseh.com"
               className="text-gray-700 hover:text-gray-900 transition-colors"
               aria-label="Email Omar Younis"
               title="Email me"
@@ -115,7 +115,7 @@ export default function Navigation() {
                 GitHub
               </a>
               <a
-                href="mailto:osyounis@csu.fullerton.edu"
+                href="mailto:omar@hendaseh.com"
                 className="text-gray-700 hover:text-gray-900 transition-colors font-medium flex items-center gap-2"
               >
                 <HiMail className="w-5 h-5" />
