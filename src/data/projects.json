@@ -12,7 +12,9 @@
       "stats": "v0.1.0 • In Development",
       "category": "mobile",
       "hasDetailPage": true,
-      "buttonText": "Learn More →"
+      "buttonText": "Learn More →",
+      "image": "/images/projects/nahtadi.svg",
+      "imageAlt": "Nahtadi iOS app - Islamic Prayer Times calculator with Swift and SwiftUI"
     },
     {
       "id": "islamic-prayer-time",
@@ -25,7 +27,9 @@
       "featured": true,
       "stats": "33 commits • GPL-3.0",
       "category": "scientific-computing",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/islamic-prayer-time.svg",
+      "imageAlt": "Islamic Prayer Time Python library - code example showing prayer times calculation"
     },
     {
       "id": "collision-avoidance-radar",
@@ -39,7 +43,9 @@
       "stats": "19 commits • GPL-3.0",
       "category": "data-tools",
       "hasDetailPage": true,
-      "buttonText": "Try It Out →"
+      "buttonText": "Try It Out →",
+      "image": "/images/projects/collision-avoidance-radar.png",
+      "imageAlt": "Collision Avoidance Radar plotting app showing vessel parameters and radar visualization"
     },
     {
       "id": "cycloidal-drive-creator",
@@ -52,7 +58,9 @@
       "featured": false,
       "stats": "29 commits • 22 stars • MIT",
       "category": "engineering-tools",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/cycloidal-drive-creator.jpg",
+      "imageAlt": "Cycloidal Drive Creator GUI showing parametric rotor profile generation"
     },
     {
       "id": "image-watermark-remover",
@@ -65,7 +73,9 @@
       "featured": false,
       "stats": "10 stars • MIT",
       "category": "machine-learning",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/image-watermark-remover.png",
+      "imageAlt": "Image Watermark Remover showing GAN-based watermark removal results"
     },
     {
       "id": "coast-guard-pilot-tracker",
@@ -78,7 +88,9 @@
       "featured": false,
       "stats": "Fleet-wide deployment • USCG Achievement Medal",
       "category": "data-tools",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/coast-guard-pilot-tracker.svg",
+      "imageAlt": "US Coast Guard Pilot Training Tracker - fleet-wide deployment achievement"
     },
     {
       "id": "coast-guard-inventory",
@@ -91,7 +103,9 @@
       "featured": false,
       "stats": "In production at USCG San Diego",
       "category": "data-tools",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/coast-guard-inventory.svg",
+      "imageAlt": "US Coast Guard Helicopter Inventory System - operational at Air Station San Diego"
     },
     {
       "id": "asl-detector",
@@ -104,7 +118,9 @@
       "featured": false,
       "stats": "Object Detection",
       "category": "machine-learning",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/asl-detector.svg",
+      "imageAlt": "ASL Letter Detector using YOLOv5 for real-time hand position recognition"
     },
     {
       "id": "wildfire-predictor",
@@ -117,7 +133,9 @@
       "featured": false,
       "stats": "ML Classification",
       "category": "machine-learning",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/wildfire-predictor.svg",
+      "imageAlt": "California Wildfire Likelihood Predictor using TensorFlow and historical data"
     }
   ]
 }

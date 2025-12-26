@@ -1,6 +1,7 @@
 import { getProjectById, getAllProjects } from '@/lib/projects';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 
 interface PageProps {
@@ -47,6 +48,19 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       >
         ← Back to Projects
       </Link>
+
+      {/* Project hero image */}
+      {project.image && (
+        <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden bg-gray-100">
+          <Image
+            src={project.image}
+            alt={project.imageAlt || project.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
 
       {/* Project header */}
       <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">

@@ -13,6 +13,8 @@ export interface Project {
   category: string;
   hasDetailPage?: boolean;
   buttonText?: string;
+  image?: string;
+  imageAlt?: string;
 }
 
 export function getAllProjects(): Project[] {

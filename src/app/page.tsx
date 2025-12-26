@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getFeaturedProjects } from '@/lib/projects';
 
 export default function Home() {
@@ -111,23 +112,35 @@ export default function Home() {
           {featuredProjects.map((project) => (
             <div
               key={project.id}
-              className="border border-gray-300 rounded-lg p-6 hover:border-blue-500 hover:shadow-md transition-all"
+              className="border border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 hover:shadow-md transition-all"
             >
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {project.title}
-              </h3>
-              <p className="text-gray-600 mb-4 line-clamp-3">
-                {project.description}
-              </p>
-              <div className="flex gap-2 flex-wrap">
-                {project.technologies.slice(0, 3).map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-                  >
-                    {tech}
-                  </span>
-                ))}
+              {project.image && (
+                <div className="relative w-full h-48 bg-gray-100">
+                  <Image
+                    src={project.image}
+                    alt={project.imageAlt || project.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  {project.title}
+                </h3>
+                <p className="text-gray-600 mb-4 line-clamp-3">
+                  {project.description}
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {project.technologies.slice(0, 3).map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
