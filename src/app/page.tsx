@@ -110,18 +110,49 @@ export default function Home() {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredProjects.map((project) => (
-            <div
+            <Link
               key={project.id}
-              className="border border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 hover:shadow-md transition-all"
+              href={project.hasDetailPage ? `/projects/${project.id}` : `/projects`}
+              className="border border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 hover:shadow-md transition-all block"
             >
               {project.image && (
-                <div className="relative w-full h-48 bg-gray-100">
-                  <Image
-                    src={project.image}
-                    alt={project.imageAlt || project.title}
-                    fill
-                    className="object-cover"
-                  />
+                <div
+                  className={`relative w-full h-48 flex items-center justify-center ${
+                    project.id === 'nahtadi'
+                      ? 'bg-gradient-to-br from-blue-300 to-blue-500'
+                      : project.id === 'collision-avoidance-radar'
+                      ? 'bg-gradient-to-br from-gray-900 to-slate-800'
+                      : 'bg-gray-100'
+                  }`}
+                >
+                  {project.id === 'nahtadi' ? (
+                    <div className="w-32 h-32 bg-white rounded-3xl shadow-2xl overflow-hidden">
+                      <Image
+                        src={project.image}
+                        alt={project.imageAlt || project.title}
+                        width={128}
+                        height={128}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : project.id === 'collision-avoidance-radar' ? (
+                    <div className="w-32 h-32 rounded-3xl shadow-2xl overflow-hidden">
+                      <Image
+                        src={project.image}
+                        alt={project.imageAlt || project.title}
+                        width={128}
+                        height={128}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <Image
+                      src={project.image}
+                      alt={project.imageAlt || project.title}
+                      fill
+                      className="object-cover"
+                    />
+                  )}
                 </div>
               )}
               <div className="p-6">
@@ -142,7 +173,7 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

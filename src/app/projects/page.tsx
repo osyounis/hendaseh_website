@@ -28,13 +28,69 @@ export default function Projects() {
           >
             <div className="md:flex">
               {project.image && (
-                <div className="relative w-full md:w-80 h-64 md:h-auto bg-gray-100 flex-shrink-0">
-                  <Image
-                    src={project.image}
-                    alt={project.imageAlt || project.title}
-                    fill
-                    className="object-cover"
-                  />
+                <div
+                  className={`relative w-full md:w-80 h-64 md:h-auto flex-shrink-0 flex items-center justify-center ${
+                    project.id === 'nahtadi'
+                      ? 'bg-gradient-to-br from-blue-300 to-blue-500'
+                      : project.id === 'collision-avoidance-radar'
+                      ? 'bg-gradient-to-br from-gray-900 to-slate-800'
+                      : project.id === 'wildfire-predictor'
+                      ? 'bg-gradient-to-br from-red-600 to-orange-500'
+                      : project.id === 'asl-detector'
+                      ? 'bg-gradient-to-br from-purple-600 to-purple-400'
+                      : project.id === 'image-watermark-remover'
+                      ? 'bg-gradient-to-br from-emerald-500 to-teal-400'
+                      : 'bg-gray-100'
+                  }`}
+                >
+                  {project.id === 'nahtadi' ? (
+                    <div className="w-40 h-40 bg-white rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center">
+                      <Image
+                        src={project.image}
+                        alt={project.imageAlt || project.title}
+                        width={160}
+                        height={160}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  ) : project.id === 'wildfire-predictor' || project.id === 'asl-detector' ? (
+                    <div className="w-40 h-40 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center p-4">
+                      <Image
+                        src={project.image}
+                        alt={project.imageAlt || project.title}
+                        width={160}
+                        height={160}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  ) : project.id === 'collision-avoidance-radar' ? (
+                    <div className="w-40 h-40 rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center">
+                      <Image
+                        src={project.image}
+                        alt={project.imageAlt || project.title}
+                        width={160}
+                        height={160}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : project.id === 'image-watermark-remover' ? (
+                    <div className="w-40 h-40 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center p-4">
+                      <Image
+                        src={project.image}
+                        alt={project.imageAlt || project.title}
+                        width={160}
+                        height={160}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <Image
+                      src={project.image}
+                      alt={project.imageAlt || project.title}
+                      fill
+                      className="object-cover"
+                    />
+                  )}
                 </div>
               )}
               <div className="p-8 flex-1">
