@@ -40,8 +40,8 @@ test.describe('Site Navigation', () => {
     await expect(contactLink).toHaveAttribute('href', '/contact')
   })
 
-  test('should have external GitHub link', async ({ page }) => {
-    await page.goto('/')
+  test('should have external GitHub link on Projects page', async ({ page }) => {
+    await page.goto('/projects')
 
     // Check GitHub link exists and has correct attributes
     const githubLink = page.locator('a[href="https://github.com/osyounis"]').first()
