@@ -11,3 +11,8 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Force rounded corners on Next.js Image component */
+.rounded-3xl img {
+  border-radius: 1.5rem;
+}

@@ -9,12 +9,16 @@
       "liveUrl": null,
       "embedUrl": null,
       "featured": true,
-      "stats": "v0.1.0 • In Development",
+      "stats": "v1.0.0 • In Development",
       "category": "mobile",
       "hasDetailPage": true,
       "buttonText": "Learn More →",
-      "image": "/images/projects/nahtadi.svg",
-      "imageAlt": "Nahtadi iOS app - Islamic Prayer Times calculator with Swift and SwiftUI"
+      "image": "/images/nahtadi/icon.png",
+      "imageAlt": "Nahtadi app icon - Islamic Prayer Times iOS app",
+      "appStoreUrl": null,
+      "privacyPolicyUrl": "/nahtadi/privacy",
+      "supportUrl": "/nahtadi/support",
+      "appStoreLive": false
     },
     {
       "id": "islamic-prayer-time",
@@ -119,7 +123,7 @@
       "stats": "Object Detection",
       "category": "machine-learning",
       "hasDetailPage": false,
-      "image": "/images/projects/asl-detector.svg",
+      "image": "/images/projects/asl-detector.png",
       "imageAlt": "ASL Letter Detector using YOLOv5 for real-time hand position recognition"
     },
     {
@@ -127,14 +131,14 @@
       "title": "California Wildfire Likelihood Predictor",
       "description": "Predictive model to determine the likelihood of California wildfires based on weather and historical data. Uses TensorFlow for model training and API for data retrieval.",
       "technologies": ["Python", "TensorFlow", "Scikit-Learn", "Seaborn"],
-      "githubUrl": null,
+      "githubUrl": "https://github.com/osyounis/cali_wildfire_likelihood_predictor",
       "liveUrl": null,
       "embedUrl": null,
       "featured": false,
       "stats": "ML Classification",
       "category": "machine-learning",
       "hasDetailPage": false,
-      "image": "/images/projects/wildfire-predictor.svg",
+      "image": "/images/projects/wildfire-predictor.png",
       "imageAlt": "California Wildfire Likelihood Predictor using TensorFlow and historical data"
     }
   ]
