@@ -21,17 +21,23 @@ test.describe('Site Navigation', () => {
     await expect(page).toHaveURL('/projects')
     await expect(page.getByRole('heading', { name: /projects/i })).toBeVisible()
 
+    // Navigate to Contact using navigation bar
+    await page.getByRole('navigation').getByRole('link', { name: 'Contact' }).click()
+    await expect(page).toHaveURL('/contact')
+    await expect(page.getByRole('heading', { name: /contact/i })).toBeVisible()
+
     // Navigate back to Home using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'Home' }).click()
     await expect(page).toHaveURL('/')
   })
 
-  test('should have accessible email link', async ({ page }) => {
+  test('should have contact page link', async ({ page }) => {
     await page.goto('/')
 
-    // Check email link exists
-    const emailLink = page.locator('a[href="mailto:omar@hendaseh.com"]').first()
-    await expect(emailLink).toBeVisible()
+    // Check "Let's Talk" button links to contact page
+    const contactLink = page.getByRole('link', { name: "Let's Talk" })
+    await expect(contactLink).toBeVisible()
+    await expect(contactLink).toHaveAttribute('href', '/contact')
   })
 
   test('should have external GitHub link', async ({ page }) => {
