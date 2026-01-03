@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { HiMail, HiMenu, HiX } from 'react-icons/hi';
+import { HiMenu, HiX } from 'react-icons/hi';
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -42,22 +42,12 @@ export default function Navigation() {
             >
               Projects
             </Link>
-            <a
-              href="https://github.com/osyounis"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/contact"
               className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
             >
-              GitHub
-            </a>
-            <a
-              href="mailto:omar@hendaseh.com"
-              className="text-gray-700 hover:text-gray-900 transition-colors"
-              aria-label="Email Omar Younis"
-              title="Email me"
-            >
-              <HiMail className="w-6 h-6" />
-            </a>
+              Contact
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -106,21 +96,13 @@ export default function Navigation() {
               >
                 Projects
               </Link>
-              <a
-                href="https://github.com/osyounis"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/contact"
                 className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                GitHub
-              </a>
-              <a
-                href="mailto:omar@hendaseh.com"
-                className="text-gray-700 hover:text-gray-900 transition-colors font-medium flex items-center gap-2"
-              >
-                <HiMail className="w-5 h-5" />
-                Email Me
-              </a>
+                Contact
+              </Link>
             </div>
           </div>
         )}

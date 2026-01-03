@@ -25,7 +25,7 @@ export default function CapabilitiesPage() {
       </section>
 
       {/* Service Cards Grid */}
-      <section className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+      <section className="grid md:grid-cols-2 gap-8 mb-16">
         {/* Custom Software Development */}
         <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all">
           <div className="mb-4">

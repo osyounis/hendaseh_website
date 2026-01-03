@@ -27,19 +27,19 @@ export default function Home() {
           <div className="flex flex-wrap gap-4">
             <Link
               href="/projects"
-              className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+              className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
             >
               View My Work
             </Link>
-            <a
-              href="mailto:omar@hendaseh.com"
-              className="px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-sm"
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-sm"
             >
               Let's Talk
-            </a>
+            </Link>
             <Link
               href="/about"
-              className="px-8 py-3 border-2 border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              className="inline-flex items-center justify-center px-8 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium shadow-sm"
             >
               About
             </Link>
@@ -54,7 +54,7 @@ export default function Home() {
           I build practical software solutions—from custom enterprise systems to consumer iOS applications.
           Available for full-time opportunities and contract engagements.
         </p>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Custom Software Development</h3>
             <p className="text-gray-700 mb-4">
@@ -73,6 +73,19 @@ export default function Home() {
             <p className="text-gray-700 mb-4">
               ETL pipelines processing millions of data points, cloud infrastructure,
               and big data solutions for ML teams and analytics platforms.
+            </p>
+            <Link
+              href="/capabilities"
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Learn more →
+            </Link>
+          </div>
+          <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Machine Learning & AI</h3>
+            <p className="text-gray-700 mb-4">
+              Computer vision, deep learning models, and predictive analytics. Building and deploying
+              ML solutions with PyTorch, TensorFlow, and production-ready infrastructure.
             </p>
             <Link
               href="/capabilities"
