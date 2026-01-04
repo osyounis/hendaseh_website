@@ -1,13 +1,9 @@
-import type { Metadata } from 'next';
+'use client';
+
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { HiCode, HiDatabase, HiDeviceMobile } from 'react-icons/hi';
 import { FaBrain } from 'react-icons/fa';
-
-export const metadata: Metadata = {
-  title: 'Capabilities - Software Engineering Expertise | Omar Younis',
-  description: 'Software engineering capabilities: custom software development, data engineering, and mobile app development. Available for full-time roles and contract projects.',
-  keywords: ['software engineering', 'custom software', 'iOS development', 'data engineering', 'contract development'],
-};
 
 export default function CapabilitiesPage() {
   return (
@@ -27,7 +23,11 @@ export default function CapabilitiesPage() {
       {/* Service Cards Grid */}
       <section className="grid md:grid-cols-2 gap-8 mb-16">
         {/* Custom Software Development */}
-        <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all">
+        <motion.div
+          whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+        >
           <div className="mb-4">
             <HiCode className="w-12 h-12 text-blue-600" />
           </div>
@@ -42,10 +42,14 @@ export default function CapabilitiesPage() {
             <p><strong>Example:</strong> Coast Guard Pilot Training Tracker</p>
             <p className="text-gray-500">Deployed fleet-wide across all US Coast Guard Air Stations, reducing processing time from 1 week to 3 minutes.</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Data Engineering */}
-        <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all">
+        <motion.div
+          whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+        >
           <div className="mb-4">
             <HiDatabase className="w-12 h-12 text-blue-600" />
           </div>
@@ -60,10 +64,14 @@ export default function CapabilitiesPage() {
             <p><strong>Example:</strong> Qualcomm ETL Pipelines</p>
             <p className="text-gray-500">Built pipelines processing 1M+ data points per minute for ML teams, improving development efficiency by 40%.</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Mobile App Development */}
-        <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all">
+        <motion.div
+          whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+        >
           <div className="mb-4">
             <HiDeviceMobile className="w-12 h-12 text-blue-600" />
           </div>
@@ -78,10 +86,14 @@ export default function CapabilitiesPage() {
             <p><strong>Example:</strong> Nahtadi Prayer Times App</p>
             <p className="text-gray-500">iOS app using advanced astronomical algorithms for accurate prayer times and Qibla direction.</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Machine Learning & AI */}
-        <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all">
+        <motion.div
+          whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+        >
           <div className="mb-4">
             <FaBrain className="w-12 h-12 text-blue-600" />
           </div>
@@ -96,7 +108,7 @@ export default function CapabilitiesPage() {
             <p><strong>Example:</strong> Image Watermark Remover</p>
             <p className="text-gray-500">Pix2Pix GAN using PyTorch trained on 16,700+ images to automatically remove watermarks from photos.</p>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Technologies & Expertise */}
