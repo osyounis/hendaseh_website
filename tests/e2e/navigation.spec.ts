@@ -26,8 +26,8 @@ test.describe('Site Navigation', () => {
     await expect(page).toHaveURL('/contact')
     await expect(page.getByRole('heading', { name: /contact/i })).toBeVisible()
 
-    // Navigate back to Home using navigation bar
-    await page.getByRole('navigation').getByRole('link', { name: 'Home' }).click()
+    // Navigate back to Home using logo
+    await page.getByRole('navigation').getByRole('link', { name: 'Hendaseh' }).click()
     await expect(page).toHaveURL('/')
   })
 

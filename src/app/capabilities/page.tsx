@@ -191,12 +191,12 @@ export default function CapabilitiesPage() {
           a full-time position or a specific project you need help with.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href="mailto:omar@hendaseh.com"
+          <Link
+            href="/contact"
             className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md text-lg"
           >
             Schedule a Consultation
-          </a>
+          </Link>
           <Link
             href="/projects"
             className="px-8 py-4 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-md text-lg"

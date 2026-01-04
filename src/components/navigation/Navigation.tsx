@@ -19,28 +19,22 @@ export default function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
-              href="/"
-              className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
-            >
-              Home
-            </Link>
-            <Link
               href="/about"
               className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
             >
               About
             </Link>
             <Link
-              href="/capabilities"
-              className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
-            >
-              Capabilities
-            </Link>
-            <Link
               href="/projects"
               className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
             >
               Projects
+            </Link>
+            <Link
+              href="/capabilities"
+              className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
+            >
+              Capabilities
             </Link>
             <Link
               href="/contact"
@@ -69,13 +63,6 @@ export default function Navigation() {
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-4">
               <Link
-                href="/"
-                className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
                 href="/about"
                 className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
@@ -83,18 +70,18 @@ export default function Navigation() {
                 About
               </Link>
               <Link
-                href="/capabilities"
-                className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Capabilities
-              </Link>
-              <Link
                 href="/projects"
                 className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Projects
+              </Link>
+              <Link
+                href="/capabilities"
+                className="text-gray-700 hover:text-gray-900 transition-colors font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Capabilities
               </Link>
               <Link
                 href="/contact"
