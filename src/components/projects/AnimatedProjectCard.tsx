@@ -37,6 +37,18 @@ export default function AnimatedProjectCard({ project, index }: AnimatedProjectC
                 ? 'bg-gradient-to-br from-purple-600 to-purple-400'
                 : project.id === 'image-watermark-remover'
                 ? 'bg-gradient-to-br from-emerald-500 to-teal-400'
+                : project.id === 'new-game-plus'
+                ? 'bg-gradient-to-br from-indigo-600 to-purple-500'
+                : project.id === 'reddit-nlp'
+                ? 'bg-gradient-to-br from-blue-500 to-teal-400'
+                : project.id === 'islamic-prayer-time'
+                ? 'bg-gradient-to-br from-green-700 to-green-900'
+                : project.id === 'coast-guard-pilot-tracker'
+                ? 'bg-gradient-to-br from-orange-500 to-blue-600'
+                : project.id === 'coast-guard-inventory'
+                ? 'bg-gradient-to-br from-blue-700 to-orange-400'
+                : project.id === 'cycloidal-drive-creator'
+                ? 'bg-gradient-to-br from-gray-600 to-blue-700'
                 : 'bg-gray-100'
             }`}
           >
@@ -71,6 +83,26 @@ export default function AnimatedProjectCard({ project, index }: AnimatedProjectC
                 />
               </div>
             ) : project.id === 'image-watermark-remover' ? (
+              <div className="w-40 h-40 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center p-4">
+                <Image
+                  src={project.image}
+                  alt={project.imageAlt || project.title}
+                  width={160}
+                  height={160}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ) : project.id === 'new-game-plus' || project.id === 'islamic-prayer-time' ? (
+              <div className="w-40 h-40 bg-white rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center">
+                <Image
+                  src={project.image}
+                  alt={project.imageAlt || project.title}
+                  width={160}
+                  height={160}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ) : project.id === 'reddit-nlp' || project.id === 'coast-guard-pilot-tracker' || project.id === 'coast-guard-inventory' || project.id === 'cycloidal-drive-creator' ? (
               <div className="w-40 h-40 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center p-4">
                 <Image
                   src={project.image}

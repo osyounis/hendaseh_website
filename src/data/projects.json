@@ -20,6 +20,21 @@
       "supportUrl": "/nahtadi/support",
       "appStoreLive": false
     },
+       {
+      "id": "new-game-plus",
+      "title": "NewGame+ - Game Recommendation System",
+      "description": "Hybrid Python/Prolog recommendation system that suggests video games based on your gaming history. Uses logic-based reasoning to match games by genre, platform, and rating similarity. Integrates with IGDB API for real game data and leverages Prolog's pattern-matching for fast recommendation queries.",
+      "technologies": ["Python", "Prolog", "SWI-Prolog", "pyswip", "IGDB API"],
+      "githubUrl": "https://github.com/osyounis/new_game_plus",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "Logic Programming • GPL-3.0",
+      "category": "machine-learning",
+      "hasDetailPage": false,
+      "image": "/images/projects/new-game-plus.png",
+      "imageAlt": "NewGame+ recommendation system using Prolog logic programming"
+    },
     {
       "id": "islamic-prayer-time",
       "title": "Islamic Prayer Time App",
@@ -32,7 +47,7 @@
       "stats": "33 commits • GPL-3.0",
       "category": "scientific-computing",
       "hasDetailPage": false,
-      "image": "/images/projects/islamic-prayer-time.svg",
+      "image": "/images/projects/islamic-prayer-time.png",
       "imageAlt": "Islamic Prayer Time Python library - code example showing prayer times calculation"
     },
     {
@@ -63,7 +78,7 @@
       "stats": "29 commits • 22 stars • MIT",
       "category": "engineering-tools",
       "hasDetailPage": false,
-      "image": "/images/projects/cycloidal-drive-creator.jpg",
+      "image": "/images/projects/cycloidal-drive-creator.png",
       "imageAlt": "Cycloidal Drive Creator GUI showing parametric rotor profile generation"
     },
     {
@@ -93,7 +108,7 @@
       "stats": "Fleet-wide deployment • USCG Achievement Medal",
       "category": "data-tools",
       "hasDetailPage": false,
-      "image": "/images/projects/coast-guard-pilot-tracker.svg",
+      "image": "/images/projects/coast-guard-pilot-tracker.png",
       "imageAlt": "US Coast Guard Pilot Training Tracker - fleet-wide deployment achievement"
     },
     {
@@ -108,7 +123,7 @@
       "stats": "In production at USCG San Diego",
       "category": "data-tools",
       "hasDetailPage": false,
-      "image": "/images/projects/coast-guard-inventory.svg",
+      "image": "/images/projects/coast-guard-inventory.png",
       "imageAlt": "US Coast Guard Helicopter Inventory System - operational at Air Station San Diego"
     },
     {
@@ -140,6 +155,21 @@
       "hasDetailPage": false,
       "image": "/images/projects/wildfire-predictor.png",
       "imageAlt": "California Wildfire Likelihood Predictor using TensorFlow and historical data"
+    },
+    {
+      "id": "reddit-nlp",
+      "title": "Reddit NLP Classifier",
+      "description": "Natural language processing project that predicts subreddit origins by analyzing language patterns in Pixar and DreamWorks fan communities. Built with scikit-learn using CountVectorizer and Multinomial Naive Bayes, achieving 76.82% test accuracy on scraped Reddit comments.",
+      "technologies": ["Python", "Scikit-Learn", "NLP", "Pandas", "Jupyter"],
+      "githubUrl": "https://github.com/osyounis/reddit_nlp",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "1 star • 77% Accuracy",
+      "category": "machine-learning",
+      "hasDetailPage": false,
+      "image": "/images/projects/reddit-nlp.png",
+      "imageAlt": "Reddit NLP Classifier analyzing language patterns between subreddit communities"
     }
   ]
 }
