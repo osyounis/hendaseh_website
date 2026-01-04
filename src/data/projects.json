@@ -9,10 +9,31 @@
       "liveUrl": null,
       "embedUrl": null,
       "featured": true,
-      "stats": "v0.1.0 • In Development",
+      "stats": "v1.0.0 • In Development",
       "category": "mobile",
       "hasDetailPage": true,
-      "buttonText": "Learn More →"
+      "buttonText": "Learn More →",
+      "image": "/images/nahtadi/icon.png",
+      "imageAlt": "Nahtadi app icon - Islamic Prayer Times iOS app",
+      "appStoreUrl": null,
+      "privacyPolicyUrl": "/nahtadi/privacy",
+      "supportUrl": "/nahtadi/support",
+      "appStoreLive": false
+    },
+       {
+      "id": "new-game-plus",
+      "title": "NewGame+ - Game Recommendation System",
+      "description": "Hybrid Python/Prolog recommendation system that suggests video games based on your gaming history. Uses logic-based reasoning to match games by genre, platform, and rating similarity. Integrates with IGDB API for real game data and leverages Prolog's pattern-matching for fast recommendation queries.",
+      "technologies": ["Python", "Prolog", "SWI-Prolog", "pyswip", "IGDB API"],
+      "githubUrl": "https://github.com/osyounis/new_game_plus",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "Logic Programming • GPL-3.0",
+      "category": "machine-learning",
+      "hasDetailPage": false,
+      "image": "/images/projects/new-game-plus.png",
+      "imageAlt": "NewGame+ recommendation system using Prolog logic programming"
     },
     {
       "id": "islamic-prayer-time",
@@ -25,7 +46,9 @@
       "featured": true,
       "stats": "33 commits • GPL-3.0",
       "category": "scientific-computing",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/islamic-prayer-time.png",
+      "imageAlt": "Islamic Prayer Time Python library - code example showing prayer times calculation"
     },
     {
       "id": "collision-avoidance-radar",
@@ -34,12 +57,18 @@
       "technologies": ["Python", "Streamlit", "Matplotlib", "NumPy", "Pytest"],
       "githubUrl": "https://github.com/osyounis/collision_avoidance_radar_plotting_app",
       "liveUrl": null,
+<<<<<<< HEAD
       "embedUrl": "https://collision-avoidance-radar-plotting-app.streamlit.app/",
+=======
+      "embedUrl": "https://collision-avoidance-radar-plotting-app.streamlit.app/?embed=true",
+>>>>>>> 6a0f07adebe09acb034501bd33259208460ffe91
       "featured": true,
       "stats": "19 commits • GPL-3.0",
       "category": "data-tools",
       "hasDetailPage": true,
-      "buttonText": "Try It Out →"
+      "buttonText": "Try It Out →",
+      "image": "/images/projects/collision-avoidance-radar.png",
+      "imageAlt": "Collision Avoidance Radar plotting app showing vessel parameters and radar visualization"
     },
     {
       "id": "cycloidal-drive-creator",
@@ -52,7 +81,9 @@
       "featured": false,
       "stats": "29 commits • 22 stars • MIT",
       "category": "engineering-tools",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/cycloidal-drive-creator.png",
+      "imageAlt": "Cycloidal Drive Creator GUI showing parametric rotor profile generation"
     },
     {
       "id": "image-watermark-remover",
@@ -65,7 +96,9 @@
       "featured": false,
       "stats": "10 stars • MIT",
       "category": "machine-learning",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/image-watermark-remover.png",
+      "imageAlt": "Image Watermark Remover showing GAN-based watermark removal results"
     },
     {
       "id": "coast-guard-pilot-tracker",
@@ -78,7 +111,9 @@
       "featured": false,
       "stats": "Fleet-wide deployment • USCG Achievement Medal",
       "category": "data-tools",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/coast-guard-pilot-tracker.png",
+      "imageAlt": "US Coast Guard Pilot Training Tracker - fleet-wide deployment achievement"
     },
     {
       "id": "coast-guard-inventory",
@@ -91,7 +126,9 @@
       "featured": false,
       "stats": "In production at USCG San Diego",
       "category": "data-tools",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/coast-guard-inventory.png",
+      "imageAlt": "US Coast Guard Helicopter Inventory System - operational at Air Station San Diego"
     },
     {
       "id": "asl-detector",
@@ -104,20 +141,39 @@
       "featured": false,
       "stats": "Object Detection",
       "category": "machine-learning",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/asl-detector.png",
+      "imageAlt": "ASL Letter Detector using YOLOv5 for real-time hand position recognition"
     },
     {
       "id": "wildfire-predictor",
       "title": "California Wildfire Likelihood Predictor",
       "description": "Predictive model to determine the likelihood of California wildfires based on weather and historical data. Uses TensorFlow for model training and API for data retrieval.",
       "technologies": ["Python", "TensorFlow", "Scikit-Learn", "Seaborn"],
-      "githubUrl": null,
+      "githubUrl": "https://github.com/osyounis/cali_wildfire_likelihood_predictor",
       "liveUrl": null,
       "embedUrl": null,
       "featured": false,
       "stats": "ML Classification",
       "category": "machine-learning",
-      "hasDetailPage": false
+      "hasDetailPage": false,
+      "image": "/images/projects/wildfire-predictor.png",
+      "imageAlt": "California Wildfire Likelihood Predictor using TensorFlow and historical data"
+    },
+    {
+      "id": "reddit-nlp",
+      "title": "Reddit NLP Classifier",
+      "description": "Natural language processing project that predicts subreddit origins by analyzing language patterns in Pixar and DreamWorks fan communities. Built with scikit-learn using CountVectorizer and Multinomial Naive Bayes, achieving 76.82% test accuracy on scraped Reddit comments.",
+      "technologies": ["Python", "Scikit-Learn", "NLP", "Pandas", "Jupyter"],
+      "githubUrl": "https://github.com/osyounis/reddit_nlp",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "1 star • 77% Accuracy",
+      "category": "machine-learning",
+      "hasDetailPage": false,
+      "image": "/images/projects/reddit-nlp.png",
+      "imageAlt": "Reddit NLP Classifier analyzing language patterns between subreddit communities"
     }
   ]
 }

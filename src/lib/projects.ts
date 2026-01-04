@@ -13,6 +13,12 @@ export interface Project {
   category: string;
   hasDetailPage?: boolean;
   buttonText?: string;
+  image?: string;
+  imageAlt?: string;
+  appStoreUrl?: string | null;
+  privacyPolicyUrl?: string | null;
+  supportUrl?: string | null;
+  appStoreLive?: boolean;
 }
 
 export function getAllProjects(): Project[] {

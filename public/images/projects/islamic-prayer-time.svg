@@ -1,0 +1,15 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grad2)"/>
+  <rect x="300" y="180" width="600" height="270" rx="12" fill="rgba(255,255,255,0.1)"/>
+  <text x="320" y="240" font-family="Monaco, monospace" font-size="24" fill="#10B981" text-anchor="start">from prayer_times import PrayerTimes</text>
+  <text x="320" y="280" font-family="Monaco, monospace" font-size="24" fill="white" text-anchor="start">pt = PrayerTimes(lat=33.88, lng=-117.93)</text>
+  <text x="320" y="320" font-family="Monaco, monospace" font-size="24" fill="white" text-anchor="start">times = pt.calculate_times()</text>
+  <text x="320" y="360" font-family="Monaco, monospace" font-size="24" fill="#9CA3AF" text-anchor="start"># Fajr, Dhuhr, Asr, Maghrib, Isha</text>
+  <text x="600" y="500" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">Pure Python Prayer Times Library</text>
+</svg>

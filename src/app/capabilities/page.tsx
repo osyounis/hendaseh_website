@@ -1,12 +1,9 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { HiCode, HiDatabase, HiDeviceMobile } from 'react-icons/hi';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Capabilities - Software Engineering Expertise | Omar Younis',
-  description: 'Software engineering capabilities: custom software development, data engineering, and mobile app development. Available for full-time roles and contract projects.',
-  keywords: ['software engineering', 'custom software', 'iOS development', 'data engineering', 'contract development'],
-};
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { HiCode, HiDatabase, HiDeviceMobile } from 'react-icons/hi';
+import { FaBrain } from 'react-icons/fa';
 
 export default function CapabilitiesPage() {
   return (
@@ -17,23 +14,27 @@ export default function CapabilitiesPage() {
           My Capabilities
         </h1>
         <p className="text-xl text-gray-600 leading-relaxed">
-          I specialize in building software solutions across three key areas. Whether you're
+          I specialize in building software solutions across four key areas. Whether you're
           looking to hire for a full-time position or need custom development for a specific
           project, here's what I can do.
         </p>
       </section>
 
       {/* Service Cards Grid */}
-      <section className="grid md:grid-cols-3 gap-8 mb-16">
+      <section className="grid md:grid-cols-2 gap-8 mb-16">
         {/* Custom Software Development */}
-        <div className="p-8 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all">
+        <motion.div
+          whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+        >
           <div className="mb-4">
             <HiCode className="w-12 h-12 text-blue-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <h3 className="text-xl font-bold text-gray-900 mb-3">
             Custom Software Development
           </h3>
-          <p className="text-gray-700 mb-6 leading-relaxed">
+          <p className="text-gray-700 mb-4 leading-relaxed text-sm">
             Internal tools and productivity applications designed to streamline your operations.
             Desktop utilities, command-line tools, and API development tailored to your workflow.
           </p>
@@ -41,17 +42,21 @@ export default function CapabilitiesPage() {
             <p><strong>Example:</strong> Coast Guard Pilot Training Tracker</p>
             <p className="text-gray-500">Deployed fleet-wide across all US Coast Guard Air Stations, reducing processing time from 1 week to 3 minutes.</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Data Engineering */}
-        <div className="p-8 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all">
+        <motion.div
+          whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+        >
           <div className="mb-4">
             <HiDatabase className="w-12 h-12 text-blue-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <h3 className="text-xl font-bold text-gray-900 mb-3">
             Data Engineering & Infrastructure
           </h3>
-          <p className="text-gray-700 mb-6 leading-relaxed">
+          <p className="text-gray-700 mb-4 leading-relaxed text-sm">
             ETL pipeline development, data warehouse architecture, and cloud infrastructure.
             Processing millions of data points with reliability and performance.
           </p>
@@ -59,17 +64,21 @@ export default function CapabilitiesPage() {
             <p><strong>Example:</strong> Qualcomm ETL Pipelines</p>
             <p className="text-gray-500">Built pipelines processing 1M+ data points per minute for ML teams, improving development efficiency by 40%.</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Mobile App Development */}
-        <div className="p-8 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all">
+        <motion.div
+          whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+        >
           <div className="mb-4">
             <HiDeviceMobile className="w-12 h-12 text-blue-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <h3 className="text-xl font-bold text-gray-900 mb-3">
             Mobile Application Development
           </h3>
-          <p className="text-gray-700 mb-6 leading-relaxed">
+          <p className="text-gray-700 mb-4 leading-relaxed text-sm">
             iOS applications built with Swift and SwiftUI. From concept to App Store launch,
             delivering polished products that users love.
           </p>
@@ -77,7 +86,29 @@ export default function CapabilitiesPage() {
             <p><strong>Example:</strong> Nahtadi Prayer Times App</p>
             <p className="text-gray-500">iOS app using advanced astronomical algorithms for accurate prayer times and Qibla direction.</p>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Machine Learning & AI */}
+        <motion.div
+          whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+        >
+          <div className="mb-4">
+            <FaBrain className="w-12 h-12 text-blue-600" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">
+            Machine Learning & AI
+          </h3>
+          <p className="text-gray-700 mb-4 leading-relaxed text-sm">
+            Computer vision, deep learning models, and predictive analytics. Building and deploying
+            ML solutions with PyTorch, TensorFlow, and production-ready infrastructure.
+          </p>
+          <div className="text-sm text-gray-600 space-y-2">
+            <p><strong>Example:</strong> Image Watermark Remover</p>
+            <p className="text-gray-500">Pix2Pix GAN using PyTorch trained on 16,700+ images to automatically remove watermarks from photos.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* Technologies & Expertise */}
@@ -160,12 +191,12 @@ export default function CapabilitiesPage() {
           a full-time position or a specific project you need help with.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href="mailto:omar@hendaseh.com"
+          <Link
+            href="/contact"
             className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md text-lg"
           >
             Schedule a Consultation
-          </a>
+          </Link>
           <Link
             href="/projects"
             className="px-8 py-4 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-md text-lg"
