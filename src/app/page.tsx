@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { getFeaturedProjects } from '@/lib/projects';
 
 export default function Home() {
@@ -25,24 +28,30 @@ export default function Home() {
             Available for full-time opportunities and contract engagements.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link
-              href="/projects"
-              className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
-            >
-              View My Work
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-sm"
-            >
-              Let's Talk
-            </Link>
-            <Link
-              href="/about"
-              className="inline-flex items-center justify-center px-8 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium shadow-sm"
-            >
-              About
-            </Link>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/projects"
+                className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+              >
+                View My Work
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-sm"
+              >
+                Let's Talk
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/about"
+                className="inline-flex items-center justify-center px-8 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium shadow-sm"
+              >
+                About
+              </Link>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -55,7 +64,12 @@ export default function Home() {
           Available for full-time opportunities and contract engagements.
         </p>
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+          <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+          >
             <h3 className="text-xl font-bold text-gray-900 mb-3">Custom Software Development</h3>
             <p className="text-gray-700 mb-4">
               Internal tools, productivity applications, and API integrations. Deployed solutions
@@ -67,8 +81,13 @@ export default function Home() {
             >
               Learn more →
             </Link>
-          </div>
-          <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+          >
             <h3 className="text-xl font-bold text-gray-900 mb-3">Data Engineering</h3>
             <p className="text-gray-700 mb-4">
               ETL pipelines processing millions of data points, cloud infrastructure,
@@ -80,8 +99,13 @@ export default function Home() {
             >
               Learn more →
             </Link>
-          </div>
-          <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+          >
             <h3 className="text-xl font-bold text-gray-900 mb-3">Machine Learning & AI</h3>
             <p className="text-gray-700 mb-4">
               Computer vision, deep learning models, and predictive analytics. Building and deploying
@@ -93,8 +117,13 @@ export default function Home() {
             >
               Learn more →
             </Link>
-          </div>
-          <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+          >
             <h3 className="text-xl font-bold text-gray-900 mb-3">Mobile App Development</h3>
             <p className="text-gray-700 mb-4">
               iOS applications built with Swift and SwiftUI. From concept to App Store
@@ -106,7 +135,7 @@ export default function Home() {
             >
               Learn more →
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -122,12 +151,19 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredProjects.map((project) => (
-            <Link
+          {featuredProjects.map((project, index) => (
+            <motion.div
               key={project.id}
-              href={project.hasDetailPage ? `/projects/${project.id}` : `/projects`}
-              className="border border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 hover:shadow-md transition-all block"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px", amount: 0.1 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
             >
+              <Link
+                href={project.hasDetailPage ? `/projects/${project.id}` : `/projects`}
+                className="border border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors block h-full"
+              >
               {project.image && (
                 <div
                   className={`relative w-full h-48 flex items-center justify-center ${
@@ -186,7 +222,8 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -202,19 +239,23 @@ export default function Home() {
             I'd love to discuss how we can work together.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/capabilities"
-              className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md text-lg"
-            >
-              See What I Can Do
-            </Link>
-            <a
-              href="/resume.pdf"
-              download="Omar_Younis_Resume.pdf"
-              className="px-8 py-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-md text-lg"
-            >
-              View Resume
-            </a>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/capabilities"
+                className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md text-lg block text-center"
+              >
+                See What I Can Do
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <a
+                href="/resume.pdf"
+                download="Omar_Younis_Resume.pdf"
+                className="px-8 py-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-md text-lg block text-center"
+              >
+                View Resume
+              </a>
+            </motion.div>
           </div>
         </div>
       </section>

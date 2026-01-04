@@ -1,12 +1,9 @@
-import type { Metadata } from 'next';
+'use client';
+
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { HiMail } from 'react-icons/hi';
 import { FaGithub, FaLinkedin, FaFilePdf } from 'react-icons/fa';
-
-export const metadata: Metadata = {
-  title: 'About - Omar Younis | Software Engineer',
-  description: 'Meet Omar Younis, software engineer specializing in data engineering, ML, and custom software solutions.',
-};
 
 export default function About() {
   return (
@@ -111,7 +108,11 @@ export default function About() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Technical Skills</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg">
+            <motion.div
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg"
+            >
               <h3 className="text-xl font-bold text-gray-900 mb-3">Core Expertise</h3>
               <ul className="space-y-2 text-gray-700">
                 <li>• Data Engineering & ETL Pipelines</li>
@@ -119,8 +120,12 @@ export default function About() {
                 <li>• Scientific Computing</li>
                 <li>• Computer Vision (OpenCV, YOLO)</li>
               </ul>
-            </div>
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg">
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg"
+            >
               <h3 className="text-xl font-bold text-gray-900 mb-3">Technologies</h3>
               <ul className="space-y-2 text-gray-700">
                 <li>• Python, C++/C, Java, SQL</li>
@@ -128,7 +133,7 @@ export default function About() {
                 <li>• PyTorch, TensorFlow, Scikit-Learn</li>
                 <li>• NumPy, Pandas, SciPy</li>
               </ul>
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -251,49 +256,58 @@ export default function About() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Email */}
-            <a
+            <motion.a
               href="mailto:omar@hendaseh.com"
-              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
             >
               <HiMail className="w-8 h-8 text-blue-600 flex-shrink-0" />
               <div>
                 <div className="font-semibold text-gray-900">Email</div>
                 <div className="text-sm text-gray-600">omar@hendaseh.com</div>
               </div>
-            </a>
+            </motion.a>
 
             {/* LinkedIn */}
-            <a
+            <motion.a
               href="https://www.linkedin.com/in/omar-younis/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
             >
               <FaLinkedin className="w-8 h-8 text-blue-600 flex-shrink-0" />
               <div>
                 <div className="font-semibold text-gray-900">LinkedIn</div>
                 <div className="text-sm text-gray-600">linkedin.com/in/omar-younis</div>
               </div>
-            </a>
+            </motion.a>
 
             {/* GitHub */}
-            <a
+            <motion.a
               href="https://github.com/osyounis"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="flex items-center gap-4 p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
             >
               <FaGithub className="w-8 h-8 text-gray-900 flex-shrink-0" />
               <div>
                 <div className="font-semibold text-gray-900">GitHub</div>
                 <div className="text-sm text-gray-600">github.com/osyounis</div>
               </div>
-            </a>
+            </motion.a>
 
             {/* Resume Download */}
-            <a
+            <motion.a
               href="/resume.pdf"
               download="Omar_Younis_Resume.pdf"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
               className="flex items-center gap-4 p-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <FaFilePdf className="w-8 h-8 flex-shrink-0" />
@@ -301,7 +315,7 @@ export default function About() {
                 <div className="font-semibold">Download Resume</div>
                 <div className="text-sm text-blue-100">PDF Format</div>
               </div>
-            </a>
+            </motion.a>
           </div>
         </section>
       </div>
