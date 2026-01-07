@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { getProjectById } from '@/lib/projects';
 import FeatureCard from '@/components/nahtadi/FeatureCard';
 import ScreenshotPlaceholder from '@/components/nahtadi/ScreenshotPlaceholder';
@@ -13,6 +14,33 @@ import {
 import { FaCompass, FaMoon, FaSun, FaCog, FaMobileAlt, FaShieldAlt } from 'react-icons/fa';
 import Link from 'next/link';
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+  title: 'Nahtadi - Islamic Prayer Times iOS App | Omar Younis',
+  description: 'Nahtadi: Production iOS app for calculating Islamic prayer times and Qibla direction. Built with Swift, SwiftUI, and SwiftData. Submitted to App Store.',
+  openGraph: {
+    title: 'Nahtadi - Islamic Prayer Times iOS App',
+    description: 'Accurate prayer times and Qibla direction, always at hand. Built with Swift & SwiftUI.',
+    url: 'https://hendaseh.com/nahtadi',
+    siteName: 'Hendaseh',
+    images: [
+      {
+        url: '/images/nahtadi/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Nahtadi iOS App - Islamic Prayer Times',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Nahtadi - Islamic Prayer Times iOS App',
+    description: 'Accurate prayer times and Qibla direction, always at hand',
+    images: ['/images/nahtadi/og-image.jpg'],
+  },
+};
 
 export default function NahtadiPage() {
   const project = getProjectById('nahtadi');
