@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://hendaseh.com'),
   title: 'Omar Younis | Software Engineer',
   description: 'Software Engineer specializing in data engineering, machine learning, and scientific computing. Currently at Qualcomm. MS in Computer Science student.',
   keywords: ['Omar Younis', 'Software Engineer', 'Data Engineering', 'Machine Learning', 'Python', 'AWS', 'PyTorch', 'Qualcomm'],
