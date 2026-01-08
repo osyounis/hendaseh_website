@@ -3,8 +3,25 @@ import { getAllProjects } from '@/lib/projects';
 import FilterableProjectList from '@/components/projects/FilterableProjectList';
 
 export const metadata: Metadata = {
-  title: 'Projects | Omar Younis',
-  description: 'Software engineering projects - data engineering tools, machine learning applications, scientific computing, and engineering software',
+  title: 'Projects - Software Portfolio | Hendaseh',
+  description: 'Portfolio of software engineering projects including data engineering tools, machine learning applications, iOS apps, and scientific computing solutions.',
+  keywords: ['Portfolio', 'Software Projects', 'Data Engineering', 'Machine Learning', 'iOS Apps', 'Python Projects'],
+  alternates: {
+    canonical: 'https://hendaseh.com/projects',
+  },
+  openGraph: {
+    title: 'Projects - Software Portfolio | Hendaseh',
+    description: 'Portfolio of software engineering projects',
+    url: 'https://hendaseh.com/projects',
+    siteName: 'Hendaseh',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Projects - Software Portfolio | Hendaseh',
+    description: 'Portfolio of software engineering projects',
+  },
 };
 
 export default function Projects() {
