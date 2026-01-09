@@ -9,16 +9,16 @@
       "liveUrl": null,
       "embedUrl": null,
       "featured": true,
-      "stats": "v1.0.0 • In Development",
+      "stats": "v1.0.0 • Available on App Store",
       "category": "mobile",
       "hasDetailPage": true,
       "buttonText": "Learn More →",
       "image": "/images/nahtadi/icon.png",
       "imageAlt": "Nahtadi app icon - Islamic Prayer Times iOS app",
-      "appStoreUrl": null,
+      "appStoreUrl": "https://apps.apple.com/us/app/nahtadi/id6755970888",
       "privacyPolicyUrl": "/nahtadi/privacy",
       "supportUrl": "/nahtadi/support",
-      "appStoreLive": false
+      "appStoreLive": true
     },
        {
       "id": "new-game-plus",
