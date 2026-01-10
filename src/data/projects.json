@@ -36,6 +36,21 @@
       "imageAlt": "NewGame+ recommendation system using Prolog logic programming"
     },
     {
+      "id": "mini-compiler",
+      "title": "Mini Compiler",
+      "description": "Production-quality compiler that transforms programs written in a Pascal-like language into executable Python code. Features a table-driven LL(1) predictive parser, semantic analysis with variable tracking, and AST-based code generation. Includes 78 comprehensive tests with 73% coverage, CI/CD with GitHub Actions, and complete type hints. Originally a CS 323 course project, significantly enhanced with modular architecture, professional testing infrastructure, and zero external dependencies.",
+      "technologies": ["Python", "LL(1) Parser", "Compiler Theory", "AST", "Pytest", "CI/CD"],
+      "githubUrl": "https://github.com/osyounis/compiler-project",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "4,172 LOC • 78 tests • 71% coverage",
+      "category": "scientific-computing",
+      "hasDetailPage": false,
+      "image": "/images/projects/mini-compiler.png",
+      "imageAlt": "Mini Compiler - LL(1) predictive parser transforming Pascal-like code to Python"
+    },
+    {
       "id": "islamic-prayer-time",
       "title": "Islamic Prayer Time App",
       "description": "Pure Python library for calculating Muslim prayer times and Qibla direction using astronomical algorithms. Supports multiple calculation methods, DST handling, and works for any location worldwide. Features 105 comprehensive unit tests and modular architecture.",

@@ -29,6 +29,8 @@ export default function AnimatedProjectCard({ project, index }: AnimatedProjectC
             className={`relative w-full md:w-80 h-64 md:h-auto flex-shrink-0 flex items-center justify-center ${
               project.id === 'nahtadi'
                 ? 'bg-gradient-to-br from-blue-300 to-blue-500'
+                : project.id === 'mini-compiler'
+                ? 'bg-gradient-to-br from-cyan-700 to-purple-900'
                 : project.id === 'collision-avoidance-radar'
                 ? 'bg-gradient-to-br from-gray-900 to-slate-800'
                 : project.id === 'wildfire-predictor'
@@ -54,6 +56,16 @@ export default function AnimatedProjectCard({ project, index }: AnimatedProjectC
           >
             {project.id === 'nahtadi' ? (
               <div className="w-40 h-40 bg-white rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center">
+                <Image
+                  src={project.image}
+                  alt={project.imageAlt || project.title}
+                  width={160}
+                  height={160}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ) : project.id === 'mini-compiler' ? (
+              <div className="w-40 h-40 bg-white rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center p-4">
                 <Image
                   src={project.image}
                   alt={project.imageAlt || project.title}
