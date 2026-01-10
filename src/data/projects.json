@@ -38,7 +38,7 @@
     {
       "id": "mini-compiler",
       "title": "Mini Compiler",
-      "description": "Production-quality compiler that transforms programs written in a Pascal-like language into executable Python code. Features a table-driven LL(1) predictive parser, semantic analysis with variable tracking, and AST-based code generation. Includes 78 comprehensive tests with 73% coverage, CI/CD with GitHub Actions, and complete type hints. Originally a CS 323 course project, significantly enhanced with modular architecture, professional testing infrastructure, and zero external dependencies.",
+      "description": "Production-quality compiler that transforms programs written in a Pascal-like language into executable Python code. Features a table-driven LL(1) predictive parser, semantic analysis with variable tracking, and AST-based code generation. Includes 78 comprehensive tests with 71% coverage, CI/CD with GitHub Actions, and complete type hints. Originally a CPSC 323 course project, significantly enhanced with modular architecture, professional testing infrastructure, and zero external dependencies.",
       "technologies": ["Python", "LL(1) Parser", "Compiler Theory", "AST", "Pytest", "CI/CD"],
       "githubUrl": "https://github.com/osyounis/compiler-project",
       "liveUrl": null,
