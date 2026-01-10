@@ -44,7 +44,7 @@
       "liveUrl": null,
       "embedUrl": null,
       "featured": false,
-      "stats": "4,172 LOC • 78 tests • 73% coverage",
+      "stats": "4,172 LOC • 78 tests • 71% coverage",
       "category": "scientific-computing",
       "hasDetailPage": false,
       "image": "/images/projects/mini-compiler.png",
