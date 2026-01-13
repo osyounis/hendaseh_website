@@ -12,6 +12,7 @@ export interface Project {
   stats: string;
   category: string;
   hasDetailPage?: boolean;
+  customUrl?: string;
   buttonText?: string;
   image?: string;
   imageAlt?: string;

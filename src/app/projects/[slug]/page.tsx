@@ -1,5 +1,5 @@
 import { getProjectById, getAllProjects } from '@/lib/projects';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
@@ -11,7 +11,7 @@ interface PageProps {
 export async function generateStaticParams() {
   const projects = getAllProjects();
   return projects
-    .filter(p => p.hasDetailPage)
+    .filter(p => p.hasDetailPage && !p.customUrl)
     .map(p => ({ slug: p.id }));
 }
 
@@ -33,11 +33,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { slug } = await params;
-
-  // Redirect Nahtadi to dedicated app page
-  if (slug === 'nahtadi') {
-    redirect('/nahtadi');
-  }
 
   const project = getProjectById(slug);
 
