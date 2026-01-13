@@ -12,6 +12,7 @@
       "stats": "v1.0.0 • Available on App Store",
       "category": "mobile",
       "hasDetailPage": true,
+      "customUrl": "/nahtadi",
       "buttonText": "Learn More →",
       "image": "/images/nahtadi/icon.png",
       "imageAlt": "Nahtadi app icon - Islamic Prayer Times iOS app",

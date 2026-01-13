@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.hendaseh.com"
+        }
+      ],
+      "destination": "https://hendaseh.com/:path*",
+      "permanent": true
+    }
+  ]
+}

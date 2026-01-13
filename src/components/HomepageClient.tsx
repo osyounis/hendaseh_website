@@ -161,7 +161,7 @@ export default function HomepageClient() {
               whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
             >
               <Link
-                href={project.hasDetailPage ? `/projects/${project.id}` : `/projects`}
+                href={project.customUrl || (project.hasDetailPage ? `/projects/${project.id}` : `/projects`)}
                 className="border border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors block h-full"
               >
               {project.image && (
