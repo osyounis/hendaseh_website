@@ -304,7 +304,7 @@ export default function AboutClient() {
             {/* Resume Download */}
             <motion.a
               href="/resume.pdf"
-              download="Omar_Younis_Resume.pdf"
+              download="omar_younis_resume_2026.pdf"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
