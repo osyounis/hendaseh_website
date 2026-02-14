@@ -14,7 +14,7 @@ export default function ContactPage() {
     <div className="max-w-6xl mx-auto px-4 py-16">
       {/* Header Section */}
       <section className="text-center mb-16 max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-[#0A1A2F] mb-6">
           Let's Work Together
         </h1>
         <p className="text-xl text-gray-600 leading-relaxed">
@@ -28,7 +28,7 @@ export default function ContactPage() {
         {/* Contact Form - 2/3 width */}
         <div className="lg:col-span-2">
           <div className="bg-white border-2 border-gray-200 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Send a Message</h2>
+            <h2 className="text-2xl font-bold text-[#0A1A2F] mb-2">Send a Message</h2>
             <p className="text-gray-600 mb-8">
               Fill out the form below and I'll get back to you within 24-48 hours.
             </p>
@@ -40,25 +40,25 @@ export default function ContactPage() {
         <div className="space-y-6">
           {/* Quick Contact */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Contact</h3>
+            <h3 className="text-xl font-bold text-[#0A1A2F] mb-4">Quick Contact</h3>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <HiMail className="w-5 h-5 text-blue-600 flex-shrink-0 mt-1" />
+                <HiMail className="w-5 h-5 text-[#0093FF] flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Email</p>
                   <a
                     href="mailto:omar@hendaseh.com"
-                    className="text-gray-900 hover:text-blue-600 font-medium transition-colors"
+                    className="text-[#0A1A2F] hover:text-blue-600 font-medium transition-colors"
                   >
                     omar@hendaseh.com
                   </a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <HiLocationMarker className="w-5 h-5 text-blue-600 flex-shrink-0 mt-1" />
+                <HiLocationMarker className="w-5 h-5 text-[#0093FF] flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Location</p>
-                  <p className="text-gray-900 font-medium">San Francisco Bay Area</p>
+                  <p className="text-[#0A1A2F] font-medium">San Francisco Bay Area</p>
                 </div>
               </div>
             </div>
@@ -66,7 +66,7 @@ export default function ContactPage() {
 
           {/* Social Links */}
           <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Connect</h3>
+            <h3 className="text-xl font-bold text-[#0A1A2F] mb-4">Connect</h3>
             <div className="space-y-3">
               <a
                 href="https://www.linkedin.com/in/omar-younis/"
@@ -74,8 +74,8 @@ export default function ContactPage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
               >
-                <FaLinkedin className="w-5 h-5 text-blue-600" />
-                <span className="text-gray-900 group-hover:text-blue-600 font-medium">
+                <FaLinkedin className="w-5 h-5 text-[#0077B5]" />
+                <span className="text-[#0A1A2F] group-hover:text-blue-600 font-medium">
                   LinkedIn
                 </span>
               </a>
@@ -85,8 +85,8 @@ export default function ContactPage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
               >
-                <FaGithub className="w-5 h-5 text-gray-900" />
-                <span className="text-gray-900 group-hover:text-blue-600 font-medium">
+                <FaGithub className="w-5 h-5 text-[#101411]" />
+                <span className="text-[#0A1A2F] group-hover:text-blue-600 font-medium">
                   GitHub
                 </span>
               </a>
@@ -94,8 +94,8 @@ export default function ContactPage() {
           </div>
 
           {/* Response Time */}
-          <div className="bg-white border-2 border-blue-600 rounded-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Response Time</h3>
+          <div className="bg-white border-2 border-[#0093FF] rounded-lg p-6">
+            <h3 className="text-lg font-bold text-[#0A1A2F] mb-2">Response Time</h3>
             <p className="text-gray-700 text-sm leading-relaxed">
               I typically respond to inquiries within <strong>24-48 hours</strong> during business days.
             </p>
@@ -105,7 +105,7 @@ export default function ContactPage() {
 
       {/* Additional Info */}
       <section className="max-w-3xl mx-auto text-center py-12 px-8 bg-gray-50 rounded-lg">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Prefer Direct Email?</h2>
+        <h2 className="text-2xl font-bold text-[#0A1A2F] mb-4">Prefer Direct Email?</h2>
         <p className="text-gray-700 mb-6 leading-relaxed">
           You can also reach me directly at{' '}
           <a href="mailto:omar@hendaseh.com" className="text-blue-600 hover:text-blue-700 font-medium">
@@ -116,7 +116,7 @@ export default function ContactPage() {
         </p>
         <a
           href="mailto:omar@hendaseh.com"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-[#0093FF] text-white rounded-lg hover:bg-[#0075CC] transition-colors font-medium"
         >
           <HiMail className="w-5 h-5" />
           Email Me Directly

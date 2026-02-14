@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { getProjectById } from '@/lib/projects';
 import FeatureCard from '@/components/nahtadi/FeatureCard';
-import ScreenshotPlaceholder from '@/components/nahtadi/ScreenshotPlaceholder';
-import AppStoreButton from '@/components/nahtadi/AppStoreButton';
+import PlatformButtons from '@/components/nahtadi/PlatformButtons';
+import ScreenshotGallery from '@/components/nahtadi/ScreenshotGallery';
 import {
   HiClock,
   HiLocationMarker,
@@ -16,11 +16,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'Nahtadi - Islamic Prayer Times iOS App | Omar Younis',
-  description: 'Nahtadi: Production iOS app for calculating Islamic prayer times and Qibla direction. Built with Swift, SwiftUI, and SwiftData. Submitted to App Store.',
+  title: 'Nahtadi - Islamic Prayer Times for iOS & Android | Omar Younis',
+  description: 'Nahtadi: Native mobile app for iOS and Android calculating Islamic prayer times and Qibla direction. iOS built with Swift and SwiftUI, Android built with Kotlin and Jetpack Compose. Available on App Store & Google Play.',
+  keywords: ['Islamic prayer times', 'prayer times app', 'Qibla direction', 'iOS app', 'Android app', 'Swift', 'SwiftUI', 'Kotlin', 'Jetpack Compose', 'Muslim app', 'Salat times', 'Hijri calendar', 'prayer notifications', 'native mobile development'],
   openGraph: {
-    title: 'Nahtadi - Islamic Prayer Times iOS App',
-    description: 'Accurate prayer times and Qibla direction, always at hand. Built with Swift & SwiftUI.',
+    title: 'Nahtadi - Islamic Prayer Times for iOS & Android',
+    description: 'Accurate prayer times and Qibla direction, always at hand. Native apps built with Swift/SwiftUI (iOS) and Kotlin/Jetpack Compose (Android).',
     url: 'https://hendaseh.com/nahtadi',
     siteName: 'Hendaseh',
     images: [
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
         url: '/images/nahtadi/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Nahtadi iOS App - Islamic Prayer Times',
+        alt: 'Nahtadi - Islamic Prayer Times for iOS and Android',
       },
     ],
     locale: 'en_US',
@@ -36,8 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nahtadi - Islamic Prayer Times iOS App',
-    description: 'Accurate prayer times and Qibla direction, always at hand',
+    title: 'Nahtadi - Islamic Prayer Times for iOS & Android',
+    description: 'Accurate prayer times and Qibla direction. Native iOS (Swift/SwiftUI) and Android (Kotlin/Jetpack Compose) apps.',
     images: ['/images/nahtadi/og-image.jpg'],
   },
 };
@@ -142,7 +143,7 @@ export default function NahtadiPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-20 px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-br from-blue-300 to-blue-500 text-white py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           {/* App Icon */}
           <div className="mb-8 flex justify-center">
@@ -169,16 +170,19 @@ export default function NahtadiPage() {
             Accurate prayer times and Qibla direction, always at hand
           </p>
 
-          {/* Download Button */}
+          {/* Download Buttons */}
           <div className="mb-6">
-            <AppStoreButton
+            <PlatformButtons
               appStoreUrl={project.appStoreUrl}
+              googlePlayUrl={project.googlePlayUrl}
               appStoreLive={project.appStoreLive}
+              googlePlayLive={project.googlePlayLive}
+              showBothPlatforms={true}
             />
           </div>
 
           {/* Version Badge */}
-          <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
+          <div className="inline-block bg-[#0A1A2F]/80 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
             <span className="text-sm font-medium text-white">{project.stats}</span>
           </div>
         </div>
@@ -224,49 +228,7 @@ export default function NahtadiPage() {
             </p>
           </div>
 
-          {/* Horizontal Scrolling Container */}
-          <div className="overflow-x-auto overflow-y-hidden pb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
-            <div className="flex gap-6 sm:gap-8 lg:gap-10" style={{ scrollSnapType: 'x mandatory' }}>
-              {screenshots.map((screenshot, index) => (
-                <div
-                  key={index}
-                  className="flex-shrink-0 w-[220px] sm:w-[240px] lg:w-[260px]"
-                  style={{ scrollSnapAlign: 'start' }}
-                >
-                  {/* Screenshot - iPhone 17 Pro Style */}
-                  <div className="relative aspect-[9/19.5] mb-4 rounded-[2.75rem] overflow-hidden shadow-2xl ring-1 ring-gray-900/10">
-                    <Image
-                      src={`/images/nahtadi/screenshot-${index + 1}.png`}
-                      alt={screenshot.title}
-                      fill
-                      className="object-contain bg-white"
-                      sizes="260px"
-                    />
-                  </div>
-
-                  {/* Screenshot Info - Enhanced */}
-                  <div className="text-center px-3 bg-white rounded-xl py-4 shadow-md border border-gray-200 min-h-[120px] flex flex-col justify-center">
-                    <h3 className="text-base font-bold text-gray-900 mb-2">
-                      {screenshot.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {screenshot.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Scroll Indicator Dots */}
-          <div className="flex justify-center gap-2 mt-6">
-            {screenshots.map((_, index) => (
-              <div
-                key={index}
-                className="w-2 h-2 rounded-full bg-blue-300"
-              />
-            ))}
-          </div>
+          <ScreenshotGallery screenshots={screenshots} />
         </div>
       </section>
 
@@ -275,56 +237,92 @@ export default function NahtadiPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Built with Modern iOS Technologies
+              Built with Native Platform Technologies
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Engineered for performance, privacy, and offline reliability
+              Platform-native implementations engineered for performance, privacy, and offline reliability
             </p>
           </div>
 
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-8 sm:p-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {/* Tech Stack */}
+              {/* iOS Tech Stack */}
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <FaMobileAlt className="text-blue-600 mr-3" />
-                  Technology Stack
+                  <FaMobileAlt className="text-[#0093FF] mr-3" />
+                  iOS Technology Stack
                 </h3>
                 <ul className="space-y-2 text-gray-700">
-                  {project.technologies.map((tech, index) => (
-                    <li key={index} className="flex items-center">
-                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                      {tech}
-                    </li>
-                  ))}
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
+                    Swift
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
+                    SwiftUI
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
+                    SwiftData (local storage)
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
+                    iOS 17.0+
+                  </li>
                 </ul>
               </div>
 
-              {/* Privacy & Architecture */}
+              {/* Android Tech Stack */}
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <FaShieldAlt className="text-blue-600 mr-3" />
-                  Privacy & Design
+                  <FaMobileAlt className="text-[#34A853] mr-3" />
+                  Android Technology Stack
                 </h3>
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    All data stored locally (SwiftData)
+                    <span className="w-2 h-2 bg-[#34A853] rounded-full mr-3"></span>
+                    Kotlin
                   </li>
                   <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    No internet required
+                    <span className="w-2 h-2 bg-[#34A853] rounded-full mr-3"></span>
+                    Jetpack Compose
                   </li>
                   <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    Zero data collection
+                    <span className="w-2 h-2 bg-[#34A853] rounded-full mr-3"></span>
+                    Room (local storage)
                   </li>
                   <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    Native iOS performance
+                    <span className="w-2 h-2 bg-[#34A853] rounded-full mr-3"></span>
+                    Android 8.0+ (API 26+)
                   </li>
                 </ul>
               </div>
+            </div>
+
+            {/* Shared Architecture */}
+            <div className="pt-8 border-t border-blue-200 mb-8">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                <FaShieldAlt className="text-[#0093FF] mr-3" />
+                Privacy-First Architecture (Both Platforms)
+              </h3>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-700">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
+                  All data stored locally on device
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
+                  No internet required
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
+                  Zero data collection
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
+                  Native platform performance
+                </li>
+              </ul>
             </div>
 
             {/* Description */}
@@ -355,7 +353,7 @@ export default function NahtadiPage() {
               href="/nahtadi/privacy"
               className="bg-white border border-gray-200 rounded-xl p-8 hover:border-blue-300 hover:shadow-md transition-all duration-300"
             >
-              <FaShieldAlt className="text-blue-600 text-3xl mb-4" />
+              <FaShieldAlt className="text-[#0093FF] text-3xl mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Privacy Policy
               </h3>
@@ -372,7 +370,7 @@ export default function NahtadiPage() {
               href="/nahtadi/support"
               className="bg-white border border-gray-200 rounded-xl p-8 hover:border-blue-300 hover:shadow-md transition-all duration-300"
             >
-              <HiBell className="text-blue-600 text-3xl mb-4" />
+              <HiBell className="text-[#0093FF] text-3xl mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">App Support</h3>
               <p className="text-gray-600 mb-4">
                 Have questions? Check our FAQ or contact our support team.
@@ -404,14 +402,16 @@ export default function NahtadiPage() {
               About This Project
             </h2>
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Nahtadi demonstrates expertise in iOS development, astronomical algorithms, and
-              user-centric design. Built with Swift and SwiftUI, this app showcases modern iOS
+              Nahtadi demonstrates expertise in native mobile development, astronomical algorithms, and
+              user-centric design. The iOS version is built with Swift and SwiftUI, showcasing modern iOS
               development practices including offline-first architecture, local data persistence
-              with SwiftData, and privacy-focused engineering.
+              with SwiftData, and privacy-focused engineering. The Android version leverages Kotlin and
+              Jetpack Compose for a consistent native experience. Both implementations emphasize
+              platform-specific best practices while maintaining feature parity.
             </p>
             <Link
               href="/projects"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors duration-200"
+              className="inline-block bg-[#0093FF] hover:bg-[#0075CC] text-white font-semibold px-8 py-3 rounded-xl transition-colors duration-200"
             >
               View More Projects →
             </Link>

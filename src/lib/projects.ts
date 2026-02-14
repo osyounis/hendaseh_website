@@ -17,9 +17,11 @@ export interface Project {
   image?: string;
   imageAlt?: string;
   appStoreUrl?: string | null;
+  googlePlayUrl?: string | null;
   privacyPolicyUrl?: string | null;
   supportUrl?: string | null;
   appStoreLive?: boolean;
+  googlePlayLive?: boolean;
 }
 
 export function getAllProjects(): Project[] {

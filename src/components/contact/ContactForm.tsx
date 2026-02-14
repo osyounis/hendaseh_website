@@ -61,7 +61,7 @@ export default function ContactForm() {
 
       {/* Name Field */}
       <div className="mb-6">
-        <label htmlFor="name" className="block text-gray-900 font-medium mb-2">
+        <label htmlFor="name" className="block text-[#0A1A2F] font-medium mb-2">
           Name <span className="text-red-500">*</span>
         </label>
         <div className="relative">
@@ -71,7 +71,7 @@ export default function ContactForm() {
             id="name"
             type="text"
             placeholder="John Doe"
-            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0093FF] transition-all ${
               errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'
             }`}
             disabled={submitStatus === 'loading'}
@@ -84,7 +84,7 @@ export default function ContactForm() {
 
       {/* Email Field */}
       <div className="mb-6">
-        <label htmlFor="email" className="block text-gray-900 font-medium mb-2">
+        <label htmlFor="email" className="block text-[#0A1A2F] font-medium mb-2">
           Email <span className="text-red-500">*</span>
         </label>
         <div className="relative">
@@ -94,7 +94,7 @@ export default function ContactForm() {
             id="email"
             type="email"
             placeholder="john@example.com"
-            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0093FF] transition-all ${
               errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
             }`}
             disabled={submitStatus === 'loading'}
@@ -107,7 +107,7 @@ export default function ContactForm() {
 
       {/* Subject Field */}
       <div className="mb-6">
-        <label htmlFor="subject" className="block text-gray-900 font-medium mb-2">
+        <label htmlFor="subject" className="block text-[#0A1A2F] font-medium mb-2">
           Subject <span className="text-red-500">*</span>
         </label>
         <div className="relative">
@@ -117,7 +117,7 @@ export default function ContactForm() {
             id="subject"
             type="text"
             placeholder="Project inquiry"
-            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0093FF] transition-all ${
               errors.subject ? 'border-red-500 bg-red-50' : 'border-gray-300'
             }`}
             disabled={submitStatus === 'loading'}
@@ -130,7 +130,7 @@ export default function ContactForm() {
 
       {/* Message Field */}
       <div className="mb-6">
-        <label htmlFor="message" className="block text-gray-900 font-medium mb-2">
+        <label htmlFor="message" className="block text-[#0A1A2F] font-medium mb-2">
           Message <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -138,7 +138,7 @@ export default function ContactForm() {
           id="message"
           rows={6}
           placeholder="Tell me about your project or inquiry..."
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-y ${
+          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0093FF] transition-all resize-y ${
             errors.message ? 'border-red-500 bg-red-50' : 'border-gray-300'
           }`}
           disabled={submitStatus === 'loading'}
@@ -155,7 +155,7 @@ export default function ContactForm() {
         className={`w-full py-4 px-6 rounded-lg font-medium text-white transition-all ${
           submitStatus === 'loading'
             ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
+            : 'bg-[#0093FF] hover:bg-[#0075CC] hover:shadow-lg'
         }`}
       >
         {submitStatus === 'loading' ? 'Sending...' : 'Send Message'}

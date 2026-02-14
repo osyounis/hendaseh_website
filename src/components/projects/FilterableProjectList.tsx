@@ -70,7 +70,7 @@ export default function FilterableProjectList({ projects }: FilterableProjectLis
               setCategoryFilter(null);
               setSearchTerm('');
             }}
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-[#0093FF] hover:text-[#0075CC] font-medium"
           >
             Clear filters
           </button>
