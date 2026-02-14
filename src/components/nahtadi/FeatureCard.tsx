@@ -10,7 +10,7 @@ export default function FeatureCard({ icon, title, description }: FeatureCardPro
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-md transition-all duration-300">
       {/* Icon */}
-      <div className="text-blue-600 mb-4 text-3xl">{icon}</div>
+      <div className="text-[#0093FF] mb-4 text-3xl">{icon}</div>
 
       {/* Title */}
       <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>

@@ -81,7 +81,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-8 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-lg"
+                    className="px-8 py-3 bg-white text-[#0A1A2F] rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-lg"
                   >
                     View on GitHub →
                   </a>
@@ -104,7 +104,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           {/* Technologies Section */}
           <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
             <div className="max-w-6xl mx-auto">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Built With</h2>
+              <h2 className="text-2xl font-bold text-[#0A1A2F] mb-6 text-center">Built With</h2>
               <div className="flex flex-wrap gap-3 justify-center">
                 {project.technologies.map((tech) => (
                   <span
@@ -163,7 +163,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           )}
 
           {/* Project header */}
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#0A1A2F] mb-4">
             {project.title}
           </h1>
           <p className="text-xl text-gray-700 mb-8 leading-relaxed">
@@ -193,7 +193,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       {project.embedUrl && (
         <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+            <h2 className="text-3xl font-bold text-[#0A1A2F] mb-6 text-center">
               Interactive Demo
             </h2>
             <div className="border-2 border-gray-300 rounded-lg overflow-hidden bg-white shadow-lg">
@@ -223,7 +223,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                  className="px-6 py-3 bg-[#101411] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors font-medium"
                 >
                   View on GitHub →
                 </a>
@@ -233,7 +233,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 border-2 border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  className="px-6 py-3 border-2 border-[#101411] text-[#0A1A2F] rounded-lg hover:bg-gray-50 transition-colors font-medium"
                 >
                   Open in New Tab →
                 </a>

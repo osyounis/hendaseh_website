@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Privacy policy for Nahtadi iOS app. No data collection, fully offline.',
+  description: 'Privacy policy for Nahtadi mobile app (iOS and Android). No data collection, fully offline.',
   robots: {
     index: true,
     follow: true,
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = 'January 2, 2026';
+  const lastUpdated = 'February 13, 2026';
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -47,7 +47,7 @@ export default function PrivacyPolicyPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Data Storage</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              All data is stored locally on your device using Apple's SwiftData framework. This includes:
+              All data is stored locally on your device using platform-native storage (SwiftData on iOS, Room on Android). This includes:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-4">
               <li>Prayer time calculations and settings</li>
@@ -70,8 +70,14 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-4">
               <li>Is used ONLY for prayer time calculations on your device</li>
               <li>Is NEVER transmitted to external servers or services</li>
-              <li>Is stored locally using Apple's secure SwiftData framework</li>
-              <li>Can be revoked at any time through iOS Settings → Nahtadi → Location</li>
+              <li>Is stored locally using platform-native secure storage (SwiftData on iOS, Room on Android)</li>
+              <li>
+                Can be revoked at any time through device settings:
+                <ul className="list-circle pl-6 mt-2 space-y-1">
+                  <li><strong>iOS:</strong> Settings → Nahtadi → Location</li>
+                  <li><strong>Android:</strong> Settings → Apps → Nahtadi → Permissions → Location</li>
+                </ul>
+              </li>
             </ul>
             <p className="text-gray-700 leading-relaxed">
               Without location access, you can still use the app by manually entering your city or

@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'App Support',
-  description: 'Support and frequently asked questions for Nahtadi iOS app.',
+  description: 'Support and frequently asked questions for Nahtadi - Islamic Prayer Times app for iOS and Android.',
   robots: {
     index: true,
     follow: true,
@@ -22,7 +22,7 @@ export default function SupportPage() {
       question: 'The prayer times seem incorrect. What should I check?',
       answer: (
         <>
-          First, verify that Location Services are enabled for Nahtadi in iOS Settings. Then, check that you've selected the appropriate calculation method for your region. The app defaults to Automatic Selection, which chooses the method based on your detected country. Different Islamic authorities use different calculation methods, so you can manually select the one recommended for your area by disabling Automatic Selection in the Settings tab. If the times are still incorrect after trying these steps, please contact{' '}
+          First, verify that Location Services are enabled for Nahtadi in your device settings (iOS: Settings → Nahtadi → Location; Android: Settings → Apps → Nahtadi → Permissions → Location). Then, check that you've selected the appropriate calculation method for your region. The app defaults to Automatic Selection, which chooses the method based on your detected country. Different Islamic authorities use different calculation methods, so you can manually select the one recommended for your area by disabling Automatic Selection in the Settings tab. If the times are still incorrect after trying these steps, please contact{' '}
           <a
             href="mailto:support@hendaseh.com?subject=Nahtadi Prayer Times Issue&body=Date:%0D%0ALocation (city, state, country):%0D%0ATimezone:%0D%0AWhat the prayer times should be for the provided date:%0D%0A"
             className="text-blue-600 hover:text-blue-800 underline"
@@ -36,7 +36,7 @@ export default function SupportPage() {
     {
       question: 'How do I enable prayer time notifications?',
       answer:
-        'Go to the Settings tab (gear icon) at the bottom of the screen. Under "Prayer Notifications," first enable the master "Enable Notifications" toggle. Then, you can individually enable or disable notifications for each prayer time (Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha). The app will request iOS notification permission if not already granted. Once enabled, notifications are automatically scheduled for the next 10 days. On day 9, you\'ll receive a reminder notification asking you to open the app so it can automatically schedule the next batch of notifications.',
+        'Go to the Settings tab (gear icon) at the bottom of the screen. Under "Prayer Notifications," first enable the master "Enable Notifications" toggle. Then, you can individually enable or disable notifications for each prayer time (Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha). The app will request notification permission if not already granted. Once enabled, notifications are automatically scheduled for the next 10 days. On day 9, you\'ll receive a reminder notification asking you to open the app so it can automatically schedule the next batch of notifications.',
     },
     {
       question: 'Does Nahtadi require an internet connection?',
@@ -57,7 +57,7 @@ export default function SupportPage() {
       question: 'Is my data private?',
       answer: (
         <>
-          Absolutely. Nahtadi does not collect, transmit, or share any personal information. All your data (location, settings, preferences) is stored locally on your device using Apple's secure SwiftData framework. See our{' '}
+          Absolutely. Nahtadi does not collect, transmit, or share any personal information. All your data (location, settings, preferences) is stored locally on your device using platform-native secure storage (SwiftData on iOS, Room on Android). See our{' '}
           <Link
             href="/nahtadi/privacy"
             className="text-blue-600 hover:text-blue-800 underline"
@@ -78,18 +78,15 @@ export default function SupportPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+        {/* Header + FAQ Section Combined */}
         <div className="bg-white rounded-lg shadow-sm p-8 sm:p-12 mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             Nahtadi App Support
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 mb-8">
             Find answers to common questions or get in touch with our support team.
           </p>
-        </div>
 
-        {/* FAQ Section */}
-        <div className="bg-white rounded-lg shadow-sm p-8 sm:p-12 mb-8">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">
             Frequently Asked Questions
           </h2>
@@ -121,7 +118,7 @@ export default function SupportPage() {
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <div className="flex items-start">
-              <HiMail className="text-blue-600 text-2xl mt-1 mr-4 flex-shrink-0" />
+              <HiMail className="text-[#0093FF] text-2xl mt-1 mr-4 flex-shrink-0" />
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Email Support
@@ -150,12 +147,12 @@ export default function SupportPage() {
                 <dd className="text-gray-600">v1.0.0</dd>
               </div>
               <div>
-                <dt className="font-medium text-gray-700">Platform</dt>
-                <dd className="text-gray-600">iOS</dd>
+                <dt className="font-medium text-gray-700">Platforms</dt>
+                <dd className="text-gray-600">iOS & Android</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700">Requirements</dt>
-                <dd className="text-gray-600">iOS 17.0 or later</dd>
+                <dd className="text-gray-600">iOS 17.0+ | Android 8.0+ (API 26+)</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700">Developer</dt>

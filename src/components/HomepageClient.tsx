@@ -8,12 +8,13 @@ import { getFeaturedProjects } from '@/lib/projects';
 export default function HomepageClient() {
   const featuredProjects = getFeaturedProjects(); // All featured projects appear on homepage
   return (
-    <div className="max-w-6xl mx-auto px-4">
+    <div>
       {/* Hero Section */}
-      <section className="py-20 md:py-32">
-        <div className="max-w-4xl">
+      <section className="bg-gradient-to-br from-gray-100 to-gray-50 py-20 md:py-32 border-b-2 border-gray-200 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="max-w-4xl">
           <div className="mb-6">
-            <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-2">
+            <h1 className="text-6xl md:text-7xl font-bold text-[#0A1A2F] mb-2">
               Hendaseh
             </h1>
             <p className="text-2xl md:text-3xl font-semibold text-gray-700">
@@ -21,7 +22,7 @@ export default function HomepageClient() {
             </p>
           </div>
           <p className="text-xl md:text-2xl text-gray-700 mb-4 leading-relaxed">
-            Building intelligent software solutions—from iOS applications to enterprise
+            Building intelligent software solutions—from native mobile applications to enterprise
             data infrastructure.
           </p>
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
@@ -31,7 +32,7 @@ export default function HomepageClient() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/projects"
-                className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                className="inline-flex items-center justify-center px-8 py-3 bg-[#0093FF] text-white rounded-lg hover:bg-[#0075CC] transition-colors font-medium shadow-md"
               >
                 View My Work
               </Link>
@@ -39,7 +40,7 @@ export default function HomepageClient() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-sm"
+                className="inline-flex items-center justify-center px-8 py-3 bg-[#0A1A2F] text-white rounded-lg hover:bg-[#0D2847] transition-colors font-medium shadow-md"
               >
                 Let's Talk
               </Link>
@@ -47,18 +48,20 @@ export default function HomepageClient() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/about"
-                className="inline-flex items-center justify-center px-8 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium shadow-sm"
+                className="inline-flex items-center justify-center px-8 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium shadow-md"
               >
                 About
               </Link>
             </motion.div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* Capabilities */}
+      <div className="max-w-6xl mx-auto px-4">
       <section className="py-16 border-t border-gray-200">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">What I Can Do</h2>
+        <h2 className="text-3xl font-bold text-[#0A1A2F] mb-4">What I Can Do</h2>
         <p className="text-lg text-gray-600 mb-12 max-w-3xl">
           I build practical software solutions—from custom enterprise systems to consumer iOS applications.
           Available for full-time opportunities and contract engagements.
@@ -70,7 +73,7 @@ export default function HomepageClient() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Custom Software Development</h3>
+            <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Custom Software Development</h3>
             <p className="text-gray-700 mb-4">
               Internal tools, productivity applications, and API integrations. Deployed solutions
               used across federal operations with measurable impact.
@@ -88,7 +91,7 @@ export default function HomepageClient() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Data Engineering</h3>
+            <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Data Engineering</h3>
             <p className="text-gray-700 mb-4">
               ETL pipelines processing millions of data points, cloud infrastructure,
               and big data solutions for ML teams and analytics platforms.
@@ -106,7 +109,7 @@ export default function HomepageClient() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Machine Learning & AI</h3>
+            <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Machine Learning & AI</h3>
             <p className="text-gray-700 mb-4">
               Computer vision, deep learning models, and predictive analytics. Building and deploying
               ML solutions with PyTorch, TensorFlow, and production-ready infrastructure.
@@ -124,9 +127,10 @@ export default function HomepageClient() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Mobile App Development</h3>
+            <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Mobile App Development</h3>
             <p className="text-gray-700 mb-4">
-              iOS applications built with Swift and SwiftUI. From concept to App Store
+              Native mobile applications for iOS and Android. Platform-specific implementations
+              using Swift/SwiftUI and Kotlin/Jetpack Compose. From concept to App Store and Google Play
               launch, delivering polished products users love.
             </p>
             <Link
@@ -142,10 +146,10 @@ export default function HomepageClient() {
       {/* Featured Projects Preview */}
       <section className="py-16">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">Featured Projects</h2>
+          <h2 className="text-3xl font-bold text-[#0A1A2F]">Featured Projects</h2>
           <Link
             href="/projects"
-            className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            className="text-gray-600 hover:text-[#0A1A2F] font-medium transition-colors"
           >
             View all →
           </Link>
@@ -243,7 +247,7 @@ export default function HomepageClient() {
                 </div>
               )}
               <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                <h3 className="text-xl font-bold text-[#0A1A2F] mb-2">
                   {project.title}
                 </h3>
                 <p className="text-gray-600 mb-4 line-clamp-3">
@@ -269,7 +273,7 @@ export default function HomepageClient() {
       {/* Dual CTAs - Ready to Collaborate */}
       <section className="py-16 border-t border-gray-200">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#0A1A2F] mb-4">
             Ready to Collaborate?
           </h2>
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
@@ -280,7 +284,7 @@ export default function HomepageClient() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/capabilities"
-                className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md text-lg block text-center"
+                className="px-8 py-4 bg-[#0093FF] text-white rounded-lg hover:bg-[#0075CC] transition-colors font-medium shadow-md text-lg block text-center"
               >
                 See What I Can Do
               </Link>
@@ -289,7 +293,7 @@ export default function HomepageClient() {
               <a
                 href="/resume.pdf"
                 download="Omar_Younis_Resume.pdf"
-                className="px-8 py-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-md text-lg block text-center"
+                className="px-8 py-4 bg-[#0A1A2F] text-white rounded-lg hover:bg-[#0D2847] transition-colors font-medium shadow-md text-lg block text-center"
               >
                 View Resume
               </a>
@@ -297,6 +301,7 @@ export default function HomepageClient() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 }
