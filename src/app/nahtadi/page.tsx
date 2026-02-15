@@ -17,8 +17,8 @@ import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Nahtadi - Islamic Prayer Times for iOS & Android | Omar Younis',
-  description: 'Nahtadi: Native mobile app for iOS and Android calculating Islamic prayer times and Qibla direction. iOS built with Swift and SwiftUI, Android built with Kotlin and Jetpack Compose. Available on App Store & Google Play.',
-  keywords: ['Islamic prayer times', 'prayer times app', 'Qibla direction', 'iOS app', 'Android app', 'Swift', 'SwiftUI', 'Kotlin', 'Jetpack Compose', 'Muslim app', 'Salat times', 'Hijri calendar', 'prayer notifications', 'native mobile development'],
+  description: 'Nahtadi: Native mobile app for iOS (available now on App Store) and Android (coming soon) calculating Islamic prayer times and Qibla direction. iOS built with Swift and SwiftUI, Android built with Kotlin and Jetpack Compose.',
+  keywords: ['Islamic prayer times', 'prayer times app', 'Qibla direction', 'iOS app', 'Swift', 'SwiftUI', 'Muslim app', 'Salat times', 'Hijri calendar', 'prayer notifications', 'native mobile development', 'Android coming soon'],
   openGraph: {
     title: 'Nahtadi - Islamic Prayer Times for iOS & Android',
     description: 'Accurate prayer times and Qibla direction, always at hand. Native apps built with Swift/SwiftUI (iOS) and Kotlin/Jetpack Compose (Android).',
