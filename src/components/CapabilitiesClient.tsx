@@ -85,7 +85,7 @@ export default function CapabilitiesClient() {
           </p>
           <div className="text-sm text-gray-600 space-y-2">
             <p><strong>Example:</strong> Nahtadi Prayer Times App</p>
-            <p className="text-gray-500">Native iOS and Android apps using advanced astronomical algorithms for accurate prayer times and Qibla direction.</p>
+            <p className="text-gray-500">Native iOS app (with Android coming soon) using advanced astronomical algorithms for accurate prayer times and Qibla direction.</p>
           </div>
         </motion.div>
 
