@@ -14,9 +14,17 @@ export default function HomepageClient() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="max-w-4xl">
           <div className="mb-6">
-            <h1 className="text-6xl md:text-7xl font-bold text-[#0A1A2F] mb-2">
-              Hendaseh
-            </h1>
+            <div className="mb-4">
+              <h1 className="sr-only">Hendaseh</h1>
+              <Image
+                src="/logos/hendaseh-logo.png"
+                alt="Hendaseh"
+                width={400}
+                height={91}
+                className="h-12 md:h-16 w-auto"
+                priority
+              />
+            </div>
             <p className="text-2xl md:text-3xl font-semibold text-gray-700">
               Software Engineering & Product Development
             </p>
