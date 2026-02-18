@@ -15,6 +15,7 @@ export default function HomepageClient() {
           <div className="max-w-4xl">
           <div className="mb-6">
             <div className="mb-4">
+              <h1 className="sr-only">Hendaseh</h1>
               <Image
                 src="/logos/hendaseh-logo.png"
                 alt="Hendaseh"
