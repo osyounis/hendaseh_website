@@ -10,26 +10,41 @@ import {
   HiBell,
   HiWifi,
   HiGlobeAlt,
+  HiStar,
 } from 'react-icons/hi';
-import { FaCompass, FaMoon, FaSun, FaCog, FaMobileAlt, FaShieldAlt } from 'react-icons/fa';
+import { FaCompass, FaCog, FaShieldAlt, FaInstagram } from 'react-icons/fa';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'Nahtadi - Islamic Prayer Times for iOS & Android | Omar Younis',
-  description: 'Nahtadi: Native mobile app for iOS (available now on App Store) and Android (coming soon) calculating Islamic prayer times and Qibla direction. iOS built with Swift and SwiftUI, Android built with Kotlin and Jetpack Compose.',
-  keywords: ['Islamic prayer times', 'prayer times app', 'Qibla direction', 'iOS app', 'Swift', 'SwiftUI', 'Muslim app', 'Salat times', 'Hijri calendar', 'prayer notifications', 'native mobile development', 'Android coming soon'],
+  title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
+  description:
+    'Nahtadi — Accurate Islamic prayer times with zero ads and zero data collection. One-time purchase. Works offline. Built by a Muslim developer.',
+  keywords: [
+    'Islamic prayer times',
+    'prayer times app',
+    'Qibla direction',
+    'Muslim app',
+    'Salat times',
+    'Hijri calendar',
+    'no ads prayer app',
+    'private prayer app',
+    'offline prayer times',
+    'Nahtadi',
+  ],
+  alternates: { canonical: 'https://hendaseh.com/nahtadi' },
   openGraph: {
-    title: 'Nahtadi - Islamic Prayer Times for iOS & Android',
-    description: 'Accurate prayer times and Qibla direction, always at hand. Native apps built with Swift/SwiftUI (iOS) and Kotlin/Jetpack Compose (Android).',
+    title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
+    description:
+      'Accurate Islamic prayer times with zero ads and zero data collection. One-time purchase. Works offline. Built by a Muslim developer.',
     url: 'https://hendaseh.com/nahtadi',
-    siteName: 'Hendaseh',
+    siteName: 'Nahtadi',
     images: [
       {
         url: '/images/nahtadi/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Nahtadi - Islamic Prayer Times for iOS and Android',
+        alt: 'Nahtadi — Islamic Prayer Times',
       },
     ],
     locale: 'en_US',
@@ -37,11 +52,31 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nahtadi - Islamic Prayer Times for iOS & Android',
-    description: 'Accurate prayer times and Qibla direction. Native iOS (Swift/SwiftUI) and Android (Kotlin/Jetpack Compose) apps.',
+    title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
+    description:
+      'Accurate prayer times with zero ads and zero data collection. One-time purchase. Works offline.',
     images: ['/images/nahtadi/og-image.jpg'],
   },
 };
+
+const faqs = [
+  {
+    q: "Why isn't it free?",
+    a: "Many prayer apps are \"free\" because they make money from ads and your data. Nahtadi is a one-time purchase because we believe your worship shouldn't be monetized. No ads means no incentive to track you. One payment means we don't nag you with subscription prompts during salat.",
+  },
+  {
+    q: 'Is my data safe?',
+    a: 'Yes. Nahtadi collects zero personal data. Everything — your location, settings, and preferences — stays on your device. There are no analytics, no third-party trackers, and no accounts to create.',
+  },
+  {
+    q: 'Does it work without internet?',
+    a: 'Completely. Prayer times are calculated on-device using astronomical algorithms, so Nahtadi works offline anywhere in the world once installed.',
+  },
+  {
+    q: 'Which calculation methods are supported?',
+    a: 'Nahtadi supports all major calculation methods including ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), Egyptian General Authority (EGAS), and more — with high-latitude adjustments for extreme latitudes.',
+  },
+];
 
 export default function NahtadiPage() {
   const project = getProjectById('nahtadi');
@@ -67,7 +102,7 @@ export default function NahtadiPage() {
       icon: <HiCalendar />,
       title: 'Hijri Calendar',
       description:
-        'Seamlessly convert between Hijri and Gregorian calendars with built-in converter.',
+        'Seamlessly convert between Hijri and Gregorian calendars with a built-in converter.',
     },
     {
       icon: <HiBell />,
@@ -91,7 +126,7 @@ export default function NahtadiPage() {
       icon: <FaCog />,
       title: 'Multiple Calculation Methods',
       description:
-        'Choose from ISNA, MWL, UQU, EGAS, and more. Select the method for your region.',
+        'ISNA, MWL, UQU, EGAS, and more — pick the method for your region.',
     },
     {
       icon: <FaShieldAlt />,
@@ -140,13 +175,61 @@ export default function NahtadiPage() {
     },
   ];
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Nahtadi',
+    operatingSystem: 'iOS',
+    applicationCategory: 'LifestyleApplication',
+    description:
+      'Accurate Islamic prayer times with zero ads and zero data collection. One-time purchase. Works offline. Built by a Muslim developer.',
+    url: 'https://hendaseh.com/nahtadi',
+    image: 'https://hendaseh.com/images/nahtadi/icon.png',
+    downloadUrl: project.appStoreUrl,
+    author: {
+      '@type': 'Organization',
+      name: 'Hendaseh',
+      url: 'https://hendaseh.com',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5.0',
+      ratingCount: '4',
+      bestRating: '5',
+    },
+    offers: {
+      '@type': 'Offer',
+      price: '3.99',
+      priceCurrency: 'USD',
+    },
+  };
+
+  const faqLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+      />
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-300 to-blue-500 text-white py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           {/* App Icon */}
-          <div className="mb-8 flex justify-center">
+          <div className="mb-6 flex justify-center">
             <div className="w-32 h-32 bg-white rounded-3xl shadow-2xl overflow-hidden">
               <Image
                 src="/images/nahtadi/icon.png"
@@ -159,6 +242,21 @@ export default function NahtadiPage() {
             </div>
           </div>
 
+          {/* Ratings Badge */}
+          <div className="mb-6 flex justify-center">
+            <a
+              href={project.appStoreUrl ?? '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full border border-white/40 hover:bg-white/25 transition-colors"
+            >
+              <HiStar className="text-yellow-300" />
+              <span className="text-sm font-semibold text-white">
+                5.0★ · 4 Ratings on the App Store
+              </span>
+            </a>
+          </div>
+
           {/* App Name & Tagline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
             Nahtadi
@@ -167,23 +265,64 @@ export default function NahtadiPage() {
             Islamic Prayer Times
           </p>
           <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Accurate prayer times and Qibla direction, always at hand
+            Accurate prayer times and Qibla direction. No ads. No tracking. Just salat.
           </p>
 
-          {/* Download Buttons */}
-          <div className="mb-6">
+          {/* Download Buttons — iOS only */}
+          <div className="mb-2">
             <PlatformButtons
               appStoreUrl={project.appStoreUrl}
-              googlePlayUrl={project.googlePlayUrl}
+              googlePlayUrl={null}
               appStoreLive={project.appStoreLive}
-              googlePlayLive={project.googlePlayLive}
-              showBothPlatforms={true}
+              googlePlayLive={false}
+              showBothPlatforms={false}
             />
           </div>
+        </div>
+      </section>
 
-          {/* Version Badge */}
-          <div className="inline-block bg-[#0A1A2F]/80 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
-            <span className="text-sm font-medium text-white">{project.stats}</span>
+      {/* Review Quote */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white border-b border-gray-100">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="flex justify-center mb-3 text-yellow-400 text-xl">
+            <HiStar /><HiStar /><HiStar /><HiStar /><HiStar />
+          </div>
+          <blockquote className="text-2xl sm:text-3xl font-semibold text-gray-900 leading-snug">
+            &ldquo;Most accurate prayer times app I have found.&rdquo;
+          </blockquote>
+          <p className="mt-4 text-gray-500 text-sm">
+            — DinaYasin, App Store review
+          </p>
+        </div>
+      </section>
+
+      {/* Why Nahtadi? */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Why Nahtadi?
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Most prayer apps are free because <em>you</em> are the product. Nahtadi isn&apos;t.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[
+              { title: 'No Ads', desc: 'Zero interruptions during salat.' },
+              { title: 'No Data Collection', desc: 'Nothing leaves your device.' },
+              { title: 'One-Time Purchase', desc: 'Pay once. No subscriptions.' },
+              { title: 'Works Offline', desc: 'Calculated on-device, anywhere.' },
+              { title: 'Muslim-Built', desc: 'By a Muslim developer, for the Ummah.' },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="bg-white border border-gray-200 rounded-xl p-5 text-center hover:border-blue-300 hover:shadow-md transition"
+              >
+                <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
+                <p className="text-sm text-gray-600">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -213,7 +352,7 @@ export default function NahtadiPage() {
         </div>
       </section>
 
-      {/* Screenshots Gallery - Horizontal Scrolling */}
+      {/* Screenshots Gallery */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-50 to-blue-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -221,116 +360,84 @@ export default function NahtadiPage() {
               App Preview
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-3">
-              Take a look at Nahtadi's beautiful and intuitive interface
+              Take a look at Nahtadi&apos;s beautiful and intuitive interface
             </p>
-            <p className="text-sm text-gray-500">
-              Scroll to see more →
-            </p>
+            <p className="text-sm text-gray-500">Scroll to see more →</p>
           </div>
 
           <ScreenshotGallery screenshots={screenshots} />
         </div>
       </section>
 
-      {/* Technical Details Section */}
+      {/* FAQ Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Built with Native Platform Technologies
+              Frequently Asked Questions
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Platform-native implementations engineered for performance, privacy, and offline reliability
-            </p>
           </div>
+          <div className="space-y-4">
+            {faqs.map((faq) => (
+              <details
+                key={faq.q}
+                className="group bg-gray-50 border border-gray-200 rounded-xl p-5 hover:border-blue-300 transition"
+              >
+                <summary className="cursor-pointer font-semibold text-gray-900 text-lg list-none flex justify-between items-center">
+                  {faq.q}
+                  <span className="text-blue-500 text-2xl leading-none group-open:rotate-45 transition-transform">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-gray-700 leading-relaxed">{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-8 sm:p-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {/* iOS Tech Stack */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <FaMobileAlt className="text-[#0093FF] mr-3" />
-                  iOS Technology Stack
-                </h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
-                    Swift
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
-                    SwiftUI
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
-                    SwiftData (local storage)
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
-                    iOS 17.0+
-                  </li>
-                </ul>
-              </div>
+      {/* Stay in the Loop — Email signup + Instagram */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Stay in the Loop
+          </h2>
+          <p className="text-lg text-gray-600 mb-8">
+            Get notified about new features, updates, and the Android release.
+          </p>
 
-              {/* Android Tech Stack */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <FaMobileAlt className="text-[#34A853] mr-3" />
-                  Android Technology Stack
-                </h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#34A853] rounded-full mr-3"></span>
-                    Kotlin
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#34A853] rounded-full mr-3"></span>
-                    Jetpack Compose
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#34A853] rounded-full mr-3"></span>
-                    Room (local storage)
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#34A853] rounded-full mr-3"></span>
-                    Android 8.0+ (API 26+)
-                  </li>
-                </ul>
-              </div>
-            </div>
+          <form
+            action="mailto:support@hendaseh.com?subject=Nahtadi%20Updates%20Signup"
+            method="post"
+            encType="text/plain"
+            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8"
+          >
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="you@example.com"
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+              type="submit"
+              className="bg-[#0093FF] hover:bg-[#0075CC] text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+            >
+              Notify Me
+            </button>
+          </form>
 
-            {/* Shared Architecture */}
-            <div className="pt-8 border-t border-blue-200 mb-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <FaShieldAlt className="text-[#0093FF] mr-3" />
-                Privacy-First Architecture (Both Platforms)
-              </h3>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-700">
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
-                  All data stored locally on device
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
-                  No internet required
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
-                  Zero data collection
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-[#0093FF] rounded-full mr-3"></span>
-                  Native platform performance
-                </li>
-              </ul>
-            </div>
-
-            {/* Description */}
-            <div className="pt-8 border-t border-blue-200">
-              <p className="text-gray-700 leading-relaxed">
-                {project.description}
-              </p>
-            </div>
+          <div className="flex items-center justify-center gap-2 text-gray-700">
+            <FaInstagram className="text-pink-500 text-xl" />
+            <span>Follow updates on Instagram:</span>
+            <a
+              href="https://instagram.com/Hendaseh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 font-semibold"
+            >
+              @Hendaseh
+            </a>
           </div>
         </div>
       </section>
@@ -348,7 +455,6 @@ export default function NahtadiPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Privacy Policy Card */}
             <Link
               href="/nahtadi/privacy"
               className="bg-white border border-gray-200 rounded-xl p-8 hover:border-blue-300 hover:shadow-md transition-all duration-300"
@@ -365,7 +471,6 @@ export default function NahtadiPage() {
               </span>
             </Link>
 
-            {/* Support Card */}
             <Link
               href="/nahtadi/support"
               className="bg-white border border-gray-200 rounded-xl p-8 hover:border-blue-300 hover:shadow-md transition-all duration-300"
@@ -381,7 +486,6 @@ export default function NahtadiPage() {
             </Link>
           </div>
 
-          {/* Contact Email */}
           <div className="mt-8 text-center">
             <p className="text-gray-600 mb-2">Questions or feedback?</p>
             <a
@@ -390,31 +494,6 @@ export default function NahtadiPage() {
             >
               support@hendaseh.com
             </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Developer Context (For Employers) */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-200">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-br from-gray-50 to-blue-50 border border-gray-200 rounded-2xl p-8 sm:p-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-              About This Project
-            </h2>
-            <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Nahtadi demonstrates expertise in native mobile development, astronomical algorithms, and
-              user-centric design. The iOS version is built with Swift and SwiftUI, showcasing modern iOS
-              development practices including offline-first architecture, local data persistence
-              with SwiftData, and privacy-focused engineering. The Android version leverages Kotlin and
-              Jetpack Compose for a consistent native experience. Both implementations emphasize
-              platform-specific best practices while maintaining feature parity.
-            </p>
-            <Link
-              href="/projects"
-              className="inline-block bg-[#0093FF] hover:bg-[#0075CC] text-white font-semibold px-8 py-3 rounded-xl transition-colors duration-200"
-            >
-              View More Projects →
-            </Link>
           </div>
         </div>
       </section>
