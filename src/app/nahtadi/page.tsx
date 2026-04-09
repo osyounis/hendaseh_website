@@ -5,7 +5,6 @@ import PlatformButtons from '@/components/nahtadi/PlatformButtons';
 import ScreenshotGallery from '@/components/nahtadi/ScreenshotGallery';
 import {
   HiClock,
-  HiLocationMarker,
   HiCalendar,
   HiBell,
   HiWifi,
@@ -141,7 +140,7 @@ export default function NahtadiPage() {
       icon: <HiClock />,
       title: 'Prayer Times',
       description:
-        'View all 5 daily prayer times with customizable calculation methods and Hijri date.',
+        'View all 5 daily prayer times with countdown timer and Hijri date.',
     },
     {
       icon: <FaCompass />,
@@ -150,28 +149,28 @@ export default function NahtadiPage() {
         'Find the exact direction to Mecca using GPS and your device compass.',
     },
     {
-      icon: <FaCog />,
-      title: 'Settings & Methods',
-      description:
-        'Choose from multiple calculation methods and customize app preferences.',
-    },
-    {
       icon: <HiCalendar />,
-      title: 'Hijri Calendar',
+      title: 'Calculation Methods',
       description:
-        'Convert between Hijri and Gregorian calendars with automatic updates.',
+        'Choose from 9+ calculation methods for your region.',
     },
     {
       icon: <HiBell />,
-      title: 'Prayer Notifications',
+      title: 'Notifications',
       description:
-        'Set up customizable notifications for each prayer time and Adhan.',
+        'Customizable notifications for each prayer time so you never miss Salat.',
     },
     {
-      icon: <HiLocationMarker />,
-      title: 'Location Services',
+      icon: <FaCog />,
+      title: 'Settings',
       description:
-        'Automatic location detection or manual entry for accurate prayer times.',
+        'Full control over calculation methods, Asr timing, and Hijri date adjustment.',
+    },
+    {
+      icon: <HiWifi />,
+      title: 'Offline Mode',
+      description:
+        'Works without internet using your previous location. Always accurate.',
     },
   ];
 
