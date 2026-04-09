@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     template: '%s | Nahtadi',
   },
   description:
-    'Accurate Islamic prayer times and Qibla direction for iPhone and iPad. Built with Swift and SwiftUI. Fully offline, privacy-first design. Calculate all 5 daily prayers with multiple calculation methods.',
+    'Nahtadi — Accurate Islamic prayer times with zero ads and zero data collection. One-time purchase. Works offline. Built by a Muslim developer.',
   keywords: [
     'Islamic prayer times',
     'Muslim prayer app',
@@ -24,8 +24,9 @@ export const metadata: Metadata = {
     'Fajr Dhuhr Asr Maghrib Isha',
   ],
   openGraph: {
-    title: 'Nahtadi - Islamic Prayer Times',
-    description: 'Accurate prayer times and Qibla direction for iPhone and iPad',
+    title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
+    description:
+      'Accurate Islamic prayer times with zero ads and zero data collection. One-time purchase. Works offline. Built by a Muslim developer.',
     url: 'https://hendaseh.com/nahtadi',
     siteName: 'Nahtadi',
     images: [
@@ -41,8 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nahtadi - Islamic Prayer Times',
-    description: 'Accurate prayer times and Qibla direction for iPhone and iPad',
+    title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
+    description:
+      'Accurate prayer times with zero ads and zero data collection. One-time purchase. Works offline.',
     images: ['/images/nahtadi/og-image.png'],
   },
   robots: {
