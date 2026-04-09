@@ -3,6 +3,7 @@ import { getProjectById } from '@/lib/projects';
 import FeatureCard from '@/components/nahtadi/FeatureCard';
 import PlatformButtons from '@/components/nahtadi/PlatformButtons';
 import ScreenshotGallery from '@/components/nahtadi/ScreenshotGallery';
+import EmailSignup from '@/components/nahtadi/EmailSignup';
 import {
   HiClock,
   HiCalendar,
@@ -405,26 +406,7 @@ export default function NahtadiPage() {
             Get notified about new features, updates, and the Android release.
           </p>
 
-          <form
-            action="mailto:support@hendaseh.com?subject=Nahtadi%20Updates%20Signup"
-            method="post"
-            encType="text/plain"
-            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8"
-          >
-            <input
-              type="email"
-              name="email"
-              required
-              placeholder="you@example.com"
-              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            <button
-              type="submit"
-              className="bg-[#0093FF] hover:bg-[#0075CC] text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-            >
-              Notify Me
-            </button>
-          </form>
+          <EmailSignup />
 
           <div className="flex items-center justify-center gap-2 text-gray-700">
             <FaInstagram className="text-pink-500 text-xl" />
