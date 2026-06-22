@@ -299,7 +299,7 @@ export default function HomepageClient() {
             </motion.div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <a
-                href="/resume.pdf"
+                href="/omar_younis_resume_2026.pdf"
                 download="Omar_Younis_Resume.pdf"
                 className="px-8 py-4 bg-[#0A1A2F] text-white rounded-lg hover:bg-[#0D2847] transition-colors font-medium shadow-md text-lg block text-center"
               >

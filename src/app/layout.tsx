@@ -24,7 +24,7 @@ const robotoRegular = Roboto({
 export const metadata: Metadata = {
   metadataBase: new URL('https://hendaseh.com'),
   title: 'Omar Younis | Software Engineer',
-  description: 'Software Engineer specializing in data engineering, machine learning, and scientific computing. Currently at Qualcomm. MS in Computer Science student.',
+  description: 'Software Engineer specializing in data engineering, machine learning, and scientific computing. Currently at Qualcomm. M.S. Computer Science, CSUF (completed May 2026).',
   keywords: ['Omar Younis', 'Software Engineer', 'Data Engineering', 'Machine Learning', 'Python', 'AWS', 'PyTorch', 'Qualcomm'],
   authors: [{ name: 'Omar Younis' }],
   icons: {
