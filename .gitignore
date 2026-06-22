@@ -157,6 +157,7 @@ vite.config.ts.timestamp-*
 # Misc
 .DS_Store
 *.pem
+.audit/
 
 # Test reports
 playwright-report/

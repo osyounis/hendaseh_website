@@ -161,7 +161,7 @@ export default function AboutClient() {
               <p className="text-gray-600 text-sm mb-2">February 2019 - May 2021</p>
               <p className="text-gray-700">
                 Led team of 20 engineers in developing ecoATMs, earning $1M contract extension.
-                Accelerated project timelines 4x through technical leadership.
+                Built Python productivity tools that raised in-house engineering efficiency by roughly 50%.
               </p>
             </div>
           </div>
