@@ -93,8 +93,8 @@ export default function AboutClient() {
             transition to tech.
           </p>
           <p className="text-gray-700 mb-4 leading-relaxed">
-            I'm currently pursuing my Master's in Computer Science at California State University, Fullerton
-            (graduating May 2026), with recent experience as a Software Engineer Intern at Qualcomm working
+            I completed my Master's in Computer Science at California State University, Fullerton
+            (May 2026), with recent experience as a Software Engineer Intern at Qualcomm working
             on data engineering and ETL pipelines.
           </p>
           <p className="text-gray-700 mb-4 leading-relaxed">

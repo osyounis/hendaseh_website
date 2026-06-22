@@ -4,7 +4,7 @@ import StructuredData from '@/components/StructuredData'
 
 export const metadata: Metadata = {
   title: 'About Omar Younis - Software Engineer | Hendaseh',
-  description: 'Software engineer with 7 years of mechanical engineering experience, currently pursuing MS in Computer Science. Specializing in data engineering, machine learning, and scientific computing.',
+  description: 'Software engineer with 7 years of mechanical engineering experience and an M.S. Computer Science, CSUF (completed May 2026). Specializing in data engineering, machine learning, and scientific computing.',
   keywords: ['Omar Younis', 'Software Engineer', 'Data Engineering', 'Machine Learning', 'Qualcomm', 'Coast Guard', 'Python', 'AWS'],
   alternates: {
     canonical: 'https://hendaseh.com/about',

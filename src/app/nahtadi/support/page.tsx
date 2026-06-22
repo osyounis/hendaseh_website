@@ -144,7 +144,7 @@ export default function SupportPage() {
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <dt className="font-medium text-gray-700">App Version</dt>
-                <dd className="text-gray-600">v1.0.0</dd>
+                <dd className="text-gray-600">v1.1.0</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700">Platforms</dt>
