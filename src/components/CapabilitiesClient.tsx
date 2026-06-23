@@ -76,16 +76,15 @@ export default function CapabilitiesClient() {
             <HiDeviceMobile className="w-12 h-12 text-[#0093FF]" />
           </div>
           <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">
-            Mobile Application Development
+            iOS Application Development
           </h3>
           <p className="text-gray-700 mb-4 leading-relaxed text-sm">
-            Native mobile applications for iOS and Android. Platform-specific implementations
-            using Swift/SwiftUI and Kotlin/Jetpack Compose. From concept to App Store and Google Play launch,
-            delivering polished products that users love.
+            Native iOS applications in Swift and SwiftUI—privacy-first, accessible, and built fully
+            on-device. From concept to App Store launch, delivering polished products that users love.
           </p>
           <div className="text-sm text-gray-600 space-y-2">
             <p><strong>Example:</strong> Nahtadi Prayer Times App</p>
-            <p className="text-gray-500">Native iOS app (with Android coming soon) using advanced astronomical algorithms for accurate prayer times and Qibla direction.</p>
+            <p className="text-gray-500">Native iOS app using advanced astronomical algorithms for accurate prayer times and Qibla direction.</p>
           </div>
         </motion.div>
 
@@ -121,10 +120,10 @@ export default function CapabilitiesClient() {
           <div>
             <h3 className="text-xl font-bold text-[#0A1A2F] mb-4">Languages & Frameworks</h3>
             <ul className="space-y-2 text-gray-700">
-              <li>• Python, Swift, Kotlin, C++/C, Java</li>
+              <li>• Python, Swift, C++/C, SQL</li>
               <li>• PyTorch, TensorFlow, Scikit-Learn</li>
-              <li>• SwiftUI, Jetpack Compose, Streamlit, FastAPI</li>
-              <li>• NumPy, Pandas, Apache Spark</li>
+              <li>• SwiftUI, SwiftData, Streamlit</li>
+              <li>• NumPy, Pandas, CUDA</li>
             </ul>
           </div>
           <div>

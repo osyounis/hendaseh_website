@@ -54,18 +54,18 @@
     },
     {
       "id": "islamic-prayer-time",
-      "title": "Islamic Prayer Time App",
-      "description": "Pure Python library for calculating Muslim prayer times and Qibla direction using astronomical algorithms. Supports multiple calculation methods, DST handling, and works for any location worldwide. Features 105 comprehensive unit tests and modular architecture.",
-      "technologies": ["Python", "Astronomical Algorithms", "Unit Testing"],
+      "title": "Islamic Prayer Time Algorithm Library",
+      "description": "Zero-dependency, pure-Python scientific-computing library—the engine behind Nahtadi—for calculating Muslim prayer times and Qibla direction from astronomical algorithms (Julian Day, spherical trigonometry, high-latitude adjustments) across 8+ calculation methods. 105 unit tests at 90%+ coverage with GitHub Actions CI.",
+      "technologies": ["Python", "Astronomical Algorithms", "Numerical Computing", "pytest"],
       "githubUrl": "https://github.com/osyounis/islamic_prayer_time_app",
       "liveUrl": null,
       "embedUrl": null,
       "featured": true,
-      "stats": "33 commits • GPL-3.0",
+      "stats": "105 tests • 90%+ coverage • 8+ methods",
       "category": "scientific-computing",
       "hasDetailPage": false,
       "image": "/images/projects/islamic-prayer-time.png",
-      "imageAlt": "Islamic Prayer Time Python library - code example showing prayer times calculation"
+      "imageAlt": "Islamic Prayer Time Algorithm Library - Python code calculating prayer times"
     },
     {
       "id": "collision-avoidance-radar",
@@ -92,7 +92,7 @@
       "liveUrl": null,
       "embedUrl": null,
       "featured": false,
-      "stats": "29 commits • 22 stars • MIT",
+      "stats": "29 commits • 28 stars • MIT",
       "category": "engineering-tools",
       "hasDetailPage": false,
       "image": "/images/projects/cycloidal-drive-creator.png",

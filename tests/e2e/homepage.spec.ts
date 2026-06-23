@@ -6,7 +6,7 @@ test.describe('Homepage', () => {
 
     // Check hero section - use heading role for specificity
     await expect(page.getByRole('heading', { name: 'Hendaseh', level: 1 })).toBeVisible()
-    await expect(page.getByText('Software Engineering & Product Development')).toBeVisible()
+    await expect(page.getByText('Software Engineer · iOS & Machine Learning')).toBeVisible()
 
     // Check capabilities section
     await expect(page.getByRole('heading', { name: 'What I Can Do' })).toBeVisible()
