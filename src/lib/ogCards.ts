@@ -5,11 +5,11 @@
 import { getProjectById } from '@/lib/projects';
 import { getProjectGradientStops } from '@/lib/projectStyles';
 
-export type OgBackground =
+type OgBackground =
   | { kind: 'solid'; color: string }
   | { kind: 'gradient'; from: string; to: string };
 
-export interface OgIcon {
+interface OgIcon {
   /** which public asset the template should render */
   src: 'hendaseh-mark' | 'nahtadi';
   /** wrap the mark in a white rounded tile (needed for the transparent Nahtadi arch) */
