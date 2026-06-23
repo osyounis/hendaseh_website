@@ -23,9 +23,9 @@ const robotoRegular = Roboto({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://hendaseh.com'),
-  title: 'Omar Younis | Software Engineer',
-  description: 'Software Engineer specializing in iOS development, on-device machine learning, and scientific computing. M.S. Computer Science, CSUF (completed May 2026).',
-  keywords: ['Omar Younis', 'Software Engineer', 'Data Engineering', 'Machine Learning', 'Python', 'AWS', 'PyTorch', 'Qualcomm'],
+  title: 'Omar Younis | Software Engineer — iOS & ML',
+  description: 'Omar Younis — software engineer and problem-solver. Ships iOS apps in Swift/SwiftUI, with machine-learning, data-engineering, and scientific-computing range, plus seven years in mechanical engineering. M.S. Computer Science, CSUF (May 2026).',
+  keywords: ['Omar Younis', 'Software Engineer', 'iOS', 'Swift', 'SwiftUI', 'Machine Learning', 'Data Engineering', 'Python', 'PyTorch', 'AWS', 'CUDA'],
   authors: [{ name: 'Omar Younis' }],
   icons: {
     icon: [
@@ -38,18 +38,18 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'Omar Younis | Software Engineer',
-    description: 'Software Engineer specializing in data engineering, machine learning, and scientific computing',
+    title: 'Omar Younis | Software Engineer — iOS & ML',
+    description: 'Software engineer and problem-solver — iOS (Swift/SwiftUI), machine learning, data engineering, and scientific computing.',
     url: 'https://hendaseh.com',
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'website',
-    images: [{ url: '/api/og?card=site', width: 1200, height: 630, alt: 'Omar Younis — iOS Engineer · on-device ML' }],
+    images: [{ url: '/api/og?card=site', width: 1200, height: 630, alt: 'Omar Younis — Software Engineer · iOS & Machine Learning' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Omar Younis | Software Engineer',
-    description: 'Software Engineer specializing in data engineering, machine learning, and scientific computing',
+    title: 'Omar Younis | Software Engineer — iOS & ML',
+    description: 'Software engineer and problem-solver — iOS (Swift/SwiftUI), machine learning, data engineering, and scientific computing.',
     images: ['/api/og?card=site'],
   },
 };

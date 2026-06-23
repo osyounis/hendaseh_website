@@ -20,10 +20,13 @@ export default function AboutClient() {
         />
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold text-[#0A1A2F] mb-2">Omar Younis</h1>
-          <p className="text-2xl text-[#0093FF] font-semibold mb-4">Software Engineer</p>
+          <p className="text-2xl text-[#0093FF] font-semibold mb-4">Software Engineer · iOS &amp; Machine Learning</p>
           <p className="text-xl text-gray-600">
-            Software engineer with a unique perspective—combining 7 years of mechanical engineering
-            experience with modern software development expertise.
+            I&apos;m a software engineer and problem-solver: I design the solution, then learn whatever
+            tool it needs. That approach has carried me from seven years in mechanical engineering
+            through machine learning, data engineering, and a privacy-first iOS app I shipped to the
+            App Store. The mechanical background isn&apos;t a detour—it&apos;s range: I can speak both
+            Mechanical and Software, and translate between the teams on each side.
           </p>
         </div>
       </div>
@@ -88,20 +91,29 @@ export default function AboutClient() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-[#0A1A2F] mb-4">My Journey</h2>
           <p className="text-gray-700 mb-4 leading-relaxed">
-            After 7 years in mechanical engineering working across military defense systems, medical devices,
-            and precision manufacturing, I discovered my passion for software development and made the
-            transition to tech.
+            I spent about seven years as a mechanical engineer across military defense systems, medical
+            devices, and precision manufacturing. At D&amp;K Engineering I led a 20-person team building
+            the ecoATM kiosk and earned a $1M contract extension. The constant across that work was
+            problem-solving: find what the system needs, then build it.
           </p>
           <p className="text-gray-700 mb-4 leading-relaxed">
-            I completed my Master's in Computer Science at California State University, Fullerton
-            (May 2026), with recent experience as a Software Engineer Intern at Qualcomm working
-            on data engineering and ETL pipelines.
+            I moved into software the same way. At Elemeno AI I trained a feed-forward neural network
+            that improved package-delivery prediction accuracy by 25%, building the data pipelines and
+            running the exploratory analysis behind it, deployed on Google Cloud. At Qualcomm I built
+            ETL pipelines processing 1M+ data points per minute for ML teams.
           </p>
           <p className="text-gray-700 mb-4 leading-relaxed">
-            I specialize in data engineering, machine learning, and scientific computing—creating practical
-            tools that solve real-world problems with measurable impact. My projects have been deployed
-            fleet-wide across Coast Guard operations, reducing workflow times from weeks to minutes and
-            delivering quantifiable efficiency improvements.
+            My M.S. in Computer Science at Cal State Fullerton (May 2026) capped it. My graduate project
+            parallelized Brent&apos;s root-finding method on the GPU in CUDA, hitting a 35× kernel-level
+            speedup on an NVIDIA RTX 3080. It taught me to think in hardware, memory layout, and where
+            performance actually comes from.
+          </p>
+          <p className="text-gray-700 mb-4 leading-relaxed">
+            Most recently I designed and shipped Nahtadi, a privacy-first iOS prayer-times and Qibla
+            app, to the App Store—built in SwiftUI/SwiftData, fully on-device, and accessible to WCAG
+            standards. iOS is where my newest work lives; machine learning, data engineering, and
+            scientific computing sit alongside it as range. That CUDA and on-device work is also
+            pointing me toward on-device ML.
           </p>
         </section>
 
@@ -113,12 +125,12 @@ export default function AboutClient() {
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg"
             >
-              <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Core Expertise</h3>
+              <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">iOS &amp; Apple</h3>
               <ul className="space-y-2 text-gray-700">
-                <li>• Data Engineering & ETL Pipelines</li>
-                <li>• Machine Learning & Deep Learning</li>
-                <li>• Scientific Computing</li>
-                <li>• Computer Vision (OpenCV, YOLO)</li>
+                <li>• Swift, SwiftUI, SwiftData</li>
+                <li>• Xcode, XCTest</li>
+                <li>• Accessibility (VoiceOver, Dynamic Type)</li>
+                <li>• App Store publishing</li>
               </ul>
             </motion.div>
             <motion.div
@@ -126,12 +138,38 @@ export default function AboutClient() {
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg"
             >
-              <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Technologies</h3>
+              <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Machine Learning &amp; Data</h3>
               <ul className="space-y-2 text-gray-700">
-                <li>• Python, C++/C, Java, SQL</li>
-                <li>• AWS, Apache Spark, Docker</li>
-                <li>• PyTorch, TensorFlow, Scikit-Learn</li>
-                <li>• NumPy, Pandas, SciPy</li>
+                <li>• Python, PyTorch, TensorFlow, scikit-learn</li>
+                <li>• NumPy, Pandas, Computer Vision (OpenCV, YOLO)</li>
+                <li>• ETL pipelines, AWS, GCP</li>
+                <li>• SQL</li>
+              </ul>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg"
+            >
+              <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Scientific &amp; Systems</h3>
+              <ul className="space-y-2 text-gray-700">
+                <li>• C++, CUDA, parallel computing</li>
+                <li>• Numerical &amp; scientific computing</li>
+                <li>• Docker, Git, GitHub Actions (CI/CD)</li>
+                <li>• pytest, unit testing</li>
+              </ul>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg"
+            >
+              <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Engineering Background</h3>
+              <ul className="space-y-2 text-gray-700">
+                <li>• Mechanical product design</li>
+                <li>• SolidWorks / CAD, FEA</li>
+                <li>• GD&amp;T, manufacturing</li>
+                <li>• A differentiator: I speak both Mechanical and Software</li>
               </ul>
             </motion.div>
           </div>
@@ -149,11 +187,11 @@ export default function AboutClient() {
               </p>
             </div>
             <div className="border-l-4 border-[#0093FF] pl-4">
-              <h3 className="font-bold text-[#0A1A2F]">Flotilla Staff Officer - US Coast Guard Auxiliary</h3>
-              <p className="text-gray-600 text-sm mb-2">May 2015 - Present</p>
+              <h3 className="font-bold text-[#0A1A2F]">Machine Learning Engineer - Elemeno AI</h3>
+              <p className="text-gray-600 text-sm mb-2">August 2022 - November 2022</p>
               <p className="text-gray-700">
-                Developed productivity tools deployed fleet-wide across all US Coast Guard Air Stations.
-                Received Coast Guard Auxiliary Achievement Medal for measurable impact.
+                Trained a feed-forward neural network that improved package-delivery prediction
+                accuracy by 25%, with SQL and big-data EDA. Deployed on Google Cloud Platform.
               </p>
             </div>
             <div className="border-l-4 border-[#0093FF] pl-4">
@@ -162,6 +200,14 @@ export default function AboutClient() {
               <p className="text-gray-700">
                 Led team of 20 engineers in developing ecoATMs, earning $1M contract extension.
                 Built Python productivity tools that raised in-house engineering efficiency by roughly 50%.
+              </p>
+            </div>
+            <div className="border-l-4 border-[#0093FF] pl-4">
+              <h3 className="font-bold text-[#0A1A2F]">US Coast Guard Auxiliary - Member since 2015</h3>
+              <p className="text-gray-600 text-sm mb-2">Flotilla Staff Officer for Operations · 2021 - 2026</p>
+              <p className="text-gray-700">
+                Developed Python productivity tools deployed fleet-wide across all US Coast Guard Air
+                Stations. Received Coast Guard Auxiliary Achievement Medal for measurable impact.
               </p>
             </div>
           </div>
@@ -227,7 +273,7 @@ export default function AboutClient() {
               <span className="text-[#0093FF] font-bold text-xl">✓</span>
               <div>
                 <strong className="text-[#0A1A2F]">Modern Tech Stack</strong>
-                <p className="text-base">Latest frameworks and industry best practices: Python, AWS, PyTorch, Swift, Apache Spark</p>
+                <p className="text-base">Latest frameworks and industry best practices: Swift/SwiftUI, Python, PyTorch, AWS, CUDA</p>
               </div>
             </div>
             <div className="flex items-start gap-3">

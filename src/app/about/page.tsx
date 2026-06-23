@@ -3,25 +3,25 @@ import AboutClient from '@/components/AboutClient'
 import StructuredData from '@/components/StructuredData'
 
 export const metadata: Metadata = {
-  title: 'About Omar Younis - Software Engineer | Hendaseh',
-  description: 'Software engineer with 7 years of mechanical engineering experience and an M.S. Computer Science, CSUF (completed May 2026). Specializing in data engineering, machine learning, and scientific computing.',
-  keywords: ['Omar Younis', 'Software Engineer', 'Data Engineering', 'Machine Learning', 'Qualcomm', 'Coast Guard', 'Python', 'AWS'],
+  title: 'About Omar Younis - Software Engineer (iOS & ML) | Hendaseh',
+  description: 'Software engineer and problem-solver: a shipped iOS app (Swift/SwiftUI), machine-learning and data-engineering work, and seven years in mechanical engineering. M.S. Computer Science, CSUF (May 2026).',
+  keywords: ['Omar Younis', 'Software Engineer', 'iOS', 'Swift', 'Machine Learning', 'Data Engineering', 'CUDA', 'Qualcomm', 'Python', 'AWS'],
   alternates: {
     canonical: 'https://hendaseh.com/about',
   },
   openGraph: {
-    title: 'About Omar Younis - Software Engineer',
-    description: 'Software engineer specializing in data engineering, ML, and scientific computing',
+    title: 'About Omar Younis - Software Engineer (iOS & ML)',
+    description: 'Software engineer and problem-solver — iOS (Swift/SwiftUI), machine learning, data engineering, and a mechanical-engineering background.',
     url: 'https://hendaseh.com/about',
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'profile',
-    images: [{ url: '/api/og?card=site', width: 1200, height: 630, alt: 'Omar Younis — iOS Engineer · on-device ML' }],
+    images: [{ url: '/api/og?card=site', width: 1200, height: 630, alt: 'Omar Younis — Software Engineer · iOS & Machine Learning' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'About Omar Younis - Software Engineer',
-    description: 'Software engineer specializing in data engineering, ML, and scientific computing',
+    title: 'About Omar Younis - Software Engineer (iOS & ML)',
+    description: 'Software engineer and problem-solver — iOS (Swift/SwiftUI), machine learning, data engineering, and a mechanical-engineering background.',
     images: ['/api/og?card=site'],
   },
 }
@@ -47,12 +47,17 @@ const personSchema = {
     },
   ],
   knowsAbout: [
-    'Data Engineering',
+    'iOS Development',
+    'Swift',
+    'SwiftUI',
     'Machine Learning',
+    'Data Engineering',
     'Python',
-    'AWS',
     'PyTorch',
     'Scientific Computing',
+    'CUDA',
+    'Parallel Computing',
+    'AWS',
   ],
 }
 

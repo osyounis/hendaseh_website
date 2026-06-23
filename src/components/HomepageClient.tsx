@@ -27,15 +27,17 @@ export default function HomepageClient() {
               />
             </div>
             <p className="text-2xl md:text-3xl font-semibold text-gray-700">
-              Software Engineering & Product Development
+              Software Engineer · iOS &amp; Machine Learning
             </p>
           </div>
           <p className="text-xl md:text-2xl text-gray-700 mb-4 leading-relaxed">
-            Building intelligent software solutions—from native mobile applications to enterprise
-            data infrastructure.
+            I&apos;m a software engineer and problem-solver—I design the solution, then learn whatever
+            tool it needs. Most recently I shipped Nahtadi, a privacy-first iOS app, to the App Store.
+            Alongside that, my work spans machine learning, data engineering, and scientific computing,
+            on a foundation of seven years in mechanical engineering.
           </p>
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-            Available for full-time opportunities and contract engagements.
+            Open to full-time and contract roles across iOS, software, and machine learning.
           </p>
           <div className="flex flex-wrap gap-4">
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -136,11 +138,10 @@ export default function HomepageClient() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
           >
-            <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">Mobile App Development</h3>
+            <h3 className="text-xl font-bold text-[#0A1A2F] mb-3">iOS App Development</h3>
             <p className="text-gray-700 mb-4">
-              Native mobile applications for iOS and Android. Platform-specific implementations
-              using Swift/SwiftUI and Kotlin/Jetpack Compose. From concept to App Store and Google Play
-              launch, delivering polished products users love.
+              Native iOS applications in Swift and SwiftUI—privacy-first, accessible, and built fully
+              on-device. From concept to App Store launch, delivering polished products users love.
             </p>
             <Link
               href="/capabilities"

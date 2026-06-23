@@ -4,24 +4,24 @@ import { HiMail, HiLocationMarker } from 'react-icons/hi';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'Contact - Omar Younis | Software Engineer',
+  title: 'Contact - Omar Younis | Software Engineer — iOS & ML',
   description: 'Get in touch with Omar Younis for software engineering opportunities, contract work, or project inquiries.',
   keywords: ['contact', 'hire software engineer', 'contract development', 'software engineering services'],
   alternates: {
     canonical: 'https://hendaseh.com/contact',
   },
   openGraph: {
-    title: 'Contact - Omar Younis | Software Engineer',
+    title: 'Contact - Omar Younis | Software Engineer — iOS & ML',
     description: 'Get in touch with Omar Younis for software engineering opportunities, contract work, or project inquiries.',
     url: 'https://hendaseh.com/contact',
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'website',
-    images: [{ url: '/api/og?card=site', width: 1200, height: 630, alt: 'Omar Younis — iOS Engineer · on-device ML' }],
+    images: [{ url: '/api/og?card=site', width: 1200, height: 630, alt: 'Omar Younis — Software Engineer · iOS & Machine Learning' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contact - Omar Younis | Software Engineer',
+    title: 'Contact - Omar Younis | Software Engineer — iOS & ML',
     description: 'Get in touch with Omar Younis for software engineering opportunities, contract work, or project inquiries.',
     images: ['/api/og?card=site'],
   },

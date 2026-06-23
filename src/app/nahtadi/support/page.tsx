@@ -4,13 +4,13 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'App Support',
-  description: 'Support and frequently asked questions for Nahtadi - Islamic Prayer Times app for iOS and Android.',
+  description: 'Support and frequently asked questions for Nahtadi - the Islamic Prayer Times app for iOS.',
   alternates: {
     canonical: 'https://hendaseh.com/nahtadi/support',
   },
   openGraph: {
     title: 'App Support | Nahtadi',
-    description: 'Support and frequently asked questions for Nahtadi - Islamic Prayer Times app for iOS and Android.',
+    description: 'Support and frequently asked questions for Nahtadi - the Islamic Prayer Times app for iOS.',
     url: 'https://hendaseh.com/nahtadi/support',
     siteName: 'Nahtadi',
     locale: 'en_US',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'App Support | Nahtadi',
-    description: 'Support and frequently asked questions for Nahtadi - Islamic Prayer Times app for iOS and Android.',
+    description: 'Support and frequently asked questions for Nahtadi - the Islamic Prayer Times app for iOS.',
     images: ['/api/og?card=nahtadi'],
   },
   robots: {
@@ -40,7 +40,7 @@ export default function SupportPage() {
       question: 'The prayer times seem incorrect. What should I check?',
       answer: (
         <>
-          First, verify that Location Services are enabled for Nahtadi in your device settings (iOS: Settings → Nahtadi → Location; Android: Settings → Apps → Nahtadi → Permissions → Location). Then, check that you've selected the appropriate calculation method for your region. The app defaults to Automatic Selection, which chooses the method based on your detected country. Different Islamic authorities use different calculation methods, so you can manually select the one recommended for your area by disabling Automatic Selection in the Settings tab. If the times are still incorrect after trying these steps, please contact{' '}
+          First, verify that Location Services are enabled for Nahtadi in your device settings (Settings → Nahtadi → Location). Then, check that you've selected the appropriate calculation method for your region. The app defaults to Automatic Selection, which chooses the method based on your detected country. Different Islamic authorities use different calculation methods, so you can manually select the one recommended for your area by disabling Automatic Selection in the Settings tab. If the times are still incorrect after trying these steps, please contact{' '}
           <a
             href="mailto:support@hendaseh.com?subject=Nahtadi Prayer Times Issue&body=Date:%0D%0ALocation (city, state, country):%0D%0ATimezone:%0D%0AWhat the prayer times should be for the provided date:%0D%0A"
             className="text-blue-600 hover:text-blue-800 underline"
@@ -75,7 +75,7 @@ export default function SupportPage() {
       question: 'Is my data private?',
       answer: (
         <>
-          Absolutely. Nahtadi does not collect, transmit, or share any personal information. All your data (location, settings, preferences) is stored locally on your device using platform-native secure storage (SwiftData on iOS, Room on Android). See our{' '}
+          Absolutely. Nahtadi does not collect, transmit, or share any personal information. All your data (location, settings, preferences) is stored locally on your device using Apple's secure on-device storage (SwiftData). See our{' '}
           <Link
             href="/nahtadi/privacy"
             className="text-blue-600 hover:text-blue-800 underline"
@@ -165,12 +165,12 @@ export default function SupportPage() {
                 <dd className="text-gray-600">v1.1.0</dd>
               </div>
               <div>
-                <dt className="font-medium text-gray-700">Platforms</dt>
-                <dd className="text-gray-600">iOS & Android</dd>
+                <dt className="font-medium text-gray-700">Platform</dt>
+                <dd className="text-gray-600">iOS</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700">Requirements</dt>
-                <dd className="text-gray-600">iOS 17.0+ | Android 8.0+ (API 26+)</dd>
+                <dd className="text-gray-600">iOS 17.0+</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700">Developer</dt>

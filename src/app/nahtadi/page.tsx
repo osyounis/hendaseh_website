@@ -224,10 +224,7 @@ export default function NahtadiPage() {
           <div className="mb-2">
             <PlatformButtons
               appStoreUrl={project.appStoreUrl}
-              googlePlayUrl={null}
               appStoreLive={project.appStoreLive}
-              googlePlayLive={false}
-              showBothPlatforms={false}
             />
           </div>
         </div>
@@ -355,7 +352,7 @@ export default function NahtadiPage() {
             Stay in the Loop
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Get notified about new features, updates, and the Android release.
+            Get notified about new features and updates.
           </p>
 
           <EmailSignup />

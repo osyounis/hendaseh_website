@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Privacy policy for Nahtadi mobile app (iOS and Android). No data collection, fully offline.',
+  description: 'Privacy policy for Nahtadi, the iOS app. No data collection, fully offline.',
   alternates: {
     canonical: 'https://hendaseh.com/nahtadi/privacy',
   },
   openGraph: {
     title: 'Privacy Policy | Nahtadi',
-    description: 'Privacy policy for Nahtadi mobile app (iOS and Android). No data collection, fully offline.',
+    description: 'Privacy policy for Nahtadi, the iOS app. No data collection, fully offline.',
     url: 'https://hendaseh.com/nahtadi/privacy',
     siteName: 'Nahtadi',
     locale: 'en_US',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Privacy Policy | Nahtadi',
-    description: 'Privacy policy for Nahtadi mobile app (iOS and Android). No data collection, fully offline.',
+    description: 'Privacy policy for Nahtadi, the iOS app. No data collection, fully offline.',
     images: ['/api/og?card=nahtadi'],
   },
   robots: {
@@ -65,7 +65,7 @@ export default function PrivacyPolicyPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Data Storage</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              All data is stored locally on your device using platform-native storage (SwiftData on iOS, Room on Android). This includes:
+              All data is stored locally on your device using Apple's on-device storage (SwiftData). This includes:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-4">
               <li>Prayer time calculations and settings</li>
@@ -88,12 +88,11 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-4">
               <li>Is used ONLY for prayer time calculations on your device</li>
               <li>Is NEVER transmitted to external servers or services</li>
-              <li>Is stored locally using platform-native secure storage (SwiftData on iOS, Room on Android)</li>
+              <li>Is stored locally using Apple's secure on-device storage (SwiftData)</li>
               <li>
                 Can be revoked at any time through device settings:
                 <ul className="list-circle pl-6 mt-2 space-y-1">
-                  <li><strong>iOS:</strong> Settings → Nahtadi → Location</li>
-                  <li><strong>Android:</strong> Settings → Apps → Nahtadi → Permissions → Location</li>
+                  <li>Settings → Nahtadi → Location</li>
                 </ul>
               </li>
             </ul>
