@@ -1,4 +1,5 @@
 import projectsData from '@/data/projects.json';
+import nahtadiReviewsData from '@/data/nahtadiReviews.json';
 
 export interface Project {
   id: string;
@@ -33,4 +34,15 @@ export function getFeaturedProjects(): Project[] {
 
 export function getProjectById(id: string): Project | undefined {
   return projectsData.projects.find(p => p.id === id);
+}
+
+export interface NahtadiReview {
+  title: string;
+  author: string;
+  date: string;
+  text: string;
+}
+
+export function getNahtadiReviews(): NahtadiReview[] {
+  return nahtadiReviewsData.reviews;
 }
