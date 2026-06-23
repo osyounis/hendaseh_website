@@ -5,6 +5,24 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'App Support',
   description: 'Support and frequently asked questions for Nahtadi - Islamic Prayer Times app for iOS and Android.',
+  alternates: {
+    canonical: 'https://hendaseh.com/nahtadi/support',
+  },
+  openGraph: {
+    title: 'App Support | Nahtadi',
+    description: 'Support and frequently asked questions for Nahtadi - Islamic Prayer Times app for iOS and Android.',
+    url: 'https://hendaseh.com/nahtadi/support',
+    siteName: 'Nahtadi',
+    locale: 'en_US',
+    type: 'website',
+    images: [{ url: '/api/og?card=nahtadi', width: 1200, height: 630, alt: 'Nahtadi — Islamic Prayer Times' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'App Support | Nahtadi',
+    description: 'Support and frequently asked questions for Nahtadi - Islamic Prayer Times app for iOS and Android.',
+    images: ['/api/og?card=nahtadi'],
+  },
   robots: {
     index: true,
     follow: true,

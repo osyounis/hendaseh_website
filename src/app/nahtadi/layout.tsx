@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Nahtadi - Islamic Prayer Times App for iOS',
+    default: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
     template: '%s | Nahtadi',
   },
   description:
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: 'Nahtadi',
     images: [
       {
-        url: '/images/nahtadi/og-image.jpg',
+        url: '/api/og?card=nahtadi',
         width: 1200,
         height: 630,
         alt: 'Nahtadi - Islamic Prayer Times App',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
     description:
       'Accurate prayer times with zero ads and zero data collection. One-time purchase. Works offline.',
-    images: ['/images/nahtadi/og-image.jpg'],
+    images: ['/api/og?card=nahtadi'],
   },
   robots: {
     index: true,

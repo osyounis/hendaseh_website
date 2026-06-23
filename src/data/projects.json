@@ -19,7 +19,8 @@
       "appStoreUrl": "https://apps.apple.com/us/app/nahtadi/id6755970888",
       "privacyPolicyUrl": "/nahtadi/privacy",
       "supportUrl": "/nahtadi/support",
-      "appStoreLive": true
+      "appStoreLive": true,
+      "appStoreRating": { "value": "5.0", "count": 4 }
     },
        {
       "id": "new-game-plus",

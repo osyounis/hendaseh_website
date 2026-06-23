@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { getFeaturedProjects } from '@/lib/projects';
+import { getProjectGradientClass } from '@/lib/projectStyles';
 
 export default function HomepageClient() {
   const featuredProjects = getFeaturedProjects(); // All featured projects appear on homepage
@@ -178,31 +179,7 @@ export default function HomepageClient() {
               >
               {project.image && (
                 <div
-                  className={`relative w-full h-48 flex items-center justify-center ${
-                    project.id === 'nahtadi'
-                      ? 'bg-gradient-to-br from-blue-300 to-blue-500'
-                      : project.id === 'collision-avoidance-radar'
-                      ? 'bg-gradient-to-br from-gray-900 to-slate-800'
-                      : project.id === 'wildfire-predictor'
-                      ? 'bg-gradient-to-br from-red-600 to-orange-500'
-                      : project.id === 'asl-detector'
-                      ? 'bg-gradient-to-br from-purple-600 to-purple-400'
-                      : project.id === 'image-watermark-remover'
-                      ? 'bg-gradient-to-br from-emerald-500 to-teal-400'
-                      : project.id === 'new-game-plus'
-                      ? 'bg-gradient-to-br from-indigo-600 to-purple-500'
-                      : project.id === 'reddit-nlp'
-                      ? 'bg-gradient-to-br from-blue-500 to-teal-400'
-                      : project.id === 'islamic-prayer-time'
-                      ? 'bg-gradient-to-br from-green-700 to-green-900'
-                      : project.id === 'coast-guard-pilot-tracker'
-                      ? 'bg-gradient-to-br from-orange-500 to-blue-600'
-                      : project.id === 'coast-guard-inventory'
-                      ? 'bg-gradient-to-br from-blue-700 to-orange-400'
-                      : project.id === 'cycloidal-drive-creator'
-                      ? 'bg-gradient-to-br from-gray-600 to-blue-700'
-                      : 'bg-gray-100'
-                  }`}
+                  className={`relative w-full h-48 flex items-center justify-center ${getProjectGradientClass(project.id)}`}
                 >
                   {project.id === 'nahtadi' ? (
                     <div className="w-32 h-32 bg-white rounded-3xl shadow-2xl overflow-hidden">
