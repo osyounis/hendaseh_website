@@ -91,7 +91,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
               {/* App Name & Tagline */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
-                Collision Avoidance Radar
+                Maritime Collision Avoidance Training System
               </h1>
               <p className="text-xl sm:text-2xl text-gray-300 mb-3">
                 Maritime Navigation Training Tool

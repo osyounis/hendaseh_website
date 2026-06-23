@@ -69,7 +69,7 @@
     },
     {
       "id": "collision-avoidance-radar",
-      "title": "Collision Avoidance Radar Plotting App",
+      "title": "Maritime Collision Avoidance Training System",
       "description": "Educational Python application for maritime navigators to train in collision avoidance calculations using radar plotting techniques. Computes Closest Point of Approach (CPA) and determines required course/speed changes. Built for Coast Guard Auxiliary training.",
       "technologies": ["Python", "Streamlit", "Matplotlib", "NumPy", "Pytest"],
       "githubUrl": "https://github.com/osyounis/collision_avoidance_radar_plotting_app",
@@ -81,7 +81,7 @@
       "hasDetailPage": true,
       "buttonText": "Try It Out →",
       "image": "/images/projects/collision-avoidance-radar.png",
-      "imageAlt": "Collision Avoidance Radar plotting app showing vessel parameters and radar visualization"
+      "imageAlt": "Maritime Collision Avoidance Training System showing vessel parameters and radar visualization"
     },
     {
       "id": "cycloidal-drive-creator",
@@ -100,7 +100,7 @@
     },
     {
       "id": "image-watermark-remover",
-      "title": "Image Watermark Remover",
+      "title": "Image Watermark Remover with PyTorch",
       "description": "Machine learning project implementing a Pix2Pix generative adversarial network using PyTorch to automatically eliminate watermarks from digital images. Trained on ~16,700 watermarked images from Unsplash dataset.",
       "technologies": ["Python", "PyTorch", "Pix2Pix", "Deep Learning"],
       "githubUrl": "https://github.com/osyounis/image_watermark_remover",
@@ -111,7 +111,7 @@
       "category": "machine-learning",
       "hasDetailPage": false,
       "image": "/images/projects/image-watermark-remover.png",
-      "imageAlt": "Image Watermark Remover showing GAN-based watermark removal results"
+      "imageAlt": "Image Watermark Remover with PyTorch showing GAN-based watermark removal results"
     },
     {
       "id": "coast-guard-pilot-tracker",
@@ -145,7 +145,7 @@
     },
     {
       "id": "asl-detector",
-      "title": "American Sign Language Letter Detector",
+      "title": "ASL Letter Detector",
       "description": "Lightweight Python app that detects ASL letters from images or video to help students practice hand positions. Uses a retrained YOLOv5 model for real-time detection.",
       "technologies": ["Python", "Streamlit", "YOLOv5", "Computer Vision"],
       "githubUrl": "https://github.com/osyounis/asl_letter_detector",
