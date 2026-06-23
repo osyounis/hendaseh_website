@@ -22,6 +22,20 @@
       "appStoreLive": true,
       "appStoreRating": { "value": "5.0", "count": 8 }
     },
+    {
+      "id": "brent-cuda",
+      "title": "Parallelizing Brent's Method with CUDA",
+      "description": "First CUDA implementation of Brent's root-finding method using batch/ensemble parallelism — one independent Brent's instance per GPU thread. Delivers a 35.31× kernel and 8.79× end-to-end speedup over a single-threaded CPU baseline on an NVIDIA RTX 3080, with CPU/GPU bit-identical fp64 results validated to <1e-10 against a Python ground-truth reference across Python, C++, and CUDA. M.S. graduate project.",
+      "technologies": ["CUDA", "C++", "Python", "CMake", "GPU Computing", "Numerical Computing"],
+      "githubUrl": "https://github.com/osyounis/brent_cuda",
+      "liveUrl": null,
+      "embedUrl": null,
+      "featured": false,
+      "stats": "35.31× kernel • 8.79× end-to-end • RTX 3080",
+      "category": "scientific-computing",
+      "hasDetailPage": true,
+      "imageAlt": "Parallelizing Brent's Method with CUDA — GPU-accelerated root-finding on an NVIDIA RTX 3080"
+    },
        {
       "id": "new-game-plus",
       "title": "NewGame+ - Game Recommendation System",
