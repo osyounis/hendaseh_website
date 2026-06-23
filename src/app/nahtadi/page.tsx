@@ -1,7 +1,8 @@
-import { getProjectById } from '@/lib/projects';
+import { getProjectById, getNahtadiReviews } from '@/lib/projects';
 import FeatureCard from '@/components/nahtadi/FeatureCard';
 import PlatformButtons from '@/components/nahtadi/PlatformButtons';
 import ScreenshotGallery from '@/components/nahtadi/ScreenshotGallery';
+import ReviewsCarousel from '@/components/nahtadi/ReviewsCarousel';
 import EmailSignup from '@/components/nahtadi/EmailSignup';
 import {
   HiClock,
@@ -36,6 +37,7 @@ const faqs = [
 
 export default function NahtadiPage() {
   const project = getProjectById('nahtadi');
+  const reviews = getNahtadiReviews();
 
   if (!project) {
     return <div>Project not found</div>;
@@ -152,6 +154,17 @@ export default function NahtadiPage() {
       price: '3.99',
       priceCurrency: 'USD',
     },
+    // Sourced from the single rating block (projects.json appStoreRating) so the
+    // badge, reviews section, and structured data all match the live App Store
+    // listing. ratingCount = ratings (incl. star-only taps); reviewCount = written reviews.
+    ...(project.appStoreRating && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: project.appStoreRating.value,
+        ratingCount: project.appStoreRating.count,
+        reviewCount: reviews.length,
+      },
+    }),
   };
 
   const faqLd = {
@@ -230,19 +243,9 @@ export default function NahtadiPage() {
         </div>
       </section>
 
-      {/* Review Quote */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white border-b border-gray-100">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="flex justify-center mb-3 text-yellow-400 text-xl">
-            <HiStar /><HiStar /><HiStar /><HiStar /><HiStar />
-          </div>
-          <blockquote className="text-2xl sm:text-3xl font-semibold text-gray-900 leading-snug">
-            &ldquo;Most accurate prayer times app I have found.&rdquo;
-          </blockquote>
-          <p className="mt-4 text-gray-500 text-sm">
-            — DinaYasin, App Store review
-          </p>
-        </div>
+      {/* Reviews Carousel — App Store reviews from the data layer */}
+      <section className="py-14 px-4 sm:px-6 lg:px-8 bg-white border-b border-gray-100">
+        <ReviewsCarousel reviews={reviews} rating={project.appStoreRating} />
       </section>
 
       {/* Why Nahtadi? */}
