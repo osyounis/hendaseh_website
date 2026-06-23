@@ -22,6 +22,7 @@ export interface Project {
   supportUrl?: string | null;
   appStoreLive?: boolean;
   googlePlayLive?: boolean;
+  appStoreRating?: { value: string; count: number };
 }
 
 export function getAllProjects(): Project[] {

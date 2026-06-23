@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import { getProjectById } from '@/lib/projects';
 import FeatureCard from '@/components/nahtadi/FeatureCard';
 import PlatformButtons from '@/components/nahtadi/PlatformButtons';
@@ -15,49 +14,6 @@ import {
 import { FaCompass, FaCog, FaShieldAlt, FaInstagram } from 'react-icons/fa';
 import Link from 'next/link';
 import Image from 'next/image';
-
-export const metadata: Metadata = {
-  title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
-  description:
-    'Nahtadi — Accurate Islamic prayer times with zero ads and zero data collection. One-time purchase. Works offline. Built by a Muslim developer.',
-  keywords: [
-    'Islamic prayer times',
-    'prayer times app',
-    'Qibla direction',
-    'Muslim app',
-    'Salat times',
-    'Hijri calendar',
-    'no ads prayer app',
-    'private prayer app',
-    'offline prayer times',
-    'Nahtadi',
-  ],
-  alternates: { canonical: 'https://hendaseh.com/nahtadi' },
-  openGraph: {
-    title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
-    description:
-      'Accurate Islamic prayer times with zero ads and zero data collection. One-time purchase. Works offline. Built by a Muslim developer.',
-    url: 'https://hendaseh.com/nahtadi',
-    siteName: 'Nahtadi',
-    images: [
-      {
-        url: '/images/nahtadi/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Nahtadi — Islamic Prayer Times',
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
-    description:
-      'Accurate prayer times with zero ads and zero data collection. One-time purchase. Works offline.',
-    images: ['/images/nahtadi/og-image.jpg'],
-  },
-};
 
 const faqs = [
   {
@@ -191,12 +147,6 @@ export default function NahtadiPage() {
       name: 'Hendaseh',
       url: 'https://hendaseh.com',
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '5.0',
-      ratingCount: '4',
-      bestRating: '5',
-    },
     offers: {
       '@type': 'Offer',
       price: '3.99',
@@ -226,7 +176,7 @@ export default function NahtadiPage() {
       />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-300 to-blue-500 text-white py-20 px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-br from-[#0F5F50] to-[#022E28] text-white py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           {/* App Icon */}
           <div className="mb-6 flex justify-center">
@@ -242,20 +192,22 @@ export default function NahtadiPage() {
             </div>
           </div>
 
-          {/* Ratings Badge */}
-          <div className="mb-6 flex justify-center">
-            <a
-              href={project.appStoreUrl ?? '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full border border-white/40 hover:bg-white/25 transition-colors"
-            >
-              <HiStar className="text-yellow-300" />
-              <span className="text-sm font-semibold text-white">
-                5.0★ · 4 Ratings on the App Store
-              </span>
-            </a>
-          </div>
+          {/* Ratings Badge — numbers sourced from the data layer (projects.json) */}
+          {project.appStoreRating && (
+            <div className="mb-6 flex justify-center">
+              <a
+                href={project.appStoreUrl ?? '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full border border-white/40 hover:bg-white/25 transition-colors"
+              >
+                <HiStar className="text-yellow-300" />
+                <span className="text-sm font-semibold text-white">
+                  {project.appStoreRating.value}★ · {project.appStoreRating.count} Ratings on the App Store
+                </span>
+              </a>
+            </div>
+          )}
 
           {/* App Name & Tagline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">

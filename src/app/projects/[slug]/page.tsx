@@ -25,9 +25,35 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const url = `https://hendaseh.com/projects/${slug}`;
+  const ogImage = {
+    url: `/api/og?card=${slug}`,
+    width: 1200,
+    height: 630,
+    alt: project.title,
+  };
+
   return {
     title: `${project.title} | Omar Younis`,
     description: project.description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: `${project.title} | Omar Younis`,
+      description: project.description,
+      url,
+      siteName: 'Hendaseh',
+      locale: 'en_US',
+      type: 'website',
+      images: [ogImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${project.title} | Omar Younis`,
+      description: project.description,
+      images: [ogImage.url],
+    },
   };
 }
 

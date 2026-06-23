@@ -16,11 +16,13 @@ export const metadata: Metadata = {
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'website',
+    images: [{ url: '/api/og?card=site', width: 1200, height: 630, alt: 'Omar Younis — Software Portfolio' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Projects - Software Portfolio | Hendaseh',
     description: 'Portfolio of software engineering projects',
+    images: ['/api/og?card=site'],
   },
 };
 

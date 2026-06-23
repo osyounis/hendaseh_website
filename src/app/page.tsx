@@ -15,11 +15,13 @@ export const metadata: Metadata = {
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'website',
+    images: [{ url: '/api/og?card=site', width: 1200, height: 630, alt: 'Omar Younis — iOS Engineer · on-device ML' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Hendaseh - Omar Younis | Software Engineer',
     description: 'Software Engineer specializing in Data Engineering, Machine Learning, and Scientific Computing',
+    images: ['/api/og?card=site'],
   },
 }
 
