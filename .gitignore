@@ -159,6 +159,9 @@ vite.config.ts.timestamp-*
 *.pem
 .audit/
 
+# Stray root-level page screenshots (review/branding artifacts, not app assets)
+/hendaseh-*.png
+
 # Test reports
 playwright-report/
 test-results/
