@@ -16,8 +16,8 @@ export default function AboutHero() {
         <h1 className="text-4xl md:text-5xl font-bold text-[#0A1A2F] mb-2">Omar Younis</h1>
         <p className="text-2xl text-[#0093FF] font-semibold mb-4">Software Engineer · iOS &amp; Machine Learning</p>
         <p className="text-xl text-gray-600">
-          I&apos;m a software engineer and problem-solver: I design the solution, then learn whatever
-          tool it needs. That approach has carried me from seven years in mechanical engineering
+          I&apos;m a software engineer and problem-solver: I design the solution, then learn what the
+          problem requires. That approach has carried me from seven years in mechanical engineering
           through machine learning, data engineering, and a privacy-first iOS app I shipped to the
           App Store. The mechanical background isn&apos;t a detour—it&apos;s range: I can speak both
           Mechanical and Software, and translate between the teams on each side.
