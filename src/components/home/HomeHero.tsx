@@ -27,8 +27,8 @@ export default function HomeHero() {
           </p>
         </div>
         <p className="text-xl md:text-2xl text-gray-700 mb-4 leading-relaxed">
-          I&apos;m a software engineer and problem-solver—I design the solution, then learn whatever
-          tool it needs. Most recently I shipped Nahtadi, a privacy-first iOS app, to the App Store.
+          I&apos;m a software engineer and problem-solver—I design the solution, then learn what the
+          problem requires. Most recently I shipped Nahtadi, a privacy-first iOS app, to the App Store.
           Alongside that, my work spans machine learning, data engineering, and scientific computing,
           on a foundation of seven years in mechanical engineering.
         </p>
