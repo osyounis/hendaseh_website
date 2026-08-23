@@ -26,13 +26,6 @@ test.describe('Homepage', () => {
     // Navigate back to home
     await page.goto('/')
 
-    // Click Capabilities link in navigation
-    await page.getByRole('navigation').getByRole('link', { name: 'Capabilities' }).click()
-    await expect(page).toHaveURL('/capabilities')
-
-    // Navigate back to home
-    await page.goto('/')
-
     // Click Projects link in navigation
     await page.getByRole('navigation').getByRole('link', { name: 'Projects', exact: true }).click()
     await expect(page).toHaveURL('/projects')

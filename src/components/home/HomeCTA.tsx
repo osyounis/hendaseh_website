@@ -18,7 +18,7 @@ export default function HomeCTA() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
-              href="/capabilities"
+              href="/about"
               className="px-8 py-4 bg-[#0093FF] text-white rounded-lg hover:bg-[#0075CC] transition-colors font-medium shadow-md text-lg block text-center"
             >
               See What I Can Do

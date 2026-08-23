@@ -25,7 +25,7 @@ export default function HomeCapabilities() {
             used across federal operations with measurable impact.
           </p>
           <Link
-            href="/capabilities"
+            href="/about"
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
             Learn more →
@@ -43,7 +43,7 @@ export default function HomeCapabilities() {
             and big data solutions for ML teams and analytics platforms.
           </p>
           <Link
-            href="/capabilities"
+            href="/about"
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
             Learn more →
@@ -61,7 +61,7 @@ export default function HomeCapabilities() {
             ML solutions with PyTorch, TensorFlow, and production-ready infrastructure.
           </p>
           <Link
-            href="/capabilities"
+            href="/about"
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
             Learn more →
@@ -79,7 +79,7 @@ export default function HomeCapabilities() {
             on-device. From concept to App Store launch, delivering polished products users love.
           </p>
           <Link
-            href="/capabilities"
+            href="/about"
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
             Learn more →

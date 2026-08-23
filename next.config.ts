@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [{ source: '/capabilities', destination: '/about', permanent: true }];
+  },
 };
 
 export default nextConfig;
