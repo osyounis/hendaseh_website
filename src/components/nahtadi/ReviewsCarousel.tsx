@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { HiStar } from 'react-icons/hi';
 import type { NahtadiReview } from '@/lib/projects';
@@ -11,25 +11,35 @@ interface ReviewsCarouselProps {
 }
 
 const AUTO_ADVANCE_MS = 6000;
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+function subscribeToReducedMotion(callback: () => void) {
+  if (typeof window === 'undefined' || !window.matchMedia) return () => {};
+  const query = window.matchMedia(REDUCED_MOTION_QUERY);
+  query.addEventListener('change', callback);
+  return () => query.removeEventListener('change', callback);
+}
+
+function getReducedMotionSnapshot(): boolean {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
+
+// Server (and first client render, before hydration) always assume no preference —
+// matches getServerSnapshot below so SSR and hydration output never mismatch.
+function getReducedMotionServerSnapshot(): boolean {
+  return false;
+}
 
 // Tracks the user's prefers-reduced-motion setting, updating if it changes.
+// useSyncExternalStore (rather than useState + effect) keeps the client's first
+// render in sync with the server-rendered HTML, avoiding a hydration mismatch.
 function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
+  return useSyncExternalStore(
+    subscribeToReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot
   );
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return;
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
-    query.addEventListener('change', onChange);
-    return () => query.removeEventListener('change', onChange);
-  }, []);
-
-  return reduced;
 }
 
 export default function ReviewsCarousel({ reviews, rating }: ReviewsCarouselProps) {
