@@ -80,4 +80,4 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 
 - **Backend:** none. If one is ever needed, **Supabase** is the designated choice (see `docs/DECISIONS.md` once created).
 - **Connected tooling:** GitHub MCP, ImageKit API + DevTools MCP (authenticated 2026-08-23). Higgsfield: direct API, unverified. Vercel MCP until decommissioned.
-- **Résumé + section text:** Omar supplies during the Phase 1 content audit (`docs/content/`); the résumé in `public/` is outdated until then.
+- **Résumé + section text:** Omar supplies during the Phase 1 content audit (`docs/content/`); the résumé in `public/` is outdated until then. Everything in `docs/content/` is **raw material only** — possibly outdated or rough by Omar's own assessment; final copy is workshopped with him during phases 4–5, never published verbatim.

@@ -676,7 +676,7 @@ Verdicts in A/B are proposals argued from the repo data and the tier bar ("a sho
 
 - [ ] **Step 3: STOP — present section D questions to Omar**
 
-Present the audit and the canonical-facts questions to Omar (AskUserQuestion or chat). Record his answers directly into `docs/CONTENT-AUDIT.md`, replacing the `?`s. Ask him to drop his résumé + saved section text into `docs/content/` now. **Do not proceed to Task 9 until answers are recorded** — Task 9's CLAUDE.md states canonical facts and must not guess.
+Present the audit and the canonical-facts questions to Omar (AskUserQuestion or chat). Record his answers directly into `docs/CONTENT-AUDIT.md`, replacing the `?`s. Ask him to drop his résumé + saved section text into `docs/content/` now. **Treat everything in `docs/content/` as raw source material, NOT publishable copy** — Omar has said it may be outdated or poorly phrased; final page copy is workshopped with him section by section during sub-projects 4–5, never lifted verbatim. Note this at the top of `docs/content/` in a short README.md. **Do not proceed to Task 9 until answers are recorded** — Task 9's CLAUDE.md states canonical facts and must not guess.
 
 - [ ] **Step 4: Commit**
 
