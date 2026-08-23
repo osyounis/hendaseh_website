@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import projectsData from '@/data/projects.json'
+import { getShowcaseProjects } from '@/lib/projects'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://hendaseh.com'
@@ -57,9 +57,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // Dynamic project routes (only those with detail pages)
-  const projectRoutes: MetadataRoute.Sitemap = projectsData.projects
-    .filter((project) => project.hasDetailPage)
+  // Dynamic project routes (showcase-tier projects only; flagship's /nahtadi
+  // is already a static route above)
+  const projectRoutes: MetadataRoute.Sitemap = getShowcaseProjects()
     .map((project) => ({
       url: `${baseUrl}/projects/${project.id}`,
       lastModified,

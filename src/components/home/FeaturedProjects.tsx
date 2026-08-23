@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { getFeaturedProjects } from '@/lib/projects';
+import { getFeaturedProjects, getProjectHref } from '@/lib/projects';
 import { getProjectGradientClass } from '@/lib/projectStyles';
 
 export default function FeaturedProjects() {
@@ -31,7 +31,7 @@ export default function FeaturedProjects() {
             whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
           >
             <Link
-              href={project.customUrl || (project.hasDetailPage ? `/projects/${project.id}` : `/projects`)}
+              href={getProjectHref(project) ?? '/projects'}
               className="border border-gray-300 rounded-lg overflow-hidden hover:border-blue-500 transition-colors block h-full"
             >
             {project.image && (

@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { getAllProjects, getFeaturedProjects, getProjectById } from '../projects'
+import { ProjectsFileSchema } from '../projectSchema'
+import projectsData from '../../data/projects.json'
+import { getProjectHref, getShowcaseProjects } from '../projects'
 
 describe('getAllProjects', () => {
   it('should return all projects', () => {
@@ -55,5 +58,40 @@ describe('getProjectById', () => {
     expect(project).toHaveProperty('title')
     expect(project).toHaveProperty('description')
     expect(project).toHaveProperty('technologies')
+  })
+})
+
+describe('projects.json schema v2', () => {
+  it('validates against ProjectsFileSchema', () => {
+    const parsed = ProjectsFileSchema.safeParse(projectsData)
+    expect(parsed.success, JSON.stringify(parsed.success ? '' : parsed.error.issues, null, 2)).toBe(true)
+  })
+
+  it('has exactly one flagship (nahtadi) with detailPath /nahtadi', () => {
+    const flagships = getAllProjects().filter(p => p.tier === 'flagship')
+    expect(flagships.map(p => p.id)).toEqual(['nahtadi'])
+    expect(flagships[0].detailPath).toBe('/nahtadi')
+  })
+})
+
+describe('getProjectHref', () => {
+  it('returns null for card tier', () => {
+    const card = getAllProjects().find(p => p.tier === 'card')!
+    expect(getProjectHref(card)).toBeNull()
+  })
+  it('returns /projects/<id> for showcase tier without detailPath', () => {
+    const sc = getAllProjects().find(p => p.tier === 'showcase' && !p.detailPath)!
+    expect(getProjectHref(sc)).toBe(`/projects/${sc.id}`)
+  })
+  it('returns detailPath when set', () => {
+    expect(getProjectHref(getProjectById('nahtadi')!)).toBe('/nahtadi')
+  })
+})
+
+describe('getShowcaseProjects', () => {
+  it('returns only showcase-tier projects', () => {
+    const s = getShowcaseProjects()
+    expect(s.length).toBeGreaterThan(0)
+    s.forEach(p => expect(p.tier).toBe('showcase'))
   })
 })
