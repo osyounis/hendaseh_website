@@ -65,7 +65,7 @@ export default function PrivacyPolicyPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Data Storage</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              All data is stored locally on your device using Apple's on-device storage (SwiftData). This includes:
+              All data is stored locally on your device using Apple&apos;s on-device storage (SwiftData). This includes:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-4">
               <li>Prayer time calculations and settings</li>
@@ -88,7 +88,7 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-4">
               <li>Is used ONLY for prayer time calculations on your device</li>
               <li>Is NEVER transmitted to external servers or services</li>
-              <li>Is stored locally using Apple's secure on-device storage (SwiftData)</li>
+              <li>Is stored locally using Apple&apos;s secure on-device storage (SwiftData)</li>
               <li>
                 Can be revoked at any time through device settings:
                 <ul className="list-circle pl-6 mt-2 space-y-1">
@@ -112,7 +112,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Children's Privacy</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Children&apos;s Privacy</h2>
             <p className="text-gray-700 leading-relaxed">
               This app does not knowingly collect information from children under 13 years of age.
               Since no data is collected at all, the app is safe for users of all ages.
@@ -122,8 +122,8 @@ export default function PrivacyPolicyPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Changes to This Privacy Policy</h2>
             <p className="text-gray-700 leading-relaxed">
-              Any updates to this privacy policy will be posted on this page with a revised "Last
-              Updated" date. We recommend checking this page periodically for any changes.
+              Any updates to this privacy policy will be posted on this page with a revised &quot;Last
+              Updated&quot; date. We recommend checking this page periodically for any changes.
             </p>
           </section>
 

@@ -46,7 +46,7 @@ export default function ContactForm() {
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
           <HiCheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
           <p className="text-green-800 font-medium">
-            Message sent successfully! I'll get back to you soon.
+            Message sent successfully! I&apos;ll get back to you soon.
           </p>
         </div>
       )}

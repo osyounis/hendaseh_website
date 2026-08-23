@@ -14,12 +14,15 @@ const AUTO_ADVANCE_MS = 6000;
 
 // Tracks the user's prefers-reduced-motion setting, updating if it changes.
 function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false);
+  const [reduced, setReduced] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(query.matches);
 
     const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
     query.addEventListener('change', onChange);
@@ -45,7 +48,9 @@ export default function ReviewsCarousel({ reviews, rating }: ReviewsCarouselProp
 
   // Keep an up-to-date ref so the interval callback never goes stale.
   const nextRef = useRef(next);
-  nextRef.current = next;
+  useEffect(() => {
+    nextRef.current = next;
+  }, [next]);
 
   useEffect(() => {
     if (!autoPlaying) return;
