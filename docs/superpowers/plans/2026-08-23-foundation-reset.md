@@ -710,6 +710,7 @@ Fresh content only — do not carry forward old sections. Required contents, sta
 - Data: `projects.json` validated by `src/lib/projectSchema.ts` (`.strict()`); never bypass helpers in `src/lib/projects.ts`; gradients synced with `projectStyles.ts` by test.
 - SEO: preserve metadata exports, JSON-LD, sitemap, OG images; no route/slug changes without redirects.
 - Workflow: dev branch → PR to main; build+test+lint must pass; Tailwind v4 (CSS config, no tailwind.config).
+- Skills routing (MUST): UI/visual work → invoke `frontend-design` and `ui-ux-pro-max` skills before writing markup; charts/data viz → `dataviz`; banner/icon/asset design → the design + banner-design skills; any feature/bugfix → superpowers process skills (brainstorming, TDD, systematic-debugging). Executing a plan → superpowers:subagent-driven-development or executing-plans per the plan header.
 
 - [ ] **Step 3: Rewrite `README.md`**
 
