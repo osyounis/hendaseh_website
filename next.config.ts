@@ -3,12 +3,8 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
+    loader: 'custom',
+    loaderFile: './src/lib/imagekitLoader.ts',
   },
   async redirects() {
     return [
