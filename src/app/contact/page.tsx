@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import ContactForm from '@/components/contact/ContactForm';
-import { HiMail, HiLocationMarker } from 'react-icons/hi';
+import { HiMail, HiLocationMarker, HiDocumentDownload } from 'react-icons/hi';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 export const metadata: Metadata = {
@@ -41,91 +40,85 @@ export default function ContactPage() {
         </p>
       </section>
 
-      {/* Two-Column Layout */}
-      <div className="grid lg:grid-cols-3 gap-12 mb-16">
-        {/* Contact Form - 2/3 width */}
-        <div className="lg:col-span-2">
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-[#0A1A2F] mb-2">Send a Message</h2>
-            <p className="text-gray-600 mb-8">
-              Fill out the form below and I&apos;ll get back to you within 24-48 hours.
-            </p>
-            <ContactForm />
+      {/* Direct channels (form removed — design pass comes in sub-project 4) */}
+      <div className="grid md:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto">
+        {/* Quick Contact */}
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-[#0A1A2F] mb-4">Quick Contact</h2>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <HiMail className="w-5 h-5 text-[#0093FF] flex-shrink-0 mt-1" />
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Email</p>
+                <a
+                  href="mailto:omar@hendaseh.com"
+                  className="text-[#0A1A2F] hover:text-blue-600 font-medium transition-colors"
+                >
+                  omar@hendaseh.com
+                </a>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <HiLocationMarker className="w-5 h-5 text-[#0093FF] flex-shrink-0 mt-1" />
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Location</p>
+                <p className="text-[#0A1A2F] font-medium">Sunnyvale, CA</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Contact Info Sidebar - 1/3 width */}
-        <div className="space-y-6">
-          {/* Quick Contact */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-[#0A1A2F] mb-4">Quick Contact</h3>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <HiMail className="w-5 h-5 text-[#0093FF] flex-shrink-0 mt-1" />
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Email</p>
-                  <a
-                    href="mailto:omar@hendaseh.com"
-                    className="text-[#0A1A2F] hover:text-blue-600 font-medium transition-colors"
-                  >
-                    omar@hendaseh.com
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <HiLocationMarker className="w-5 h-5 text-[#0093FF] flex-shrink-0 mt-1" />
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Location</p>
-                  <p className="text-[#0A1A2F] font-medium">Sunnyvale, CA</p>
-                </div>
-              </div>
-            </div>
+        {/* Social Links */}
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-[#0A1A2F] mb-4">Connect</h2>
+          <div className="space-y-3">
+            <a
+              href="https://www.linkedin.com/in/omar-younis/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <FaLinkedin className="w-5 h-5 text-[#0077B5]" />
+              <span className="text-[#0A1A2F] group-hover:text-blue-600 font-medium">
+                LinkedIn
+              </span>
+            </a>
+            <a
+              href="https://github.com/osyounis"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <FaGithub className="w-5 h-5 text-[#101411]" />
+              <span className="text-[#0A1A2F] group-hover:text-blue-600 font-medium">
+                GitHub
+              </span>
+            </a>
+            <a
+              href="/omar_younis_resume_2026.pdf"
+              download="Omar_Younis_Resume.pdf"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <HiDocumentDownload className="w-5 h-5 text-[#0093FF]" />
+              <span className="text-[#0A1A2F] group-hover:text-blue-600 font-medium">Résumé (PDF)</span>
+            </a>
           </div>
+        </div>
 
-          {/* Social Links */}
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-[#0A1A2F] mb-4">Connect</h3>
-            <div className="space-y-3">
-              <a
-                href="https://www.linkedin.com/in/omar-younis/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-              >
-                <FaLinkedin className="w-5 h-5 text-[#0077B5]" />
-                <span className="text-[#0A1A2F] group-hover:text-blue-600 font-medium">
-                  LinkedIn
-                </span>
-              </a>
-              <a
-                href="https://github.com/osyounis"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-              >
-                <FaGithub className="w-5 h-5 text-[#101411]" />
-                <span className="text-[#0A1A2F] group-hover:text-blue-600 font-medium">
-                  GitHub
-                </span>
-              </a>
-            </div>
-          </div>
-
-          {/* Response Time */}
-          <div className="bg-white border-2 border-[#0093FF] rounded-lg p-6">
-            <h3 className="text-lg font-bold text-[#0A1A2F] mb-2">Response Time</h3>
-            <p className="text-gray-700 text-sm leading-relaxed">
-              I typically respond to inquiries within <strong>24-48 hours</strong> during business days.
-            </p>
-          </div>
+        {/* Response Time */}
+        <div className="bg-white border-2 border-[#0093FF] rounded-lg p-6">
+          <h2 className="text-lg font-bold text-[#0A1A2F] mb-2">Response Time</h2>
+          <p className="text-gray-700 text-sm leading-relaxed">
+            I typically respond to inquiries within <strong>24-48 hours</strong> during business days.
+          </p>
         </div>
       </div>
 
       {/* Additional Info */}
       <section className="max-w-3xl mx-auto text-center py-12 px-8 bg-gray-50 rounded-lg">
-        <h2 className="text-2xl font-bold text-[#0A1A2F] mb-4">Prefer Direct Email?</h2>
+        <h2 className="text-2xl font-bold text-[#0A1A2F] mb-4">Email Me</h2>
         <p className="text-gray-700 mb-6 leading-relaxed">
-          You can also reach me directly at{' '}
+          You can reach me at{' '}
           <a href="mailto:omar@hendaseh.com" className="text-blue-600 hover:text-blue-700 font-medium">
             omar@hendaseh.com
           </a>
