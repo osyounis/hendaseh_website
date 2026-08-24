@@ -171,3 +171,9 @@ test-results/
 CLAUDE.md
 claude_plan.md
 .playwright-mcp/
+
+# Internal working docs — kept local because this repo is public.
+# These contain candid self-assessment, private repo names, pre-negotiation
+# commercial posture, and raw/possibly-outdated personal source material.
+docs/CONTENT-AUDIT.md
+docs/content/

@@ -76,7 +76,7 @@ export default function ContactPage() {
                 <HiLocationMarker className="w-5 h-5 text-[#0093FF] flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Location</p>
-                  <p className="text-[#0A1A2F] font-medium">San Francisco Bay Area</p>
+                  <p className="text-[#0A1A2F] font-medium">Sunnyvale, CA</p>
                 </div>
               </div>
             </div>

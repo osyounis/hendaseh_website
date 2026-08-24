@@ -29,6 +29,7 @@ export default function CareerHighlights() {
         </div>
         <div className="border-l-4 border-[#0093FF] pl-4">
           <h3 className="font-bold text-[#0A1A2F]">US Coast Guard Auxiliary - Member since 2015</h3>
+          <p className="text-gray-600 text-sm mb-2">Software Engineer (volunteer) · Sep 2022 - Present</p>
           <p className="text-gray-600 text-sm mb-2">Flotilla Staff Officer for Operations · 2021 - 2026</p>
           <p className="text-gray-700">
             Developed Python productivity tools deployed fleet-wide across all US Coast Guard Air
