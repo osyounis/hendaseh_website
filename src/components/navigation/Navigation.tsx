@@ -39,12 +39,6 @@ export default function Navigation() {
               Projects
             </Link>
             <Link
-              href="/capabilities"
-              className="text-gray-700 hover:text-[#0A1A2F] transition-colors font-medium"
-            >
-              Capabilities
-            </Link>
-            <Link
               href="/contact"
               className="text-gray-700 hover:text-[#0A1A2F] transition-colors font-medium"
             >
@@ -83,13 +77,6 @@ export default function Navigation() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Projects
-              </Link>
-              <Link
-                href="/capabilities"
-                className="text-gray-700 hover:text-[#0A1A2F] transition-colors font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Capabilities
               </Link>
               <Link
                 href="/contact"

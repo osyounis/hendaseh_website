@@ -5,20 +5,21 @@
       "title": "Nahtadi - Islamic Prayer Times",
       "description": "Native iOS application that calculates the five daily Islamic prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) and provides the Qibla direction. Built with Swift and SwiftUI. Features multiple calculation methods, Hijri calendar, prayer notifications, and offline capability.",
       "technologies": ["Swift", "SwiftUI", "SwiftData", "iOS"],
-      "githubUrl": null,
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "flagship",
+      "detailPath": "/nahtadi",
       "featured": true,
+      "private": false,
       "stats": "v1.1.0 • Available on App Store",
       "category": "mobile",
-      "hasDetailPage": true,
-      "customUrl": "/nahtadi",
       "buttonText": "Learn More →",
       "image": "/images/nahtadi/icon.png",
       "imageAlt": "Nahtadi app icon - Islamic Prayer Times for iOS",
-      "appStoreUrl": "https://apps.apple.com/us/app/nahtadi/id6755970888",
-      "privacyPolicyUrl": "/nahtadi/privacy",
-      "supportUrl": "/nahtadi/support",
+      "links": {
+        "appStore": "https://apps.apple.com/us/app/nahtadi/id6755970888"
+      },
+      "brand": {
+        "gradient": { "from": "#0F5F50", "to": "#022E28" }
+      },
       "appStoreLive": true,
       "appStoreRating": { "value": "5.0", "count": 8 }
     },
@@ -27,180 +28,225 @@
       "title": "Parallelizing Brent's Method with CUDA",
       "description": "First CUDA implementation of Brent's root-finding method using batch/ensemble parallelism — one independent Brent's instance per GPU thread. Delivers a 35.31× kernel and 8.79× end-to-end speedup over a single-threaded CPU baseline on an NVIDIA RTX 3080, with CPU/GPU bit-identical fp64 results validated to <1e-10 against a Python ground-truth reference across Python, C++, and CUDA. M.S. graduate project.",
       "technologies": ["CUDA", "C++", "Python", "CMake", "GPU Computing", "Numerical Computing"],
-      "githubUrl": "https://github.com/osyounis/brent_cuda",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "showcase",
       "featured": false,
+      "private": false,
       "stats": "35.31× kernel • 8.79× end-to-end • RTX 3080",
       "category": "scientific-computing",
-      "hasDetailPage": true,
-      "imageAlt": "Parallelizing Brent's Method with CUDA — GPU-accelerated root-finding on an NVIDIA RTX 3080"
+      "imageAlt": "Parallelizing Brent's Method with CUDA — GPU-accelerated root-finding on an NVIDIA RTX 3080",
+      "links": {
+        "github": "https://github.com/osyounis/brent_cuda"
+      },
+      "brand": {
+        "gradient": { "from": "#166534", "to": "#111827" }
+      }
     },
-       {
+    {
       "id": "new-game-plus",
       "title": "NewGame+ - Game Recommendation System",
       "description": "Hybrid Python/Prolog recommendation system that suggests video games based on your gaming history. Uses logic-based reasoning to match games by genre, platform, and rating similarity. Integrates with IGDB API for real game data and leverages Prolog's pattern-matching for fast recommendation queries.",
       "technologies": ["Python", "Prolog", "SWI-Prolog", "pyswip", "IGDB API"],
-      "githubUrl": "https://github.com/osyounis/new_game_plus",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": false,
       "stats": "Logic Programming • GPL-3.0",
       "category": "machine-learning",
-      "hasDetailPage": false,
       "image": "/images/projects/new-game-plus.png",
-      "imageAlt": "NewGame+ recommendation system using Prolog logic programming"
+      "imageAlt": "NewGame+ recommendation system using Prolog logic programming",
+      "links": {
+        "github": "https://github.com/osyounis/new_game_plus"
+      },
+      "brand": {
+        "gradient": { "from": "#4F46E5", "to": "#A855F7" }
+      }
     },
     {
       "id": "mini-compiler",
       "title": "Mini Compiler",
       "description": "Production-quality compiler that transforms programs written in a Pascal-like language into executable Python code. Features a table-driven LL(1) predictive parser, semantic analysis with variable tracking, and AST-based code generation. Includes 78 comprehensive tests with 71% coverage, CI/CD with GitHub Actions, and complete type hints. Originally a CPSC 323 course project, significantly enhanced with modular architecture, professional testing infrastructure, and zero external dependencies.",
       "technologies": ["Python", "LL(1) Parser", "Compiler Theory", "AST", "Pytest", "CI/CD"],
-      "githubUrl": "https://github.com/osyounis/compiler-project",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": false,
       "stats": "4,172 LOC • 78 tests • 71% coverage",
       "category": "scientific-computing",
-      "hasDetailPage": false,
       "image": "/images/projects/mini-compiler.png",
-      "imageAlt": "Mini Compiler - LL(1) predictive parser transforming Pascal-like code to Python"
+      "imageAlt": "Mini Compiler - LL(1) predictive parser transforming Pascal-like code to Python",
+      "links": {
+        "github": "https://github.com/osyounis/compiler-project"
+      },
+      "brand": {
+        "gradient": { "from": "#0E7490", "to": "#581C87" }
+      }
     },
     {
       "id": "islamic-prayer-time",
       "title": "Islamic Prayer Time Algorithm Library",
       "description": "Zero-dependency, pure-Python scientific-computing library—the engine behind Nahtadi—for calculating Muslim prayer times and Qibla direction from astronomical algorithms (Julian Day, spherical trigonometry, high-latitude adjustments) across 8+ calculation methods. 105 unit tests at 90%+ coverage with GitHub Actions CI.",
       "technologies": ["Python", "Astronomical Algorithms", "Numerical Computing", "pytest"],
-      "githubUrl": "https://github.com/osyounis/islamic_prayer_time_app",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": true,
+      "private": false,
       "stats": "105 tests • 90%+ coverage • 8+ methods",
       "category": "scientific-computing",
-      "hasDetailPage": false,
       "image": "/images/projects/islamic-prayer-time.png",
-      "imageAlt": "Islamic Prayer Time Algorithm Library - Python code calculating prayer times"
+      "imageAlt": "Islamic Prayer Time Algorithm Library - Python code calculating prayer times",
+      "links": {
+        "github": "https://github.com/osyounis/islamic_prayer_time_app"
+      },
+      "brand": {
+        "gradient": { "from": "#15803D", "to": "#14532D" }
+      }
     },
     {
       "id": "collision-avoidance-radar",
       "title": "Maritime Collision Avoidance Training System",
       "description": "Educational Python application for maritime navigators to train in collision avoidance calculations using radar plotting techniques. Computes Closest Point of Approach (CPA) and determines required course/speed changes. Built for Coast Guard Auxiliary training.",
       "technologies": ["Python", "Streamlit", "Matplotlib", "NumPy", "Pytest"],
-      "githubUrl": "https://github.com/osyounis/collision_avoidance_radar_plotting_app",
-      "liveUrl": null,
-      "embedUrl": "https://collision-avoidance-radar-plotting-app.streamlit.app/?embed=true",
+      "tier": "showcase",
       "featured": true,
+      "private": false,
       "stats": "19 commits • GPL-3.0",
       "category": "data-tools",
-      "hasDetailPage": true,
       "buttonText": "Try It Out →",
       "image": "/images/projects/collision-avoidance-radar.png",
-      "imageAlt": "Maritime Collision Avoidance Training System showing vessel parameters and radar visualization"
+      "imageAlt": "Maritime Collision Avoidance Training System showing vessel parameters and radar visualization",
+      "links": {
+        "github": "https://github.com/osyounis/collision_avoidance_radar_plotting_app",
+        "embed": "https://collision-avoidance-radar-plotting-app.streamlit.app/?embed=true"
+      },
+      "brand": {
+        "gradient": { "from": "#111827", "to": "#1E293B" }
+      }
     },
     {
       "id": "cycloidal-drive-creator",
       "title": "Cycloidal Drive Creator",
       "description": "Python application that generates parametric equations for cycloidal drive rotors (mechanical speed reducers). Creates rotor profiles that can be directly imported into SolidWorks CAD software via \"Equation Driven Curve\" feature.",
       "technologies": ["Python", "Tkinter", "NumPy", "Matplotlib"],
-      "githubUrl": "https://github.com/osyounis/cycloidal_drive_creator",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": false,
       "stats": "29 commits • 28 stars • MIT",
       "category": "engineering-tools",
-      "hasDetailPage": false,
       "image": "/images/projects/cycloidal-drive-creator.png",
-      "imageAlt": "Cycloidal Drive Creator GUI showing parametric rotor profile generation"
+      "imageAlt": "Cycloidal Drive Creator GUI showing parametric rotor profile generation",
+      "links": {
+        "github": "https://github.com/osyounis/cycloidal_drive_creator"
+      },
+      "brand": {
+        "gradient": { "from": "#4B5563", "to": "#1D4ED8" }
+      }
     },
     {
       "id": "image-watermark-remover",
       "title": "Image Watermark Remover with PyTorch",
       "description": "Machine learning project implementing a Pix2Pix generative adversarial network using PyTorch to automatically eliminate watermarks from digital images. Trained on ~16,700 watermarked images from Unsplash dataset.",
       "technologies": ["Python", "PyTorch", "Pix2Pix", "Deep Learning"],
-      "githubUrl": "https://github.com/osyounis/image_watermark_remover",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": false,
       "stats": "10 stars • MIT",
       "category": "machine-learning",
-      "hasDetailPage": false,
       "image": "/images/projects/image-watermark-remover.png",
-      "imageAlt": "Image Watermark Remover with PyTorch showing GAN-based watermark removal results"
+      "imageAlt": "Image Watermark Remover with PyTorch showing GAN-based watermark removal results",
+      "links": {
+        "github": "https://github.com/osyounis/image_watermark_remover"
+      },
+      "brand": {
+        "gradient": { "from": "#10B981", "to": "#2DD4BF" }
+      }
     },
     {
       "id": "coast-guard-pilot-tracker",
       "title": "Coast Guard Pilot Training Tracker",
       "description": "Productivity tool for accessing and summarizing training data for Coast Guard pilots. Adopted across ALL Coast Guard Air Stations nationwide. Reduced summarizing time from one week to 3 minutes. Received Coast Guard Auxiliary Achievement Medal.",
       "technologies": ["Python", "Excel", "pandas", "numpy", "VBA"],
-      "githubUrl": null,
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": true,
       "stats": "Fleet-wide deployment • USCG Achievement Medal",
       "category": "data-tools",
-      "hasDetailPage": false,
       "image": "/images/projects/coast-guard-pilot-tracker.png",
-      "imageAlt": "US Coast Guard Pilot Training Tracker - fleet-wide deployment achievement"
+      "imageAlt": "US Coast Guard Pilot Training Tracker - fleet-wide deployment achievement",
+      "links": {},
+      "brand": {
+        "gradient": { "from": "#F97316", "to": "#2563EB" }
+      }
     },
     {
       "id": "coast-guard-inventory",
       "title": "Coast Guard Helicopter Inventory System",
       "description": "Efficient inventory system and database to enhance Coast Guard helicopter maintenance operations. Resulted in 85% reduction in search time. Currently in operation at Coast Guard Air Station San Diego.",
       "technologies": ["Python", "Excel", "pandas", "numpy"],
-      "githubUrl": null,
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": true,
       "stats": "In production at USCG San Diego",
       "category": "data-tools",
-      "hasDetailPage": false,
       "image": "/images/projects/coast-guard-inventory.png",
-      "imageAlt": "US Coast Guard Helicopter Inventory System - operational at Air Station San Diego"
+      "imageAlt": "US Coast Guard Helicopter Inventory System - operational at Air Station San Diego",
+      "links": {},
+      "brand": {
+        "gradient": { "from": "#1D4ED8", "to": "#FB923C" }
+      }
     },
     {
       "id": "asl-detector",
       "title": "ASL Letter Detector",
       "description": "Lightweight Python app that detects ASL letters from images or video to help students practice hand positions. Uses a retrained YOLOv5 model for real-time detection.",
       "technologies": ["Python", "Streamlit", "YOLOv5", "Computer Vision"],
-      "githubUrl": "https://github.com/osyounis/asl_letter_detector",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": false,
       "stats": "Object Detection",
       "category": "machine-learning",
-      "hasDetailPage": false,
       "image": "/images/projects/asl-detector.png",
-      "imageAlt": "ASL Letter Detector using YOLOv5 for real-time hand position recognition"
+      "imageAlt": "ASL Letter Detector using YOLOv5 for real-time hand position recognition",
+      "links": {
+        "github": "https://github.com/osyounis/asl_letter_detector"
+      },
+      "brand": {
+        "gradient": { "from": "#9333EA", "to": "#C084FC" }
+      }
     },
     {
       "id": "wildfire-predictor",
       "title": "California Wildfire Likelihood Predictor",
       "description": "Predictive model to determine the likelihood of California wildfires based on weather and historical data. Uses TensorFlow for model training and API for data retrieval.",
       "technologies": ["Python", "TensorFlow", "Scikit-Learn", "Seaborn"],
-      "githubUrl": "https://github.com/osyounis/cali_wildfire_likelihood_predictor",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": false,
       "stats": "ML Classification",
       "category": "machine-learning",
-      "hasDetailPage": false,
       "image": "/images/projects/wildfire-predictor.png",
-      "imageAlt": "California Wildfire Likelihood Predictor using TensorFlow and historical data"
+      "imageAlt": "California Wildfire Likelihood Predictor using TensorFlow and historical data",
+      "links": {
+        "github": "https://github.com/osyounis/cali_wildfire_likelihood_predictor"
+      },
+      "brand": {
+        "gradient": { "from": "#DC2626", "to": "#F97316" }
+      }
     },
     {
       "id": "reddit-nlp",
       "title": "Reddit NLP Classifier",
       "description": "Natural language processing project that predicts subreddit origins by analyzing language patterns in Pixar and DreamWorks fan communities. Built with scikit-learn using CountVectorizer and Multinomial Naive Bayes, achieving 76.82% test accuracy on scraped Reddit comments.",
       "technologies": ["Python", "Scikit-Learn", "NLP", "Pandas", "Jupyter"],
-      "githubUrl": "https://github.com/osyounis/reddit_nlp",
-      "liveUrl": null,
-      "embedUrl": null,
+      "tier": "card",
       "featured": false,
+      "private": false,
       "stats": "1 star • 77% Accuracy",
       "category": "machine-learning",
-      "hasDetailPage": false,
       "image": "/images/projects/reddit-nlp.png",
-      "imageAlt": "Reddit NLP Classifier analyzing language patterns between subreddit communities"
+      "imageAlt": "Reddit NLP Classifier analyzing language patterns between subreddit communities",
+      "links": {
+        "github": "https://github.com/osyounis/reddit_nlp"
+      },
+      "brand": {
+        "gradient": { "from": "#3B82F6", "to": "#2DD4BF" }
+      }
     }
   ]
 }

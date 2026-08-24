@@ -49,7 +49,7 @@ export default function HomeHero() {
               href="/contact"
               className="inline-flex items-center justify-center px-8 py-3 bg-[#0A1A2F] text-white rounded-lg hover:bg-[#0D2847] transition-colors font-medium shadow-md"
             >
-              Let's Talk
+              Let&apos;s Talk
             </Link>
           </motion.div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>

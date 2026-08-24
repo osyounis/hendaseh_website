@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function AboutWhatIBuild() {
   return (
     <section className="mb-12">
@@ -22,10 +24,10 @@ export default function AboutWhatIBuild() {
       </ul>
       <p className="text-gray-700 mt-4 leading-relaxed">
         Check out my{' '}
-        <a href="/projects" className="text-blue-600 hover:text-blue-800 font-medium">
+        <Link href="/projects" className="text-blue-600 hover:text-blue-800 font-medium">
           projects page
-        </a>{' '}
-        to see what I've built, or visit my{' '}
+        </Link>{' '}
+        to see what I&apos;ve built, or visit my{' '}
         <a
           href="https://github.com/osyounis"
           target="_blank"

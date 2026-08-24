@@ -1,39 +1,30 @@
 import projectsData from '@/data/projects.json';
 import nahtadiReviewsData from '@/data/nahtadiReviews.json';
+import { ProjectsFileSchema, type Project } from './projectSchema';
 
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  technologies: string[];
-  githubUrl: string | null;
-  liveUrl: string | null;
-  embedUrl: string | null;
-  featured: boolean;
-  stats: string;
-  category: string;
-  hasDetailPage?: boolean;
-  customUrl?: string;
-  buttonText?: string;
-  image?: string;
-  imageAlt?: string;
-  appStoreUrl?: string | null;
-  privacyPolicyUrl?: string | null;
-  supportUrl?: string | null;
-  appStoreLive?: boolean;
-  appStoreRating?: { value: string; count: number };
-}
+export type { Project, Tier } from './projectSchema';
+
+const projects: Project[] = ProjectsFileSchema.parse(projectsData).projects;
 
 export function getAllProjects(): Project[] {
-  return projectsData.projects;
+  return projects;
 }
 
 export function getFeaturedProjects(): Project[] {
-  return projectsData.projects.filter(p => p.featured);
+  return projects.filter((p) => p.featured);
+}
+
+export function getShowcaseProjects(): Project[] {
+  return projects.filter((p) => p.tier === 'showcase');
 }
 
 export function getProjectById(id: string): Project | undefined {
-  return projectsData.projects.find(p => p.id === id);
+  return projects.find((p) => p.id === id);
+}
+
+export function getProjectHref(p: Project): string | null {
+  if (p.tier === 'card') return null;
+  return p.detailPath ?? `/projects/${p.id}`;
 }
 
 export interface NahtadiReview {

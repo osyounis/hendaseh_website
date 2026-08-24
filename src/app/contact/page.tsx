@@ -33,11 +33,11 @@ export default function ContactPage() {
       {/* Header Section */}
       <section className="text-center mb-16 max-w-3xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-[#0A1A2F] mb-6">
-          Let's Work Together
+          Let&apos;s Work Together
         </h1>
         <p className="text-xl text-gray-600 leading-relaxed">
           Available for full-time software engineering opportunities and contract engagements.
-          Whether you have a project in mind or want to discuss potential collaboration, I'd love to hear from you.
+          Whether you have a project in mind or want to discuss potential collaboration, I&apos;d love to hear from you.
         </p>
       </section>
 
@@ -48,7 +48,7 @@ export default function ContactPage() {
           <div className="bg-white border-2 border-gray-200 rounded-lg p-8">
             <h2 className="text-2xl font-bold text-[#0A1A2F] mb-2">Send a Message</h2>
             <p className="text-gray-600 mb-8">
-              Fill out the form below and I'll get back to you within 24-48 hours.
+              Fill out the form below and I&apos;ll get back to you within 24-48 hours.
             </p>
             <ContactForm />
           </div>
@@ -76,7 +76,7 @@ export default function ContactPage() {
                 <HiLocationMarker className="w-5 h-5 text-[#0093FF] flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Location</p>
-                  <p className="text-[#0A1A2F] font-medium">San Francisco Bay Area</p>
+                  <p className="text-[#0A1A2F] font-medium">Sunnyvale, CA</p>
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function ContactPage() {
           <a href="mailto:omar@hendaseh.com" className="text-blue-600 hover:text-blue-700 font-medium">
             omar@hendaseh.com
           </a>
-          . I'm available for discussions about full-time opportunities, contract projects, or technical
+          . I&apos;m available for discussions about full-time opportunities, contract projects, or technical
           collaborations.
         </p>
         <a

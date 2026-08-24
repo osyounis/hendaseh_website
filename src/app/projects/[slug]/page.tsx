@@ -8,10 +8,16 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Enforces the tier contract: only `showcase` projects without their own
+// detailPath get a /projects/[slug] page. `card` tier means "no page", and the
+// flagship lives at its own frozen URL — without this, every card slug still
+// rendered a full self-canonicalising, OG-carded page.
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const projects = getAllProjects();
   return projects
-    .filter(p => p.hasDetailPage && !p.customUrl)
+    .filter(p => p.tier === 'showcase' && !p.detailPath)
     .map(p => ({ slug: p.id }));
 }
 
@@ -102,9 +108,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-                {project.githubUrl && (
+                {project.links.github && (
                   <a
-                    href={project.githubUrl}
+                    href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-8 py-3 bg-white text-[#0A1A2F] rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-lg"
@@ -162,9 +168,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-                {project.githubUrl && (
+                {project.links.github && (
                   <a
-                    href={project.githubUrl}
+                    href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-8 py-3 bg-white text-[#0A1A2F] rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-lg"
@@ -261,7 +267,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               <p>
                 The complete source is on{' '}
                 <a
-                  href={project.githubUrl ?? '#'}
+                  href={project.links.github ?? '#'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800"
@@ -345,8 +351,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Embedded Streamlit App (if embedUrl exists) */}
-      {project.embedUrl && (
+      {/* Embedded Streamlit App (if links.embed exists) */}
+      {project.links.embed && (
         <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-[#0A1A2F] mb-6 text-center">
@@ -354,7 +360,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             </h2>
             <div className="border-2 border-gray-300 rounded-lg overflow-hidden bg-white shadow-lg">
               <iframe
-                src={project.embedUrl}
+                src={project.links.embed}
                 className="w-full h-[800px]"
                 title={`${project.title} - Interactive Demo`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -374,9 +380,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           <div className="max-w-4xl mx-auto">
             {/* Links */}
             <div className="flex gap-4 mb-12 justify-center">
-              {project.githubUrl && (
+              {project.links.github && (
                 <a
-                  href={project.githubUrl}
+                  href={project.links.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 bg-[#101411] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors font-medium"
@@ -384,9 +390,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   View on GitHub →
                 </a>
               )}
-              {project.liveUrl && (
+              {project.links.live && (
                 <a
-                  href={project.liveUrl}
+                  href={project.links.live}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 border-2 border-[#101411] text-[#0A1A2F] rounded-lg hover:bg-gray-50 transition-colors font-medium"
@@ -401,13 +407,13 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               <h2>About This Project</h2>
               <p>{project.description}</p>
 
-              {project.githubUrl && (
+              {project.links.github && (
                 <div className="mt-6">
                   <h3>Source Code</h3>
                   <p>
                     The complete source code for this project is available on{' '}
                     <a
-                      href={project.githubUrl}
+                      href={project.links.github}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800"

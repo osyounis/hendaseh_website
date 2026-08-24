@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { HiStar } from 'react-icons/hi';
 import type { NahtadiReview } from '@/lib/projects';
@@ -11,22 +11,40 @@ interface ReviewsCarouselProps {
 }
 
 const AUTO_ADVANCE_MS = 6000;
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+function subscribeToReducedMotion(callback: () => void) {
+  if (typeof window === 'undefined' || !window.matchMedia) return () => {};
+  const query = window.matchMedia(REDUCED_MOTION_QUERY);
+  query.addEventListener('change', callback);
+  return () => query.removeEventListener('change', callback);
+}
+
+function getReducedMotionSnapshot(): boolean {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
+
+// Server (and first client render, before hydration) always assume no preference —
+// matches getServerSnapshot below so SSR and hydration output never mismatch.
+function getReducedMotionServerSnapshot(): boolean {
+  return false;
+}
 
 // Tracks the user's prefers-reduced-motion setting, updating if it changes.
+// useSyncExternalStore is used rather than useState + effect because
+// getServerSnapshot pins the hydration render to the same value the server
+// rendered, while getReducedMotionSnapshot supplies the real preference on every
+// render after that. The version this replaced read matchMedia in a lazy
+// useState initializer, which returned true on the client's first render while
+// the server had rendered false — flipping aria-live below and producing a real
+// hydration mismatch. tests/e2e/reduced-motion-hydration.spec.ts guards it.
 function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return;
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(query.matches);
-
-    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
-    query.addEventListener('change', onChange);
-    return () => query.removeEventListener('change', onChange);
-  }, []);
-
-  return reduced;
+  return useSyncExternalStore(
+    subscribeToReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot
+  );
 }
 
 export default function ReviewsCarousel({ reviews, rating }: ReviewsCarouselProps) {
@@ -45,7 +63,9 @@ export default function ReviewsCarousel({ reviews, rating }: ReviewsCarouselProp
 
   // Keep an up-to-date ref so the interval callback never goes stale.
   const nextRef = useRef(next);
-  nextRef.current = next;
+  useEffect(() => {
+    nextRef.current = next;
+  }, [next]);
 
   useEffect(() => {
     if (!autoPlaying) return;

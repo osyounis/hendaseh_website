@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import type { Project } from '@/lib/projects';
+import { getProjectHref } from '@/lib/projects';
 import { getProjectGradientClass } from '@/lib/projectStyles';
 
 interface AnimatedProjectCardProps {
@@ -137,20 +138,20 @@ export default function AnimatedProjectCard({ project, index }: AnimatedProjectC
           </div>
 
           <div className="flex gap-4 flex-wrap">
-            {project.hasDetailPage && (
+            {getProjectHref(project) && (
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Link
-                  href={project.customUrl || `/projects/${project.id}`}
+                  href={getProjectHref(project)!}
                   className="px-6 py-2 bg-[#0093FF] text-white rounded-lg hover:bg-[#0075CC] transition-colors font-medium inline-block"
                 >
                   {project.buttonText || 'View Details →'}
                 </Link>
               </motion.div>
             )}
-            {project.githubUrl && (
+            {project.links.github && (
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <a
-                  href={project.githubUrl}
+                  href={project.links.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-6 py-2 bg-[#101411] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors font-medium"
@@ -162,10 +163,10 @@ export default function AnimatedProjectCard({ project, index }: AnimatedProjectC
                 </a>
               </motion.div>
             )}
-            {project.liveUrl && (
+            {project.links.live && (
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <a
-                  href={project.liveUrl}
+                  href={project.links.live}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-2 border-2 border-[#0A1A2F] text-[#0A1A2F] rounded-lg hover:bg-gray-50 transition-colors font-medium inline-block"
@@ -174,7 +175,7 @@ export default function AnimatedProjectCard({ project, index }: AnimatedProjectC
                 </a>
               </motion.div>
             )}
-            {!project.githubUrl && !project.liveUrl && !project.hasDetailPage && (
+            {!project.links.github && !project.links.live && !getProjectHref(project) && (
               <span className="px-6 py-2 text-gray-500 italic">
                 Internal/Private Project
               </span>

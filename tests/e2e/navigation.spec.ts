@@ -11,11 +11,6 @@ test.describe('Site Navigation', () => {
     await expect(page).toHaveURL('/about')
     await expect(page.getByRole('heading', { name: 'Omar Younis', level: 1 })).toBeVisible()
 
-    // Navigate to Capabilities using navigation bar
-    await page.getByRole('navigation').getByRole('link', { name: 'Capabilities' }).click()
-    await expect(page).toHaveURL('/capabilities')
-    await expect(page.getByRole('heading', { name: 'My Capabilities' })).toBeVisible()
-
     // Navigate to Projects using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'Projects', exact: true }).click()
     await expect(page).toHaveURL('/projects')

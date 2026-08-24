@@ -12,13 +12,13 @@ export default function HomeCTA() {
           Ready to Collaborate?
         </h2>
         <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-          Whether you're looking to hire for a full-time position or need custom software solutions,
-          I'd love to discuss how we can work together.
+          Whether you&apos;re looking to hire for a full-time position or need custom software solutions,
+          I&apos;d love to discuss how we can work together.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
-              href="/capabilities"
+              href="/about"
               className="px-8 py-4 bg-[#0093FF] text-white rounded-lg hover:bg-[#0075CC] transition-colors font-medium shadow-md text-lg block text-center"
             >
               See What I Can Do

@@ -40,7 +40,7 @@ export default function SupportPage() {
       question: 'The prayer times seem incorrect. What should I check?',
       answer: (
         <>
-          First, verify that Location Services are enabled for Nahtadi in your device settings (Settings → Nahtadi → Location). Then, check that you've selected the appropriate calculation method for your region. The app defaults to Automatic Selection, which chooses the method based on your detected country. Different Islamic authorities use different calculation methods, so you can manually select the one recommended for your area by disabling Automatic Selection in the Settings tab. If the times are still incorrect after trying these steps, please contact{' '}
+          First, verify that Location Services are enabled for Nahtadi in your device settings (Settings → Nahtadi → Location). Then, check that you&apos;ve selected the appropriate calculation method for your region. The app defaults to Automatic Selection, which chooses the method based on your detected country. Different Islamic authorities use different calculation methods, so you can manually select the one recommended for your area by disabling Automatic Selection in the Settings tab. If the times are still incorrect after trying these steps, please contact{' '}
           <a
             href="mailto:support@hendaseh.com?subject=Nahtadi Prayer Times Issue&body=Date:%0D%0ALocation (city, state, country):%0D%0ATimezone:%0D%0AWhat the prayer times should be for the provided date:%0D%0A"
             className="text-blue-600 hover:text-blue-800 underline"
@@ -75,7 +75,7 @@ export default function SupportPage() {
       question: 'Is my data private?',
       answer: (
         <>
-          Absolutely. Nahtadi does not collect, transmit, or share any personal information. All your data (location, settings, preferences) is stored locally on your device using Apple's secure on-device storage (SwiftData). See our{' '}
+          Absolutely. Nahtadi does not collect, transmit, or share any personal information. All your data (location, settings, preferences) is stored locally on your device using Apple&apos;s secure on-device storage (SwiftData). See our{' '}
           <Link
             href="/nahtadi/privacy"
             className="text-blue-600 hover:text-blue-800 underline"
@@ -131,7 +131,7 @@ export default function SupportPage() {
           </h2>
 
           <p className="text-gray-700 leading-relaxed mb-6">
-            Have a question or issue not covered in the FAQ? We're here to help!
+            Have a question or issue not covered in the FAQ? We&apos;re here to help!
           </p>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
@@ -142,7 +142,7 @@ export default function SupportPage() {
                   Email Support
                 </h3>
                 <p className="text-gray-700 mb-3">
-                  Send us an email and we'll get back to you within 24-48 hours.
+                  Send us an email and we&apos;ll get back to you within 24-48 hours.
                 </p>
                 <a
                   href="mailto:support@hendaseh.com?subject=Nahtadi App Support"

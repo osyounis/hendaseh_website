@@ -143,7 +143,7 @@ export default function NahtadiPage() {
       'Accurate Islamic prayer times with zero ads and zero data collection. One-time purchase. Works offline. Built by a Muslim developer.',
     url: 'https://hendaseh.com/nahtadi',
     image: 'https://hendaseh.com/images/nahtadi/icon.png',
-    downloadUrl: project.appStoreUrl,
+    downloadUrl: project.links.appStore,
     author: {
       '@type': 'Organization',
       name: 'Hendaseh',
@@ -209,7 +209,7 @@ export default function NahtadiPage() {
           {project.appStoreRating && (
             <div className="mb-6 flex justify-center">
               <a
-                href={project.appStoreUrl ?? '#'}
+                href={project.links.appStore ?? '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full border border-white/40 hover:bg-white/25 transition-colors"
@@ -236,7 +236,7 @@ export default function NahtadiPage() {
           {/* Download Buttons — iOS only */}
           <div className="mb-2">
             <PlatformButtons
-              appStoreUrl={project.appStoreUrl}
+              appStoreUrl={project.links.appStore}
               appStoreLive={project.appStoreLive}
             />
           </div>
