@@ -26,6 +26,29 @@ test.describe('Site Navigation', () => {
     await expect(page).toHaveURL('/')
   })
 
+  test('should have a Home link that navigates to /', async ({ page }) => {
+    await page.goto('/about')
+    await page.getByRole('navigation').getByRole('link', { name: 'Home' }).click()
+    await expect(page).toHaveURL('/')
+  })
+
+  test('should mark the active nav item with aria-current="page"', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByRole('navigation').getByRole('link', { name: 'Home' })).toHaveAttribute(
+      'aria-current',
+      'page'
+    )
+
+    await page.goto('/projects')
+    await expect(
+      page.getByRole('navigation').getByRole('link', { name: 'Projects', exact: true })
+    ).toHaveAttribute('aria-current', 'page')
+    await expect(page.getByRole('navigation').getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+      'aria-current',
+      'page'
+    )
+  })
+
   test('should have contact page link', async ({ page }) => {
     await page.goto('/')
 

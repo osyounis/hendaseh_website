@@ -177,3 +177,7 @@ claude_plan.md
 # commercial posture, and raw/possibly-outdated personal source material.
 docs/CONTENT-AUDIT.md
 docs/content/
+
+# OpenNext / Cloudflare Workers build output and local state
+.open-next/
+.wrangler/
