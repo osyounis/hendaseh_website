@@ -5,6 +5,14 @@
   "compatibility_date": "2026-08-01",
   "compatibility_flags": ["nodejs_compat"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+
+  // Production hostnames. Declared here rather than clicked in the dashboard so
+  // every deploy reconciles them: a CI deploy from a config WITHOUT these would
+  // detach the custom domains and take the live site down.
+  "routes": [
+    { "pattern": "hendaseh.com", "custom_domain": true },
+    { "pattern": "www.hendaseh.com", "custom_domain": true }
+  ],
   // Enabled before the custom domain is attached so production Worker logs
   // already exist the first time real traffic hits them, rather than being
   // switched on while debugging an incident.
