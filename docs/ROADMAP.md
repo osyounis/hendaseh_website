@@ -10,7 +10,7 @@ The master plan for the full redesign of hendaseh.com. Every design and implemen
 
 | # | Sub-project | Status |
 |---|-------------|--------|
-| 1 | Foundation reset | **In progress** — spec approved 2026-08-23 |
+| 1 | Foundation reset | **Complete** — 2026-08-23 |
 | 2 | Hosting migration | Not started |
 | 3 | Asset engine | Not started |
 | 4 | Page redesigns | Not started |
@@ -23,7 +23,7 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 **Goal:** make the ground solid so the redesign moves fast and nothing contradicts anything.
 
 - Design token system from the brandbook (Tailwind v4 `@theme`): color scales, semantic tokens for dark + light themes (dark-first), Roboto via `next/font`, type/spacing/motion scales; internal `/dev/tokens` preview page.
-- Content audit: reconcile github.com/osyounis against `projects.json` (add Radar Moboard etc.), produce `docs/CONTENT-AUDIT.md` + canonical-facts sheet from Omar's answers, current résumé, and his saved section text (`docs/content/`).
+- Content audit: reconcile github.com/osyounis against `projects.json` (add Radar Moboard etc.), produce `docs/CONTENT-AUDIT.md` (local-only, gitignored — this repo is public) + canonical-facts sheet from Omar's answers, current résumé, and his saved section text (`docs/content/`).
 - `projects.json` schema v2: `tier` (flagship/showcase/card), `brand` fields for the asset engine, consolidated `links`, Zod validation in tests.
 - Repo hygiene: delete `/capabilities` (301 → `/about`), re-enable ESLint, rewrite CLAUDE.md fresh, refresh README, create `docs/DECISIONS.md`.
 
@@ -80,4 +80,4 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 
 - **Backend:** none. If one is ever needed, **Supabase** is the designated choice (see `docs/DECISIONS.md` once created).
 - **Connected tooling:** GitHub MCP, ImageKit API + DevTools MCP (authenticated 2026-08-23). Higgsfield: direct API, unverified. Vercel MCP until decommissioned.
-- **Résumé + section text:** Omar supplies during the Phase 1 content audit (`docs/content/`); the résumé in `public/` is outdated until then. Everything in `docs/content/` is **raw material only** — possibly outdated or rough by Omar's own assessment; final copy is workshopped with him during phases 4–5, never published verbatim.
+- **Résumé + section text:** Omar supplies during the Phase 1 content audit (`docs/content/`, local-only and gitignored); the résumé in `public/` is outdated until then. Everything in `docs/content/` is **raw material only** — possibly outdated or rough by Omar's own assessment; final copy is workshopped with him during phases 4–5, never published verbatim.
