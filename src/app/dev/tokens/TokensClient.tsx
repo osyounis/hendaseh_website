@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+
 // Every swatch class is written out literally so Tailwind's scanner emits it.
 // Do NOT build class names by interpolation in this file.
 const BRAND_SWATCHES: { label: string; className: string }[] = [
@@ -53,6 +55,100 @@ function SwatchRow({
   );
 }
 
+
+// Type scale — one entry per --text-* token in @theme. Full literal class names.
+const TYPE_SAMPLES: { label: string; className: string }[] = [
+  { label: 'text-display', className: 'text-display' },
+  { label: 'text-h1', className: 'text-h1' },
+  { label: 'text-h2', className: 'text-h2' },
+  { label: 'text-h3', className: 'text-h3' },
+  { label: 'text-body', className: 'text-body' },
+  { label: 'text-small', className: 'text-small' },
+];
+
+// Radii — one entry per --radius-* token in @theme. Full literal class names.
+const RADIUS_SAMPLES: { label: string; className: string }[] = [
+  { label: 'rounded-card', className: 'rounded-card' },
+  { label: 'rounded-control', className: 'rounded-control' },
+];
+
+const PANGRAM = 'Hendaseh — Sphinx of black quartz, judge my vow. 0123456789';
+
+// Reads the *computed* font-family off a rendered node. This is the check that
+// catches a broken --font-heading / --font-body: if the next/font variable is
+// not defined on the same element as the @theme :root declaration, the token
+// resolves to the guaranteed-invalid value and this readout shows the inherited
+// or UA font instead of a Roboto face.
+function useComputedFontFamily() {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [family, setFamily] = useState<string>('measuring…');
+  useEffect(() => {
+    if (ref.current) setFamily(getComputedStyle(ref.current).fontFamily);
+  }, []);
+  return { ref, family };
+}
+
+function FontSample({
+  label,
+  className,
+}: {
+  label: string;
+  className: string;
+}) {
+  const { ref, family } = useComputedFontFamily();
+  return (
+    <div>
+      <div className="text-muted mb-1 font-mono text-xs">{label}</div>
+      <p ref={ref} className={className}>
+        {PANGRAM}
+      </p>
+      <div className="text-muted mt-1 font-mono text-xs break-all">
+        computed font-family: {family}
+      </div>
+    </div>
+  );
+}
+
+function TypeScale() {
+  return (
+    <div className="space-y-3">
+      <h3 className="text-muted font-mono text-xs uppercase tracking-wide">Type scale</h3>
+      {TYPE_SAMPLES.map(({ label, className }) => (
+        <div key={label} className="flex items-baseline gap-3">
+          <span className="text-muted w-28 shrink-0 font-mono text-xs">{label}</span>
+          <span className={className}>Aa</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Fonts() {
+  return (
+    <div className="space-y-4">
+      <h3 className="text-muted font-mono text-xs uppercase tracking-wide">Fonts</h3>
+      <FontSample label="font-heading (Roboto Medium 500)" className="font-heading text-h3" />
+      <FontSample label="font-body (Roboto Regular 400)" className="font-body text-body" />
+    </div>
+  );
+}
+
+function Radii() {
+  return (
+    <div className="space-y-3">
+      <h3 className="text-muted font-mono text-xs uppercase tracking-wide">Radii</h3>
+      <div className="flex flex-wrap gap-4">
+        {RADIUS_SAMPLES.map(({ label, className }) => (
+          <div key={label} className="flex flex-col items-center gap-1">
+            <div className={'bg-accent h-20 w-20 ' + className} />
+            <span className="text-muted font-mono text-xs">{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Panel({ theme }: { theme: 'light' | 'dark' }) {
   return (
     <div data-theme={theme} className="bg-surface text-secondary p-8 space-y-6">
@@ -68,6 +164,9 @@ function Panel({ theme }: { theme: 'light' | 'dark' }) {
       <div className="bg-surface-sunken rounded-xl p-4 text-secondary">
         surface-sunken
       </div>
+      <TypeScale />
+      <Fonts />
+      <Radii />
     </div>
   );
 }

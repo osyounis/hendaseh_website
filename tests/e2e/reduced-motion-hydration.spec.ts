@@ -1,10 +1,27 @@
 import { test, expect } from '@playwright/test'
 
-// Guards against React hydration mismatches on /nahtadi for visitors with
-// prefers-reduced-motion set — this is the condition under which
-// ReviewsCarousel's useReducedMotion hook (src/components/nahtadi/ReviewsCarousel.tsx)
-// could disagree between the server-rendered HTML and the client's first
-// hydration render if it ever regresses back to a non-hydration-safe pattern.
+// WHAT THIS ASSERTS: /nahtadi loads and hydrates with no hydration-related
+// console error or uncaught page error when the browser reports
+// prefers-reduced-motion: reduce.
+//
+// WHAT IT GENUINELY GUARDS: ReviewsCarousel's useReducedMotion hook
+// (src/components/nahtadi/ReviewsCarousel.tsx). The route's `aria-live` value is
+// derived from the reduced-motion preference, so any hook that reads the live
+// matchMedia value during the *first* client render disagrees with the
+// server-rendered HTML and React reports a hydration mismatch.
+//
+// Verified red/green on 2026-08-23 by swapping the hook implementation:
+//
+//   useSyncExternalStore + getServerSnapshot()=false  -> PASSES (current code)
+//   useState(() => matchMedia(...).matches) + effect  -> FAILS  (the actual
+//       pre-fix code at 96cba68^; the run reported exactly
+//       `+ aria-live="polite"` / `- aria-live="off"`)
+//   useState(false) + effect that calls setReduced()  -> PASSES
+//
+// The third case passing is correct, not a gap: that shape renders `false` on
+// the server AND on the client's first render, so there is no mismatch to
+// detect — it only applies the preference in a post-hydration effect. This spec
+// fires on a real hydration mismatch and stays silent when there is none.
 //
 // Uses an explicit browser.newContext({ reducedMotion: 'reduce' }) rather than
 // test.use(...) — with this project's chromium project config (devices['Desktop
@@ -15,7 +32,7 @@ import { test, expect } from '@playwright/test'
 
 const HYDRATION_ERROR_PATTERN = /hydrat|did not match|Minified React error #(418|423|425)/i
 
-test('/nahtadi hydrates cleanly with prefers-reduced-motion: reduce', async ({ browser }) => {
+test('/nahtadi hydrates without a mismatch under prefers-reduced-motion: reduce', async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: 'reduce' })
   const page = await context.newPage()
 
@@ -28,7 +45,13 @@ test('/nahtadi hydrates cleanly with prefers-reduced-motion: reduce', async ({ b
   })
 
   await page.goto('/nahtadi')
-  // Give React a moment to complete hydration and flush any mismatch warnings.
+
+  // Sanity-check that the emulated media feature actually reached the page —
+  // without this the assertion below could pass simply because reduced motion
+  // was never applied, which is how this guard would silently rot.
+  expect(await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true)
+
+  // Give React a moment to finish hydration and flush any warnings.
   await page.waitForTimeout(500)
 
   await context.close()

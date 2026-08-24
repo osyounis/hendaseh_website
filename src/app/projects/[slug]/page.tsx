@@ -8,6 +8,12 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Enforces the tier contract: only `showcase` projects without their own
+// detailPath get a /projects/[slug] page. `card` tier means "no page", and the
+// flagship lives at its own frozen URL — without this, every card slug still
+// rendered a full self-canonicalising, OG-carded page.
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const projects = getAllProjects();
   return projects

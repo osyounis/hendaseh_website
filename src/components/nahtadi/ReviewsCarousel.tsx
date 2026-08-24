@@ -32,8 +32,13 @@ function getReducedMotionServerSnapshot(): boolean {
 }
 
 // Tracks the user's prefers-reduced-motion setting, updating if it changes.
-// useSyncExternalStore (rather than useState + effect) keeps the client's first
-// render in sync with the server-rendered HTML, avoiding a hydration mismatch.
+// useSyncExternalStore is used rather than useState + effect because
+// getServerSnapshot pins the hydration render to the same value the server
+// rendered, while getReducedMotionSnapshot supplies the real preference on every
+// render after that. The version this replaced read matchMedia in a lazy
+// useState initializer, which returned true on the client's first render while
+// the server had rendered false — flipping aria-live below and producing a real
+// hydration mismatch. tests/e2e/reduced-motion-hydration.spec.ts guards it.
 function useReducedMotion(): boolean {
   return useSyncExternalStore(
     subscribeToReducedMotion,

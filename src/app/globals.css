@@ -69,9 +69,9 @@
   --surface-sunken: #e5ecf4;      /* navy-100 */
   --fg-strong: #0a1a2f;           /* navy-950 */
   --fg-body: #2b425b;             /* navy-800 */
-  --fg-muted: #4b779f;            /* navy-500 */
-  --accent: #0076d1;              /* blue-600: AA on white */
-  --accent-strong: #005da6;       /* blue-700 */
+  --fg-muted: #4b779f;            /* navy-500 — 4.73:1 on surface (AA); 4.36:1 on surface-raised (AA-large only) */
+  --accent: #0076d1;              /* brand-600 — 4.65:1 on surface (AA); 4.29:1 on surface-raised (AA-large only) */
+  --accent-strong: #005da6;       /* brand-700 */
   --edge: #c7d6e6;                /* navy-200 */
 }
 
@@ -82,8 +82,8 @@
   --fg-strong: #f3f6fa;           /* navy-50 */
   --fg-body: #c7d6e6;             /* navy-200 */
   --fg-muted: #9db8d1;            /* navy-300 */
-  --accent: #57b4ff;              /* blue-400: AA on navy-950 */
-  --accent-strong: #8fd0ff;       /* blue-300 */
+  --accent: #57b4ff;              /* brand-400 — AA on navy-950 */
+  --accent-strong: #8fd0ff;       /* brand-300 */
   --edge: #2b425b;                /* navy-800 */
 }
 

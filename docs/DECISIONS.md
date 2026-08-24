@@ -65,3 +65,33 @@ Source of authority: the "Program-level decisions (locked)" section of [`docs/su
 **Decision:** `docs/CONTENT-AUDIT.md` and `docs/content/` are **local-only and gitignored**. They are not in version control and will not be present on a fresh clone; they live only on Omar's machine.
 **Why:** This repo is public. The audit documents a correctness bug in an app that is live and iframe-embedded on the site, names private repositories, records pre-negotiation commercial posture toward the Coast Guard, and contains candid per-project self-assessment. `docs/content/` is raw, possibly-outdated personal source material. `.claude/` and `CLAUDE.md` are already excluded for the same reason.
 **Revisit when:** The repo goes private, or a sanitised public summary of the audit's conclusions is wanted — in which case write a new file rather than un-ignoring these.
+
+## 2026-08-23 — Brand blue is namespaced `brand-50…950`; Tailwind's `blue-*` is untouched
+
+**Decision:** The Hendaseh blue scale is registered as `--color-brand-50 … --color-brand-950` in `@theme`. Tailwind's **default `blue-*` palette is deliberately left alone** — brand blue does not overwrite it.
+**Why:** Two reasons, both concrete. (1) 93 existing `blue-*` utility occurrences across 16 files in `src/` would have silently changed hue. (2) `src/lib/projectStyles.ts` pairs `blue-*` classNames with **default-blue hex literals** for the same gradient — e.g. `reddit-nlp` is `from-blue-500` alongside `{ from: '#3B82F6' }` — because Satori cannot resolve Tailwind tokens, so the OG card reads the hex while the in-site card reads the class. Redefining `blue-500` would desync the share card from the card it is supposed to mirror, and `src/lib/__tests__` guards that pairing.
+**Revisit when:** Sub-project 4 has moved pages onto the semantic tokens and the raw `blue-*` usages are gone — at which point the namespace question is moot rather than resolved.
+
+## 2026-08-23 — Semantic foreground vars are `--fg-strong` / `--fg-body` / `--fg-muted`
+
+**Decision:** The semantic text tokens use the `--fg-*` prefix. `--text-body` is **not** available as a semantic color name.
+**Why:** `--text-body` collided with the `@theme` type-scale variable of the same name (`--text-body: 1rem`, which generates the `text-body` font-size utility). The unlayered `:root` rule won the cascade over Tailwind's layered `@theme` output, so the color value overwrote the font size and broke the `text-body` utility. `--fg-*` has no such collision.
+**Revisit when:** Never for this reason — but any future semantic token must be checked against the `@theme` namespaces (`--text-*`, `--color-*`, `--font-*`, `--radius-*`, `--ease-*`) before it is added.
+
+## 2026-08-23 — Dark mode is opt-in via `data-theme="dark"`, not `prefers-color-scheme`
+
+**Decision:** The dark variant is defined as `@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *))`. It does **not** follow the OS `prefers-color-scheme` media query yet.
+**Why:** Only the token layer is dark-aware so far; the pages still carry hard-coded light colors. Binding dark to the media query today would restyle the live site inconsistently for every visitor with a dark OS setting — a half-dark page is worse than a light one.
+**Revisit when:** Sub-project 4 has flipped the pages onto the semantic tokens. At that point add the `prefers-color-scheme` default while keeping `data-theme` as the explicit override.
+
+## 2026-08-23 — Known caveat: light-theme `accent` and `fg-muted` are AA-large only on raised surfaces
+
+**Decision:** Shipped as-is and recorded rather than fixed now. Light-theme `--accent` `#0076d1` and `--fg-muted` `#4b779f` clear WCAG AA against `--surface` (#ffffff) at **4.65:1** and **4.73:1**, but against `--surface-raised` (#f3f6fa) they fall to **4.29:1** and **4.36:1** — below the 4.5:1 body-text threshold, so **AA-large only** there.
+**Why:** The values come straight off the brand scale, and no shipped page currently puts body-size accent or muted text on a raised surface. Darkening them mid-sub-project would have changed rendered color while the brief was zero visual change.
+**Revisit when:** Sub-project 4 applies the tokens to real pages — it must either darken both values or keep them off `surface-raised` for body-size text. This is a blocker for that sub-project, not an optional cleanup.
+
+## 2026-08-23 — Known gap: spacing and elevation tokens were not shipped
+
+**Decision:** The foundation-reset token system shipped **color, type scale, fonts, radius (`--radius-card`, `--radius-control`) and one motion easing (`--ease-brand`)**. The spacing and elevation (shadow) scales the design spec asked for were **not** built.
+**Why:** Recorded honestly rather than quietly dropped. Spacing and elevation are only meaningful once real layouts consume them, and inventing a scale with no consumer would have been guesswork that sub-project 4 then had to undo.
+**Revisit when:** Sub-project 4 — it owns adding both scales, driven by the layouts it actually builds.

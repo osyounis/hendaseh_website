@@ -60,8 +60,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${robotoMedium.variable} ${robotoRegular.variable} antialiased`}>
+    // next/font variable classes live on <html> so the `--font-roboto-*` vars are
+    // defined on the same element as the `@theme` `:root` declarations that
+    // reference them (`--font-heading` / `--font-body`). On <body> they resolved
+    // to the guaranteed-invalid value and both tokens computed to nothing.
+    <html lang="en" className={`${robotoMedium.variable} ${robotoRegular.variable}`}>
+      <body className="antialiased">
         <Navigation />
         <main className="min-h-screen">{children}</main>
         <footer className="border-t border-gray-200 mt-16">
