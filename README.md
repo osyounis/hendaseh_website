@@ -34,3 +34,5 @@ npm run dev        # local dev server at http://localhost:3000
 ## License
 
 Licensed under the GNU General Public License v3.0. See [`LICENSE`](LICENSE).
+
+<!-- Workers Builds preview smoke test — this branch is never merged. -->
