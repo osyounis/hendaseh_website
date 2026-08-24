@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const url = `https://hendaseh.com/projects/${slug}`;
   const ogImage = {
-    url: `/api/og?card=${slug}`,
+    url: `/og/${slug}.png`,
     width: 1200,
     height: 630,
     alt: project.title,

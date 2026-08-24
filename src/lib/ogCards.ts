@@ -1,4 +1,4 @@
-// Per-card config for the OG image engine (src/app/api/og/route.tsx).
+// Per-card config for the OG image engine (rendered by scripts/generate-og.tsx).
 // One small config object per card feeds ONE template, so the same engine renders
 // the site card, the Nahtadi card, per-project cards, and (later) GitHub banners.
 

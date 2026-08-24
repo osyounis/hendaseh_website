@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: 'Nahtadi',
     images: [
       {
-        url: '/api/og?card=nahtadi',
+        url: '/og/nahtadi.png',
         width: 1200,
         height: 630,
         alt: 'Nahtadi - Islamic Prayer Times App',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     title: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
     description:
       'Accurate prayer times with zero ads and zero data collection. One-time purchase. Works offline.',
-    images: ['/api/og?card=nahtadi'],
+    images: ['/og/nahtadi.png'],
   },
   robots: {
     index: true,

@@ -15,13 +15,13 @@ export const metadata: Metadata = {
     siteName: 'Nahtadi',
     locale: 'en_US',
     type: 'website',
-    images: [{ url: '/api/og?card=nahtadi', width: 1200, height: 630, alt: 'Nahtadi — Islamic Prayer Times' }],
+    images: [{ url: '/og/nahtadi.png', width: 1200, height: 630, alt: 'Nahtadi — Islamic Prayer Times' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'App Support | Nahtadi',
     description: 'Support and frequently asked questions for Nahtadi - the Islamic Prayer Times app for iOS.',
-    images: ['/api/og?card=nahtadi'],
+    images: ['/og/nahtadi.png'],
   },
   robots: {
     index: true,
