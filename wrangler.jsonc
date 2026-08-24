@@ -4,5 +4,9 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-08-01",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" }
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  // Enabled before the custom domain is attached so production Worker logs
+  // already exist the first time real traffic hits them, rather than being
+  // switched on while debugging an incident.
+  "observability": { "enabled": true }
 }
