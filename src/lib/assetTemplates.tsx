@@ -174,6 +174,21 @@ export function GRADIENT_CSS(g: { from: string; to: string }): string {
  * above: gradient background, white rounded icon tile, Roboto Medium title,
  * muted footer. `iconPng` is a full-bleed square image (already trimmed by
  * the caller), so it's rendered directly at a fixed size, not fitted.
+ *
+ * Vertical budget note: the outer container is `flexDirection: column` with
+ * `justifyContent: center`. Every direct child below is `flexShrink: 0` —
+ * without it, a flex child's default `flexShrink: 1` lets the box get
+ * squeezed *below* its own text's rendered height whenever total content
+ * exceeds the 640px frame, and the glyphs (rendered at full size regardless)
+ * spill out of the shrunk box into whatever comes next. That is what let a
+ * two-line title overlap the tagline: the sizes below are chosen so a
+ * two-line title + tagline + footer fit the frame without any shrinking, and
+ * `flexShrink: 0` makes that a guarantee rather than an accident of the
+ * current copy. The title is additionally clamped to 2 lines
+ * (`WebkitLineClamp` + `textOverflow: 'ellipsis'`, which Satori honors only
+ * together with `display: '-webkit-box'` / `WebkitBoxOrient: 'vertical'`) so
+ * a future title longer than any in the catalog degrades to an ellipsis
+ * instead of reintroducing overlap.
  */
 export function BannerTemplate({
   title,
@@ -195,7 +210,7 @@ export function BannerTemplate({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '80px',
+        padding: '56px',
         fontFamily: 'Roboto',
         backgroundImage: GRADIENT_CSS(gradient),
       }}
@@ -203,25 +218,32 @@ export function BannerTemplate({
       <div
         style={{
           display: 'flex',
+          flexShrink: 0,
           alignItems: 'center',
           justifyContent: 'center',
-          width: '220px',
-          height: '220px',
+          width: '176px',
+          height: '176px',
           backgroundColor: '#FFFFFF',
-          borderRadius: '40px',
-          marginBottom: '40px',
+          borderRadius: '32px',
+          marginBottom: '28px',
         }}
       >
-        <img src={iconPng} width={156} height={156} alt="" />
+        <img src={iconPng} width={124} height={124} alt="" />
       </div>
 
       <div
         style={{
+          display: '-webkit-box',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: 2,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          flexShrink: 0,
           maxWidth: '1080px',
-          fontSize: '72px',
+          fontSize: '64px',
           fontWeight: 500,
           color: '#FFFFFF',
-          lineHeight: 1.06,
+          lineHeight: 1.08,
           textAlign: 'center',
         }}
       >
@@ -231,8 +253,9 @@ export function BannerTemplate({
       {tagline && (
         <div
           style={{
-            marginTop: '26px',
-            fontSize: '36px',
+            flexShrink: 0,
+            marginTop: '32px',
+            fontSize: '32px',
             fontWeight: 400,
             color: 'rgba(255,255,255,0.86)',
             textAlign: 'center',
@@ -244,8 +267,9 @@ export function BannerTemplate({
 
       <div
         style={{
-          marginTop: '40px',
-          fontSize: '28px',
+          flexShrink: 0,
+          marginTop: '32px',
+          fontSize: '26px',
           fontWeight: 400,
           color: 'rgba(255,255,255,0.6)',
         }}
