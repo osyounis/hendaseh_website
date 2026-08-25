@@ -71,6 +71,31 @@ export default function RootLayout({
             <p>&copy; {new Date().getFullYear()} Omar Younis. All rights reserved.</p>
           </div>
         </footer>
+        {/*
+          Cloudflare Web Analytics (cookieless). Installed as a snippet rather
+          than by Cloudflare's automatic injection: auto-injection rewrites HTML
+          passing through the proxy and does not reach Worker responses, so the
+          beacon never appeared on this site. Verified empirically before
+          switching to manual installation.
+
+          Deliberately NO integrity/SRI hash. The beacon is a self-updating
+          script served from Cloudflare's own edge — the same infrastructure
+          already serving this site — so a pinned hash would silently kill
+          analytics on their next release with no failure signal.
+
+          The token is not a secret; it ships in the HTML of every site using
+          Web Analytics.
+
+          `defer` is redundant beside `type="module"` (module scripts are
+          deferred by spec) but is kept so @next/next/no-sync-scripts can see
+          the script is non-blocking, rather than disabling that rule here.
+        */}
+        <script
+          type="module"
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token": "9cf964f6a3c44480b01ac78088fce540"}'
+        />
       </body>
     </html>
   );
