@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 
-// src/lib/ogTemplate.tsx imports sharp + node:fs and is only meant to be
-// imported by the build-time script scripts/generate-og.tsx. Neither sharp
+// src/lib/assetTemplates.tsx imports sharp + node:fs and is only meant to be
+// imported by build-time scripts (e.g. scripts/generate-og.tsx). Neither sharp
 // nor node:fs runs on the Cloudflare Workers runtime this site deploys to, so
 // if any app module (src/app/** or src/components/**) ever imports it, the
 // Workers build breaks. Guard that by grepping the tree for the import.
@@ -18,7 +18,7 @@ function listFiles(dir: string): string[] {
   })
 }
 
-describe('ogTemplate stays out of app code', () => {
+describe('assetTemplates stays out of app code', () => {
   it('is never imported from src/app or src/components', () => {
     const root = path.resolve(__dirname, '../../..')
     const dirs = ['src/app', 'src/components'].map((d) => path.join(root, d))
@@ -28,7 +28,7 @@ describe('ogTemplate stays out of app code', () => {
       if (!statSync(dir, { throwIfNoEntry: false })) continue
       for (const file of listFiles(dir)) {
         const contents = readFileSync(file, 'utf8')
-        if (/from\s+['"][^'"]*ogTemplate['"]/.test(contents) || /require\(['"][^'"]*ogTemplate['"]\)/.test(contents)) {
+        if (/from\s+['"][^'"]*assetTemplates['"]/.test(contents) || /require\(['"][^'"]*assetTemplates['"]\)/.test(contents)) {
           offenders.push(path.relative(root, file))
         }
       }

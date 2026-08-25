@@ -12,7 +12,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { getOgCard } from '../src/lib/ogCards';
 import { getShowcaseProjects } from '../src/lib/projects';
-import { CardTemplate, loadMarks } from '../src/lib/ogTemplate';
+import { CardTemplate, loadMarks } from '../src/lib/assetTemplates';
 
 const FONT_DIR = 'src/fonts/roboto';
 const OUT = 'public/og';

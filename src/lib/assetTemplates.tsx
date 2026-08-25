@@ -1,8 +1,9 @@
-// OG card template + asset loaders for the static card generator.
+// Shared Satori templates + asset loaders for the static asset generators
+// (OG cards and GitHub banners).
 //
-// This module is ONLY ever imported by the build script (`scripts/generate-og.tsx`),
-// never by app code. It deliberately keeps its `sharp` / `node:fs` imports, which
-// cannot run on the Cloudflare Workers runtime the site deploys to.
+// Imported only by scripts/ — uses sharp and node:fs; never import from app code.
+// Neither `sharp` nor `node:fs` is available on the Cloudflare Workers runtime the
+// site deploys to.
 
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -146,6 +147,98 @@ export function CardTemplate({ card, mark }: { card: OgCard; mark: Mark | null }
           {card.footer}
         </div>
       )}
+    </div>
+  );
+}
+
+/** `linear-gradient(135deg, from, to)` — the gradient idiom shared by every card. */
+export function GRADIENT_CSS(g: { from: string; to: string }): string {
+  return `linear-gradient(135deg, ${g.from}, ${g.to})`;
+}
+
+/**
+ * 1280x640 GitHub social preview banner. Same visual family as the OG cards
+ * above: gradient background, white rounded icon tile, Roboto Medium title,
+ * muted footer. `iconPng` is a full-bleed square image (already trimmed by
+ * the caller), so it's rendered directly at a fixed size, not fitted.
+ */
+export function BannerTemplate({
+  title,
+  tagline,
+  iconPng,
+  gradient,
+}: {
+  title: string;
+  tagline?: string;
+  iconPng: string;
+  gradient: { from: string; to: string };
+}) {
+  return (
+    <div
+      style={{
+        width: '1280px',
+        height: '640px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '80px',
+        fontFamily: 'Roboto',
+        backgroundImage: GRADIENT_CSS(gradient),
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '220px',
+          height: '220px',
+          backgroundColor: '#FFFFFF',
+          borderRadius: '40px',
+          marginBottom: '40px',
+        }}
+      >
+        <img src={iconPng} width={156} height={156} alt="" />
+      </div>
+
+      <div
+        style={{
+          maxWidth: '1080px',
+          fontSize: '72px',
+          fontWeight: 500,
+          color: '#FFFFFF',
+          lineHeight: 1.06,
+          textAlign: 'center',
+        }}
+      >
+        {title}
+      </div>
+
+      {tagline && (
+        <div
+          style={{
+            marginTop: '26px',
+            fontSize: '36px',
+            fontWeight: 400,
+            color: 'rgba(255,255,255,0.86)',
+            textAlign: 'center',
+          }}
+        >
+          {tagline}
+        </div>
+      )}
+
+      <div
+        style={{
+          marginTop: '40px',
+          fontSize: '28px',
+          fontWeight: 400,
+          color: 'rgba(255,255,255,0.6)',
+        }}
+      >
+        hendaseh.com
+      </div>
     </div>
   );
 }
