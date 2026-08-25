@@ -30,6 +30,7 @@ npm run dev        # local dev server at http://localhost:3000
 | `npm run lint` | ESLint |
 | `npm run test:all` | Lint + unit + e2e |
 | `npm run generate:og` | Re-render the static Open Graph cards into `public/og/` |
+| `npm run assets -- <id>` / `-- --all` | Regenerate one project's (or every project's) icon/banner assets |
 | `npm run preview` | Build the Worker and run it locally in workerd |
 | `npm run deploy` | Build and deploy the Worker to Cloudflare |
 
@@ -43,6 +44,10 @@ Hosted on **Cloudflare Workers**. Deploys run on **Cloudflare Workers Builds**, 
 `npm run preview` runs a production build inside workerd locally, which is the honest way to check Workers-specific behaviour before opening a PR. `npm run deploy` deploys straight from a workstation and is for deliberate, out-of-band deploys only — CI is the normal path.
 
 Custom domains are declared as `routes` in `wrangler.jsonc` rather than attached in the Cloudflare dashboard, because Wrangler reconciles routes on every deploy.
+
+## Assets
+
+Every project's icon, squircle icon, catalog card, and GitHub social-preview banner are produced by `npm run assets -- <id>` (or `-- --all` for the whole catalog), a deterministic compositor (`scripts/generate-assets.tsx`) that takes one human-approved artwork PNG per project from `assets/artwork/` and renders it onto that project's brand gradient. Artwork is committed and expensive to produce; the four generated files under `public/images/projects/<id>/` are disposable and fully reproducible from it, so they're never hand-edited. Open Graph cards are a separate, similarly manual step — `npm run generate:og` — since neither pipeline runs at request time on Cloudflare Workers.
 
 ## Project docs
 
