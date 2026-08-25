@@ -51,10 +51,23 @@ async function loadNahtadiMark(): Promise<Mark> {
   return { src: toDataUri(data), width: info.width, height: info.height };
 }
 
-/** Load both marks once. Every card in the set is rendered in a single process. */
+/** Load both fixed marks once. Every card in the set is rendered in a single process. */
 export async function loadMarks(): Promise<{ hendaseh: Mark; nahtadi: Mark }> {
   const [hendaseh, nahtadi] = await Promise.all([loadHendasehMark(), loadNahtadiMark()]);
   return { hendaseh, nahtadi };
+}
+
+/**
+ * A project's OG card icon is its transparent engine artwork
+ * (assets/artwork/<id>.png) — the subject on full transparency, same source
+ * the compositor (scripts/lib/compose.ts) uses. Trim it the same way: the
+ * artwork carries large, inconsistent transparent margins, so an untrimmed
+ * subject renders at unpredictable sizes on the card.
+ */
+export async function loadProjectArtwork(projectId: string): Promise<Mark> {
+  const artworkPath = path.join(process.cwd(), 'assets', 'artwork', `${projectId}.png`);
+  const { data, info } = await sharp(artworkPath).trim().png().toBuffer({ resolveWithObject: true });
+  return { src: toDataUri(data), width: info.width, height: info.height };
 }
 
 /** Scale a mark's intrinsic size to a target box, preserving aspect ratio. */

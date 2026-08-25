@@ -10,8 +10,12 @@ type OgBackground =
   | { kind: 'gradient'; from: string; to: string };
 
 interface OgIcon {
-  /** which public asset the template should render */
-  src: 'hendaseh-mark' | 'nahtadi';
+  /**
+   * which mark the template should render — the two fixed marks, or a
+   * project's own transparent artwork (assets/artwork/<id>.png), identified
+   * by `{ project: id }` so the loader can resolve it per-card.
+   */
+  src: 'hendaseh-mark' | 'nahtadi' | { project: string };
   /** wrap the mark in a white rounded tile (needed for the transparent Nahtadi arch) */
   tile: boolean;
 }
@@ -72,8 +76,9 @@ export function getOgCard(card: string): OgCard {
       const { from, to } = getProjectGradientStops(project.id);
       return {
         background: { kind: 'gradient', from, to },
+        icon: { src: { project: project.id }, tile: false },
         name: project.title,
-        nameSize: 72,
+        nameSize: 64,
         footer: 'hendaseh.com',
         textColor: WHITE,
       };

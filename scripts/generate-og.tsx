@@ -12,7 +12,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { getOgCard } from '../src/lib/ogCards';
 import { getShowcaseProjects } from '../src/lib/projects';
-import { CardTemplate, loadMarks } from '../src/lib/assetTemplates';
+import { CardTemplate, loadMarks, loadProjectArtwork, type Mark } from '../src/lib/assetTemplates';
 
 const FONT_DIR = 'src/fonts/roboto';
 const OUT = 'public/og';
@@ -28,7 +28,12 @@ async function main() {
   const ids = ['site', 'nahtadi', ...getShowcaseProjects().map((p) => p.id)];
   for (const id of ids) {
     const card = getOgCard(id);
-    const mark = card.icon ? marks[card.icon.src === 'nahtadi' ? 'nahtadi' : 'hendaseh'] : null;
+    let mark: Mark | null = null;
+    if (card.icon) {
+      if (card.icon.src === 'nahtadi') mark = marks.nahtadi;
+      else if (card.icon.src === 'hendaseh-mark') mark = marks.hendaseh;
+      else mark = await loadProjectArtwork(card.icon.src.project);
+    }
     const svg = await satori(<CardTemplate card={card} mark={mark} />, {
       width: 1200,
       height: 630,
