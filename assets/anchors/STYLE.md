@@ -1,58 +1,87 @@
-# Hendaseh project-icon style — locked 2026-08-25
+# Hendaseh project-icon style — locked 2026-08-25 (v2)
 
-Omar-approved style, distilled from a 25-generation anchor session. The three anchor PNGs in this
-directory are the visual source of truth; this file is the operational recipe. Anything ambiguous:
-match the anchors.
+> **v1 (flat "Apple-modern flat", full-bleed gradient tile) was REJECTED by Omar at the Task-5 gate.**
+> It is preserved at the bottom of this file for history. Do not generate from it.
 
-## The three anchors (all Omar-approved)
+The visual source of truth is **Omar's own existing project icons** in `public/images/projects/`.
+Anything ambiguous: match those.
 
-| file | subject | how it was made |
-|---|---|---|
-| `anchor-1-compass.png` | compass rose dial, green/gold (islamic-prayer-time palette) | `recraftv3`, prompt-only (round 5) |
-| `anchor-2-helicopter.png` | rescue helicopter over water, orange/blue (pilot-tracker palette) | `recraftv4_1`, prompt-only (round 8) |
-| `anchor-3-gears.png` | meshing white+amber gears, teal/purple (mini-compiler palette) | `recraftv3` + **custom style** (see below) |
+## The language
 
-## Custom style — the primary generation path
+1. **Transparent floating subject — no background tile.** The artwork is a subject on full
+   transparency; the compositor puts it on the project gradient. (10 of Omar's 11 originals are
+   built this way: alpha mean 44–118 on a 1024² canvas.)
+2. **Colour lives INSIDE the subject**, as luminous multi-hue gradients — not in a flat ground
+   behind it. This is the single biggest difference from v1 and the reason v1 read as monotonous.
+3. **Glossy and dimensional**, with soft specular highlights and a gentle three-quarter view.
+   Not flat vector, not photoreal, not chunky toy-3D.
+4. **Simple, clean, professional.** One subject, few elements, exquisitely rendered.
+5. **Text is allowed** where it carries meaning (`NLP`, `CUDA`) — v1 banned it; Omar does not.
 
-A Recraft custom style trained on anchors 1+2 (our own images, nothing third-party):
+## Generator
 
-- **style_id: `9771fd49-aadc-48c8-a309-98ccffe53175`** (private to Omar's Recraft account)
-- Pass `"style_id"` in the generation body **instead of** `"style"`. Works with `recraftv3` (custom styles are V2/V3-only; V4.1 ignores them).
-- Re-create if ever lost: `POST /v1/styles` with `style=digital_illustration`, `files=` anchor-1 + anchor-2 (+3). Costs ~5 credits.
+Recraft REST API (see `CLI-NOTES.md` for endpoints). Catalog default:
 
-**Catalog default:** `recraftv3` + `style_id` + `controls.colors` (project gradient + white + accent) + a SHORT prompt (V3 caps prompts ≈1000 chars). Fall back to `recraftv4_1` prompt-only (long prompts allowed, no style_id) when V3's output goes busy — then apply the style rules below hard in the prompt.
+- `model: recraftv3`
+- **`style_id: bb32bb31-09dc-40fd-84ed-ba21f1b9732a`** — custom style trained on FIVE of Omar's own
+  originals (pilot-tracker, image-watermark-remover, cycloidal-drive-creator, wildfire-predictor,
+  asl-detector). Private to Omar's account. Recreate with `POST /v1/styles`,
+  `style=digital_illustration`, repeated `files=` (~5 credits).
+- **`controls.colors` is MANDATORY on every call, including image-to-image.**
+- `POST /v1/images/removeBackground` after generation, to key the plain-white ground out.
 
-## Style rules (from the anchor session + studying Apple's real icons locally — analysis only, never as generation inputs)
-
-1. **Full-bleed square artwork, no tile** — background reaches all four edges. Baked rounded corners from the model are fine; the compositor masks corners authoritatively.
-2. **Subject fills most of the frame** (~85–90%). Small floating subjects read sterile.
-3. **Light from directly above; vertical gradients** (lighter top). Diagonal reads less Apple.
-4. **Depth = silky continuous shading** — soft volumetric gradients inside shapes, one soft contact/cast shadow. NEVER bevel rings or "inner shadow ring" language (produces clunk), never grain/noise.
-5. **No outlines. No text** (letters sneak in via compass cardinal marks etc. — reject those).
-6. **Palette per project**: gradient pair from `projects.json` `brand.gradient` + white + ONE accent chosen to complement that palette (gold vs greens, amber vs teal/purple…). Record the accent per project. Enforce via `controls.colors` (rgb array), not just prompt.
-7. **Few elements, exquisitely rendered** — Apple's lesson. One subject; complexity budget like the anchors, no scenery unless it IS the concept (helicopter's sky/water).
-8. **Prompt discipline**: describe only what should exist. Naming decorations in negations ("no scattered stars") plants them. Keep a short Forbidden list for structural things only (tile, margins, borders, text, outlines, gloss, photorealism).
-
-## Master prompt template (V3 + style_id — keep under 1000 chars)
+### Prompt tail
 
 ```
-App icon artwork: {SUBJECT}, on a smooth vertical gradient from {FROM_NAME} to {TO_NAME}.
-Simple, clean, softly shaded, subject filling most of the frame, no outlines, no text.
+Clean professional app icon illustration, glossy, luminous gradients, soft highlights,
+single centered subject, plain white background.
 ```
 
-With `controls`: `{"colors": [{FROM_RGB},{TO_RGB},{255,255,255},{ACCENT_RGB}]}`.
+## Rule: colour must be chosen per project, never defaulted
 
-For the V4.1 fallback, expand with the full style language (see `git log` for the round-8 helicopter prompt as the reference long-form).
+The v1 catalog pass failed because a gold/amber accent was reused for **9 of 12** projects, so every
+subject read white-plus-amber and only the ground hue varied. Derive each project's colours from its
+own `brand.gradient`, or sample them off its existing icon — and pass them in `controls.colors`.
+Prompt words alone do not hold a palette.
 
-## Fix-up toolkit (when a single generation is 90% right)
+**A dropped `controls` field on the image-to-image path once turned a purple helicopter green and a
+red joystick salmon.** Multipart calls need `controls` as a JSON string field; it is easy to omit.
 
-Use surgically, in this order of preference — each proved out in the anchor session:
+## Techniques, in order of preference
 
-1. **Re-roll** with a tightened prompt (cheap, ~$0.04).
-2. **Image-to-image** `POST /v1/images/imageToImage` (multipart: `image`, `prompt`, `strength`, `model=recraftv3`): strength 0.15–0.25 preserves composition while fixing style/depth. Composition problems can be fixed by hand first (sharp: cut with feathered circular mask, patch background by sampling a clean column of the vertical gradient and stretching), then healed at ~0.18.
-3. **Background replacement** `POST /v1/images/replaceBackground` (multipart: `image`, `prompt`, `model=recraftv3`) — when the subject is right and only the background is wrong. May mute colors: restore with sharp `modulate({brightness:~1.04, saturation:~1.12})`.
-4. Know when to STOP compositing: chains of surgery accumulate wrongness (the gear saga). If two fix-ups haven't landed it, regenerate fresh — ideally via the custom style.
+Generation is the last resort, not the first. Cheaper and more faithful, in order:
 
-## Nahtadi exception
+1. **Keep the original.** Omar's icons are strong. Several rounds of generation failed to beat them.
+   Regenerate only where something is actually missing or wrong.
+2. **Deterministic recolour** (`sharp`, HSL hue remap by family) — when the render is right and only
+   the hues are off. Preserves shading exactly. Used for `islamic-prayer-time`.
+3. **Glyph extraction** (`sharp`, min-channel + saturation gate + connected-component filter, keep
+   the N largest blobs) — to lift a subject off its own background tile. Used for `mini-compiler`,
+   which removed the tile while keeping Omar's exact `>_`.
+4. **Image-to-image seeding** from Omar's original, `strength` 0.35–0.50 — keeps his composition and
+   restyles it. Used for `cycloidal-drive-creator`.
+5. **Geometry seeding** — render the true shape yourself (SVG from real parametric equations) and
+   seed image-to-image from it, when the model does not know a technical subject. Tried for the
+   cycloidal disc; the geometry was correct but the result lost craft, and Omar rejected it.
+   Keep the technique in mind; it is right for a shape a model has no prior for.
+6. **Fresh text-to-image** — for subjects with no existing artwork at all (`brent-cuda`).
 
-Never generate artwork for Nahtadi. Its real App Store icon (`public/images/nahtadi/icon.png`) is its artwork; the engine only builds banners around it.
+## Exceptions
+
+- **Nahtadi:** never generate artwork for it. Its real App Store icon
+  (`public/images/nahtadi/icon.png`) is its artwork; the engine only builds banners around it.
+- **`coast-guard-pilot-tracker`** uses `anchor-2-helicopter.png`, which is an **opaque full-bleed**
+  image from v1, not a transparent subject. It is the one input in the set that carries its own
+  background. The compositor detects this by alpha coverage and uses it as the full tile.
+
+---
+
+## Superseded — v1 "Apple-modern flat" (2026-08-25, rejected same day)
+
+Flat geometric subject, full-bleed square artwork on the project gradient, palette restricted to the
+gradient pair + white + one accent, no text, corners masked by the compositor. Anchors
+`anchor-1-compass.png`, `anchor-2-helicopter.png`, `anchor-3-gears.png`; custom style
+`9771fd49-aadc-48c8-a309-98ccffe53175` (trained on anchors 1+2).
+
+Rejected because, at catalog scale, colour-in-the-background plus a flat white subject reads
+duller and more uniform than Omar's existing icons. Only `anchor-2` survives, as noted above.
