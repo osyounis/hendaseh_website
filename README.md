@@ -6,7 +6,11 @@ The site covers his projects (including Nahtadi, a shipped iOS app) and hosts Na
 
 ## Stack
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Zod · Framer Motion · Resend (contact form) · Vitest + Playwright. Deployed on Vercel.
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Zod · Framer Motion · Vitest + Playwright.
+
+Deployed to **Cloudflare Workers** via [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare). Images are served through ImageKit (a custom `next/image` loader); Open Graph cards are rendered at build time with Satori into `public/og/`.
+
+The site is fully static — no backend, no server actions, no API routes, and no environment variables to configure. `npm install && npm run dev` is all the setup there is.
 
 ## Getting started
 
@@ -25,6 +29,20 @@ npm run dev        # local dev server at http://localhost:3000
 | `npm run test:e2e` | End-to-end tests (Playwright) |
 | `npm run lint` | ESLint |
 | `npm run test:all` | Lint + unit + e2e |
+| `npm run generate:og` | Re-render the static Open Graph cards into `public/og/` |
+| `npm run preview` | Build the Worker and run it locally in workerd |
+| `npm run deploy` | Build and deploy the Worker to Cloudflare |
+
+## Deployment
+
+Hosted on **Cloudflare Workers**. Deploys run on **Cloudflare Workers Builds**, connected to this repository:
+
+- push to `main` → production (hendaseh.com, www.hendaseh.com)
+- pull request → a Cloudflare preview URL
+
+`npm run preview` runs a production build inside workerd locally, which is the honest way to check Workers-specific behaviour before opening a PR. `npm run deploy` deploys straight from a workstation and is for deliberate, out-of-band deploys only — CI is the normal path.
+
+Custom domains are declared as `routes` in `wrangler.jsonc` rather than attached in the Cloudflare dashboard, because Wrangler reconciles routes on every deploy.
 
 ## Project docs
 
