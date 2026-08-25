@@ -104,7 +104,7 @@ Source of authority: the "Program-level decisions (locked)" section of [`docs/su
 
 ## 2026-08-24 — OG images move from runtime generation to build time
 
-**Decision:** The runtime `/api/og` route is deleted. Cards are pre-rendered by `npm run generate:og` (`scripts/generate-og.tsx` → `src/lib/ogTemplate.tsx` + `src/lib/ogCards.ts`) into `public/og/*.png` and served as static assets. `satori` and `sharp` are **build-time-only** devDependencies. Two 307 redirects in `next.config.ts` map old `/api/og` URLs onto their static PNGs.
+**Decision:** The runtime `/api/og` route is deleted. Cards are pre-rendered by `npm run generate:og` (`scripts/generate-og.tsx` → `src/lib/assetTemplates.tsx` + `src/lib/ogCards.ts`) into `public/og/*.png` and served as static assets. `satori` and `sharp` are **build-time-only** devDependencies. Two 307 redirects in `next.config.ts` map old `/api/og` URLs onto their static PNGs.
 **Why:** `next/og` at runtime needs `sharp` and `node:fs`; neither runs on Cloudflare Workers. The card set is finite and fully deterministic — one per project plus the site card — so there was never a reason to render it per request. Static PNGs are also faster and cheaper for the crawlers that actually fetch them.
 **Revisit when:** Cards need to vary per request (they should not), or the card set grows large enough that generating it by hand becomes a chore. **Regeneration is manual** — a copy or gradient change ships a stale card unless `npm run generate:og` is re-run and the PNGs committed.
 
