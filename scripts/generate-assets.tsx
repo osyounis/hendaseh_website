@@ -82,12 +82,13 @@ async function main() {
         if (!p) throw new Error(`unknown project id: ${id}`);
         return p;
       });
-  if (projects.length === 0) throw new Error('usage: npm run assets -- <id> [<id>…] | --all [--compose-only]');
+  if (projects.length === 0) throw new Error('usage: npm run assets -- <id> [<id>…] | --all');
   for (const p of projects) {
+    const artPath = p.id === 'nahtadi' ? 'public/images/nahtadi/icon.png' : ARTWORK(p.id);
     try {
-      await access(p.id === 'nahtadi' ? 'public/images/nahtadi/icon.png' : ARTWORK(p.id));
+      await access(artPath);
     } catch {
-      console.warn(`assets: ${p.id} skipped — no artwork at ${ARTWORK(p.id)}`);
+      console.warn(`assets: ${p.id} skipped — no artwork at ${artPath}`);
       continue;
     }
     await compose(p);

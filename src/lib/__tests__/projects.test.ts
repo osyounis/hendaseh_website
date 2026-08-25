@@ -104,4 +104,18 @@ describe('project assets', () => {
       expect(existsSync(`public${p.image}`), `${p.id}: ${p.image}`).toBe(true)
     })
   })
+
+  // The asset engine (see docs/ROADMAP.md, "Adding a project's assets")
+  // deterministically generates four outputs per project from one committed
+  // artwork PNG. This is the assertion the docs advertise as "keeps you
+  // honest" — it fails if any of the four goes missing for any project.
+  it('every project has all four generated asset files', () => {
+    const outputs = ['icon.png', 'icon-squircle.png', 'card.png', 'github-banner.png']
+    getAllProjects().forEach((p) => {
+      outputs.forEach((file) => {
+        const assetPath = `public/images/projects/${p.id}/${file}`
+        expect(existsSync(assetPath), `${p.id}: missing ${file}`).toBe(true)
+      })
+    })
+  })
 })
