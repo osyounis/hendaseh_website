@@ -65,7 +65,10 @@ async function compose(p: Project) {
     BannerTemplate({ title: p.title, tagline: p.tagline, artwork: bannerArtwork, opaque, gradient: p.brand.gradient }),
     { width: 1280, height: 640, fonts: await fonts() }
   );
-  await writeFile(path.join(OUT(p.id), 'github-banner.png'), await sharp(Buffer.from(svg)).png().toBuffer());
+  await writeFile(
+    path.join(OUT(p.id), 'github-banner.png'),
+    await sharp(Buffer.from(svg)).png({ compressionLevel: 9, effort: 10 }).toBuffer()
+  );
   console.log(`assets: ${p.id} ✓`);
 }
 

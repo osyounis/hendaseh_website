@@ -42,7 +42,10 @@ async function main() {
         { name: 'Roboto', data: medium, weight: 500, style: 'normal' },
       ],
     });
-    await writeFile(path.join(OUT, `${id}.png`), await sharp(Buffer.from(svg)).png().toBuffer());
+    await writeFile(
+      path.join(OUT, `${id}.png`),
+      await sharp(Buffer.from(svg)).png({ compressionLevel: 9, effort: 10 }).toBuffer()
+    );
     console.log(`og: ${id}.png`);
   }
 }

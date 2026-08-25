@@ -106,8 +106,8 @@ export async function isOpaqueFullBleed(artwork: Buffer): Promise<boolean> {
  */
 async function fullBleedComposite(artwork: Buffer, g: Gradient): Promise<Buffer> {
   const bg = gradientSvg(SIZE, g);
-  const art = await sharp(artwork).resize(SIZE, SIZE, { fit: 'cover' }).png().toBuffer();
-  return sharp(bg).composite([{ input: art }]).png().toBuffer();
+  const art = await sharp(artwork).resize(SIZE, SIZE, { fit: 'cover' }).png({ compressionLevel: 9, effort: 10 }).toBuffer();
+  return sharp(bg).composite([{ input: art }]).png({ compressionLevel: 9, effort: 10 }).toBuffer();
 }
 
 /**
@@ -126,12 +126,12 @@ async function insetComposite(artwork: Buffer, g: Gradient, opts: { maskPath?: s
   const trimmed = await sharp(artwork).trim().toBuffer();
   const subject = await sharp(trimmed)
     .resize(SUBJECT, SUBJECT, { fit: 'inside', withoutEnlargement: false })
-    .png()
+    .png({ compressionLevel: 9, effort: 10 })
     .toBuffer();
   const meta = await sharp(subject).metadata();
   return sharp(bg)
     .composite([{ input: subject, left: Math.round((SIZE - meta.width!) / 2), top: Math.round((SIZE - meta.height!) / 2) }])
-    .png()
+    .png({ compressionLevel: 9, effort: 10 })
     .toBuffer();
 }
 
@@ -141,7 +141,7 @@ export async function composeIcon(artwork: Buffer, g: Gradient, shape: 'rounded'
     const mask = maskShapeSvg(SIZE, shape);
     return sharp(composite)
       .composite([{ input: mask, blend: 'dest-in' }])
-      .png()
+      .png({ compressionLevel: 9, effort: 10 })
       .toBuffer();
   }
   const maskOpts = shape === 'squircle' ? { maskPath: squirclePath(SIZE) } : { rx: 180 };
