@@ -86,6 +86,23 @@ function fitWithin(mark: Mark, maxW: number, maxH: number) {
   return { width: Math.round(mark.width * scale), height: Math.round(mark.height * scale) };
 }
 
+/**
+ * Vertical budget note (same failure mode `BannerTemplate` was hardened
+ * against in commit `3026f78`): the outer container is `flexDirection:
+ * column` with `justifyContent: center`. Every direct child below is
+ * `flexShrink: 0` — without it, a flex child's default `flexShrink: 1` lets
+ * the box get squeezed *below* its own text's rendered height whenever total
+ * content exceeds the 630px frame, and the glyphs (rendered at full size
+ * regardless) spill out of the shrunk box into whatever comes next, which is
+ * exactly how a wrapping title once overlapped the tagline. This template
+ * added an icon (~258px of vertical budget) after that fix shipped, so it
+ * carries the same latent bug until hardened the same way. The name is
+ * additionally clamped to 2 lines (`WebkitLineClamp` + `textOverflow:
+ * 'ellipsis'`, which Satori honors only together with `display:
+ * '-webkit-box'` / `WebkitBoxOrient: 'vertical'`) so a future name longer
+ * than any in the catalog degrades to an ellipsis instead of reintroducing
+ * overlap.
+ */
 export function CardTemplate({ card, mark }: { card: OgCard; mark: Mark | null }) {
   const background =
     card.background.kind === 'solid'
@@ -112,6 +129,7 @@ export function CardTemplate({ card, mark }: { card: OgCard; mark: Mark | null }
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            flexShrink: 0,
             width: '260px',
             height: '260px',
             backgroundColor: '#FFFFFF',
@@ -127,12 +145,26 @@ export function CardTemplate({ card, mark }: { card: OgCard; mark: Mark | null }
       ) : (
         (() => {
           const { width, height } = fitWithin(mark, 230, 210);
-          return <img src={mark.src} width={width} height={height} alt="" style={{ marginBottom: '48px' }} />;
+          return (
+            <img
+              src={mark.src}
+              width={width}
+              height={height}
+              alt=""
+              style={{ flexShrink: 0, marginBottom: '48px' }}
+            />
+          );
         })()
       ))}
 
       <div
         style={{
+          display: '-webkit-box',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: 2,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          flexShrink: 0,
           maxWidth: '1040px',
           fontSize: `${card.nameSize}px`,
           fontWeight: 500,
@@ -147,6 +179,7 @@ export function CardTemplate({ card, mark }: { card: OgCard; mark: Mark | null }
       {card.tagline && (
         <div
           style={{
+            flexShrink: 0,
             marginTop: '26px',
             fontSize: '40px',
             fontWeight: 400,
@@ -161,6 +194,7 @@ export function CardTemplate({ card, mark }: { card: OgCard; mark: Mark | null }
       {card.footer && (
         <div
           style={{
+            flexShrink: 0,
             marginTop: '40px',
             fontSize: '30px',
             fontWeight: 400,
