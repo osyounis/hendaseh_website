@@ -1,10 +1,15 @@
 import { test, expect } from '@playwright/test'
+import { getShowcaseProjects } from '@/lib/projects'
 
 // OG cards are pre-rendered to static PNGs (`npm run generate:og` → public/og)
 // because the old runtime /api/og route needed sharp + node:fs, neither of which
 // runs on Cloudflare Workers. The legacy /api/og URLs stay reachable via redirect.
 
-const CARDS = ['site', 'nahtadi', 'brent-cuda', 'collision-avoidance-radar']
+// Derived from the same source scripts/generate-og.tsx uses, rather than
+// hardcoded, so the test and the generator can't drift apart: promoting a
+// project to showcase tier without running `npm run generate:og` leaves its
+// card missing from public/og, and this suite fails until it's generated.
+const CARDS = ['site', 'nahtadi', ...getShowcaseProjects().map((p) => p.id)]
 
 test('every static OG card serves as a PNG', async ({ request }) => {
   for (const id of CARDS) {

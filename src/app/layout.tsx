@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/navigation/Navigation';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 
 // Primary font: Roboto Medium (weight 500)
 const robotoMedium = Roboto({
@@ -73,8 +71,6 @@ export default function RootLayout({
             <p>&copy; {new Date().getFullYear()} Omar Younis. All rights reserved.</p>
           </div>
         </footer>
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

@@ -95,3 +95,52 @@ Source of authority: the "Program-level decisions (locked)" section of [`docs/su
 **Decision:** The foundation-reset token system shipped **color, type scale, fonts, radius (`--radius-card`, `--radius-control`) and one motion easing (`--ease-brand`)**. The spacing and elevation (shadow) scales the design spec asked for were **not** built.
 **Why:** Recorded honestly rather than quietly dropped. Spacing and elevation are only meaningful once real layouts consume them, and inventing a scale with no consumer would have been guesswork that sub-project 4 then had to undo.
 **Revisit when:** Sub-project 4 — it owns adding both scales, driven by the layouts it actually builds.
+
+## 2026-08-24 — Contact form dropped; Resend decommissioned
+
+**Decision:** The contact form is removed and **Resend is decommissioned**. `RESEND_API_KEY` is gone from the repo (it was never committed — `.env.local` is gitignored and appears in no commit), gone from the dependency tree, and the `send` TXT/MX and `resend._domainkey` DNS records are deleted from the zone. **Still outstanding:** the API key itself remains valid in the Resend dashboard and in a stale local `.env.local` on Omar's machine — it needs revoking, and that file deleting. `/contact` remains one of the four public pages and presents direct channels only (email, LinkedIn, GitHub, résumé). Supersedes the "no backend" entry of 2026-08-23 insofar as it described a contact form via Resend.
+**Why:** The form was the site's only server-side mutation, its only secret, and its only runtime third-party dependency — three sources of migration risk and ongoing maintenance for a channel nobody used. The real audience (recruiters, hiring managers) contacts by email or LinkedIn.
+**Revisit when:** A contact channel is actually needed that email cannot serve. Any replacement must not reintroduce a runtime secret without a deliberate decision about where it lives on Workers.
+
+## 2026-08-24 — OG images move from runtime generation to build time
+
+**Decision:** The runtime `/api/og` route is deleted. Cards are pre-rendered by `npm run generate:og` (`scripts/generate-og.tsx` → `src/lib/ogTemplate.tsx` + `src/lib/ogCards.ts`) into `public/og/*.png` and served as static assets. `satori` and `sharp` are **build-time-only** devDependencies. Two 307 redirects in `next.config.ts` map old `/api/og` URLs onto their static PNGs.
+**Why:** `next/og` at runtime needs `sharp` and `node:fs`; neither runs on Cloudflare Workers. The card set is finite and fully deterministic — one per project plus the site card — so there was never a reason to render it per request. Static PNGs are also faster and cheaper for the crawlers that actually fetch them.
+**Revisit when:** Cards need to vary per request (they should not), or the card set grows large enough that generating it by hand becomes a chore. **Regeneration is manual** — a copy or gradient change ships a stale card unless `npm run generate:og` is re-run and the PNGs committed.
+
+## 2026-08-24 — ImageKit is the `next/image` loader, chosen over Cloudflare Images
+
+**Decision:** `next.config.ts` uses `loader: 'custom'` with `src/lib/imagekitLoader.ts`, pointing at endpoint `https://ik.imagekit.io/osyounis` with a WEB_FOLDER origin at `https://hendaseh.com`. Images stay in `public/`; ImageKit pulls and transforms them. Cloudflare Images remains the documented fallback.
+**Why:** Host portability. The loader is nothing but a URL prefix, so a future host change does not touch the image pipeline at all — whereas Cloudflare Images would bind image delivery to the same vendor as hosting, which is exactly the coupling this migration just spent a sub-project undoing. ImageKit also stores the generated project assets sub-project 3 will produce, so one account covers both needs.
+**Revisit when:** ImageKit's free-tier limits or costs stop fitting, or the origin-pull model conflicts with the asset engine's storage model.
+
+## 2026-08-24 — Analytics: Cloudflare Web Analytics (chosen; not yet enabled)
+
+**Decision:** **Cloudflare Web Analytics** (free, cookieless) is the chosen replacement for `@vercel/analytics` and `@vercel/speed-insights`; both packages and their `layout.tsx` usage are removed. Once enabled, the beacon is injected automatically by Cloudflare because the zone is proxied — **no `<script>` tag lives in this repo**.
+**Status (2026-08-24): not yet enabled.** Turning it on is a dashboard action of Omar's, so **the site currently collects no analytics at all** — the Vercel beacons are gone and nothing has replaced them. The decision itself stands regardless; only its activation is pending.
+**Why:** The Vercel packages do not work off Vercel. Cloudflare's equivalent is free with the zone, needs no cookie banner, and auto-injection keeps third-party script management out of the codebase. If auto-injection ever has to be replaced by the manual snippet, **never add an `integrity`/SRI hash** to it: the beacon is self-updating, and a pinned hash would silently kill analytics on Cloudflare's next release.
+**Revisit when:** Real-user performance data (Core Web Vitals over time) is wanted at a depth Cloudflare's free tier does not reach.
+
+## 2026-08-24 — CI/CD: Cloudflare Workers Builds
+
+**Decision:** Deploys run on **Cloudflare Workers Builds**, connected to the GitHub repo: push to `main` → production, pull requests → preview URLs. No GitHub Actions workflow, no API token stored in the repo.
+**Why:** It is the native equivalent of the Vercel git integration the migration removed, so the day-to-day workflow (`dev` → PR → `main`) is unchanged. Cloudflare holds its own credentials, so nothing has to be minted, scoped, and rotated in GitHub secrets.
+**Revisit when:** A build step Workers Builds cannot run is needed (e.g. asset generation requiring credentials), at which point GitHub Actions with a scoped API token is the fallback.
+
+## 2026-08-24 — `incrementalCache: staticAssetsIncrementalCache` is a binding constraint
+
+**Decision:** `open-next.config.ts` overrides the adapter default with `staticAssetsIncrementalCache`. This is a **constraint on all future work, not a footnote.**
+**Why:** With the adapter's plain `defineCloudflareConfig()` there is no incremental cache, so the Worker's read of the prerendered SSG payload for `/projects/[slug]` misses — and because that route sets `dynamicParams = false`, the miss becomes a **404**. Both showcase case studies (`/projects/brent-cuda`, `/projects/collision-avoidance-radar`) were dead in exactly this way before the override. `staticAssetsIncrementalCache` reads the payloads out of the Workers static-assets binding: read-only, provisions nothing, costs nothing.
+**Revisit when:** **Before** any work adds ISR, `revalidate`, a server action, an API route, or the composable cache — a read-only cache **forbids revalidation** and any of those will break against it. Sub-projects 3–5 must swap in a KV-backed incremental cache first if they need any of them.
+
+## 2026-08-24 — Custom domains are declared in `wrangler.jsonc`, never attached in the dashboard
+
+**Decision:** `hendaseh.com` and `www.hendaseh.com` are declared as `routes` with `custom_domain: true` in `wrangler.jsonc`. They are **not** attached by clicking in the Cloudflare dashboard.
+**Why:** Wrangler reconciles routes on **every** deploy. A CI deploy from a config that lacks these entries would detach the custom domains and take the live site down — a dashboard-only attachment is a silent trap waiting for the next `main` push. Declaring them in config makes the deploy idempotent and the domain binding reviewable in a diff.
+**Revisit when:** Never remove these entries while the domains are live. Adding a hostname means adding it here first.
+
+## 2026-08-24 — No CAA records on the zone
+
+**Decision:** The zone carries **no CAA records**. The three inherited CAA records (which authorized Vercel's certificate issuers) were deleted before cutover.
+**Why:** CAA restricts which CAs may issue for the domain. The inherited set named Vercel's issuers, so leaving it in place would have blocked Cloudflare's certificate at the worst possible moment. Absent CAA, any CA may issue — which is the permissive default and is what allowed the cutover to complete cleanly.
+**Revisit when:** Tightening certificate issuance is wanted as hardening — then add CAA records naming **Cloudflare's** issuers (`digicert.com`, `letsencrypt.org`, `pki.goog`, `ssl.com`, per Cloudflare's current set), verify certificate renewal afterwards, and never leave a stale issuer list behind again.

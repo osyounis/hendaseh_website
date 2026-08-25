@@ -11,7 +11,7 @@ The master plan for the full redesign of hendaseh.com. Every design and implemen
 | # | Sub-project | Status |
 |---|-------------|--------|
 | 1 | Foundation reset | **Complete** — 2026-08-23 |
-| 2 | Hosting migration | Not started |
+| 2 | Hosting migration | **Complete** — 2026-08-24 |
 | 3 | Asset engine | Not started |
 | 4 | Page redesigns | Not started |
 | 5 | Case-study content | Not started |
@@ -33,14 +33,20 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 
 **Goal:** the current, known-good site running on the platform everything after is built for.
 
-- `@opennextjs/cloudflare` adapter + `wrangler` config; ImageKit (or Cloudflare Images) as the `next/image` loader replacing Vercel's optimizer.
-- Swap `@vercel/analytics` / Speed Insights for a Cloudflare-friendly equivalent at cutover.
-- Verify every route on a `workers.dev` preview — especially `/nahtadi/*`, the contact form (Resend), OG image generation, redirects, sitemap.
-- Move DNS from GoDaddy→Vercel to Cloudflare; keep Vercel live until Cloudflare is verified; then cut over. CI: deploy on push to `main`, previews for branches.
+- `@opennextjs/cloudflare` adapter + `wrangler.jsonc`; ImageKit as the `next/image` loader replacing Vercel's optimizer (Cloudflare Images kept as the documented fallback).
+- Contact form and Resend removed — the site's only server-side mutation, only secret, and only runtime third-party dependency. `/contact` presents direct channels; its redesign belongs to sub-project 4.
+- OG cards moved from the runtime `/api/og` route to build-time PNGs in `public/og/` (`npm run generate:og`), because `sharp` + `node:fs` cannot run on Workers. Old `/api/og` URLs 307 to their static PNG.
+- `@vercel/analytics` / Speed Insights swapped for Cloudflare Web Analytics (free, cookieless, auto-injected on the proxied zone — no script tag in the repo).
+- Every route verified on a `workers.dev` preview, then against production: `/nahtadi/*`, showcase case studies, all four redirects, sitemap, robots, OG assets.
+- DNS moved from GoDaddy→Vercel to Cloudflare and cut over; Vercel kept live until Cloudflare was verified. CI: **Cloudflare Workers Builds** — `main` → production, PRs → preview URLs.
 
-**Exit:** hendaseh.com serves from Cloudflare Workers with all routes verified, Nahtadi URLs intact, Vercel decommissioned.
+**Exit:** met 2026-08-24 — hendaseh.com and www serve from Cloudflare Workers, 17/17 e2e green against production, Nahtadi URLs intact, Vercel analytics and Resend removed from the codebase. Deleting the Vercel project itself is deliberately deferred ~24h as rollback insurance.
 
-**Needs from Omar:** Cloudflare account + one-time `wrangler login`; GoDaddy DNS access.
+**Needs from Omar:** done — Cloudflare account created, `wrangler login` completed, GoDaddy nameservers repointed. Three manual steps remain his:
+
+1. **Enable Cloudflare Web Analytics** in the dashboard — until then the site collects no analytics at all.
+2. **Delete the Vercel project** once the ~24h rollback window closes.
+3. **Revoke the Resend API key** in the Resend dashboard and delete the stale local `.env.local` that holds it. The key was never committed (`.env.local` is gitignored and appears in no commit), so this is routine cleanup and revocation of a credential for a decommissioned service — not an exposure.
 
 ## 3 — Asset engine
 
@@ -60,7 +66,7 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 - Home: full above the fold, real hierarchy, Nahtadi as flagship story.
 - Projects: searchable/filterable grid built around the new assets; `/projects/[slug]` case-study template.
 - About: Omar's arc (ME → ML → iOS) told with intent, from the canonical facts + his source text.
-- Contact: simple, polished, Resend-backed.
+- Contact: simple, polished, direct channels only (email, LinkedIn, GitHub, résumé) — no form, no backend.
 - Nahtadi pages: visual consistency pass, URLs and SEO untouched.
 - Both themes, `prefers-reduced-motion`, WCAG-conscious contrast, no SEO regressions (metadata, JSON-LD, sitemap preserved).
 
@@ -78,6 +84,7 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 
 ## Standing notes
 
-- **Backend:** none. If one is ever needed, **Supabase** is the designated choice (see `docs/DECISIONS.md` once created).
-- **Connected tooling:** GitHub MCP, ImageKit API + DevTools MCP (authenticated 2026-08-23). Higgsfield: direct API, unverified. Vercel MCP until decommissioned.
+- **Backend:** none — and now literally none: the contact form and **Resend are decommissioned** (2026-08-24), so the site has no server-side mutation, no secret, and no runtime third-party dependency. If a backend is ever needed, **Supabase** is the designated choice (see `docs/DECISIONS.md`).
+- **Hosting:** Cloudflare Workers via `@opennextjs/cloudflare`; CI by Workers Builds. `open-next.config.ts` pins `incrementalCache: staticAssetsIncrementalCache`, which **forbids revalidation** — sub-projects 3–5 must move to a KV-backed cache before adding ISR, a server action, an API route, or the composable cache.
+- **Connected tooling:** GitHub MCP, ImageKit API + DevTools MCP (authenticated 2026-08-23). Higgsfield: direct API, unverified.
 - **Résumé + section text:** Omar supplies during the Phase 1 content audit (`docs/content/`, local-only and gitignored); the résumé in `public/` is outdated until then. Everything in `docs/content/` is **raw material only** — possibly outdated or rough by Omar's own assessment; final copy is workshopped with him during phases 4–5, never published verbatim.

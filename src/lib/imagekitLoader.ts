@@ -16,7 +16,7 @@ export default function imagekitLoader({ src, width, quality }: ImageLoaderProps
   // silently swapping Apple's trademarked vector badge for a raster image.
   // Match Next's own test exactly: strip any query string before checking
   // the extension, so `foo.svg?v=2` is treated the same as `foo.svg`.
-  if (src.split('?', 1)[0].endsWith('.svg')) return src;
+  if (src.split('?', 1)[0].toLowerCase().endsWith('.svg')) return src;
 
   return `${ENDPOINT}/tr:w-${width},q-${quality ?? 75},f-auto${src}`;
 }
