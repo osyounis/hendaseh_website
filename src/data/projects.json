@@ -35,7 +35,8 @@
       "private": false,
       "stats": "35.31× kernel • 8.79× end-to-end • RTX 3080",
       "category": "scientific-computing",
-      "imageAlt": "Parallelizing Brent's Method with CUDA — GPU-accelerated root-finding on an NVIDIA RTX 3080",
+      "image": "/images/projects/brent-cuda/card.png",
+      "imageAlt": "Glossy green circuit-board icon of a microprocessor chip labeled CUDA, representing GPU-accelerated root-finding",
       "links": {
         "github": "https://github.com/osyounis/brent_cuda"
       },
@@ -54,8 +55,8 @@
       "private": false,
       "stats": "Logic Programming • GPL-3.0",
       "category": "machine-learning",
-      "image": "/images/projects/new-game-plus.png",
-      "imageAlt": "NewGame+ recommendation system using Prolog logic programming",
+      "image": "/images/projects/new-game-plus/card.png",
+      "imageAlt": "Stylized icon of a game joystick beside a plus symbol, representing the NewGame+ recommendation system",
       "links": {
         "github": "https://github.com/osyounis/new_game_plus"
       },
@@ -74,13 +75,13 @@
       "private": false,
       "stats": "4,172 LOC • 78 tests • 71% coverage",
       "category": "scientific-computing",
-      "image": "/images/projects/mini-compiler.png",
-      "imageAlt": "Mini Compiler - LL(1) predictive parser transforming Pascal-like code to Python",
+      "image": "/images/projects/mini-compiler/card.png",
+      "imageAlt": "Stylized icon of a terminal prompt arrow and cursor, representing the Mini Compiler's code transformation",
       "links": {
         "github": "https://github.com/osyounis/compiler-project"
       },
       "brand": {
-        "gradient": { "from": "#0E7490", "to": "#581C87" }
+        "gradient": { "from": "#49F2E5", "to": "#7E22CE" }
       }
     },
     {
@@ -94,13 +95,13 @@
       "private": false,
       "stats": "105 tests • 90%+ coverage • 8+ methods",
       "category": "scientific-computing",
-      "image": "/images/projects/islamic-prayer-time.png",
-      "imageAlt": "Islamic Prayer Time Algorithm Library - Python code calculating prayer times",
+      "image": "/images/projects/islamic-prayer-time/card.png",
+      "imageAlt": "Stylized icon of a minaret clock tower with a crescent moon, representing the Islamic Prayer Time algorithm library",
       "links": {
         "github": "https://github.com/osyounis/islamic_prayer_time_app"
       },
       "brand": {
-        "gradient": { "from": "#15803D", "to": "#14532D" }
+        "gradient": { "from": "#5EAFA3", "to": "#1F6F63" }
       }
     },
     {
@@ -115,14 +116,14 @@
       "stats": "19 commits • GPL-3.0",
       "category": "data-tools",
       "buttonText": "Try It Out →",
-      "image": "/images/projects/collision-avoidance-radar.png",
-      "imageAlt": "Maritime Collision Avoidance Training System showing vessel parameters and radar visualization",
+      "image": "/images/projects/collision-avoidance-radar/card.png",
+      "imageAlt": "Stylized icon of a glowing radar display with tracked contacts, representing the Maritime Collision Avoidance Training System",
       "links": {
         "github": "https://github.com/osyounis/collision_avoidance_radar_plotting_app",
         "embed": "https://collision-avoidance-radar-plotting-app.streamlit.app/?embed=true"
       },
       "brand": {
-        "gradient": { "from": "#111827", "to": "#1E293B" }
+        "gradient": { "from": "#8DA2B8", "to": "#2F4058" }
       }
     },
     {
@@ -136,8 +137,8 @@
       "private": false,
       "stats": "29 commits • 28 stars • MIT",
       "category": "engineering-tools",
-      "image": "/images/projects/cycloidal-drive-creator.png",
-      "imageAlt": "Cycloidal Drive Creator GUI showing parametric rotor profile generation",
+      "image": "/images/projects/cycloidal-drive-creator/card.png",
+      "imageAlt": "Stylized icon of a layered mechanical gear assembly, representing the Cycloidal Drive Creator's parametric rotor profiles",
       "links": {
         "github": "https://github.com/osyounis/cycloidal_drive_creator"
       },
@@ -156,8 +157,8 @@
       "private": false,
       "stats": "10 stars • MIT",
       "category": "machine-learning",
-      "image": "/images/projects/image-watermark-remover.png",
-      "imageAlt": "Image Watermark Remover with PyTorch showing GAN-based watermark removal results",
+      "image": "/images/projects/image-watermark-remover/card.png",
+      "imageAlt": "Stylized icon of an eraser removing a mark, representing the PyTorch-based watermark remover",
       "links": {
         "github": "https://github.com/osyounis/image_watermark_remover"
       },
@@ -176,8 +177,8 @@
       "private": true,
       "stats": "Fleet-wide deployment • USCG Achievement Medal",
       "category": "data-tools",
-      "image": "/images/projects/coast-guard-pilot-tracker.png",
-      "imageAlt": "US Coast Guard Pilot Training Tracker - fleet-wide deployment achievement",
+      "image": "/images/projects/coast-guard-pilot-tracker/card.png",
+      "imageAlt": "Illustration of a Coast Guard helicopter flying over ocean waves at sunset, representing the Pilot Training Tracker",
       "links": {},
       "brand": {
         "gradient": { "from": "#F97316", "to": "#2563EB" }
@@ -194,8 +195,8 @@
       "private": true,
       "stats": "In production at USCG San Diego",
       "category": "data-tools",
-      "image": "/images/projects/coast-guard-inventory.png",
-      "imageAlt": "US Coast Guard Helicopter Inventory System - operational at Air Station San Diego",
+      "image": "/images/projects/coast-guard-inventory/card.png",
+      "imageAlt": "Stylized icon of a warehouse shelf holding labeled storage boxes, representing the Helicopter Inventory System",
       "links": {},
       "brand": {
         "gradient": { "from": "#1D4ED8", "to": "#FB923C" }
@@ -212,13 +213,13 @@
       "private": false,
       "stats": "Object Detection",
       "category": "machine-learning",
-      "image": "/images/projects/asl-detector.png",
-      "imageAlt": "ASL Letter Detector using YOLOv5 for real-time hand position recognition",
+      "image": "/images/projects/asl-detector/card.png",
+      "imageAlt": "Stylized icon of a raised fist forming the ASL letter S inside a camera viewfinder frame",
       "links": {
         "github": "https://github.com/osyounis/asl_letter_detector"
       },
       "brand": {
-        "gradient": { "from": "#9333EA", "to": "#C084FC" }
+        "gradient": { "from": "#5B21B6", "to": "#2E1065" }
       }
     },
     {
@@ -232,13 +233,13 @@
       "private": false,
       "stats": "ML Classification",
       "category": "machine-learning",
-      "image": "/images/projects/wildfire-predictor.png",
-      "imageAlt": "California Wildfire Likelihood Predictor using TensorFlow and historical data",
+      "image": "/images/projects/wildfire-predictor/card.png",
+      "imageAlt": "Stylized icon of pine trees silhouetted inside a flame, representing the California Wildfire Likelihood Predictor",
       "links": {
         "github": "https://github.com/osyounis/cali_wildfire_likelihood_predictor"
       },
       "brand": {
-        "gradient": { "from": "#DC2626", "to": "#F97316" }
+        "gradient": { "from": "#991B1B", "to": "#292524" }
       }
     },
     {
@@ -252,13 +253,13 @@
       "private": false,
       "stats": "1 star • 77% Accuracy",
       "category": "machine-learning",
-      "image": "/images/projects/reddit-nlp.png",
-      "imageAlt": "Reddit NLP Classifier analyzing language patterns between subreddit communities",
+      "image": "/images/projects/reddit-nlp/card.png",
+      "imageAlt": "Stylized icon of overlapping speech bubbles labeled NLP, representing the Reddit NLP Classifier",
       "links": {
         "github": "https://github.com/osyounis/reddit_nlp"
       },
       "brand": {
-        "gradient": { "from": "#3B82F6", "to": "#2DD4BF" }
+        "gradient": { "from": "#1D4ED8", "to": "#0E7490" }
       }
     }
   ]

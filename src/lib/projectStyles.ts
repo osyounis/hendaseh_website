@@ -23,24 +23,24 @@ const PROJECT_GRADIENTS: Record<string, ProjectGradient> = {
     stops: { from: '#0F5F50', to: '#022E28' },
   },
   'mini-compiler': {
-    className: 'bg-gradient-to-br from-cyan-700 to-purple-900',
-    stops: { from: '#0E7490', to: '#581C87' },
+    className: 'bg-gradient-to-br from-[#49F2E5] to-[#7E22CE]',
+    stops: { from: '#49F2E5', to: '#7E22CE' },
   },
   'brent-cuda': {
     className: 'bg-gradient-to-br from-green-800 to-gray-900',
     stops: { from: '#166534', to: '#111827' },
   },
   'collision-avoidance-radar': {
-    className: 'bg-gradient-to-br from-gray-900 to-slate-800',
-    stops: { from: '#111827', to: '#1E293B' },
+    className: 'bg-gradient-to-br from-[#8DA2B8] to-[#2F4058]',
+    stops: { from: '#8DA2B8', to: '#2F4058' },
   },
   'wildfire-predictor': {
-    className: 'bg-gradient-to-br from-red-600 to-orange-500',
-    stops: { from: '#DC2626', to: '#F97316' },
+    className: 'bg-gradient-to-br from-[#991B1B] to-[#292524]',
+    stops: { from: '#991B1B', to: '#292524' },
   },
   'asl-detector': {
-    className: 'bg-gradient-to-br from-purple-600 to-purple-400',
-    stops: { from: '#9333EA', to: '#C084FC' },
+    className: 'bg-gradient-to-br from-[#5B21B6] to-[#2E1065]',
+    stops: { from: '#5B21B6', to: '#2E1065' },
   },
   'image-watermark-remover': {
     className: 'bg-gradient-to-br from-emerald-500 to-teal-400',
@@ -51,12 +51,12 @@ const PROJECT_GRADIENTS: Record<string, ProjectGradient> = {
     stops: { from: '#4F46E5', to: '#A855F7' },
   },
   'reddit-nlp': {
-    className: 'bg-gradient-to-br from-blue-500 to-teal-400',
-    stops: { from: '#3B82F6', to: '#2DD4BF' },
+    className: 'bg-gradient-to-br from-[#1D4ED8] to-[#0E7490]',
+    stops: { from: '#1D4ED8', to: '#0E7490' },
   },
   'islamic-prayer-time': {
-    className: 'bg-gradient-to-br from-green-700 to-green-900',
-    stops: { from: '#15803D', to: '#14532D' },
+    className: 'bg-gradient-to-br from-[#5EAFA3] to-[#1F6F63]',
+    stops: { from: '#5EAFA3', to: '#1F6F63' },
   },
   'coast-guard-pilot-tracker': {
     className: 'bg-gradient-to-br from-orange-500 to-blue-600',

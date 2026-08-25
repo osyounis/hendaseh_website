@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { existsSync } from 'node:fs'
 import { getAllProjects, getFeaturedProjects, getProjectById } from '../projects'
 import { ProjectsFileSchema } from '../projectSchema'
 import projectsData from '../../data/projects.json'
@@ -93,5 +94,14 @@ describe('getShowcaseProjects', () => {
     const s = getShowcaseProjects()
     expect(s.length).toBeGreaterThan(0)
     s.forEach(p => expect(p.tier).toBe('showcase'))
+  })
+})
+
+describe('project assets', () => {
+  it('every project image path resolves to a real file in public/', () => {
+    getAllProjects().forEach((p) => {
+      expect(p.image, p.id).toBeDefined()
+      expect(existsSync(`public${p.image}`), `${p.id}: ${p.image}`).toBe(true)
+    })
   })
 })
