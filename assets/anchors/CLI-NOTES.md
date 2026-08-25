@@ -1,4 +1,20 @@
-# Higgsfield CLI — spike notes (2026-08-24)
+# Generator interface notes
+
+> **SUPERSEDED for generation (2026-08-25):** the asset engine's generator is now the **Recraft REST API**, not the Higgsfield CLI — see the "Recraft API" section below, and `STYLE.md` for the locked style + workflow. The Higgsfield notes remain for reference (account still holds 9 free credits; useful someday for video).
+
+## Recraft API (the active generator)
+
+- Auth: `Authorization: Bearer $RECRAFT_API_KEY` — key in `.env.local` (gitignored). Omar's account, ~$10 API units purchased 2026-08-24; a generation costs 35–40 units (≈ $0.04), custom-style creation ~5 credits.
+- Generate: `POST https://external.api.recraft.ai/v1/images/generations` — JSON body: `prompt`, `model` (`recraftv4_1` | `recraftv3`), `size: "1024x1024"`, `n`, optional `style_id` (V3 only), `controls: { colors: [{"rgb":[r,g,b]},…], background_color? }`.
+- Image-to-image: `POST /v1/images/imageToImage` — multipart: `image`, `prompt`, `strength` (0–1), `model`. V3 examples only.
+- Background replace: `POST /v1/images/replaceBackground` — multipart: `image`, `prompt`, `model`.
+- Custom styles: `POST /v1/styles` — multipart: `style=digital_illustration`, repeated `files=`. Returns `id` → pass as `style_id`. **Active style: `9771fd49-aadc-48c8-a309-98ccffe53175`** (trained on anchors 1+2).
+- Response: JSON `data[0].url` (CDN); download with `curl -sL`. `credits` field reports the charge.
+- Caps: V3 prompt ≈1000 chars; V4.1 accepts long prompts. V4.1 ignores `style`/`style_id` (prompt + controls only).
+
+---
+
+# Higgsfield CLI — spike notes (2026-08-24, superseded)
 
 Interface contract for the asset engine's generation half. Verified live against CLI v1.1.23 on Omar's account (`omar@hendaseh.com`).
 

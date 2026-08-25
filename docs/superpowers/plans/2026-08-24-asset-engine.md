@@ -12,6 +12,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-24-asset-engine-design.md`
 
+> **STATUS 2026-08-25:** Tasks 1–2 are COMPLETE (done interactively with Fable + Omar; 25-generation anchor session). The generator changed from Higgsfield CLI to the **Recraft REST API** — `assets/anchors/CLI-NOTES.md` (Recraft section) is the generator interface and `assets/anchors/STYLE.md` is the locked style + workflow, including the custom style_id trained on the approved anchors. **Execution starts at Task 3.** Where later tasks say "generate with anchors as references", read: generate per STYLE.md (recraftv3 + style_id + controls.colors, V4.1 long-prompt fallback).
+
 ## Global Constraints
 
 - Art direction is locked by the spec: **Apple-modern flat**, palette = project `brand.gradient` + white/navy, App-Store-icon quality bar. The written form lives in `assets/anchors/STYLE.md` after Task 2 — treat it as the single source of truth for prompts.
