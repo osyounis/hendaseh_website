@@ -2,11 +2,21 @@ import { describe, expect, it } from 'vitest'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 
-// src/lib/assetTemplates.tsx imports sharp + node:fs and is only meant to be
-// imported by build-time scripts (e.g. scripts/generate-og.tsx). Neither sharp
-// nor node:fs runs on the Cloudflare Workers runtime this site deploys to, so
-// if any app module (src/app/** or src/components/**) ever imports it, the
-// Workers build breaks. Guard that by grepping the tree for the import.
+// sharp and node:fs/node:fs/promises cannot run on the Cloudflare Workers
+// runtime this site deploys to. src/lib/assetTemplates.tsx uses both and is
+// only meant to be imported by build-time scripts (e.g.
+// scripts/generate-og.tsx, scripts/generate-assets.tsx) — never by app code.
+//
+// A per-file "does src/app or src/components import assetTemplates"
+// grep (the original version of this test) misses three things a real
+// mistake could hit: a transitive import through some other src/lib module,
+// any file elsewhere under src/lib itself (where assetTemplates.tsx lives,
+// beside modules that ARE always bundled), and a second sharp/node:fs entry
+// point that bypasses assetTemplates.tsx entirely (e.g. a future
+// scripts/lib/compose.ts-style helper added under src/ by mistake). Guard
+// the actual invariant instead: nothing under src/ imports sharp or
+// node:fs/node:fs/promises directly, except assetTemplates.tsx itself and
+// test files (which run under Node, not the Workers runtime).
 
 function listFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true })
@@ -18,19 +28,33 @@ function listFiles(dir: string): string[] {
   })
 }
 
-describe('assetTemplates stays out of app code', () => {
-  it('is never imported from src/app or src/components', () => {
+const FORBIDDEN_SPECIFIERS = ['sharp', 'node:fs', 'node:fs/promises']
+
+function importsForbiddenModule(contents: string): boolean {
+  return FORBIDDEN_SPECIFIERS.some((specifier) => {
+    const escaped = specifier.replace(/\//g, '\\/')
+    const fromImport = new RegExp(`from\\s+['"]${escaped}['"]`)
+    const bareImport = new RegExp(`import\\s+['"]${escaped}['"]`)
+    const requireCall = new RegExp(`require\\(['"]${escaped}['"]\\)`)
+    return fromImport.test(contents) || bareImport.test(contents) || requireCall.test(contents)
+  })
+}
+
+describe('sharp / node:fs stay out of src/', () => {
+  it('is imported only by assetTemplates.tsx and __tests__ files', () => {
     const root = path.resolve(__dirname, '../../..')
-    const dirs = ['src/app', 'src/components'].map((d) => path.join(root, d))
+    const srcDir = path.join(root, 'src')
 
     const offenders: string[] = []
-    for (const dir of dirs) {
-      if (!statSync(dir, { throwIfNoEntry: false })) continue
-      for (const file of listFiles(dir)) {
-        const contents = readFileSync(file, 'utf8')
-        if (/from\s+['"][^'"]*assetTemplates['"]/.test(contents) || /require\(['"][^'"]*assetTemplates['"]\)/.test(contents)) {
-          offenders.push(path.relative(root, file))
-        }
+    for (const file of listFiles(srcDir)) {
+      const relative = path.relative(root, file)
+      const isAssetTemplates = relative === path.join('src', 'lib', 'assetTemplates.tsx')
+      const isTestFile = relative.split(path.sep).includes('__tests__')
+      if (isAssetTemplates || isTestFile) continue
+
+      const contents = readFileSync(file, 'utf8')
+      if (importsForbiddenModule(contents)) {
+        offenders.push(relative)
       }
     }
 
