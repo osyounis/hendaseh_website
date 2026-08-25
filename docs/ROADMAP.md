@@ -58,7 +58,7 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 - Deterministic compositor (`scripts/generate-assets.tsx`, `scripts/lib/compose.ts`) turns one committed, human-approved artwork PNG per project (`assets/artwork/<id>.png`) into four outputs in `public/images/projects/<id>/`: `icon.png`, `icon-squircle.png`, `card.png`, `github-banner.png`. Run with `npm run assets -- <id> [<id>…]` or `npm run assets -- --all`.
 - Full existing 12-project catalog regenerated through the pipeline. Nahtadi is the one exception: its artwork is its real shipped App Store icon (`public/images/nahtadi/icon.png`), never AI-generated, and its catalog card now renders through the engine (on its own brand gradient) rather than using that transparent icon file as a card directly.
 
-**Exit:** met 2026-08-25 — all 12 catalog projects have matching icon/squircle/card/banner assets generated from committed, approved artwork; `src/lib/__tests__/projects.test.ts` asserts every project's `image` path resolves to a real file. Adding a project's assets is: add the `projects.json` entry, get artwork approved, run `npm run assets -- <id>` (full recipe in `.claude/CLAUDE.md`).
+**Exit:** met 2026-08-25 — all 12 catalog projects have matching icon/squircle/card/banner assets generated from committed, approved artwork; `src/lib/__tests__/projects.test.ts` asserts every project's `image` path resolves to a real file. Adding a project's assets is: add the `projects.json` entry, get artwork approved, run `npm run assets -- <id>` (full recipe in [`README.md`](../README.md#adding-a-projects-assets)).
 
 **Lessons carried forward, worth knowing before touching this again:**
 - Colour must be chosen **per project** — derived from that project's `brand.gradient` or sampled off its existing icon — and passed via `controls.colors`. Reusing one amber/gold accent for 9 of 12 projects is the specific mistake that made the first full-catalog pass read monotonous; separately, dropping the `controls` field entirely on an image-to-image call shifted hues wildly (a purple helicopter went green, a red joystick went salmon).
@@ -83,8 +83,10 @@ than iOS and ML, and the pair may read as narrower than his actual range — pos
 `Software Engineer`. **This reopens a locked decision**, so it is a deliberate call for this sub-project,
 not a copy tweak: dropping the specifics also drops the concrete proof (`iOS` is backed by a shipped App
 Store app) that makes the line credible, so whatever replaces it has to carry range without going vague.
-Whatever is chosen must land on every surface at once — see the surface-string table in
-`.claude/CLAUDE.md`; the OG card is a pre-rendered PNG and needs `npm run generate:og` re-run and committed.
+Whatever is chosen must land on every surface at once: `src/components/home/HomeHero.tsx`,
+`src/lib/ogCards.ts` (site card tagline), `src/app/layout.tsx` (OG image `alt` + metadata titles),
+`src/app/page.tsx`, `src/app/contact/page.tsx`, and `src/app/about/page.tsx`. The OG card is a
+pre-rendered PNG and needs `npm run generate:og` re-run and committed.
 
 **Exit:** all pages shipped in both themes, Lighthouse/axe clean, SEO parity confirmed.
 
@@ -95,7 +97,7 @@ Whatever is chosen must land on every surface at once — see the surface-string
 - Write and build showcase pages for the chosen tier-2 projects (from the audit): Radar Moboard, pilot training tracker, helicopter inventory, brent-cuda, prayer-time library, collision-avoidance (live embed).
 - Sanitized visuals for private projects: screenshots/GIFs of shareable animations (Omar captures; pipeline/ImageKit processes), diagrams where screenshots can't be shown.
 - Final tier assignment for every project; card-only projects link to GitHub.
-- New `projects.json` entries added in this phase (`radar-moboard`, `a16-summarizer`) get their assets the same way as the rest of the catalog — the asset engine (sub-project 3) is already built: pick a subject, get artwork approved, `npm run assets -- <id>`. See `.claude/CLAUDE.md`, "Adding a project's assets."
+- New `projects.json` entries added in this phase (`radar-moboard`, `a16-summarizer`) get their assets the same way as the rest of the catalog — the asset engine (sub-project 3) is already built: pick a subject, get artwork approved, `npm run assets -- <id>`. See [`README.md`, "Adding a project's assets"](../README.md#adding-a-projects-assets).
 
 **Exit:** every repo/project accounted for at its right tier; private projects presentable without revealing anything sensitive.
 

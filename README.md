@@ -49,6 +49,21 @@ Custom domains are declared as `routes` in `wrangler.jsonc` rather than attached
 
 Every project's icon, squircle icon, catalog card, and GitHub social-preview banner are produced by `npm run assets -- <id>` (or `-- --all` for the whole catalog), a deterministic compositor (`scripts/generate-assets.tsx`) that takes one human-approved artwork PNG per project from `assets/artwork/` and renders it onto that project's brand gradient. Artwork is committed and expensive to produce; the four generated files under `public/images/projects/<id>/` are disposable and fully reproducible from it, so they're never hand-edited. Open Graph cards are a separate, similarly manual step — `npm run generate:og` — since neither pipeline runs at request time on Cloudflare Workers.
 
+### Adding a project's assets
+
+1. Add the `projects.json` entry (with `brand.gradient`).
+2. Pick a subject and one-line tagline per [`assets/anchors/STYLE.md`](assets/anchors/STYLE.md).
+3. Get artwork — cheapest technique first: keep an existing icon, deterministic HSL recolour, glyph extraction, image-to-image seeding, geometry seeding, fresh generation, in that order. `STYLE.md` documents all six.
+4. **Omar approves the artwork.**
+5. Commit it as `assets/artwork/<id>.png`.
+6. Run `npm run assets -- <id>`.
+7. `src/lib/__tests__/projects.test.ts`'s file-exists assertion keeps you honest — it fails if any of the four generated files is missing.
+
+`assets/artwork/` is **committed and precious** — one human-approved PNG per project, expensive to produce. Everything under `public/images/projects/<id>/` (`icon.png`, `icon-squircle.png`, `card.png`, `github-banner.png`) is **disposable** — deterministically regenerated from that artwork, never hand-edited. Nahtadi is the one exception: its artwork is its real shipped App Store icon (`public/images/nahtadi/icon.png`), never AI-generated.
+
+- **Colour is chosen per project, never defaulted.** Derive it from that project's `brand.gradient` or sample it off its existing icon, and pass it via the generator's `controls.colors` — prompt text alone will not hold a palette. Reusing one amber/gold accent across most of the catalog is what made the first full-catalog generation pass read monotonous; dropping `controls` entirely on an image-to-image call has separately shifted hues wildly (a purple subject went green, a red one went salmon).
+- **OG cards silently go stale.** They're pre-rendered PNGs (see the Deployment section above); changing a project's gradient does not touch its committed `public/og/<slug>.png`, and the e2e OG spec only checks HTTP status/content-type — nothing in CI catches the mismatch. Re-run `npm run generate:og` and commit the output whenever a project's gradient changes.
+
 ## Project docs
 
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — the redesign plan and current status.
