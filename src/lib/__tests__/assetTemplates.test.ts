@@ -10,7 +10,12 @@ describe('BannerTemplate', () => {
     const regular = await readFile('src/fonts/roboto/Roboto-Regular.ttf')
     const onePx = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
     const svg = await satori(
-      BannerTemplate({ title: 'Test Project', tagline: 'A tagline', iconPng: onePx, gradient: { from: '#0A1A2F', to: '#04294A' } }),
+      BannerTemplate({
+        title: 'Test Project',
+        tagline: 'A tagline',
+        artwork: { src: onePx, width: 1, height: 1 },
+        gradient: { from: '#0A1A2F', to: '#04294A' },
+      }),
       { width: 1280, height: 640, embedFont: false, fonts: [
         { name: 'Roboto', data: regular, weight: 400, style: 'normal' },
         { name: 'Roboto', data: medium, weight: 500, style: 'normal' },
@@ -34,7 +39,7 @@ describe('BannerTemplate', () => {
       BannerTemplate({
         title: 'California Wildfire Likelihood Predictor',
         tagline: 'Wildfire likelihood from weather data',
-        iconPng: onePx,
+        artwork: { src: onePx, width: 1, height: 1 },
         gradient: { from: '#0A1A2F', to: '#04294A' },
       }),
       { width: 1280, height: 640, embedFont: false, fonts: [

@@ -19,8 +19,8 @@ import satori from 'satori';
 import { readFile, mkdir, writeFile, access } from 'node:fs/promises';
 import path from 'node:path';
 import { getAllProjects, getProjectById, type Project } from '../src/lib/projects';
-import { BannerTemplate } from '../src/lib/assetTemplates';
-import { composeIcon, composeCard } from './lib/compose';
+import { BannerTemplate, trimArtworkToMark, type Mark } from '../src/lib/assetTemplates';
+import { composeIcon, composeCard, isOpaqueFullBleed } from './lib/compose';
 
 const OUT = (id: string) => `public/images/projects/${id}`;
 const ARTWORK = (id: string) => `assets/artwork/${id}.png`;
@@ -50,9 +50,19 @@ async function compose(p: Project) {
   await writeFile(path.join(OUT(p.id), 'icon-squircle.png'), squircle);
   await writeFile(path.join(OUT(p.id), 'card.png'), card);
 
-  const iconDataUri = `data:image/png;base64,${icon.toString('base64')}`;
+  // Banner artwork: STYLE.md's default is a transparent floating subject,
+  // trimmed and rendered directly on the banner's own gradient — same branch
+  // compose.ts uses to decide icon/card treatment, reused rather than
+  // re-derived. The opaque full-bleed exception (coast-guard-pilot-tracker)
+  // reuses the already-composited, corner-masked `icon` PNG as a
+  // self-contained tile instead of floating the raw scene bare.
+  const opaque = await isOpaqueFullBleed(artwork);
+  const bannerArtwork: Mark = opaque
+    ? { src: `data:image/png;base64,${icon.toString('base64')}`, width: 1024, height: 1024 }
+    : await trimArtworkToMark(artwork);
+
   const svg = await satori(
-    BannerTemplate({ title: p.title, tagline: p.tagline, iconPng: iconDataUri, gradient: p.brand.gradient }),
+    BannerTemplate({ title: p.title, tagline: p.tagline, artwork: bannerArtwork, opaque, gradient: p.brand.gradient }),
     { width: 1280, height: 640, fonts: await fonts() }
   );
   await writeFile(path.join(OUT(p.id), 'github-banner.png'), await sharp(Buffer.from(svg)).png().toBuffer());

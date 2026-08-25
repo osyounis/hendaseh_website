@@ -58,16 +58,26 @@ export async function loadMarks(): Promise<{ hendaseh: Mark; nahtadi: Mark }> {
 }
 
 /**
+ * Trim a transparent subject's baked-in margin and wrap it as a `Mark`.
+ * Shared by every caller that renders raw engine artwork (assets/artwork/<id>.png,
+ * or Nahtadi's shipped icon) directly on a gradient — the artwork carries large,
+ * inconsistent transparent margins, so an untrimmed subject renders at
+ * unpredictable sizes from project to project. Mirrors the trim step
+ * scripts/lib/compose.ts uses before compositing.
+ */
+export async function trimArtworkToMark(artwork: Buffer): Promise<Mark> {
+  const { data, info } = await sharp(artwork).trim().png().toBuffer({ resolveWithObject: true });
+  return { src: toDataUri(data), width: info.width, height: info.height };
+}
+
+/**
  * A project's OG card icon is its transparent engine artwork
  * (assets/artwork/<id>.png) — the subject on full transparency, same source
- * the compositor (scripts/lib/compose.ts) uses. Trim it the same way: the
- * artwork carries large, inconsistent transparent margins, so an untrimmed
- * subject renders at unpredictable sizes on the card.
+ * the compositor (scripts/lib/compose.ts) uses.
  */
 export async function loadProjectArtwork(projectId: string): Promise<Mark> {
   const artworkPath = path.join(process.cwd(), 'assets', 'artwork', `${projectId}.png`);
-  const { data, info } = await sharp(artworkPath).trim().png().toBuffer({ resolveWithObject: true });
-  return { src: toDataUri(data), width: info.width, height: info.height };
+  return trimArtworkToMark(await readFile(artworkPath));
 }
 
 /** Scale a mark's intrinsic size to a target box, preserving aspect ratio. */
@@ -171,9 +181,22 @@ export function GRADIENT_CSS(g: { from: string; to: string }): string {
 
 /**
  * 1280x640 GitHub social preview banner. Same visual family as the OG cards
- * above: gradient background, white rounded icon tile, Roboto Medium title,
- * muted footer. `iconPng` is a full-bleed square image (already trimmed by
- * the caller), so it's rendered directly at a fixed size, not fitted.
+ * above and, for the artwork treatment specifically, the same idea as
+ * `CardTemplate`'s untiled branch (commit `53c4970`): the project's
+ * transparent artwork renders directly on the banner's own gradient — no
+ * white tile behind it. `artwork` is a `Mark` (already trimmed of its baked-in
+ * transparent margin by the caller, e.g. via `trimArtworkToMark`/
+ * `loadProjectArtwork`) so every project's subject fits the same box at a
+ * consistent apparent size regardless of how much margin its source PNG
+ * carried.
+ *
+ * `opaque` is the one exception STYLE.md documents: coast-guard-pilot-tracker
+ * is a full-bleed baked scene, not a transparent subject to float. Rendered
+ * bare it would look like a pasted rectangle, so the caller instead passes
+ * the already-composited, corner-masked `icon` PNG (see
+ * scripts/lib/compose.ts's `isOpaqueFullBleed` branch) and this template
+ * gives it a smaller, explicitly rounded box so it reads as a deliberate
+ * self-contained tile rather than a floating subject.
  *
  * Vertical budget note: the outer container is `flexDirection: column` with
  * `justifyContent: center`. Every direct child below is `flexShrink: 0` —
@@ -181,8 +204,9 @@ export function GRADIENT_CSS(g: { from: string; to: string }): string {
  * squeezed *below* its own text's rendered height whenever total content
  * exceeds the 640px frame, and the glyphs (rendered at full size regardless)
  * spill out of the shrunk box into whatever comes next. That is what let a
- * two-line title overlap the tagline: the sizes below are chosen so a
- * two-line title + tagline + footer fit the frame without any shrinking, and
+ * two-line title overlap the tagline (see task 7c); the sizes below —
+ * including the artwork box's 200px height cap — are chosen so a two-line
+ * title + tagline + footer still fit the frame without any shrinking, and
  * `flexShrink: 0` makes that a guarantee rather than an accident of the
  * current copy. The title is additionally clamped to 2 lines
  * (`WebkitLineClamp` + `textOverflow: 'ellipsis'`, which Satori honors only
@@ -193,14 +217,22 @@ export function GRADIENT_CSS(g: { from: string; to: string }): string {
 export function BannerTemplate({
   title,
   tagline,
-  iconPng,
+  artwork,
+  opaque = false,
   gradient,
 }: {
   title: string;
   tagline?: string;
-  iconPng: string;
+  artwork: Mark;
+  opaque?: boolean;
   gradient: { from: string; to: string };
 }) {
+  // Transparent subjects get a wide, generous box (fit is height-capped so
+  // subjects stay a consistent size across the catalog regardless of aspect
+  // ratio); the opaque full-bleed exception gets a smaller square tile, since
+  // it's already a self-contained square composite, not a subject to float.
+  const { width, height } = opaque ? fitWithin(artwork, 200, 200) : fitWithin(artwork, 480, 200);
+
   return (
     <div
       style={{
@@ -215,21 +247,17 @@ export function BannerTemplate({
         backgroundImage: GRADIENT_CSS(gradient),
       }}
     >
-      <div
+      <img
+        src={artwork.src}
+        width={width}
+        height={height}
+        alt=""
         style={{
-          display: 'flex',
           flexShrink: 0,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '176px',
-          height: '176px',
-          backgroundColor: '#FFFFFF',
-          borderRadius: '32px',
-          marginBottom: '28px',
+          marginBottom: '32px',
+          ...(opaque ? { borderRadius: '28px' } : {}),
         }}
-      >
-        <img src={iconPng} width={124} height={124} alt="" />
-      </div>
+      />
 
       <div
         style={{

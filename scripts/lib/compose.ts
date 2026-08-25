@@ -8,6 +8,8 @@
  * surviving v1 anchor (coast-guard-pilot-tracker.png) is an opaque
  * full-bleed image with its own baked background instead; it is detected by
  * alpha statistics, not hardcoded by project id (see isOpaqueFullBleed).
+ * Exported so scripts/generate-assets.tsx can apply the same branch to the
+ * GitHub banner's artwork treatment instead of re-deriving the heuristic.
  *
  * Script-only code: uses sharp and node-only APIs. Never import this from
  * src/app/** or src/components/** — sharp doesn't run on the Cloudflare
@@ -35,7 +37,7 @@ const SUBJECT = 720; // artwork box, centered — generous margins per STYLE.md
  * fully-opaque anti-aliased edge pixels on an otherwise transparent subject
  * can't flip it into this branch by accident.
  */
-const OPAQUE_ALPHA_MEAN = 250;
+export const OPAQUE_ALPHA_MEAN = 250;
 
 /** Apple-style superellipse |x/a|^n + |y/a|^n = 1, n≈4.6 */
 export function squirclePath(size: number, n = 4.6): string {
@@ -85,7 +87,7 @@ function maskShapeSvg(size: number, shape: 'rounded' | 'squircle', rx = 180): Bu
  * PNGs that do carry an alpha channel but whose pixels are essentially all
  * opaque (mean alpha >= OPAQUE_ALPHA_MEAN) are treated the same way.
  */
-async function isOpaqueFullBleed(artwork: Buffer): Promise<boolean> {
+export async function isOpaqueFullBleed(artwork: Buffer): Promise<boolean> {
   const meta = await sharp(artwork).metadata();
   if (!meta.hasAlpha) return true;
   const { channels } = await sharp(artwork).stats();
