@@ -36,56 +36,14 @@ export default function FeaturedProjects() {
             >
             {project.image && (
               <div
-                className={`relative w-full h-48 flex items-center justify-center ${getProjectGradientClass(project.id)}`}
+                className={`relative w-full h-48 ${getProjectGradientClass(project.id)}`}
               >
-                {project.id === 'nahtadi' ? (
-                  <div className="w-32 h-32 bg-white rounded-3xl shadow-2xl overflow-hidden">
-                    <Image
-                      src={project.image}
-                      alt={project.imageAlt || project.title}
-                      width={128}
-                      height={128}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : project.id === 'collision-avoidance-radar' ? (
-                  <div className="w-32 h-32 rounded-3xl shadow-2xl overflow-hidden">
-                    <Image
-                      src={project.image}
-                      alt={project.imageAlt || project.title}
-                      width={128}
-                      height={128}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : project.id === 'new-game-plus' || project.id === 'islamic-prayer-time' ? (
-                  <div className="w-32 h-32 bg-white rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center">
-                    <Image
-                      src={project.image}
-                      alt={project.imageAlt || project.title}
-                      width={128}
-                      height={128}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                ) : project.id === 'wildfire-predictor' || project.id === 'asl-detector' || project.id === 'image-watermark-remover' || project.id === 'reddit-nlp' || project.id === 'coast-guard-pilot-tracker' || project.id === 'coast-guard-inventory' || project.id === 'cycloidal-drive-creator' ? (
-                  <div className="w-32 h-32 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center p-3">
-                    <Image
-                      src={project.image}
-                      alt={project.imageAlt || project.title}
-                      width={128}
-                      height={128}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                ) : (
-                  <Image
-                    src={project.image}
-                    alt={project.imageAlt || project.title}
-                    fill
-                    className="object-cover"
-                  />
-                )}
+                <Image
+                  src={project.image}
+                  alt={project.imageAlt || project.title}
+                  fill
+                  className="object-cover"
+                />
               </div>
             )}
             <div className="p-6">
