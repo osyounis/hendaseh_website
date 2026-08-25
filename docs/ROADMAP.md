@@ -76,6 +76,16 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 - Nahtadi pages: visual consistency pass, URLs and SEO untouched.
 - Both themes, `prefers-reduced-motion`, WCAG-conscious contrast, no SEO regressions (metadata, JSON-LD, sitemap preserved).
 
+**Open question — the positioning tagline (raised by Omar 2026-08-25).** The locked surface string is
+`Software Engineer · iOS & Machine Learning`, and it currently appears on the home hero, the OG site card
+(`src/lib/ogCards.ts`), and `layout.tsx`'s OG `alt`. Omar wants it reconsidered: he does and will do more
+than iOS and ML, and the pair may read as narrower than his actual range — possibly just
+`Software Engineer`. **This reopens a locked decision**, so it is a deliberate call for this sub-project,
+not a copy tweak: dropping the specifics also drops the concrete proof (`iOS` is backed by a shipped App
+Store app) that makes the line credible, so whatever replaces it has to carry range without going vague.
+Whatever is chosen must land on every surface at once — see the surface-string table in
+`.claude/CLAUDE.md`; the OG card is a pre-rendered PNG and needs `npm run generate:og` re-run and committed.
+
 **Exit:** all pages shipped in both themes, Lighthouse/axe clean, SEO parity confirmed.
 
 ## 5 — Case-study content
