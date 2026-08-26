@@ -1,4 +1,5 @@
 import { getProjectById, getAllProjects } from '@/lib/projects';
+import { getProjectGradientClass } from '@/lib/projectStyles';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -155,6 +156,22 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           {/* Hero Section for Brent's Method with CUDA */}
           <section className="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 text-white py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto text-center">
+              {/* Project Icon */}
+              {project.image && (
+                <div className="mb-8 flex justify-center">
+                  <div className="w-40 h-40 rounded-3xl shadow-2xl overflow-hidden">
+                    <Image
+                      src={project.image}
+                      alt={project.imageAlt || project.title}
+                      width={160}
+                      height={160}
+                      className="w-full h-full object-cover"
+                      priority
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Project Name & Tagline */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
                 Parallelizing Brent&apos;s Method with CUDA
@@ -290,37 +307,20 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             ← Back to Projects
           </Link>
 
-          {/* Project hero image */}
+          {/* Project hero image — object-contain so the full square artwork
+              shows uncropped; the project's own gradient fills the rest of
+              the frame. */}
           {project.image && (
             <div
-              className={`relative w-full h-96 mb-8 overflow-hidden flex items-center justify-center ${
-                project.id === 'wildfire-predictor'
-                  ? 'bg-gradient-to-br from-red-600 to-orange-500 rounded-3xl'
-                  : project.id === 'asl-detector'
-                  ? 'bg-gradient-to-br from-purple-600 to-purple-400 rounded-3xl'
-                  : 'bg-gray-100 rounded-lg'
-              }`}
+              className={`relative w-full h-96 mb-8 overflow-hidden rounded-3xl flex items-center justify-center ${getProjectGradientClass(project.id)}`}
             >
-              {project.id === 'wildfire-predictor' || project.id === 'asl-detector' ? (
-                <div className="w-60 h-60 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center p-6">
-                  <Image
-                    src={project.image}
-                    alt={project.imageAlt || project.title}
-                    width={240}
-                    height={240}
-                    className="w-full h-full object-contain"
-                    priority
-                  />
-                </div>
-              ) : (
-                <Image
-                  src={project.image}
-                  alt={project.imageAlt || project.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              )}
+              <Image
+                src={project.image}
+                alt={project.imageAlt || project.title}
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
           )}
 

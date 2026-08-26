@@ -6,9 +6,10 @@ const config = [
   ...coreWebVitals,
   ...typescript,
   {
-    // The OG card template is rendered by Satori, not the DOM/browser — it cannot
-    // consume next/image's <Image />, so raw <img> is required and correct here.
-    files: ['src/lib/ogTemplate.tsx'],
+    // The shared asset templates (OG cards + GitHub banner) are rendered by
+    // Satori, not the DOM/browser — they cannot consume next/image's <Image />,
+    // so raw <img> is required and correct here.
+    files: ['src/lib/assetTemplates.tsx'],
     rules: {
       '@next/next/no-img-element': 'off',
     },

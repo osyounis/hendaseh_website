@@ -12,7 +12,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { getOgCard } from '../src/lib/ogCards';
 import { getShowcaseProjects } from '../src/lib/projects';
-import { CardTemplate, loadMarks } from '../src/lib/ogTemplate';
+import { CardTemplate, loadMarks, loadProjectArtwork, type Mark } from '../src/lib/assetTemplates';
 
 const FONT_DIR = 'src/fonts/roboto';
 const OUT = 'public/og';
@@ -28,7 +28,12 @@ async function main() {
   const ids = ['site', 'nahtadi', ...getShowcaseProjects().map((p) => p.id)];
   for (const id of ids) {
     const card = getOgCard(id);
-    const mark = card.icon ? marks[card.icon.src === 'nahtadi' ? 'nahtadi' : 'hendaseh'] : null;
+    let mark: Mark | null = null;
+    if (card.icon) {
+      if (card.icon.src === 'nahtadi') mark = marks.nahtadi;
+      else if (card.icon.src === 'hendaseh-mark') mark = marks.hendaseh;
+      else mark = await loadProjectArtwork(card.icon.src.project);
+    }
     const svg = await satori(<CardTemplate card={card} mark={mark} />, {
       width: 1200,
       height: 630,
@@ -37,7 +42,10 @@ async function main() {
         { name: 'Roboto', data: medium, weight: 500, style: 'normal' },
       ],
     });
-    await writeFile(path.join(OUT, `${id}.png`), await sharp(Buffer.from(svg)).png().toBuffer());
+    await writeFile(
+      path.join(OUT, `${id}.png`),
+      await sharp(Buffer.from(svg)).png({ compressionLevel: 9, effort: 10 }).toBuffer()
+    );
     console.log(`og: ${id}.png`);
   }
 }
