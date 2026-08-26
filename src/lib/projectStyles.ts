@@ -27,8 +27,8 @@ const PROJECT_GRADIENTS: Record<string, ProjectGradient> = {
     stops: { from: '#49F2E5', to: '#7E22CE' },
   },
   'brent-cuda': {
-    className: 'bg-gradient-to-br from-green-800 to-gray-900',
-    stops: { from: '#166534', to: '#111827' },
+    className: 'bg-gradient-to-br from-[#4B5563] to-[#1F2937]',
+    stops: { from: '#4B5563', to: '#1F2937' },
   },
   'collision-avoidance-radar': {
     className: 'bg-gradient-to-br from-[#8DA2B8] to-[#2F4058]',

@@ -23,7 +23,7 @@ export interface Gradient {
 }
 
 const SIZE = 1024;
-const SUBJECT = 720; // artwork box, centered — generous margins per STYLE.md
+const SUBJECT = 650; // artwork box, centered — generous margins per STYLE.md
 
 /**
  * Mean alpha (sharp's stats scale is 0–255) at or above which artwork is
