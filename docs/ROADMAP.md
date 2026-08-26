@@ -76,6 +76,17 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 - Nahtadi pages: visual consistency pass, URLs and SEO untouched.
 - Both themes, `prefers-reduced-motion`, WCAG-conscious contrast, no SEO regressions (metadata, JSON-LD, sitemap preserved).
 
+**Open question — meta descriptions are too long (measured 2026-08-26).** `/projects/[slug]` emits each
+project's full `description` from `projects.json` as both `description` and `og:description`. Measured on
+`/projects/collision-avoidance-radar`: **261 characters**. Google truncates around 150–160, and social
+previews show roughly 125 — so the tail is cut on every surface. The page `<title>`/`og:title` are fine
+at 58 characters; only the description is over.
+
+Sub-project 3 added a **`tagline`** to all 13 projects, which is written for exactly this length
+(`"Radar plotting for collision avoidance"` = 37 chars). Using `tagline` for the meta/OG description and
+keeping the full `description` for page body copy fixes every project at once. Pre-existing, not a
+regression from sub-project 3.
+
 **Open question — the positioning tagline (raised by Omar 2026-08-25).** The locked surface string is
 `Software Engineer · iOS & Machine Learning`, and it currently appears on the home hero, the OG site card
 (`src/lib/ogCards.ts`), and `layout.tsx`'s OG `alt`. Omar wants it reconsidered: he does and will do more
