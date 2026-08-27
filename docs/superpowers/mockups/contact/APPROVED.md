@@ -19,6 +19,8 @@ One idea: **the email address is the hero.** No form (decided phase 2), no avail
 - `→` = internal navigation · `↗` = external link (new tab) · `↓` = download.
 - Destination icons (octocat, ) say WHERE; arrows say WHAT HAPPENS; they compose ("GitHub ↗" with octocat icon).
 - Every interactive card and pill has the standard `:active` press response (scale .96–.98).
+- Arrows are VISUAL ONLY: always `aria-hidden`; the link text/label must be self-sufficient for screen readers. (Applies retroactively to the older → arrows.)
+- A scroll-to-anchor gets NO arrow (neither → nor ↓ applies).
 - Applies to ALL pages. B2/B3/B4 build to it; where already-built Home misses it (GitHub pills without ↗, résumé links without ↓, cards without :active), the next B-task touching that surface retrofits it.
 
 ## Build notes for B4

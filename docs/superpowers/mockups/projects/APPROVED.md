@@ -22,7 +22,7 @@
 
 ## Case-study template (`/projects/[slug]`)
 
-- **Hero:** project-palette gradient; breadcrumb `← All projects`; icon 132px; title + one-line thesis; action buttons — GitHub (octocat, 18px glyph) and, when an embed exists, primary `Launch live demo ↓` **anchoring to the in-page embed**; 3-stat row (real numbers only).
+- **Hero:** project-palette gradient; breadcrumb `← All projects`; icon 132px; title + one-line thesis; action buttons — GitHub (octocat, 18px glyph) and, when an embed exists, primary `Launch live demo` (NO arrow — a scroll-to-anchor is neither navigation → nor download ↓ per the sitewide grammar) **anchoring to the in-page embed**; 3-stat row (real numbers only).
 - **Body:** `THE PROBLEM → THE APPROACH → THE IMPACT` as eyebrow + statement headings, prose ≤760px, 1.75 leading. **Media slot** (16:9 figure + caption) for phase-5 charts/GIFs; **embed slot** loads the live demo in place (Streamlit today; demos hosted on-site under case studies is the standing intent).
 - **Scroll reveal:** sections/figures rise 14px + fade, 450ms strong ease-out, once (IntersectionObserver, `-80px` margin), fully static under reduced motion.
 - **Bottom rhythm:** content → space → ONE hairline (the footer's). The prev/next nav row has no border of its own — never stack hairlines.
@@ -36,6 +36,9 @@
 - Hero cluster: horizontally centered; scale the whole cluster with `transform: scale()` on small viewports — never fixed-width geometry that can drift off-center.
 - Feature/work tiles: never stack into full-width sprawl — compact horizontal layout (icon ~84px left, text right), same as small tiles.
 - Every future mockup ships an explicit phone-width pane; "implementer judgment" mobile layouts are no longer acceptable.
+- Mobile filter chips: single horizontal scrolling row (iOS-native pattern, per B2 ruling upheld) — scrollbar hidden, partial last chip as the scroll affordance. Never wrap into multiple rows.
+- Case-study media slot renders NOTHING when a project has no media (the mockup's hatched placeholder was design scaffolding, not visitor-facing content).
+- DEFERRED TO B6 (named item): case-study nav-over-hero treatment — translucent dark nav with adaptive link colors so the hero reaches under the nav per the mockup; until then the light-theme band above dark heroes is an accepted temporary seam.
 
 ## Build notes for B2
 
