@@ -1,9 +1,9 @@
 # Home — APPROVED design contract (M1 complete, 2026-08-26)
 
 **Approved mockups (the visual contract for Task B1):**
-- `v10-final.html` — dark theme (canonical)
-- `v10-final-light.html` — light theme companion
-- (v9 pair superseded by v10 after Omar's Apple-calibration review)
+- `v11-final.html` — dark theme (canonical)
+- `v11-final-light.html` — light theme companion
+- (v9/v10 pairs superseded; v11 = full Apple-audit pass)
 - History: v1 directions → v9 across 9 iterations with Omar; superseded files kept for reference.
 
 ## Page structure (locked, in order)
@@ -23,7 +23,12 @@ Small blue eyebrow (12px, 900, letterspaced) + large statement heading (Roboto 9
 ## Hero copy (locked)
 Lede (if used under tagline): "I design the solution first — then learn whatever the problem needs. Machines for seven years; now the software that drives them." — canonical-facts compliant; no embellishment beyond it.
 
-## Apple-calibration rules (v10, from measuring apple.com + the apple-design skill)
+## Apple-calibration rules (v11 — full-page audit, both themes)
+
+**Light theme uses Apple's gray ladder on a near-white ground — never soft grays on a tinted ground:**
+ground `#fbfbfd` (sky fades `#eef4fb → #fbfbfd`) · cards/surfaces `#fff` with hairline `#d2d2d7` + soft shadow `0 2px 12px rgba(0,0,0,.04)` · primary text `#1d1d1f` · muted text floor `#6e6e73` · tertiary/separators `#aeaeb2` · footer text `#86868b` over a hairline top border · secondary pill fill `#e8e8ed` · accent `#0071e3`.
+Dark theme: footer text navy-300 with `#0d1e33` hairline (was too dim).
+
 
 - **Buttons are pills** (radius 980px), never outlined: primary = blue fill (#0071e3-family) + white text; secondary = soft fill (light: #e8edf4 + navy text; dark: rgba(199,214,230,.14) + white). Press response `:active { scale(.97) }` — feedback on pointer-down.
 - **Text-contrast floor:** no UI text lighter than Apple's #6e6e73-equivalent on light (our #5d6f83 for ticker secondaries; nav links rgba(10,26,47,.8) weight 600). Same discipline in dark (ticker secondaries #6a87a5+).
