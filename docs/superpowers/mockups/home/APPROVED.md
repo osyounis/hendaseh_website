@@ -26,7 +26,7 @@ Lede (if used under tagline): "I design the solution first — then learn whatev
 ## Apple-calibration rules (v11 — full-page audit, both themes)
 
 **Light theme uses Apple's gray ladder on a near-white ground — never soft grays on a tinted ground:**
-ground `#fbfbfd` (sky fades `#eef4fb → #fbfbfd`) · cards/surfaces `#fff` with hairline `#d2d2d7` + soft shadow `0 2px 12px rgba(0,0,0,.04)` · primary text `#1d1d1f` · muted text floor `#6e6e73` · tertiary/separators `#aeaeb2` · footer text `#86868b` over a hairline top border · secondary pill fill `#e8e8ed` on plain ground — but **on tinted/sky surfaces the secondary pill is WHITE with an inset `#d2d2d7` hairline + soft shadow** (a gray pill melts into a tinted ground) · accent `#0071e3`.
+ground `#fbfbfd` (sky fades `#eef4fb → #fbfbfd`) · cards/surfaces `#fff` with hairline `#d2d2d7` + soft shadow `0 2px 12px rgba(0,0,0,.04)` · primary text `#1d1d1f` · muted text floor `#6e6e73` · tertiary/separators `#aeaeb2` · footer text `#86868b` over a hairline top border · secondary pill fill `#e3e3e8` on plain/white ground (one step darker than Apple default so it reads identical across white cards and the #fbfbfd page ground) — but **on tinted/sky surfaces the secondary pill is WHITE with an inset `#d2d2d7` hairline + soft shadow** (a gray pill melts into a tinted ground) · accent `#0071e3`.
 Dark theme: footer text navy-300 with `#0d1e33` hairline (was too dim).
 
 
