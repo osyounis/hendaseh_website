@@ -4,7 +4,7 @@ test.describe('Site Navigation', () => {
   test('should navigate through all main pages', async ({ page }) => {
     // Start at homepage
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Hendaseh', level: 1 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Omar Younis', level: 1 })).toBeVisible()
 
     // Navigate to About using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'About' }).click()
@@ -52,8 +52,9 @@ test.describe('Site Navigation', () => {
   test('should have contact page link', async ({ page }) => {
     await page.goto('/')
 
-    // Check "Let's Talk" button links to contact page
-    const contactLink = page.getByRole('link', { name: "Let's Talk" })
+    // The home page's own contact CTA is now a mailto:, so the nav is where a
+    // link to /contact has to hold.
+    const contactLink = page.getByRole('navigation').getByRole('link', { name: 'Contact' })
     await expect(contactLink).toBeVisible()
     await expect(contactLink).toHaveAttribute('href', '/contact')
   })

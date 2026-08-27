@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 // Every swatch class is written out literally so Tailwind's scanner emits it.
 // Do NOT build class names by interpolation in this file.
@@ -30,6 +30,45 @@ const NAVY_SWATCHES: { label: string; className: string }[] = [
   { label: 'navy-800', className: 'bg-navy-800' },
   { label: 'navy-900', className: 'bg-navy-900' },
   { label: 'navy-950', className: 'bg-navy-950' },
+];
+
+const INK_SWATCHES: { label: string; className: string }[] = [
+  { label: 'ink-50', className: 'bg-ink-50' },
+  { label: 'ink-100', className: 'bg-ink-100' },
+  { label: 'ink-200', className: 'bg-ink-200' },
+  { label: 'ink-300', className: 'bg-ink-300' },
+  { label: 'ink-400', className: 'bg-ink-400' },
+  { label: 'ink-500', className: 'bg-ink-500' },
+  { label: 'ink-600', className: 'bg-ink-600' },
+  { label: 'ink-900', className: 'bg-ink-900' },
+];
+
+const HAZE_SWATCHES: { label: string; className: string }[] = [
+  { label: 'haze-100', className: 'bg-haze-100' },
+  { label: 'haze-200', className: 'bg-haze-200' },
+];
+
+const APPLE_BLUE_SWATCHES: { label: string; className: string }[] = [
+  { label: 'apple-blue', className: 'bg-apple-blue' },
+];
+
+const DEEP_SWATCHES: { label: string; className: string }[] = [
+  { label: 'deep-page', className: 'bg-deep-page' },
+  { label: 'deep-sky', className: 'bg-deep-sky' },
+  { label: 'deep-ticker', className: 'bg-deep-ticker' },
+  { label: 'deep-card', className: 'bg-deep-card' },
+  { label: 'deep-hairline', className: 'bg-deep-hairline' },
+  { label: 'deep-core-top', className: 'bg-deep-core-top' },
+  { label: 'deep-core-bottom', className: 'bg-deep-core-bottom' },
+];
+
+const NAHTADI_SWATCHES: { label: string; className: string }[] = [
+  { label: 'nahtadi-100', className: 'bg-nahtadi-100' },
+  { label: 'nahtadi-200', className: 'bg-nahtadi-200' },
+  { label: 'nahtadi-600', className: 'bg-nahtadi-600' },
+  { label: 'nahtadi-700', className: 'bg-nahtadi-700' },
+  { label: 'nahtadi-800', className: 'bg-nahtadi-800' },
+  { label: 'nahtadi-900', className: 'bg-nahtadi-900' },
 ];
 
 function SwatchRow({
@@ -127,7 +166,8 @@ function Fonts() {
   return (
     <div className="space-y-4">
       <h3 className="text-muted font-mono text-xs uppercase tracking-wide">Fonts</h3>
-      <FontSample label="font-heading (Roboto Medium 500)" className="font-heading text-h3" />
+      <FontSample label="font-heading (Roboto 500/700/900)" className="font-heading text-h3" />
+      <p className="font-heading text-h3 font-black">Roboto 900 — statement heading weight</p>
       <FontSample label="font-body (Roboto Regular 400)" className="font-body text-body" />
     </div>
   );
@@ -145,6 +185,117 @@ function Radii() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// Every semantic token the redesign consumes, printed with its *computed*
+// value in each theme. Colour tokens get a swatch; gradients, shadows and
+// lengths are text-only because that is what is actually worth eyeballing.
+const COLOUR_TOKENS = [
+  '--surface',
+  '--surface-raised',
+  '--surface-sunken',
+  '--ticker-surface',
+  '--fg-strong',
+  '--fg-body',
+  '--fg-muted',
+  '--fg-subtle',
+  '--fg-faint',
+  '--accent',
+  '--accent-strong',
+  '--edge',
+  '--edge-soft',
+  '--tile-hover-edge',
+  '--pill-primary-bg',
+  '--pill-primary-fg',
+  '--pill-secondary-bg',
+  '--pill-secondary-fg',
+  '--pill-sky-bg',
+  '--nav-fg',
+  '--nav-fg-active',
+  '--ticker-secondary',
+  '--flagship-fg',
+  '--flagship-meta',
+  '--flagship-body',
+  '--flagship-pill-bg',
+  '--flagship-pill-fg',
+];
+
+const VALUE_TOKENS = [
+  '--nav-h',
+  '--home-sky',
+  '--cta-surface',
+  '--card-shadow',
+  '--cta-shadow',
+  '--tile-hover-shadow',
+  '--aurora-image',
+  '--aurora-opacity',
+  '--stars-opacity',
+  '--core-bg',
+  '--core-shadow',
+  '--sat-shadow',
+  '--pill-sky-shadow',
+  '--pill-secondary-shadow',
+  '--flagship-bg',
+  '--flagship-edge',
+  '--flagship-glow',
+  '--nahtadi-tile',
+  '--nahtadi-tile-flagship',
+  '--nahtadi-tile-shadow',
+];
+
+function useComputedTokens(names: string[]) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [values, setValues] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!ref.current) return;
+    const styles = getComputedStyle(ref.current);
+    setValues(Object.fromEntries(names.map((n) => [n, styles.getPropertyValue(n).trim()])));
+    // `names` is a module-level constant array; re-running on identity is noise.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return { ref, values };
+}
+
+function SemanticTokens() {
+  const { ref, values } = useComputedTokens(COLOUR_TOKENS);
+  return (
+    <div ref={ref} className="space-y-3">
+      <h3 className="text-muted font-mono text-xs uppercase tracking-wide">Semantic colours</h3>
+      <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 font-mono text-xs">
+        {COLOUR_TOKENS.map((name) => (
+          <Fragment key={name}>
+            <dt className="text-secondary">{name}</dt>
+            <dd className="flex items-center gap-2">
+              <span className="text-muted">{values[name] ?? '…'}</span>
+              <span
+                className="border-edge inline-block h-4 w-8 shrink-0 rounded border"
+                style={{ background: `var(${name})` }}
+              />
+            </dd>
+          </Fragment>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function EffectTokens() {
+  const { ref, values } = useComputedTokens(VALUE_TOKENS);
+  return (
+    <div ref={ref} className="space-y-3">
+      <h3 className="text-muted font-mono text-xs uppercase tracking-wide">
+        Layout, gradients &amp; elevation
+      </h3>
+      <dl className="space-y-1 font-mono text-xs">
+        {VALUE_TOKENS.map((name) => (
+          <Fragment key={name}>
+            <dt className="text-secondary">{name}</dt>
+            <dd className="text-muted mb-1 break-all">{values[name] ?? '…'}</dd>
+          </Fragment>
+        ))}
+      </dl>
     </div>
   );
 }
@@ -167,6 +318,8 @@ function Panel({ theme }: { theme: 'light' | 'dark' }) {
       <TypeScale />
       <Fonts />
       <Radii />
+      <SemanticTokens />
+      <EffectTokens />
     </div>
   );
 }
@@ -178,6 +331,11 @@ export default function TokensClient() {
         <h1 className="text-2xl mb-4">Brand scales</h1>
         <SwatchRow name="brand" swatches={BRAND_SWATCHES} />
         <SwatchRow name="navy" swatches={NAVY_SWATCHES} />
+        <SwatchRow name="ink (Apple gray ladder, light theme)" swatches={INK_SWATCHES} />
+        <SwatchRow name="haze (light tints)" swatches={HAZE_SWATCHES} />
+        <SwatchRow name="apple-blue (light-theme accent)" swatches={APPLE_BLUE_SWATCHES} />
+        <SwatchRow name="deep (dark grounds)" swatches={DEEP_SWATCHES} />
+        <SwatchRow name="nahtadi (flagship card)" swatches={NAHTADI_SWATCHES} />
       </section>
       <section className="grid md:grid-cols-2 gap-4 rounded-2xl overflow-hidden border border-edge">
         <Panel theme="light" />

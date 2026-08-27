@@ -1,5 +1,9 @@
 import { Metadata } from 'next'
-import HomepageClient from '@/components/HomepageClient'
+import HomeHero from '@/components/home/HomeHero'
+import HomeTicker from '@/components/home/HomeTicker'
+import HomeFlagship from '@/components/home/HomeFlagship'
+import HomeWork from '@/components/home/HomeWork'
+import HomeCTA from '@/components/home/HomeCTA'
 
 export const metadata: Metadata = {
   title: 'Hendaseh - Omar Younis | Software Engineer — iOS & ML',
@@ -26,5 +30,13 @@ export const metadata: Metadata = {
 }
 
 export default function Home() {
-  return <HomepageClient />
+  return (
+    <>
+      <HomeHero />
+      <HomeTicker />
+      <HomeFlagship />
+      <HomeWork />
+      <HomeCTA />
+    </>
+  )
 }

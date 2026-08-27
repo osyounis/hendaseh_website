@@ -18,12 +18,32 @@ export default function AnimatedProjectCard({ project, index }: AnimatedProjectC
 
   return (
     <motion.div
-      initial={shouldAnimate ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
+      /*
+       * The resting state is VISIBLE. The reveal is an enhancement layered on
+       * top, never a gate.
+       *
+       * This used to start at `opacity: 0` and rely on `whileInView` — an
+       * IntersectionObserver callback — to raise it to 1. That put the one
+       * property that decides whether content exists at all under the control
+       * of JavaScript: with JS disabled, with the client chunk failing to load
+       * on a flaky mobile connection, or with an observer callback that never
+       * fires, twelve of the thirteen cards server-rendered blank. That is the
+       * "only Nahtadi's image renders" report from the 2026-08-26 phone review.
+       *
+       * Opacity is therefore pinned at 1 in every state and the reveal animates
+       * `y` alone, so the trigger, easing, duration and stagger are unchanged
+       * for everyone whose JavaScript runs, and a card is legible even when
+       * nothing on the JS path ever executes. Guarded by
+       * `tests/e2e/projects-no-js.spec.ts`. (Task B2 owns rebuilding this
+       * reveal properly when it redesigns /projects.)
+       */
+      initial={{ opacity: 1, y: shouldAnimate ? 10 : 0 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px", amount: 0.1 }}
       transition={{ duration: 0.3, delay: shouldAnimate ? Math.min(index * 0.05, 0.2) : 0 }}
       whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
       className="border border-gray-300 rounded-lg overflow-hidden hover:border-[#0093FF] transition-colors"
+      data-testid="project-card"
     >
       <div className="md:flex">
         {project.image && (

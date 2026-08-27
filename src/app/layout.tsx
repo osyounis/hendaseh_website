@@ -2,10 +2,13 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/navigation/Navigation';
+import Footer from '@/components/Footer';
 
-// Primary font: Roboto Medium (weight 500)
+// Primary font. Weight 500 is the brandbook's heading weight; 700 and 900 are
+// loaded because the redesign's statement headings are set in Roboto 900 and a
+// synthesised bold is visibly wrong at display sizes.
 const robotoMedium = Roboto({
-  weight: '500',
+  weight: ['500', '700', '900'],
   subsets: ['latin'],
   variable: '--font-roboto-medium',
   display: 'swap',
@@ -66,11 +69,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Navigation />
         <main className="min-h-screen">{children}</main>
-        <footer className="border-t border-gray-200 mt-16">
-          <div className="max-w-6xl mx-auto px-4 py-8 text-center text-gray-600">
-            <p>&copy; {new Date().getFullYear()} Omar Younis. All rights reserved.</p>
-          </div>
-        </footer>
+        <Footer />
         {/*
           Cloudflare Web Analytics (cookieless). Installed as a snippet rather
           than by Cloudflare's automatic injection: auto-injection rewrites HTML
