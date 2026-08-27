@@ -1,7 +1,7 @@
 # About — APPROVED design contract (M3, 2026-08-27)
 
 **Approved mockups (visual contract for Task B3):**
-- `v8.html` — dark (canonical) · `v8-light.html` — light companion
+- `v9.html` — dark (canonical) · `v9-light.html` — light companion (v8 pair superseded: light-theme heading fix, connector contrast, pill-ground rule, .when contrast floor)
 - History: v1 → v8 across Omar's copy workshop + review rounds; superseded files kept.
 
 ## Copy is LOCKED VERBATIM
@@ -22,6 +22,8 @@ The copy in v8 went through a multi-round workshop with Omar and is locked word-
 - Reveals: sections rise 20px/600ms, trigger at threshold .25 with -60px bottom margin (must be seen, not pre-fired); reveal uses the `translate` property so it NEVER conflicts with hover `transform`. (sitewide)
 - **Card hover is SHARED CODE, not a spec to re-implement:** B3 applies the existing built `.home-tile` class/tokens (ease-brand 280ms, -6px, tile-hover tokens) to About's cards. Same rule binds **B2 for the projects page cards** per Omar's explicit instruction. Parity is structural, never approximated. (sitewide)
 - Phone (sub-880): stacked hero (photo 220px below text), inline timeline dots, single-column cards, stacked CTAs.
+
+- Focus visibility: B3 reuses the built `.home-tile:focus-visible` outline pattern on all interactive cards/pills. (sitewide)
 
 ## Build notes for B3
 
