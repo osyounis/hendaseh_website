@@ -22,7 +22,7 @@
 
 ## Case-study template (`/projects/[slug]`)
 
-- **Hero:** project-palette gradient; breadcrumb `← All projects`; icon 132px; title + one-line thesis; action buttons — GitHub (octocat, 18px glyph) and, when an embed exists, primary `Launch live demo` (NO arrow — a scroll-to-anchor is neither navigation → nor download ↓ per the sitewide grammar) **anchoring to the in-page embed**; 3-stat row (real numbers only).
+- **Hero:** project-palette gradient; breadcrumb `← All projects`; icon 132px; title + one-line thesis; action buttons — GitHub (octocat, 18px glyph) and, when an embed exists, primary `Launch live demo` with the chevron-down-in-circle glyph (grammar v2: in-page jump) **anchoring to the in-page embed**; 3-stat row (real numbers only).
 - **Body:** `THE PROBLEM → THE APPROACH → THE IMPACT` as eyebrow + statement headings, prose ≤760px, 1.75 leading. **Media slot** (16:9 figure + caption) for phase-5 charts/GIFs; **embed slot** loads the live demo in place (Streamlit today; demos hosted on-site under case studies is the standing intent).
 - **Scroll reveal:** sections/figures rise 14px + fade, 450ms strong ease-out, once (IntersectionObserver, `-80px` margin), fully static under reduced motion.
 - **Bottom rhythm:** content → space → ONE hairline (the footer's). The prev/next nav row has no border of its own — never stack hairlines.

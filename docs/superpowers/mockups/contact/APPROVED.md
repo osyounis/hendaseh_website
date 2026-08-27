@@ -14,14 +14,21 @@ One idea: **the email address is the hero.** No form (decided phase 2), no avail
 - Entrance: staggered rise cascade (eyebrow → heading → sub → email → hint → cards → sign-off, ~120ms steps, 600ms ease-out). Aurora background at reduced opacity. Reduced motion: fully static.
 - Mobile (sub-880): channel cards become full-width rows (icon left, labels left-aligned), email wraps, everything centered otherwise.
 
-## Link-affordance grammar (SITEWIDE LAW, formalized here)
+## Link-affordance grammar v2 (SITEWIDE LAW — Apple symbol semantics, adopted 2026-08-27)
 
-- `→` = internal navigation · `↗` = external link (new tab) · `↓` = download.
+Chevrons = movement within the experience; arrows = actions or leaving it (Apple's own vocabulary, per Omar's audit of apple.com):
+
+- **chevron-right** `›` = internal navigation (replaces the older `→` on "Case study", "The story", "All projects", etc. — label text unchanged, glyph swapped)
+- **chevron-down-in-circle** = in-page jump/anchor ("Launch live demo" carries this — supersedes the earlier no-arrow ruling)
+- **arrow-down-in-circle** = download (replaces bare `↓`)
+- **arrow-up-right** = external link, new tab (unchanged)
+
+**Licensing: never use SF Symbols assets or fonts on the web** (Apple's license restricts them to Apple-platform software). All four glyphs are SELF-DRAWN SVGs matching these semantics.
 - Destination icons (octocat, ) say WHERE; arrows say WHAT HAPPENS; they compose ("GitHub ↗" with octocat icon).
 - Every interactive card and pill has the standard `:active` press response (scale .96–.98).
 - Arrows are VISUAL ONLY: always `aria-hidden`; the link text/label must be self-sufficient for screen readers. (Applies retroactively to the older → arrows.)
 - **Arrows are inline SVG, never Unicode characters** (iOS renders U+2197 as an emoji; fonts render it at wild lengths; text arrows orphan-wrap). One shared set of three small SVG glyphs (→, ↗, ↓) at ~0.65em, baseline-aligned, compact like Apple's — and each arrow is wrapped with the label's LAST WORD in a `white-space: nowrap` span so it can never wrap onto its own line.
-- A scroll-to-anchor gets NO arrow (neither → nor ↓ applies).
+- (Superseded by grammar v2: scroll-to-anchor uses chevron-down-in-circle.)
 - Applies to ALL pages. B2/B3/B4 build to it; where already-built Home misses it (GitHub pills without ↗, résumé links without ↓, cards without :active), the next B-task touching that surface retrofits it.
 
 ## Build notes for B4
