@@ -14,6 +14,13 @@ One idea: **the email address is the hero.** No form (decided phase 2), no avail
 - Entrance: staggered rise cascade (eyebrow → heading → sub → email → hint → cards → sign-off, ~120ms steps, 600ms ease-out). Aurora background at reduced opacity. Reduced motion: fully static.
 - Mobile (sub-880): channel cards become full-width rows (icon left, labels left-aligned), email wraps, everything centered otherwise.
 
+## Link-affordance grammar (SITEWIDE LAW, formalized here)
+
+- `→` = internal navigation · `↗` = external link (new tab) · `↓` = download.
+- Destination icons (octocat, ) say WHERE; arrows say WHAT HAPPENS; they compose ("GitHub ↗" with octocat icon).
+- Every interactive card and pill has the standard `:active` press response (scale .96–.98).
+- Applies to ALL pages. B2/B3/B4 build to it; where already-built Home misses it (GitHub pills without ↗, résumé links without ↓, cards without :active), the next B-task touching that surface retrofits it.
+
 ## Build notes for B4
 
 - Clipboard Playwright test with permissions granted; assert button label/state morph and revert.
