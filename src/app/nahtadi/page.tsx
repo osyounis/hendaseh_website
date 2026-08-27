@@ -4,6 +4,7 @@ import PlatformButtons from '@/components/nahtadi/PlatformButtons';
 import ScreenshotGallery from '@/components/nahtadi/ScreenshotGallery';
 import ReviewsCarousel from '@/components/nahtadi/ReviewsCarousel';
 import EmailSignup from '@/components/nahtadi/EmailSignup';
+import { AffordanceLabel, ChevronRight } from '@/components/LinkAffordance';
 import {
   HiClock,
   HiCalendar,
@@ -400,7 +401,7 @@ export default function NahtadiPage() {
                 Learn how Nahtadi protects your privacy with no data collection.
               </p>
               <span className="text-blue-600 font-medium hover:underline">
-                Read Privacy Policy →
+                <AffordanceLabel label="Read Privacy Policy" glyph={<ChevronRight />} />
               </span>
             </Link>
 
@@ -414,7 +415,7 @@ export default function NahtadiPage() {
                 Have questions? Check our FAQ or contact our support team.
               </p>
               <span className="text-blue-600 font-medium hover:underline">
-                Get Support →
+                <AffordanceLabel label="Get Support" glyph={<ChevronRight />} />
               </span>
             </Link>
           </div>

@@ -1,100 +1,84 @@
 'use client';
 
-import { useState } from 'react';
+import type { CategoryChip } from '@/lib/projectCategories';
+
+/**
+ * The sticky filter bar: live search plus single-select category chips.
+ *
+ * Fully controlled. The previous version kept its own copy of the query and
+ * the selected category alongside the list's copy, so two components held the
+ * same truth and could disagree; the list owns it now and this renders it.
+ *
+ * Nothing here is animated except pointer-down press feedback. Filtering runs
+ * on every keystroke, which is the frequency band where decoration reads as
+ * lag, so the grid reflows instantly and the chips never transition their
+ * layout.
+ */
 
 interface ProjectFilterProps {
-  categories: string[];
-  onFilterChange: (category: string | null) => void;
-  onSearchChange: (search: string) => void;
+  chips: CategoryChip[];
+  category: string;
+  query: string;
+  onCategoryChange: (category: string) => void;
+  onQueryChange: (query: string) => void;
 }
 
 export default function ProjectFilter({
-  categories,
-  onFilterChange,
-  onSearchChange
+  chips,
+  category,
+  query,
+  onCategoryChange,
+  onQueryChange,
 }: ProjectFilterProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleCategoryChange = (category: string) => {
-    const newCategory = category === 'all' ? null : category;
-    setSelectedCategory(newCategory);
-    onFilterChange(newCategory);
-  };
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    onSearchChange(e.target.value);
-  };
-
-  const clearFilters = () => {
-    setSelectedCategory(null);
-    setSearchTerm('');
-    onFilterChange(null);
-    onSearchChange('');
-  };
-
-  const hasActiveFilters = selectedCategory !== null || searchTerm !== '';
-
   return (
-    <div className="mb-8">
-      <div className="flex flex-col sm:flex-row gap-4 mb-4">
-        {/* Category Filter */}
-        <select
-          value={selectedCategory || 'all'}
-          onChange={(e) => handleCategoryChange(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-        >
-          <option value="all">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {formatCategory(cat)}
-            </option>
-          ))}
-        </select>
-
-        {/* Search */}
-        <div className="relative flex-1">
-          <input
-            type="text"
-            placeholder="Search by technology (Python, Swift, PyTorch...)"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-          <svg
-            className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    <div className="projects-bar">
+      <div className="page-wrap">
+        <div className="flex flex-wrap items-center gap-3.5 py-3.5">
+          <div className="relative min-w-[260px] flex-1">
+            <label htmlFor="projects-search" className="sr-only">
+              Search projects
+            </label>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.4}
+              aria-hidden="true"
+              className="text-muted pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.8-3.8" />
+            </svg>
+            <input
+              id="projects-search"
+              type="search"
+              className="projects-search-input"
+              placeholder="Search by name, tech, or keyword"
+              autoComplete="off"
+              value={query}
+              onChange={(event) => onQueryChange(event.target.value)}
             />
-          </svg>
-        </div>
+          </div>
 
-        {/* Clear Filters Button */}
-        {hasActiveFilters && (
-          <button
-            onClick={clearFilters}
-            className="px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium whitespace-nowrap"
+          <div
+            role="group"
+            aria-label="Filter projects by category"
+            className="projects-chiprow min-w-0"
           >
-            Clear Filters
-          </button>
-        )}
+            {chips.map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                className="projects-chip"
+                aria-pressed={value === category}
+                onClick={() => onCategoryChange(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
-}
-
-function formatCategory(category: string): string {
-  const formatted = category
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-  return formatted;
 }

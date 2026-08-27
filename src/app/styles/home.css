@@ -1,0 +1,279 @@
+/* Home-only bands. Split out of globals.css ahead of Task B2 (Task B2.0, see
+   .superpowers/sdd/2026-08-25-page-redesigns/). Moved verbatim -- no rule
+   renamed, merged, split, or reordered for taste. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * Hero sky + swarm set-piece
+   * ---------------------------------------------------------------------- */
+
+  .home-sky {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    background: var(--home-sky);
+  }
+
+  /* On the tinted hero sky the secondary pill goes white, per the v11 audit.
+     This overrides `.pill-secondary` (shared.css) but only ever matches
+     inside `.home-sky`, which is Home-only, so it lives here rather than
+     with the rest of the `.pill*` family. Specificity (0,2,0) beats the
+     shared rule's (0,1,0) regardless of file/import order, so this is safe
+     to file separately from `.pill-secondary` itself. */
+  .home-sky .pill-secondary {
+    background: var(--pill-sky-bg);
+    box-shadow: var(--pill-sky-shadow);
+  }
+
+  .home-aurora {
+    position: absolute;
+    inset: -40% -20%;
+    pointer-events: none;
+    opacity: var(--aurora-opacity);
+    background: var(--aurora-image);
+    filter: blur(70px);
+    animation: home-drift 14s ease-in-out infinite alternate;
+  }
+
+  .home-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--stars-opacity);
+    background-image:
+      radial-gradient(1.2px 1.2px at 12% 22%, var(--color-navy-300) 50%, transparent 51%),
+      radial-gradient(1px 1px at 78% 14%, var(--color-navy-300) 50%, transparent 51%),
+      radial-gradient(1.4px 1.4px at 60% 70%, var(--color-navy-200) 50%, transparent 51%),
+      radial-gradient(1px 1px at 32% 82%, var(--color-navy-300) 50%, transparent 51%),
+      radial-gradient(1px 1px at 90% 55%, var(--color-navy-300) 50%, transparent 51%);
+  }
+
+  /* The stage is authored at a fixed 520x430 and scaled down as one piece on
+     narrow viewports, so every satellite keeps its authored geometry. */
+  .home-cluster {
+    --cluster-scale: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    height: calc(430px * var(--cluster-scale));
+    margin-top: 36px;
+  }
+
+  .home-stage {
+    position: relative;
+    /* MUST NOT shrink. Every child is absolutely positioned against the
+       authored 520x430 canvas (core at left:198, orbit origin at left:260 =
+       exactly half of 520), so the flex default `flex-shrink: 1` let the box
+       collapse to the container width on phones and dragged the orbit centre
+       off-centre by ~42px at 390px. Scale the canvas, never resize it. */
+    flex: none;
+    width: 520px;
+    height: 430px;
+    transform: scale(var(--cluster-scale));
+    transform-origin: top center;
+  }
+
+  @media (max-width: 580px) {
+    .home-cluster {
+      --cluster-scale: 0.62;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .home-cluster {
+      --cluster-scale: 0.5;
+    }
+  }
+
+  .home-core {
+    position: absolute;
+    left: 198px;
+    top: 153px;
+    z-index: 6;
+    display: flex;
+    width: 124px;
+    height: 124px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 28%;
+    background: var(--core-bg);
+    box-shadow: var(--core-shadow);
+    animation: home-pop 0.5s var(--ease-brand) var(--pop-delay, 0s) both;
+  }
+
+  .home-swarm {
+    position: absolute;
+    left: 260px;
+    top: 215px;
+    width: 0;
+    height: 0;
+    animation: home-orbit 60s linear infinite;
+  }
+
+  .home-sat {
+    position: absolute;
+    width: var(--sat-size);
+    height: var(--sat-size);
+    margin: calc(var(--sat-size) / -2);
+    /* Placement lives in `transform`; the pop-in uses the standalone `scale`
+       property so the two compose instead of overwriting each other. */
+    transform: rotate(var(--sat-angle)) translateX(var(--sat-radius))
+      rotate(calc(-1 * var(--sat-angle)));
+    animation: home-pop 0.5s var(--ease-brand) var(--pop-delay, 0s) both;
+  }
+
+  .home-sat-img {
+    width: 100%;
+    height: auto;
+    border-radius: 24%;
+    box-shadow: var(--sat-shadow);
+    /* Counter-rotates at the swarm's own rate so icons stay upright. */
+    animation: home-counter-orbit 60s linear infinite;
+  }
+
+  .home-sat-img-nahtadi {
+    background: var(--nahtadi-tile);
+    padding: 9%;
+  }
+
+  @keyframes home-drift {
+    from {
+      transform: translate3d(-3%, -2%, 0);
+    }
+    to {
+      transform: translate3d(3%, 3%, 0) scale(1.06);
+    }
+  }
+
+  @keyframes home-orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes home-counter-orbit {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes home-pop {
+    from {
+      opacity: 0;
+      scale: 0.9;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Ticker
+   * ---------------------------------------------------------------------- */
+
+  .home-ticker {
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 1px solid var(--edge);
+    border-bottom: 1px solid var(--edge);
+    background: var(--ticker-surface);
+  }
+
+  /* The track lays the two halves out side by side and is deliberately NOT
+     animated and NOT promoted -- nothing here may create a layer as wide as
+     the whole tape. See the header comment in HomeTicker.tsx. */
+  .home-tape-track {
+    display: inline-flex;
+    width: max-content;
+    padding-block: 15px;
+  }
+
+  /* One compositor layer per half: 1290 CSS px, i.e. 2581 device px at DPR 2
+     and 3871 at DPR 3, both inside iOS's ~4096px GPU texture limit. */
+  .home-tape {
+    display: inline-flex;
+    flex: 0 0 auto;
+    animation: home-tape 30s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .home-ticker:hover .home-tape {
+    animation-play-state: paused;
+  }
+
+  /* Each half shifts left by exactly its own width, so the arrangement at the
+     end of a cycle is identical to the start and the restart is invisible. */
+  @keyframes home-tape {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-100%, 0, 0);
+    }
+  }
+
+  .home-tk {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 9px;
+    padding-inline: 30px;
+    border-right: 1px solid var(--edge-soft);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Flagship band
+   * ---------------------------------------------------------------------- */
+
+  .home-flagship {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--flagship-edge);
+    background: var(--flagship-bg);
+  }
+
+  .home-flagship::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--flagship-glow);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * CTA card
+   * ---------------------------------------------------------------------- */
+
+  .home-cta-card {
+    border: 1px solid var(--edge);
+    background: var(--cta-surface);
+    box-shadow: var(--cta-shadow);
+  }
+
+  .home-nahtadi-tile {
+    background: var(--nahtadi-tile-flagship);
+    padding: 9%;
+    box-shadow: var(--nahtadi-tile-shadow);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Reduced motion: the set-piece is fully static — swarm frozen in its
+   * authored pose, pop-in resolved to its end state, aurora parked, tape
+   * stopped at offset 0. Pure CSS so server and client render identical HTML.
+   *
+   * `.home-tile`'s reduced-motion override is NOT here -- it moved to
+   * shared.css with the rest of `.home-tile`'s rules (see the comment there).
+   * ---------------------------------------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-aurora,
+    .home-swarm,
+    .home-sat,
+    .home-sat-img,
+    .home-core,
+    .home-tape {
+      animation: none;
+    }
+  }
+}

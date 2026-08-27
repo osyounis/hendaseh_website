@@ -1,3 +1,6 @@
+import NewTabHint from '@/components/NewTabHint';
+import { AffordanceLabel, ArrowUpRight } from '@/components/LinkAffordance';
+
 export default function HomeCTA() {
   return (
     <section className="page-wrap py-20">
@@ -16,7 +19,8 @@ export default function HomeCTA() {
             rel="noopener noreferrer"
             className="pill pill-secondary"
           >
-            LinkedIn
+            <AffordanceLabel label="LinkedIn" glyph={<ArrowUpRight />} />
+            <NewTabHint />
           </a>
         </div>
       </div>

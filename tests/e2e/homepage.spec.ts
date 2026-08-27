@@ -1,7 +1,8 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 const TAGLINE = 'Software Engineer · iOS, ML & Autonomous Systems'
 const MOBILE_VIEWPORT = { width: 390, height: 844 }
+const MOBILE_CONTEXT = { viewport: MOBILE_VIEWPORT, isMobile: true, hasTouch: true }
 
 // Mirrors tests/e2e/reduced-motion-hydration.spec.ts — see that file's header for
 // why the pattern is written this way and what it does and does not catch.
@@ -23,6 +24,26 @@ const readAnimationNames = () => {
     satelliteIcon: pick('[data-testid="hero-satellite"] img'),
     tape: pick('.home-tape'),
   }
+}
+
+/*
+ * The mobile menu panel scales 0.97 -> 1 on the way in, so a
+ * getBoundingClientRect() taken mid-transition reports every row ~3% short and
+ * would fail the 44px tap-target floor for reasons that have nothing to do with
+ * the layout. This waits on the real end condition: the open rule sets
+ * `transform: none`, so the computed transform resolves to the string 'none'
+ * only once the transition has actually landed. Never a bare timeout.
+ */
+const settleMenu = async (page: Page) => {
+  await expect
+    .poll(
+      () =>
+        page
+          .locator('#site-nav-mobile-menu .nav-menu-panel')
+          .evaluate((el) => getComputedStyle(el).transform),
+      { message: 'the mobile menu never finished its enter transition' }
+    )
+    .toBe('none')
 }
 
 test.describe('Homepage', () => {
@@ -55,7 +76,7 @@ test.describe('Homepage', () => {
     await page.goto('/')
 
     await expect(page.getByRole('heading', { name: 'Shipped, and live today.' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'The story →' })).toHaveAttribute('href', '/nahtadi')
+    await expect(page.getByRole('link', { name: 'The story' })).toHaveAttribute('href', '/nahtadi')
   })
 
   test('work-grid tiles link per tier', async ({ page }) => {
@@ -86,7 +107,7 @@ test.describe('Homepage', () => {
       await expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     }
 
-    await expect(page.getByRole('link', { name: 'All projects →' })).toHaveAttribute(
+    await expect(page.getByRole('link', { name: 'All projects' })).toHaveAttribute(
       'href',
       '/projects'
     )
@@ -133,7 +154,7 @@ test.describe('Homepage', () => {
    * thumb: a target too small to hit, or an overlay sitting on top of it.
    */
   test.describe('mobile nav (touch)', () => {
-    test.use({ viewport: MOBILE_VIEWPORT, isMobile: true, hasTouch: true })
+    test.use({ ...MOBILE_CONTEXT })
 
     // Apple HIG's 44x44pt minimum. WCAG 2.5.5 (AAA) uses the same number;
     // 2.5.8 (AA) allows 24x24 only when targets are spaced 24px apart, which
@@ -154,7 +175,10 @@ test.describe('Homepage', () => {
       const menu = page.locator('#site-nav-mobile-menu')
       const toggle = page.getByRole('button', { name: 'Toggle mobile menu' })
 
-      await expect(menu).toHaveCount(0)
+      // The panel is always mounted now -- it has to survive its own exit
+      // transition -- so "closed" means inert, not absent.
+      await expect(menu).toHaveCount(1)
+      await expect(menu).toBeHidden()
       await expect(toggle).toHaveAttribute('aria-expanded', 'false')
 
       // 1. The toggle itself must be big enough to hit with a thumb, and must
@@ -190,6 +214,10 @@ test.describe('Homepage', () => {
       await toggle.tap()
       await expect(menu).toBeVisible()
       await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+
+      // The panel is mid-scale for the first 220ms; measuring now would read
+      // every row 3% short. Wait on the transition's real end condition.
+      await settleMenu(page)
 
       // 3. Every link must be visible, have a non-zero box, meet the tap-target
       //    minimum, and be the TOPMOST element at its own centre. The last
@@ -256,13 +284,141 @@ test.describe('Homepage', () => {
       for (const { dx, dy } of corners) {
         await page.goto('/')
         const menu = page.locator('#site-nav-mobile-menu')
-        await expect(menu).toHaveCount(0)
+        await expect(menu).toBeHidden()
         await page.touchscreen.tap(box.x + dx, box.y + dy)
         await expect(
           menu,
           `a tap at (+${dx}, +${dy}) inside the hamburger did not open the menu`
         ).toBeVisible()
       }
+    })
+
+    /*
+     * The panel used to be conditionally rendered, so it popped in and out with
+     * no transition at all. These two tests read the motion that is ACTUALLY
+     * applied in each state rather than trusting the stylesheet, and they are
+     * what stops the spec -- 220ms in / 160ms out, transitions and not
+     * keyframes, scale from 0.97 and never 0, origin at the hamburger, a 35ms
+     * row stagger, opacity-only under reduced motion -- from quietly rotting.
+     */
+    const readPanelMotion = (page: Page) =>
+      page.locator('#site-nav-mobile-menu .nav-menu-panel').evaluate((el) => {
+        const cs = getComputedStyle(el)
+        return {
+          properties: cs.transitionProperty.split(',').map((p) => p.trim()),
+          durations: cs.transitionDuration.split(',').map((d) => parseFloat(d)),
+          animationName: cs.animationName,
+          transform: cs.transform,
+          transformOrigin: cs.transformOrigin,
+          // offsetWidth, not the client rect: transform-origin resolves in the
+          // element's own untransformed box, and the closed panel is scaled.
+          width: (el as HTMLElement).offsetWidth,
+        }
+      })
+
+    test('the menu transitions open in 220ms and closed in 160ms', async ({ page }) => {
+      await page.goto('/')
+
+      const menu = page.locator('#site-nav-mobile-menu')
+      const toggle = page.getByRole('button', { name: 'Toggle mobile menu' })
+
+      // Closed: mounted, fully inert, and already carrying its exit transition.
+      expect(
+        await menu.evaluate((el) => getComputedStyle(el).pointerEvents),
+        'a closed menu must not be hit-testable'
+      ).toBe('none')
+      expect(
+        await menu.evaluate((el) => getComputedStyle(el).visibility),
+        'a closed menu must be out of the tab order and out of the a11y tree'
+      ).toBe('hidden')
+
+      const closed = await readPanelMotion(page)
+      expect(closed.animationName, 'must be a transition, not a keyframe animation').toBe('none')
+      expect(closed.properties).toEqual(['opacity', 'transform'])
+      expect(closed.durations, 'the exit must be faster than the enter').toEqual([0.16, 0.16])
+      // Never from scale(0) -- 0.97, so the panel already has a shape.
+      expect(closed.transform).toBe('matrix(0.97, 0, 0, 0.97, 0, 0)')
+      // Anchored at the hamburger, i.e. the panel's own top-right corner.
+      expect(closed.transformOrigin).toBe(`${closed.width}px 0px`)
+
+      await toggle.tap()
+      const open = await readPanelMotion(page)
+      expect(open.properties).toEqual(['opacity', 'transform'])
+      expect(open.durations).toEqual([0.22, 0.22])
+      expect(open.animationName).toBe('none')
+
+      await settleMenu(page)
+
+      // Rows land 35ms apart, and the stagger rides on transform only so the
+      // row's opacity press feedback is never delayed behind it.
+      const rows = await menu.locator('.nav-menu-item').evaluateAll((els) =>
+        els.map((el) => {
+          const cs = getComputedStyle(el)
+          return {
+            properties: cs.transitionProperty.split(',').map((p) => p.trim()),
+            delays: cs.transitionDelay.split(',').map((d) => parseFloat(d)),
+          }
+        })
+      )
+      expect(rows.map((r) => r.properties)).toEqual([
+        ['opacity', 'transform'],
+        ['opacity', 'transform'],
+        ['opacity', 'transform'],
+        ['opacity', 'transform'],
+      ])
+      expect(rows.map((r) => r.delays)).toEqual([
+        [0, 0],
+        [0, 0.035],
+        [0, 0.07],
+        [0, 0.105],
+      ])
+
+      // Close it again, and prove the exit is not just a visual fade: mid-exit
+      // (well inside the 160ms transition), the panel must already be out of
+      // the tab order. `visibility` alone does not do this -- it only flips
+      // once the 160ms exit transition finishes -- so this is the assertion
+      // that catches a missing `inert`. Mirrors the real measurement: 60ms
+      // into the exit, a programmatic `.focus()` on a menu link still took.
+      await toggle.tap()
+      await page.waitForTimeout(60)
+      const firstLink = menu.getByRole('link').first()
+      await firstLink.evaluate((el) => (el as HTMLElement).focus())
+      expect(
+        await firstLink.evaluate((el) => document.activeElement === el),
+        'a menu link took focus 60ms into the close transition -- the panel is not yet out of the tab order'
+      ).toBe(false)
+    })
+
+    test('under reduced motion the menu is a 150ms opacity fade with no transform', async ({
+      browser,
+    }) => {
+      // test.use() options do not reach a hand-built context, so the mobile
+      // context is spread in explicitly.
+      const context = await browser.newContext({ ...MOBILE_CONTEXT, reducedMotion: 'reduce' })
+      const page = await context.newPage()
+      await page.goto('/')
+
+      expect(
+        await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      ).toBe(true)
+
+      const closed = await readPanelMotion(page)
+      expect(closed.properties).toEqual(['opacity'])
+      expect(closed.durations).toEqual([0.15])
+      expect(closed.transform, 'no transform under reduced motion').toBe('none')
+
+      await page.getByRole('button', { name: 'Toggle mobile menu' }).tap()
+      const open = await readPanelMotion(page)
+      expect(open.properties).toEqual(['opacity'])
+      expect(open.durations).toEqual([0.15])
+      expect(open.transform, 'no transform under reduced motion').toBe('none')
+
+      const rowTransforms = await page
+        .locator('#site-nav-mobile-menu .nav-menu-item')
+        .evaluateAll((els) => els.map((el) => getComputedStyle(el).transform))
+      expect(rowTransforms).toEqual(['none', 'none', 'none', 'none'])
+
+      await context.close()
     })
   })
 
@@ -292,6 +448,83 @@ test.describe('Homepage', () => {
         satelliteIcon: 'home-counter-orbit',
         tape: 'home-tape',
       })
+    })
+
+    /*
+     * The ticker tape is split into two independently-composited halves so no
+     * single animated layer exceeds iOS's ~4096px GPU texture limit (see the
+     * header comment in src/components/home/HomeTicker.tsx). That only holds if
+     * there really are two of them, they are the same width, and each one
+     * translates by its OWN full width -- if any of that drifts the seam breaks
+     * or the oversized layer comes back.
+     *
+     * Engine caveat: playwright.config.ts defines only a `chromium` project, so
+     * the `width * 3 <= 4096` guard below (and the menu timing assertions
+     * elsewhere in this file) are evaluated against Chromium's font metrics --
+     * while the bug this guards against, and every measurement in the fix
+     * report behind it, were taken in WebKit (iOS Safari is WebKit). The two
+     * engines currently agree (WebKit measures 1290.27px per half, i.e.
+     * 3870.8 device px at DPR 3, matching what Chromium reports here), and that
+     * agreement was verified by hand on 2026-08-27 -- it is not assumed to hold
+     * forever. A future font or metrics change could drift the two engines
+     * apart and leave this guard silently watching the wrong number.
+     */
+    test('the ticker tape is two equal, independently-animated halves', async ({ page }) => {
+      await page.goto('/')
+
+      const halves = page.locator('.home-tape')
+      await expect(halves).toHaveCount(2)
+
+      // Layout metrics, not client rects: the tape is mid-animation, so a
+      // client rect would report wherever the translate happens to have
+      // carried it. offsetLeft/offsetWidth are the untransformed positions.
+      const measured = await page.evaluate(() => {
+        const track = document.querySelector('.home-tape-track') as HTMLElement
+        return {
+          trackAnimation: getComputedStyle(track).animationName,
+          halves: [...document.querySelectorAll('.home-tape')].map((el) => {
+            const cs = getComputedStyle(el)
+            return {
+              left: (el as HTMLElement).offsetLeft,
+              width: (el as HTMLElement).offsetWidth,
+              animationName: cs.animationName,
+              duration: cs.animationDuration,
+              delay: cs.animationDelay,
+            }
+          }),
+          items: document.querySelectorAll('.home-tk').length,
+        }
+      })
+
+      // Nothing may animate the full-width track -- that is the oversized layer.
+      expect(measured.trackAnimation).toBe('none')
+      expect(measured.items).toBe(12)
+
+      const [a, b] = measured.halves
+      expect(a.width).toBe(b.width)
+      expect(a.animationName).toBe('home-tape')
+      expect(b.animationName).toBe('home-tape')
+      expect(a.duration).toBe(b.duration)
+      // The two halves stay in sync only because both start with the same
+      // animation-delay (0s). A delay on just one half is the exact edit that
+      // would reopen the seam, and nothing else in this test would catch it.
+      expect(a.delay).toBe(b.delay)
+      // Half B starts exactly one half-width along, so -100% on each half puts
+      // the tape back where it began and the restart is invisible.
+      expect(b.left - a.left).toBe(a.width)
+
+      // The number the whole fix hinges on. Every current iPhone is DPR 3, so
+      // each half's backing store is width x 3 device px and has to stay inside
+      // iOS's ~4096px GPU texture limit. 1290 x 3 = 3870 leaves only ~5.5%, so
+      // it is asserted rather than assumed: if the tape ever grows past
+      // 1365 CSS px the flicker comes straight back.
+      const IOS_MAX_TEXTURE_PX = 4096
+      expect(
+        a.width * 3,
+        `each ticker half rasterises to ${a.width * 3} device px at DPR 3, past iOS's ` +
+          `~${IOS_MAX_TEXTURE_PX}px GPU texture limit -- the tape has grown and the tile ` +
+          `eviction that caused the flicker is back`
+      ).toBeLessThanOrEqual(IOS_MAX_TEXTURE_PX)
     })
   })
 
@@ -327,6 +560,13 @@ test.describe('Homepage', () => {
       satelliteIcon: 'none',
       tape: 'none',
     })
+
+    // Both halves of the tape, not just the first one the selector finds.
+    expect(
+      await page.evaluate(() =>
+        [...document.querySelectorAll('.home-tape')].map((el) => getComputedStyle(el).animationName)
+      )
+    ).toEqual(['none', 'none'])
 
     // ...and the pop-in has resolved to its end state rather than leaving the
     // set-piece invisible.

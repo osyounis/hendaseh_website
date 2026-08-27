@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { AffordanceLabel, ArrowDownCircle } from '@/components/LinkAffordance';
 
 /**
  * The swarm: seven project icons revolving clockwise as one group around the
@@ -111,7 +112,7 @@ export default function HomeHero() {
             download="Omar_Younis_Resume.pdf"
             className="pill pill-secondary"
           >
-            Résumé (PDF)
+            <AffordanceLabel label="Résumé (PDF)" glyph={<ArrowDownCircle />} />
           </a>
         </div>
       </div>

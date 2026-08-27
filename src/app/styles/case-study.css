@@ -1,0 +1,434 @@
+/* Case-study template furniture (`/projects/[slug]`, Task B2.4).
+   Page-scoped, so it sits beside projects.css rather than in shared.css.
+   The two deliberately shared things here are `.page-wrap`/`.section-eyebrow`
+   and `.home-tile` -- the approved contract names `.home-tile` for card hover
+   wherever cards appear, and the "next case study" slot is a card. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * Hero
+   *
+   * The hero is a COLOUR CARD: identical in both themes, like the Nahtadi
+   * flagship band. So its foreground colours are literal white, not `--fg-*`
+   * tokens -- a token would flip to near-black in the light theme and vanish
+   * against the dark gradient.
+   *
+   * Its two live stops come from the project's case-study record as
+   * `--case-hero-from` / `--case-hero-to`; the third is fixed so every hero,
+   * whatever its palette, lands on the same ground.
+   *
+   * It deliberately does NOT reach up under the transparent nav the way the
+   * Home and Projects skies do. The nav is a shared component painted with
+   * `--nav-fg`, which is near-black in the light theme; over this dark
+   * gradient it would be unreadable, and re-colouring the nav per route is
+   * Task B6's call, not this one's.
+   * ---------------------------------------------------------------------- */
+
+  .case-hero {
+    background: linear-gradient(
+      210deg,
+      var(--case-hero-from) 0%,
+      var(--case-hero-to) 55%,
+      var(--color-deep-page) 100%
+    );
+    padding-block: 40px 64px;
+    overflow: hidden;
+  }
+
+  .case-crumb {
+    display: inline-block;
+    margin-bottom: 34px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.66);
+    transition: color 0.15s ease-out;
+  }
+
+  .case-crumb:hover {
+    color: #ffffff;
+  }
+
+  .case-crumb:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .case-hero-row {
+    display: grid;
+    grid-template-columns: 132px 1fr auto;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .case-icon {
+    /* `icon-squircle.png` carries its squircle mask and its own gradient in
+       the pixels, so it is placed whole -- no CSS radius, no crop. Same rule
+       the project cards follow. */
+    width: 132px;
+    height: 132px;
+    filter: drop-shadow(0 22px 50px rgb(0 0 0 / 0.45));
+  }
+
+  .case-title {
+    color: #ffffff;
+    font-size: clamp(30px, 4.4vw, 46px);
+    font-weight: 900;
+    line-height: 1.1;
+    /* Tracking is size-specific: display type reads too loose as it grows. */
+    letter-spacing: -0.015em;
+  }
+
+  .case-thesis {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: rgb(255 255 255 / 0.82);
+  }
+
+  .case-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Hero buttons wear the shared `.pill` geometry and press feedback; only
+     the ground changes, and it is theme-independent for the same reason the
+     text is. `--pill-*` is not used here: those tokens flip per theme. */
+  /* `.pill` centres its contents but sets no gap, because most pills on the
+     site are text only. These carry a glyph, so they need one. */
+  .case-btn-white,
+  .case-btn-primary,
+  .case-btn-ghost {
+    gap: 9px;
+  }
+
+  .case-btn-white {
+    background: #ffffff;
+    color: var(--color-brand-navy);
+  }
+
+  .case-btn-primary {
+    background: var(--color-brand-500);
+    color: var(--color-deep-page);
+  }
+
+  .case-btn-ghost {
+    background: rgb(255 255 255 / 0.14);
+    color: #ffffff;
+  }
+
+  .case-btn-white:focus-visible,
+  .case-btn-primary:focus-visible,
+  .case-btn-ghost:focus-visible {
+    /* `--accent` is a theme token and lands on a dark ground either way;
+       white is the one outline guaranteed to read on every hero palette. */
+    outline-color: #ffffff;
+  }
+
+  /* Destination marks only -- see the same note in projects.css. The
+     `.link-glyph` affordance glyphs size themselves in `em` and are stroked,
+     not filled. */
+  .case-btn-white svg:not(.link-glyph),
+  .case-btn-primary svg:not(.link-glyph),
+  .case-btn-ghost svg:not(.link-glyph) {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Stat row (three real numbers)
+   * ---------------------------------------------------------------------- */
+
+  .case-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 44px;
+  }
+
+  .case-stat {
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 16px;
+    background: rgb(0 0 0 / 0.25);
+    padding: 22px 24px;
+  }
+
+  .case-stat-value {
+    display: block;
+    color: #ffffff;
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .case-stat-label {
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: rgb(255 255 255 / 0.72);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Body
+   *
+   * Back on the page ground, so back on the semantic tokens.
+   * ---------------------------------------------------------------------- */
+
+  .case-body {
+    padding-block: 72px 40px;
+  }
+
+  .case-section {
+    max-width: 760px;
+    margin-bottom: 64px;
+  }
+
+  .case-heading {
+    margin-top: 12px;
+    margin-bottom: 16px;
+    color: var(--fg-strong);
+    font-size: clamp(24px, 3.2vw, 32px);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .case-p {
+    margin-bottom: 14px;
+    color: var(--fg-body);
+    font-size: 16px;
+    /* Body leading is loose where the heading's is tight: 1.75 is the
+       contract's measure for a 760px column. */
+    line-height: 1.75;
+  }
+
+  .case-p strong {
+    color: var(--fg-strong);
+    font-weight: 700;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Media slot and live-demo embed
+   * ---------------------------------------------------------------------- */
+
+  .case-figure,
+  .case-embed {
+    margin-block: 56px;
+    border: 1px solid var(--edge);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .case-figure-media {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .case-caption {
+    padding: 14px 18px;
+    background: var(--surface-sunken);
+    /* --fg-muted-on-tint, not --fg-muted: this background is
+       --surface-sunken, a pairing --fg-muted never had before this
+       component. ink-600 on ink-100 is 4.15:1 in light, under the 4.5 AA
+       floor -- see the token's definition in globals.css for the measured
+       fix and why dark needs no change. */
+    color: var(--fg-muted-on-tint);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .case-embed {
+    /* The demo is an anchor target. A little breathing room above it so the
+       frame does not land flush against the top of the viewport. */
+    scroll-margin-top: 24px;
+  }
+
+  .case-embed-frame {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    background: var(--surface-sunken);
+  }
+
+  /* Below 880 a 16:9 frame is too short to use: the Streamlit controls and
+     the plot stack vertically. Give it a real height instead. */
+  @media (max-width: 880px) {
+    .case-embed-frame {
+      aspect-ratio: auto;
+      height: 640px;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Tech chips (in IMPACT)
+   * ---------------------------------------------------------------------- */
+
+  .case-techrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+    list-style: none;
+  }
+
+  .case-tech {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--pill-secondary-bg);
+    color: var(--pill-secondary-fg);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Bottom navigation -- fixed slots
+   *
+   * Left is ALWAYS "All projects", right is ALWAYS "Next case study". No
+   * "previous", so the two slots never swap places between pages: the thing
+   * you learned on one case study is true on the next one.
+   *
+   * The row carries NO border of its own. The footer's hairline is the only
+   * rule at the bottom of the page; a second one here would stack.
+   * ---------------------------------------------------------------------- */
+
+  .case-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding-block: 16px 64px;
+  }
+
+  .case-nav-back {
+    color: var(--fg-muted);
+    font-size: 13px;
+    font-weight: 600;
+    transition: color 0.15s ease-out;
+  }
+
+  .case-nav-back:hover {
+    color: var(--fg-strong);
+  }
+
+  .case-nav-back:focus-visible,
+  .case-nav-next:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .case-nav-next {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 14px;
+    border-radius: 16px;
+    padding: 14px 18px;
+    text-align: right;
+  }
+
+  .case-nav-next-label {
+    display: block;
+    color: var(--fg-muted);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .case-nav-next-title {
+    display: block;
+    margin-top: 3px;
+    color: var(--fg-strong);
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .case-nav-next-icon {
+    width: 46px;
+    height: 46px;
+    flex: none;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Scroll reveal
+   *
+   * READ THIS BEFORE CHANGING IT.
+   *
+   * The resting state of `[data-reveal]` is VISIBLE. There is deliberately no
+   * rule that hides it. Only `[data-reveal="pending"]` hides, and the only
+   * thing that can write that value is `ScrollReveal.tsx` after it has
+   * confirmed JavaScript, an IntersectionObserver and no reduced-motion
+   * preference, and only for elements below the fold. Adding `opacity: 0` to
+   * the `[data-reveal]` rule below would turn this back into the content gate
+   * that `tests/e2e/projects-no-js.spec.ts` was written to catch.
+   * ---------------------------------------------------------------------- */
+
+  [data-reveal="pending"] {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  [data-reveal="in"] {
+    opacity: 1;
+    transform: none;
+    /* A transition, not a keyframe: it retargets from wherever the value
+       currently is if anything interrupts it. Strong ease-out, so the motion
+       is fastest at the moment the eye arrives. */
+    transition:
+      opacity 0.45s var(--ease-brand),
+      transform 0.45s var(--ease-brand);
+  }
+
+  /* Belt and braces for a preference flipped after load: `ScrollReveal`
+     checks the same query before it arms anything, but it does not re-run. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal],
+    [data-reveal="pending"],
+    [data-reveal="in"] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Narrow viewports
+   * ---------------------------------------------------------------------- */
+
+  @media (max-width: 880px) {
+    .case-hero-row {
+      grid-template-columns: 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .case-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .case-body {
+      padding-block: 48px 32px;
+    }
+
+    .case-section {
+      margin-bottom: 48px;
+    }
+
+    .case-nav {
+      gap: 12px;
+    }
+
+    .case-nav-next {
+      padding: 12px 14px;
+    }
+  }
+}

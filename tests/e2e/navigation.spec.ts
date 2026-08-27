@@ -14,7 +14,12 @@ test.describe('Site Navigation', () => {
     // Navigate to Projects using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'Projects', exact: true }).click()
     await expect(page).toHaveURL('/projects')
-    await expect(page.getByRole('heading', { name: /projects/i })).toBeVisible()
+    // The Projects h1 is the approved contract's statement heading, not the
+    // word "Projects" (that is the eyebrow above it, and eyebrows are not
+    // headings). Task B2.3.
+    await expect(
+      page.getByRole('heading', { name: "Everything I've built.", level: 1 })
+    ).toBeVisible()
 
     // Navigate to Contact using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'Contact' }).click()
@@ -59,12 +64,21 @@ test.describe('Site Navigation', () => {
     await expect(contactLink).toHaveAttribute('href', '/contact')
   })
 
-  test('should have external GitHub link on Projects page', async ({ page }) => {
+  test('should have safe external GitHub links on Projects page', async ({ page }) => {
     await page.goto('/projects')
 
-    // Check GitHub link exists and has correct attributes
-    const githubLink = page.locator('a[href="https://github.com/osyounis"]').first()
-    await expect(githubLink).toBeVisible()
-    await expect(githubLink).toHaveAttribute('target', '_blank')
+    // The redesigned page has no "View GitHub Profile" button — the approved
+    // contract replaced it with a per-card octocat pill that goes to that
+    // project's own repository (Task B2.3). The property worth guarding is
+    // unchanged: every GitHub link here opens in a new tab and carries
+    // `rel="noopener"`.
+    const githubLinks = page.locator('[data-testid="project-card"] a[href^="https://github.com/osyounis/"]')
+    const total = await githubLinks.count()
+    expect(total).toBeGreaterThan(0)
+
+    for (let i = 0; i < total; i++) {
+      await expect(githubLinks.nth(i)).toHaveAttribute('target', '_blank')
+      await expect(githubLinks.nth(i)).toHaveAttribute('rel', /noopener/)
+    }
   })
 })

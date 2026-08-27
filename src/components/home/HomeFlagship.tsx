@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getProjectById, getProjectHref } from '@/lib/projects';
+import { AffordanceLabel, ChevronRight } from '@/components/LinkAffordance';
 
 export default function HomeFlagship() {
   const nahtadi = getProjectById('nahtadi');
@@ -8,8 +9,11 @@ export default function HomeFlagship() {
 
   // A build-time invariant: Nahtadi is the flagship and its page is a frozen
   // URL. Failing loudly here beats silently shipping a dead flagship band.
-  if (!href) {
+  if (!nahtadi || !href) {
     throw new Error('HomeFlagship: no detail page resolved for the "nahtadi" project.');
+  }
+  if (!nahtadi.tagline) {
+    throw new Error('HomeFlagship: "nahtadi" has no tagline in projects.json.');
   }
 
   return (
@@ -32,20 +36,19 @@ export default function HomeFlagship() {
         />
 
         <div>
-          <h3 className="text-[32px] font-black text-[color:var(--flagship-fg)]">Nahtadi</h3>
+          <h3 className="text-[32px] font-black text-[color:var(--flagship-fg)]">{nahtadi.title}</h3>
           <p className="mt-[10px] mb-3 text-[14px] font-bold text-[color:var(--flagship-meta)]">
             LIVE ON THE APP STORE · 5.0★ · PRIVACY-FIRST
           </p>
           <p className="max-w-[52ch] leading-[1.65] text-[color:var(--flagship-body)] max-[880px]:mx-auto">
-            Prayer times and Qibla for iOS. Privacy-first and fully offline, built in Swift and
-            SwiftUI.
+            {nahtadi.tagline}
           </p>
         </div>
 
         {/* Lifted above the card's ::after glow so the white pill stays white. */}
         <div className="relative z-[1]">
           <Link href={href} className="pill pill-on-flagship">
-            The story →
+            <AffordanceLabel label="The story" glyph={<ChevronRight />} />
           </Link>
         </div>
       </div>

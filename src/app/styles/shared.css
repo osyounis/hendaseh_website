@@ -1,0 +1,306 @@
+/* Furniture used by more than one page. Split out of globals.css ahead of
+   Task B2 (Task B2.0, see .superpowers/sdd/2026-08-25-page-redesigns/). Moved
+   verbatim -- no rule renamed, merged, split, or reordered for taste. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * Shared page furniture
+   * ---------------------------------------------------------------------- */
+
+  .page-wrap {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 32px;
+  }
+
+  @media (max-width: 640px) {
+    .page-wrap {
+      padding-inline: 20px;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Mobile navigation menu
+   *
+   * The panel stays mounted in both states. It used to be conditionally
+   * rendered, so it unmounted the instant it closed and there was nothing left
+   * to transition -- it popped. `visibility` is what makes the closed state
+   * fully inert (not focusable, not hit-testable, not in the accessibility
+   * tree); it is a discrete property, so it flips instantly on open and is
+   * delayed by the exit duration on close, which lets the fade finish.
+   *
+   * Transitions, never keyframes: the toggle can be tapped faster than the
+   * 220ms enter, and a transition retargets from wherever the value currently
+   * is, where a keyframe animation would restart from zero.
+   * ---------------------------------------------------------------------- */
+
+  .nav-menu {
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 0s linear 160ms;
+  }
+
+  .nav-menu[data-state="open"] {
+    visibility: visible;
+    pointer-events: auto;
+    transition: visibility 0s linear 0s;
+  }
+
+  /* Scales from the hamburger it came out of (top right), and never from
+     scale(0) -- nothing in the real world appears out of nothing. Exit is
+     faster than enter: 160ms out, 220ms in. */
+  .nav-menu-panel {
+    transform-origin: top right;
+    opacity: 0;
+    transform: scale(0.97);
+    transition:
+      opacity 160ms var(--ease-brand),
+      transform 160ms var(--ease-brand);
+  }
+
+  .nav-menu[data-state="open"] .nav-menu-panel {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 220ms var(--ease-brand),
+      transform 220ms var(--ease-brand);
+  }
+
+  /* Rows settle into place 35ms apart. The stagger rides on `transform` only,
+     so the row's `:active` press -- which rides on opacity -- is never delayed
+     and a tap still answers on pointer-down. */
+  .nav-menu-item {
+    transform: translateY(-6px);
+    transition:
+      opacity 100ms ease-out,
+      transform 160ms var(--ease-brand);
+  }
+
+  .nav-menu[data-state="open"] .nav-menu-item {
+    transform: none;
+    transition:
+      opacity 100ms ease-out,
+      transform 220ms var(--ease-brand) calc(var(--nav-item-index, 0) * 35ms);
+  }
+
+  /* Reduced motion: opacity only, 150ms, no transform anywhere. The closed
+     state still comes from the base rules, so the panel is still inert. */
+  @media (prefers-reduced-motion: reduce) {
+    .nav-menu {
+      transition: visibility 0s linear 150ms;
+    }
+
+    .nav-menu[data-state="open"] {
+      transition: visibility 0s linear 0s;
+    }
+
+    .nav-menu-panel,
+    .nav-menu[data-state="open"] .nav-menu-panel {
+      transform: none;
+      transition: opacity 150ms ease;
+    }
+
+    .nav-menu-item,
+    .nav-menu[data-state="open"] .nav-menu-item {
+      transform: none;
+      transition: opacity 100ms ease-out;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Link-affordance glyphs (grammar v2)
+   *
+   * Sizing/colour/alignment for the four self-drawn SVG glyphs in
+   * `src/components/LinkAffordance.tsx`. That file carries the geometry
+   * rationale; this carries the one knob every glyph shares.
+   *
+   * `height: 0.65em` is the contract's size and it is set on the BOX, not on
+   * the drawing: each glyph's viewBox is proportioned to its own form, so the
+   * box height is also the em-relative size the contract asks for. Width is
+   * per-form -- a bare chevron is ~0.58 as wide as it is tall (SF Symbols'
+   * proportion), the enclosed and diagonal glyphs are square.
+   *
+   * `fill: none` is not cosmetic: `.projects-mini svg` and the `.case-btn-*`
+   * svg rule both set `fill: currentColor` for the DESTINATION marks (octocat,
+   * Apple logo), which are filled paths. These glyphs are stroked outlines and
+   * would render as solid blobs under that fill, so both of those rules are
+   * scoped with `:not(.link-glyph)` and the fill is re-stated here.
+   *
+   * Baseline: an inline SVG's baseline is its bottom margin edge, so at
+   * `vertical-align: baseline` the box sits flush ON the text baseline,
+   * spanning 0 -> 0.65em with its optical centre at 0.325em. The labels these
+   * sit in are all mixed case, whose optical centre is cap-height/2 = 0.356em
+   * in Roboto (capHeight 1456/2048). The 0.03em lift closes exactly that gap.
+   *
+   * `margin-left` is the side bearing. There is no space character before the
+   * glyph -- it is welded to the last word (see `AffordanceLabel`) -- so this
+   * is the only thing setting the gap, and it is deliberately tighter than a
+   * word space so the glyph reads as part of the label, not as a next word.
+   * ---------------------------------------------------------------------- */
+
+  .link-glyph {
+    /* Tailwind's preflight sets `svg { display: block; vertical-align: middle }`
+       so that icons behave as flex items. These glyphs are inline TEXT
+       companions, and under the preflight default each one took a line of its
+       own -- the exact orphan the nowrap rule exists to prevent. Both
+       declarations are restored here; `inline-block` keeps the SVG's baseline
+       at its bottom margin edge, which is what the `vertical-align` below is
+       measured against. */
+    display: inline-block;
+    flex: none;
+    height: 0.65em;
+    margin-left: 0.2em;
+    vertical-align: 0.03em;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .link-glyph-chevron {
+    width: 0.4em;
+  }
+
+  .link-glyph-square {
+    width: 0.65em;
+  }
+
+  /* Pills. Radius 980px, never outlined; feedback lands on pointer-down. */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 980px;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    transition:
+      transform 100ms ease-out,
+      background-color 200ms ease-out;
+  }
+
+  .pill:active {
+    transform: scale(0.97);
+  }
+
+  .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .pill-primary {
+    background: var(--pill-primary-bg);
+    color: var(--pill-primary-fg);
+  }
+
+  .pill-secondary {
+    background: var(--pill-secondary-bg);
+    color: var(--pill-secondary-fg);
+    box-shadow: var(--pill-secondary-shadow);
+  }
+
+  .pill-on-flagship {
+    background: var(--flagship-pill-bg);
+    color: var(--flagship-pill-fg);
+  }
+
+  /* Small blue eyebrow + large statement heading. No numbers, no rules.
+     Sitewide pattern (docs/superpowers/mockups/home/APPROVED.md, "Section
+     header pattern (sitewide)"); the Projects contract
+     (docs/superpowers/mockups/projects/APPROVED.md) reuses the same eyebrow
+     + heading anatomy for its own page header, so this lives here rather
+     than in home.css. */
+  .section-eyebrow {
+    display: block;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+  }
+
+  .section-heading {
+    margin-top: 10px;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--fg-strong);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Tiles
+   *
+   * The `home-` prefix is historical (born on the Home work grid) but this
+   * class is deliberately SHARED, not Home-only. Three committed design
+   * contracts depend on the exact name `.home-tile`:
+   *   - docs/superpowers/mockups/projects/APPROVED.md ("Build notes for B2":
+   *     "Card hover is SHARED CODE ... apply the existing built `.home-tile`
+   *     class/tokens to all project cards -- never re-implement the hover.")
+   *   - the M3 contract extends the same reuse to Task B3 (About).
+   *   - docs/superpowers/mockups/contact/APPROVED.md (M4, line 12): "Shared
+   *     `.home-tile` hover + focus-visible" for Contact's channel cards.
+   * Do not rename it and do not move it into home.css -- filing it as
+   * Home-only silently breaks B2/B3/B4's card hover with nothing failing.
+   * ---------------------------------------------------------------------- */
+
+  .home-tile {
+    background: var(--surface-raised);
+    border: 1px solid var(--edge);
+    box-shadow: var(--card-shadow);
+    transition:
+      transform 0.28s var(--ease-brand),
+      border-color 0.28s var(--ease-brand),
+      box-shadow 0.28s var(--ease-brand);
+  }
+
+  .home-tile:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* Press feedback (link-affordance grammar, contact/APPROVED.md M4 line 20:
+     "Every interactive card and pill has the standard :active press
+     response") only where the tile itself IS the link: Home's work-grid
+     tiles and the case study's "next" card both render `.home-tile` on an
+     `<a>`. The Projects card wears the same class on a deliberately
+     non-interactive `<article>` (its own `.projects-mini` pills already
+     press, see projects.css) -- scoping this to the `a` element keeps the
+     press off the article without adding a second class anywhere. */
+  a.home-tile:active {
+    transform: scale(0.98);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .home-tile:hover {
+      transform: translateY(-6px);
+      border-color: var(--tile-hover-edge);
+      box-shadow: var(--tile-hover-shadow);
+    }
+  }
+
+  /* Reduced motion for `.home-tile` lives here, next to the rest of its
+     rules, rather than being grouped with the Home-only reduced-motion block
+     in home.css -- `.home-tile` is shared, so its reduced-motion override
+     must travel with it (a future page that only reuses this tile must not
+     lose the reduced-motion no-hover-transform override). The original
+     source had one combined `@media (prefers-reduced-motion: reduce)` block
+     covering both Home-only set-piece selectors and `.home-tile`; splitting
+     that grouping in two (one block here, one in home.css) changes nothing
+     about which selectors match or what they resolve to -- every individual
+     rule keeps its original selector and declarations untouched. */
+  @media (prefers-reduced-motion: reduce) {
+    .home-tile {
+      transition: none;
+    }
+
+    a.home-tile:active {
+      transform: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .home-tile:hover {
+        transform: none;
+      }
+    }
+  }
+}

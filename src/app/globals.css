@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "./styles/shared.css";
+@import "./styles/home.css";
+@import "./styles/projects.css";
+@import "./styles/case-study.css";
 
 /* Dark mode is opt-in via data-theme, NOT prefers-color-scheme, until
    sub-project 4 applies tokens to every page. Flipping on media query now
@@ -119,6 +123,16 @@
   --surface-raised: #ffffff;
   --surface-sunken: var(--color-ink-100);
   --home-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100%);
+  /* The Projects page header band (the Projects contract draws a gradient
+     here where Home's dark sky is flat, so the two grounds are genuinely
+     different values and get separate tokens).
+     The light tint resolves at 100px -- a length, not a percentage, so it
+     does not move with the band's height -- which puts every word of header
+     copy on plain `--surface`. Measured: the eyebrow is `--accent` (#0071e3)
+     at 12px/900, which is 4.54:1 on `--surface` but only 4.37:1 on the
+     tinted stop, i.e. under the 4.5 floor. The nav sits in the tinted 100px,
+     and its own colours have far more headroom. */
+  --projects-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100px);
   --ticker-surface: #ffffff;
   --cta-surface: #ffffff;
 
@@ -132,6 +146,16 @@
      Do not "restore" ink-500 here without re-checking contrast. */
   --fg-subtle: var(--color-ink-600);
   --fg-faint: var(--color-ink-400);
+  /* B2 fix round: `.case-caption` sits on `--surface-sunken` (ink-100,
+     #e8e8ed), not `--surface`/white — a pairing `--fg-muted` never had a
+     consumer for. ink-600 (#6e6e73) on ink-100 measures 4.15:1, under the
+     4.5 AA floor for 13px normal text. This is a darker step used ONLY for
+     muted text on a tinted/sunken ground; --fg-muted itself is left alone
+     because its other consumers (footer, ticker, placeholder) sit on
+     --surface/--surface-raised and already clear AA there. Measured:
+     #5c5c61 on #e8e8ed = 5.44:1. Dark is unchanged (--fg-muted on
+     --surface-sunken there is 9.42:1, already fine) and stays var(--fg-muted). */
+  --fg-muted-on-tint: #5c5c61;
   --accent: var(--color-apple-blue);
   --accent-strong: var(--color-brand-700);
 
@@ -165,6 +189,13 @@
   /* A gray pill melts into a tinted ground, so on the hero sky it goes white. */
   --pill-sky-bg: #ffffff;
   --pill-sky-shadow: inset 0 0 0 1px var(--color-ink-300), 0 2px 8px rgb(0 0 0 / 0.06);
+
+  /* Private-project badge (USCG). The Projects mockup leaves its dark-theme
+     gold (#e8b84b) unchanged in light, where it measures 1.9:1 on white; the
+     contrast floor wins, so light gets a darkened gold. Measured on the
+     badge's own tinted ground: 4.70:1 light, 7.44:1 dark. */
+  --badge-private-fg: #8a6100;
+  --badge-private-bg: rgb(138 97 0 / 0.12);
 
   /* Navigation */
   --nav-fg: rgb(10 26 47 / 0.8);
@@ -212,6 +243,11 @@
   --surface-raised: var(--color-deep-card);
   --surface-sunken: var(--color-deep-sky);
   --home-sky: var(--color-deep-sky);
+  --projects-sky: linear-gradient(
+    180deg,
+    var(--color-deep-core-bottom) 0%,
+    var(--color-deep-page) 100%
+  );
   --ticker-surface: var(--color-deep-ticker);
   --cta-surface: radial-gradient(60% 120% at 50% 0%, rgb(0 147 255 / 0.1), transparent 70%);
 
@@ -220,6 +256,12 @@
   --fg-muted: var(--color-navy-300);
   --fg-subtle: var(--color-navy-300);
   --fg-faint: var(--color-navy-450);
+  /* Unlike light, dark's --fg-muted (navy-300) already clears AA on
+     --surface-sunken (9.42:1) -- no new step needed, but this MUST be
+     redefined here anyway: custom properties are inherited, so leaving it
+     unset under [data-theme="dark"] would carry the light theme's #5c5c61
+     forward, which measures only 2.91:1 on the dark sunken ground. */
+  --fg-muted-on-tint: var(--fg-muted);
   --accent: var(--color-brand-400);
   --accent-strong: var(--color-brand-300);
 
@@ -247,6 +289,9 @@
   --pill-sky-bg: rgb(199 214 230 / 0.14);
   --pill-sky-shadow: none;
 
+  --badge-private-fg: #e8b84b;
+  --badge-private-bg: rgb(232 184 75 / 0.12);
+
   --nav-fg: var(--color-navy-200);
   --nav-fg-active: #ffffff;
 
@@ -273,373 +318,6 @@ body {
   color: var(--fg-body);
   background: var(--surface);
   font-family: var(--font-roboto-medium), sans-serif;
-}
-
-@layer components {
-  /* ---------------------------------------------------------------------- *
-   * Shared page furniture
-   * ---------------------------------------------------------------------- */
-
-  .page-wrap {
-    max-width: 1120px;
-    margin-inline: auto;
-    padding-inline: 32px;
-  }
-
-  @media (max-width: 640px) {
-    .page-wrap {
-      padding-inline: 20px;
-    }
-  }
-
-  /* Pills. Radius 980px, never outlined; feedback lands on pointer-down. */
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 980px;
-    padding: 14px 28px;
-    font-size: 15px;
-    font-weight: 600;
-    transition:
-      transform 100ms ease-out,
-      background-color 200ms ease-out;
-  }
-
-  .pill:active {
-    transform: scale(0.97);
-  }
-
-  .pill:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-  }
-
-  .pill-primary {
-    background: var(--pill-primary-bg);
-    color: var(--pill-primary-fg);
-  }
-
-  .pill-secondary {
-    background: var(--pill-secondary-bg);
-    color: var(--pill-secondary-fg);
-    box-shadow: var(--pill-secondary-shadow);
-  }
-
-  /* On the tinted hero sky the secondary pill goes white, per the v11 audit. */
-  .home-sky .pill-secondary {
-    background: var(--pill-sky-bg);
-    box-shadow: var(--pill-sky-shadow);
-  }
-
-  .pill-on-flagship {
-    background: var(--flagship-pill-bg);
-    color: var(--flagship-pill-fg);
-  }
-
-  /* Small blue eyebrow + large statement heading. No numbers, no rules. */
-  .section-eyebrow {
-    display: block;
-    font-size: 12px;
-    font-weight: 900;
-    letter-spacing: 0.18em;
-    color: var(--accent);
-  }
-
-  .section-heading {
-    margin-top: 10px;
-    font-size: clamp(28px, 4vw, 44px);
-    font-weight: 900;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: var(--fg-strong);
-  }
-
-  /* ---------------------------------------------------------------------- *
-   * Hero sky + swarm set-piece
-   * ---------------------------------------------------------------------- */
-
-  .home-sky {
-    position: relative;
-    overflow: hidden;
-    text-align: center;
-    background: var(--home-sky);
-  }
-
-  .home-aurora {
-    position: absolute;
-    inset: -40% -20%;
-    pointer-events: none;
-    opacity: var(--aurora-opacity);
-    background: var(--aurora-image);
-    filter: blur(70px);
-    animation: home-drift 14s ease-in-out infinite alternate;
-  }
-
-  .home-stars {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: var(--stars-opacity);
-    background-image:
-      radial-gradient(1.2px 1.2px at 12% 22%, var(--color-navy-300) 50%, transparent 51%),
-      radial-gradient(1px 1px at 78% 14%, var(--color-navy-300) 50%, transparent 51%),
-      radial-gradient(1.4px 1.4px at 60% 70%, var(--color-navy-200) 50%, transparent 51%),
-      radial-gradient(1px 1px at 32% 82%, var(--color-navy-300) 50%, transparent 51%),
-      radial-gradient(1px 1px at 90% 55%, var(--color-navy-300) 50%, transparent 51%);
-  }
-
-  /* The stage is authored at a fixed 520x430 and scaled down as one piece on
-     narrow viewports, so every satellite keeps its authored geometry. */
-  .home-cluster {
-    --cluster-scale: 1;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    height: calc(430px * var(--cluster-scale));
-    margin-top: 36px;
-  }
-
-  .home-stage {
-    position: relative;
-    /* MUST NOT shrink. Every child is absolutely positioned against the
-       authored 520x430 canvas (core at left:198, orbit origin at left:260 =
-       exactly half of 520), so the flex default `flex-shrink: 1` let the box
-       collapse to the container width on phones and dragged the orbit centre
-       off-centre by ~42px at 390px. Scale the canvas, never resize it. */
-    flex: none;
-    width: 520px;
-    height: 430px;
-    transform: scale(var(--cluster-scale));
-    transform-origin: top center;
-  }
-
-  @media (max-width: 580px) {
-    .home-cluster {
-      --cluster-scale: 0.62;
-    }
-  }
-
-  @media (max-width: 400px) {
-    .home-cluster {
-      --cluster-scale: 0.5;
-    }
-  }
-
-  .home-core {
-    position: absolute;
-    left: 198px;
-    top: 153px;
-    z-index: 6;
-    display: flex;
-    width: 124px;
-    height: 124px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 28%;
-    background: var(--core-bg);
-    box-shadow: var(--core-shadow);
-    animation: home-pop 0.5s var(--ease-brand) var(--pop-delay, 0s) both;
-  }
-
-  .home-swarm {
-    position: absolute;
-    left: 260px;
-    top: 215px;
-    width: 0;
-    height: 0;
-    animation: home-orbit 60s linear infinite;
-  }
-
-  .home-sat {
-    position: absolute;
-    width: var(--sat-size);
-    height: var(--sat-size);
-    margin: calc(var(--sat-size) / -2);
-    /* Placement lives in `transform`; the pop-in uses the standalone `scale`
-       property so the two compose instead of overwriting each other. */
-    transform: rotate(var(--sat-angle)) translateX(var(--sat-radius))
-      rotate(calc(-1 * var(--sat-angle)));
-    animation: home-pop 0.5s var(--ease-brand) var(--pop-delay, 0s) both;
-  }
-
-  .home-sat-img {
-    width: 100%;
-    height: auto;
-    border-radius: 24%;
-    box-shadow: var(--sat-shadow);
-    /* Counter-rotates at the swarm's own rate so icons stay upright. */
-    animation: home-counter-orbit 60s linear infinite;
-  }
-
-  .home-sat-img-nahtadi {
-    background: var(--nahtadi-tile);
-    padding: 9%;
-  }
-
-  @keyframes home-drift {
-    from {
-      transform: translate3d(-3%, -2%, 0);
-    }
-    to {
-      transform: translate3d(3%, 3%, 0) scale(1.06);
-    }
-  }
-
-  @keyframes home-orbit {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes home-counter-orbit {
-    to {
-      transform: rotate(-360deg);
-    }
-  }
-
-  @keyframes home-pop {
-    from {
-      opacity: 0;
-      scale: 0.9;
-    }
-    to {
-      opacity: 1;
-      scale: 1;
-    }
-  }
-
-  /* ---------------------------------------------------------------------- *
-   * Ticker
-   * ---------------------------------------------------------------------- */
-
-  .home-ticker {
-    overflow: hidden;
-    white-space: nowrap;
-    border-top: 1px solid var(--edge);
-    border-bottom: 1px solid var(--edge);
-    background: var(--ticker-surface);
-  }
-
-  .home-tape {
-    display: inline-flex;
-    width: max-content;
-    padding-block: 15px;
-    animation: home-tape 30s linear infinite;
-    will-change: transform;
-    backface-visibility: hidden;
-  }
-
-  .home-ticker:hover .home-tape {
-    animation-play-state: paused;
-  }
-
-  /* Two pixel-identical halves; -50% lands exactly on the seam. */
-  @keyframes home-tape {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(-50%, 0, 0);
-    }
-  }
-
-  .home-tk {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 9px;
-    padding-inline: 30px;
-    border-right: 1px solid var(--edge-soft);
-  }
-
-  /* ---------------------------------------------------------------------- *
-   * Tiles
-   * ---------------------------------------------------------------------- */
-
-  .home-tile {
-    background: var(--surface-raised);
-    border: 1px solid var(--edge);
-    box-shadow: var(--card-shadow);
-    transition:
-      transform 0.28s var(--ease-brand),
-      border-color 0.28s var(--ease-brand),
-      box-shadow 0.28s var(--ease-brand);
-  }
-
-  .home-tile:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .home-tile:hover {
-      transform: translateY(-6px);
-      border-color: var(--tile-hover-edge);
-      box-shadow: var(--tile-hover-shadow);
-    }
-  }
-
-  /* ---------------------------------------------------------------------- *
-   * Flagship band
-   * ---------------------------------------------------------------------- */
-
-  .home-flagship {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--flagship-edge);
-    background: var(--flagship-bg);
-  }
-
-  .home-flagship::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: var(--flagship-glow);
-  }
-
-  /* ---------------------------------------------------------------------- *
-   * CTA card
-   * ---------------------------------------------------------------------- */
-
-  .home-cta-card {
-    border: 1px solid var(--edge);
-    background: var(--cta-surface);
-    box-shadow: var(--cta-shadow);
-  }
-
-  .home-nahtadi-tile {
-    background: var(--nahtadi-tile-flagship);
-    padding: 9%;
-    box-shadow: var(--nahtadi-tile-shadow);
-  }
-
-  /* ---------------------------------------------------------------------- *
-   * Reduced motion: the set-piece is fully static — swarm frozen in its
-   * authored pose, pop-in resolved to its end state, aurora parked, tape
-   * stopped at offset 0. Pure CSS so server and client render identical HTML.
-   * ---------------------------------------------------------------------- */
-
-  @media (prefers-reduced-motion: reduce) {
-    .home-aurora,
-    .home-swarm,
-    .home-sat,
-    .home-sat-img,
-    .home-core,
-    .home-tape {
-      animation: none;
-    }
-
-    .home-tile {
-      transition: none;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .home-tile:hover {
-        transform: none;
-      }
-    }
-  }
 }
 
 @layer utilities {

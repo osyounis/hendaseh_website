@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { getShowcaseProjects } from '@/lib/projects'
+import { getCaseStudyProjects } from '@/lib/projects'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://hendaseh.com'
@@ -51,9 +51,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // Dynamic project routes (showcase-tier projects only; flagship's /nahtadi
-  // is already a static route above)
-  const projectRoutes: MetadataRoute.Sitemap = getShowcaseProjects()
+  // Dynamic project routes. Uses getCaseStudyProjects() (not
+  // getShowcaseProjects()) so this can never list a URL the route's own
+  // generateStaticParams doesn't return -- with dynamicParams = false, a
+  // showcase project that grows a detailPath would otherwise appear here but
+  // 404 on the route. Flagship's /nahtadi is already a static route above.
+  const projectRoutes: MetadataRoute.Sitemap = getCaseStudyProjects()
     .map((project) => ({
       url: `${baseUrl}/projects/${project.id}`,
       lastModified,
