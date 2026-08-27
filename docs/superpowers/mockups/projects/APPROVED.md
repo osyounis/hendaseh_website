@@ -1,13 +1,13 @@
 # Projects + Case-Study Template — APPROVED design contract (M2, 2026-08-26)
 
 **Approved mockups (visual contract for Task B2):**
-- `v4.html` — dark (canonical): Projects page + two case-study instances (brent-cuda, collision-avoidance-radar)
-- `v4-light.html` — light companion (Apple gray ladder per the Home v11 contract; same ruleset governs)
+- `v5.html` — dark (canonical): Projects page + two case-study instances (brent-cuda, collision-avoidance-radar)
+- `v5-light.html` — light companion (Apple gray ladder per the Home v11 contract; same ruleset governs)
 - History: v1 → v4 with Omar's review; superseded files kept.
 
 ## Projects page
 
-- **Header:** eyebrow `PROJECTS`, heading `Apps, models, and machines.` — **count-free by rule** (nothing in headline/sub may state a number that changes when projects are added). The only count is the computed `N of M projects` line.
+- **Header:** eyebrow `PROJECTS`, heading `Everything I've built.` — **count-free by rule** (nothing in headline/sub may state a number that changes when projects are added). The only count is the computed `N of M projects` line.
 - **Sticky filter bar** (Apple local-nav pattern): search + category chips in a translucent `backdrop-blur` bar, `position: sticky; top: 0`, hairline bottom border. Always reachable regardless of catalog length.
 - **Search:** live, unanimated filtering (Emil frequency rule — instant reflow, no card animations on filter). Matches name + description + tech keywords. Designed empty state ("Nothing matches …").
 - **Chips:** All / iOS / Machine Learning / Scientific Computing / Data Tools / Engineering Tools — single-select, from `projects.json` categories.
@@ -25,6 +25,8 @@
 - **Hero:** project-palette gradient; breadcrumb `← All projects`; icon 132px; title + one-line thesis; action buttons — GitHub (octocat, 18px glyph) and, when an embed exists, primary `Launch live demo ↓` **anchoring to the in-page embed**; 3-stat row (real numbers only).
 - **Body:** `THE PROBLEM → THE APPROACH → THE IMPACT` as eyebrow + statement headings, prose ≤760px, 1.75 leading. **Media slot** (16:9 figure + caption) for phase-5 charts/GIFs; **embed slot** loads the live demo in place (Streamlit today; demos hosted on-site under case studies is the standing intent).
 - **Scroll reveal:** sections/figures rise 14px + fade, 450ms strong ease-out, once (IntersectionObserver, `-80px` margin), fully static under reduced motion.
+- **Bottom rhythm:** content → space → ONE hairline (the footer's). The prev/next nav row has no border of its own — never stack hairlines.
+- **App Store artwork rule:** cards use the plain  glyph pill; the official "Download on the App Store" badge appears only on `/nahtadi`, unmodified, per Apple marketing guidelines.
 - **Bottom nav — fixed slots (Familiarity rule):** left slot ALWAYS `← All projects`; right slot ALWAYS `Next case study` as an icon card (46px squircle + label). No "previous". Next = following showcase-tier project in catalog order, wrapping.
 - Tech chips row in IMPACT; footer standard.
 
