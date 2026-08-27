@@ -17,6 +17,11 @@
 
 **Cut from Home (deliberate):** Range/skills section (ticker owns that message; ME line lives in hero lede + About), scroll-scrub statement (mechanic rejected; the sentence moves to About), availability stamp, blueprint numbered section labels.
 
+## Copy rules (added 2026-08-26)
+
+- **No em dashes, no AI-cadence anywhere** (sitewide rule, originated in the projects contract). Plain sentences, numbers written naturally.
+- **Copy-sync rule:** wherever Home shows a project (flagship band, work grid tiles), its description text is COPIED from the projects-page approved copy for that same project (`docs/superpowers/mockups/projects/v5.html` / its APPROVED.md), shortened only by truncation if space demands. One project, one description, everywhere. The v11 Home mockups may contain older em-dash copy; the projects-contract copy wins.
+
 ## Section header pattern (sitewide)
 Small blue eyebrow (12px, 900, letterspaced) + large statement heading (Roboto 900). No numbers, no rules-with-boxes.
 
