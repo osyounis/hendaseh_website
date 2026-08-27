@@ -1,8 +1,9 @@
 # Home — APPROVED design contract (M1 complete, 2026-08-26)
 
 **Approved mockups (the visual contract for Task B1):**
-- `v9-final.html` — dark theme (canonical)
-- `v9-final-light.html` — light theme companion
+- `v10-final.html` — dark theme (canonical)
+- `v10-final-light.html` — light theme companion
+- (v9 pair superseded by v10 after Omar's Apple-calibration review)
 - History: v1 directions → v9 across 9 iterations with Omar; superseded files kept for reference.
 
 ## Page structure (locked, in order)
@@ -21,6 +22,12 @@ Small blue eyebrow (12px, 900, letterspaced) + large statement heading (Roboto 9
 
 ## Hero copy (locked)
 Lede (if used under tagline): "I design the solution first — then learn whatever the problem needs. Machines for seven years; now the software that drives them." — canonical-facts compliant; no embellishment beyond it.
+
+## Apple-calibration rules (v10, from measuring apple.com + the apple-design skill)
+
+- **Buttons are pills** (radius 980px), never outlined: primary = blue fill (#0071e3-family) + white text; secondary = soft fill (light: #e8edf4 + navy text; dark: rgba(199,214,230,.14) + white). Press response `:active { scale(.97) }` — feedback on pointer-down.
+- **Text-contrast floor:** no UI text lighter than Apple's #6e6e73-equivalent on light (our #5d6f83 for ticker secondaries; nav links rgba(10,26,47,.8) weight 600). Same discipline in dark (ticker secondaries #6a87a5+).
+- **Ticker loop:** two pixel-identical halves, `width:max-content`, `translate3d` keyframes, `will-change:transform` — fixes the wrap flash.
 
 ## Build notes for B1
 - Both themes per the mockup pair; system `prefers-color-scheme` (flip mechanism stays Task B6).
