@@ -30,6 +30,13 @@
 - **Bottom nav — fixed slots (Familiarity rule):** left slot ALWAYS `← All projects`; right slot ALWAYS `Next case study` as an icon card (46px squircle + label). No "previous". Next = following showcase-tier project in catalog order, wrapping.
 - Tech chips row in IMPACT; footer standard.
 
+
+## Mobile rules (sub-880, added after phone review 2026-08-26)
+
+- Hero cluster: horizontally centered; scale the whole cluster with `transform: scale()` on small viewports — never fixed-width geometry that can drift off-center.
+- Feature/work tiles: never stack into full-width sprawl — compact horizontal layout (icon ~84px left, text right), same as small tiles.
+- Every future mockup ships an explicit phone-width pane; "implementer judgment" mobile layouts are no longer acceptable.
+
 ## Build notes for B2
 
 - Grid/search/filter behaviors replace `FilterableProjectList`/`ProjectFilter` visuals but preserve semantics; data via `src/lib/projects.ts` helpers only (`getProjectHref` drives the story-action).

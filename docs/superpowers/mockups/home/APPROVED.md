@@ -10,7 +10,7 @@
 
 1. **Hero** — aurora + starfield sky; **swarm cluster**: Hendaseh hexagon tile pinned at center, 7 project icons (squircle assets) at varied sizes/radii revolving **clockwise as one group**, icons counter-rotated to stay upright, full lap ≈ 60s; staggered pop-in on load. Below: `Omar Younis` (Roboto 900), tagline `Software Engineer · iOS, ML & Autonomous Systems` (tagline segment in blue), CTAs `View projects` (primary) + `Résumé (PDF)`. **No availability line. No radar sweep. No orbit rings/guides.**
 2. **Ticker** — full-width moving tape (~30s loop, pauses on hover, `aria-hidden`, static under reduced motion): quiet monochrome pairs + uncostumed real stats. Items: SWIFT/SWIFTUI · PYTORCH/TENSORFLOW · CUDA/C++ 35.31× · PYTHON/NUMPY · APP STORE 5.0★ · MECHANICAL 7 YRS. **No stock-price styling, no green gains.**
-3. **Flagship band** — eyebrow `FLAGSHIP`, heading `Shipped, and live today.`; green-gradient card (Nahtadi brand gradient), Nahtadi icon **on a WHITE tile** (rule generalized 2026-08-26: the transparent arch icon's tile must CONTRAST its ground — white on the green band or any green/dark ground; a green tile is only for neutral grounds. Green-on-green was the original blend bug), meta line `LIVE ON THE APP STORE · 5.0★ · PRIVACY-FIRST`, description, white `The story →` button → `/nahtadi`.
+3. **Flagship band** — eyebrow `FLAGSHIP`, heading `Shipped, and live today.`; green-gradient card (Nahtadi brand gradient), Nahtadi icon **on a WHITE tile** (rule generalized 2026-08-26: the transparent arch icon's tile must CONTRAST its ground — white on the green band or any green/dark ground; a green tile is only for grounds of a DIFFERENT hue/luminance. Green-on-green was the blend bug; green-on-dark-navy is fine — which is why the hero swarm satellite keeps its green tile in BOTH themes: the swarm family is colorful tiles, and a lone white satellite would break it), meta line `LIVE ON THE APP STORE · 5.0★ · PRIVACY-FIRST`, description, white `The story →` button → `/nahtadi`.
 4. **Work grid** — eyebrow `WORK`, heading `Proof, not promises.` **Tier-semantic sizes:** two horizontal feature tiles (showcase tier: brent-cuda, collision-avoidance-radar) with full **uncropped** square icons (172px), one-line description, `Case study →` → `/projects/<slug>`; three compact tiles (card tier: islamic-prayer-time, cycloidal-drive-creator, image-watermark-remover) with 72px icons → GitHub links. `All projects →` button → `/projects`. **Never center-crop the square card images into banner slivers.**
 5. **CTA** — card `Have a role in mind?` / `Sunnyvale, CA · omar@hendaseh.com` / `Email me` + `LinkedIn`.
 6. **Footer** — © Omar Younis · omar@hendaseh.com · Sunnyvale, CA.
@@ -20,7 +20,7 @@
 ## Copy rules (added 2026-08-26)
 
 - **No em dashes, no AI-cadence anywhere** (sitewide rule, originated in the projects contract). Plain sentences, numbers written naturally.
-- **Copy-sync rule:** wherever Home shows a project (flagship band, work grid tiles), its description text is COPIED from the projects-page approved copy for that same project (`docs/superpowers/mockups/projects/v5.html` / its APPROVED.md), shortened only by truncation if space demands. One project, one description, everywhere. The v11 Home mockups may contain older em-dash copy; the projects-contract copy wins.
+- **Copy-sync rule (clarified after B1 questions):** wherever Home shows a project, its **name AND description** are copied from the projects-page approved copy (`projects/v5.html` / APPROVED.md) — projects-page versions win on divergence (so: `Prayer-Time Algorithm Library`, `Image Watermark Remover`). Shortening only by truncation, which MAY drop a trailing sentence that duplicates adjacent meta text (e.g. the flagship description drops "Live on the App Store." because the meta line above says it). One project, one name, one description, everywhere.
 
 ## Section header pattern (sitewide)
 Small blue eyebrow (12px, 900, letterspaced) + large statement heading (Roboto 900). No numbers, no rules-with-boxes.
@@ -38,6 +38,14 @@ Dark theme: footer text navy-300 with `#0d1e33` hairline (was too dim).
 - **Buttons are pills** (radius 980px), never outlined: primary = blue fill (#0071e3-family) + white text; secondary = soft fill (light: #e8edf4 + navy text; dark: rgba(199,214,230,.14) + white). Press response `:active { scale(.97) }` — feedback on pointer-down.
 - **Text-contrast floor:** no UI text lighter than Apple's #6e6e73-equivalent on light (our #5d6f83 for ticker secondaries; nav links rgba(10,26,47,.8) weight 600). Same discipline in dark (ticker secondaries #6a87a5+).
 - **Ticker loop:** two pixel-identical halves, `width:max-content`, `translate3d` keyframes, `will-change:transform` — fixes the wrap flash.
+
+
+## Mobile rules (sub-880, added after phone review 2026-08-26)
+
+- Hero cluster: horizontally centered; scale the whole cluster with `transform: scale()` on small viewports — never fixed-width geometry that can drift off-center.
+- Flagship band: contents center-aligned, icon capped ~120px.
+- Feature/work tiles: never stack into full-width sprawl — compact horizontal layout (icon ~84px left, text right), same as small tiles.
+- Every future mockup ships an explicit phone-width pane; "implementer judgment" mobile layouts are no longer acceptable.
 
 ## Build notes for B1
 - Both themes per the mockup pair; system `prefers-color-scheme` (flip mechanism stays Task B6).
