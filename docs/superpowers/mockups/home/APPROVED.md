@@ -34,6 +34,8 @@ Lede (if used under tagline): "I design the solution first — then learn whatev
 ground `#fbfbfd` (sky fades `#eef4fb → #fbfbfd`) · cards/surfaces `#fff` with hairline `#d2d2d7` + soft shadow `0 2px 12px rgba(0,0,0,.04)` · primary text `#1d1d1f` · muted text floor `#6e6e73` · tertiary/separators `#aeaeb2` · footer text `#86868b` over a hairline top border · secondary pill fill `#e3e3e8` on plain/white ground (one step darker than Apple default so it reads identical across white cards and the #fbfbfd page ground) — but **on tinted/sky surfaces the secondary pill is WHITE with an inset `#d2d2d7` hairline + soft shadow** (a gray pill melts into a tinted ground) · accent `#0071e3`.
 Dark theme: footer text navy-300 with `#0d1e33` hairline (was too dim).
 
+**AA override, light footer (approved 2026-08-26):** the implementation ships `#6e6e73` (4.9:1) for the light-theme footer text, not the `#86868b` (3.5:1) written above. Where Apple-fidelity and the WCAG AA floor conflict, the AA floor wins; `#6e6e73` is the same muted-text floor already named in this section.
+
 
 - **Buttons are pills** (radius 980px), never outlined: primary = blue fill (#0071e3-family) + white text; secondary = soft fill (light: #e8edf4 + navy text; dark: rgba(199,214,230,.14) + white). Press response `:active { scale(.97) }` — feedback on pointer-down.
 - **Text-contrast floor:** no UI text lighter than Apple's #6e6e73-equivalent on light (our #5d6f83 for ticker secondaries; nav links rgba(10,26,47,.8) weight 600). Same discipline in dark (ticker secondaries #6a87a5+).

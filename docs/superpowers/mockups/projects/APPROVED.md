@@ -39,6 +39,8 @@
 
 ## Build notes for B2
 
+- **Card hover is SHARED CODE (Omar's explicit instruction):** apply the existing built `.home-tile` class/tokens to all project cards — never re-implement the hover. Same ease-brand curve, 280ms, -6px lift, tile-hover tokens.
+
 - Grid/search/filter behaviors replace `FilterableProjectList`/`ProjectFilter` visuals but preserve semantics; data via `src/lib/projects.ts` helpers only (`getProjectHref` drives the story-action).
 - Showcase pages migrate to the template with this mockup's real copy (Omar-approved); `/projects/reddit-nlp` still 404s (guarded e2e).
 - Live search must remain client-side and instant; no debounce animation.
