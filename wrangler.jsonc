@@ -6,6 +6,10 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
 
+  // Version preview URLs (https://<version-prefix>-hendaseh.hendaseh.workers.dev)
+  // for testing branch builds on real devices before anything merges to main.
+  "preview_urls": true,
+
   // Production hostnames. Declared here rather than clicked in the dashboard so
   // every deploy reconciles them: a CI deploy from a config WITHOUT these would
   // detach the custom domains and take the live site down.
