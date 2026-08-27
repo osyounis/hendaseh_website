@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
-> **Execution split:** MOCKUP tasks (M-tasks) run interactively — Fable + Omar, design skills loaded (`frontend-design`, `ui-ux-pro-max`), Mobbin for references. BUILD tasks (B-tasks) run in CLI sessions from the approved mockup files. **No B-task starts before its M-task's approval is recorded.** Approved mockups are committed under `docs/superpowers/mockups/<page>/` and are the build's visual contract, together with the spec.
+> **Execution split:** MOCKUP tasks (M-tasks) run interactively — Fable + Omar, design skills loaded (`frontend-design`, `ui-ux-pro-max`, **`apple-design` + `emil-design-eng`** — standing rule from M1: every mockup is checked against the Apple-calibration ruleset in docs/superpowers/mockups/home/APPROVED.md, both themes, before it goes to Omar), Mobbin for references. BUILD tasks (B-tasks) run in CLI sessions from the approved mockup files. **No B-task starts before its M-task's approval is recorded.** Approved mockups are committed under `docs/superpowers/mockups/<page>/` and are the build's visual contract, together with the spec.
 
 **Goal:** All five page surfaces redesigned per the spec, in both themes, with the new tagline converged and metadata cleaned.
 
@@ -28,7 +28,7 @@
 
 **Files:** Create `docs/superpowers/mockups/home/` (direction files + `APPROVED.md` recording the chosen direction and Omar's adjustments)
 
-- [ ] Invoke `frontend-design` + `ui-ux-pro-max`; pull Mobbin references for hero/portfolio patterns.
+- [x] Invoke `frontend-design` + `ui-ux-pro-max`; pull Mobbin references for hero/portfolio patterns.
 - [ ] Produce 2–3 full-page Home directions at realistic scale (real copy drafts, real phase-3 assets, real nav/footer), presented for click-through. Dark theme first; winner also shown light.
 - [ ] Directions must differ meaningfully (layout system, gradient treatment, type scale attitude) — not palette swaps. Each embodies "cinematic entrance, quiet interior" differently.
 - [ ] Iterate with Omar; record approval + change list in `APPROVED.md`; commit mockups.
