@@ -14,6 +14,8 @@ import {
   AffordanceLabel,
   ArrowUpRight,
   ChevronDownCircle,
+  ChevronLeft,
+  LeadingAffordanceLabel,
 } from '@/components/LinkAffordance';
 
 interface PageProps {
@@ -174,7 +176,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       >
         <div className="page-wrap">
           <Link href="/projects" className="case-crumb">
-            ← All projects
+            <LeadingAffordanceLabel label="All projects" glyph={<ChevronLeft />} />
           </Link>
 
           <div className="case-hero-row">
@@ -288,7 +290,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             is the only rule at the bottom of the page. */}
         <nav className="case-nav" aria-label="Case study">
           <Link href="/projects" className="case-nav-back">
-            ← All projects
+            <LeadingAffordanceLabel label="All projects" glyph={<ChevronLeft />} />
           </Link>
 
           {next && (

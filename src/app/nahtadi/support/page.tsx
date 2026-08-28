@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { HiMail } from 'react-icons/hi';
 import Link from 'next/link';
+import { ChevronLeft, LeadingAffordanceLabel } from '@/components/LinkAffordance';
 
 export const metadata: Metadata = {
   title: 'App Support',
@@ -199,7 +200,7 @@ export default function SupportPage() {
             href="/nahtadi"
             className="text-blue-600 hover:text-blue-800 font-medium inline-flex items-center"
           >
-            ← Back to Nahtadi App Page
+            <LeadingAffordanceLabel label="Back to Nahtadi App Page" glyph={<ChevronLeft />} />
           </a>
         </div>
       </div>

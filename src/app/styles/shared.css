@@ -110,15 +110,34 @@
   /* ---------------------------------------------------------------------- *
    * Link-affordance glyphs (grammar v2)
    *
-   * Sizing/colour/alignment for the four self-drawn SVG glyphs in
-   * `src/components/LinkAffordance.tsx`. That file carries the geometry
-   * rationale; this carries the one knob every glyph shares.
+   * Sizing/colour/alignment for the five self-drawn SVG glyphs in
+   * `src/components/LinkAffordance.tsx`. That file carries the geometry and
+   * clipping rationale; this carries what the browser needs.
    *
-   * `height: 0.65em` is the contract's size and it is set on the BOX, not on
-   * the drawing: each glyph's viewBox is proportioned to its own form, so the
-   * box height is also the em-relative size the contract asks for. Width is
-   * per-form -- a bare chevron is ~0.58 as wide as it is tall (SF Symbols'
-   * proportion), the enclosed and diagonal glyphs are square.
+   * SIZE IS PER GLYPH, not one shared value. Apple sizes these by role, and
+   * the three steps are MEASURED off apple.com's own rendering -- each glyph's
+   * INK height as a ratio of the capital-letter height in the same screenshot,
+   * converted through Roboto's cap height (0.711em): chevrons 0.533em of ink
+   * (75% of cap), the diagonal arrow 0.599em (83%), the circle-enclosed pair
+   * 1.009em (142%). The circle pair has to be the largest -- a ring at chevron
+   * height spends its whole size budget on the ring and its interior arrow
+   * stops being legible.
+   *
+   * Height is set on the BOX, not on the drawing, and the box is NOT the
+   * target. Each viewBox carries one stroke-width of anti-clip padding (see
+   * LinkAffordance.tsx), so ink is a fixed fraction of the box and the box
+   * heights below are DERIVED from the ink targets:
+   *   chevron  0.533 / (11.8/15.8) = 0.714em
+   *   arrow    0.599 / (13.3/17.3) = 0.78em
+   *   circle   1.009 / (17.8/21)   = 1.19em
+   * Ink is never bought back by shrinking the clearance -- more ink means a
+   * bigger box.
+   *
+   * ONE STROKE WEIGHT ACROSS THE FAMILY: all three sizes are drawn at
+   * ~0.090em of stroke (0.0904 / 0.0902 / 0.0907), the way a symbol family
+   * works. Scaling the strokes up with the boxes instead would have made the
+   * chevron -- the smallest mark -- the heaviest thing on the line, which
+   * reads as bolder rather than bigger.
    *
    * `fill: none` is not cosmetic: `.projects-mini svg` and the `.case-btn-*`
    * svg rule both set `fill: currentColor` for the DESTINATION marks (octocat,
@@ -126,16 +145,37 @@
    * would render as solid blobs under that fill, so both of those rules are
    * scoped with `:not(.link-glyph)` and the fill is re-stated here.
    *
-   * Baseline: an inline SVG's baseline is its bottom margin edge, so at
-   * `vertical-align: baseline` the box sits flush ON the text baseline,
-   * spanning 0 -> 0.65em with its optical centre at 0.325em. The labels these
-   * sit in are all mixed case, whose optical centre is cap-height/2 = 0.356em
-   * in Roboto (capHeight 1456/2048). The 0.03em lift closes exactly that gap.
+   * BASELINE: an inline SVG's baseline is its bottom margin edge, so at
+   * `vertical-align: baseline` the box sits flush ON the text baseline. Each
+   * glyph's ink is centred in its own box, so centring the BOX on the label's
+   * optical centre centres the ink. That optical centre is cap-height/2 =
+   * 0.3555em in Roboto (capHeight 1456/2048), hence
+   *   vertical-align = 0.3555em - height/2
+   * re-derived at the new sizes: -0.0015em at 0.714em (the chevron's box is
+   * now almost exactly cap height, so its shift falls to nothing), -0.035em
+   * at 0.78em, -0.2395em at 1.19em.
    *
-   * `margin-left` is the side bearing. There is no space character before the
-   * glyph -- it is welded to the last word (see `AffordanceLabel`) -- so this
-   * is the only thing setting the gap, and it is deliberately tighter than a
-   * word space so the glyph reads as part of the label, not as a next word.
+   * The 1.19em circle is TALLER THAN ITS OWN TEXT, so it is worth writing
+   * down why it does not grow the line box. An inline-block contributes its
+   * whole margin box to the line box and gets no half-leading of its own: it
+   * spans -0.9505em to +0.2395em about the baseline. Every call site here
+   * runs `line-height: 1.5`, whose strut spans -1.0918em to +0.4082em
+   * (Roboto ascent 0.9277 / descent 0.2441, half-leading 0.1641), so the
+   * glyph sits inside the strut with room to spare. Break-even is a
+   * line-height of 1.218; below that the circle would push the line box, and
+   * the fix would then be the line box, never the glyph size.
+   *
+   * SIDE BEARING: there is no space character next to the glyph -- it is
+   * welded to a word (see `AffordanceLabel` / `LeadingAffordanceLabel`) -- so
+   * the margin is the only thing setting the gap. The gap the eye sees is the
+   * margin PLUS the viewBox's one-stroke-width inset, so the margin is the
+   * target gap minus that stroke-width:
+   *   chevrons          0.35em - 0.0904em = 0.26em
+   *   arrow-up-right    0.35em - 0.0902em = 0.26em
+   *   circle glyphs     0.38em - 0.0907em = 0.29em
+   * The circles get marginally more, matching Apple's own spacing of the
+   * heavier enclosed marks. Both gap targets are measured off apple.com
+   * alongside the ink heights.
    * ---------------------------------------------------------------------- */
 
   .link-glyph {
@@ -148,21 +188,46 @@
        measured against. */
     display: inline-block;
     flex: none;
-    height: 0.65em;
-    margin-left: 0.2em;
-    vertical-align: 0.03em;
     fill: none;
     stroke: currentColor;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
 
+  /* chevron-left / chevron-right -- viewBox 10.9 x 15.8, stroke 2. Ink
+     0.533em. Width is height x 10.9/15.8 = 0.4925em, rounded UP to 0.494em so
+     sub-pixel rounding can never make the width the binding dimension and
+     letterbox the drawing. */
   .link-glyph-chevron {
-    width: 0.4em;
+    height: 0.714em;
+    width: 0.494em;
+    margin-left: 0.26em;
+    vertical-align: -0.0015em;
   }
 
-  .link-glyph-square {
-    width: 0.65em;
+  /* arrow-up-right -- square viewBox 17.3 x 17.3, stroke 2. Ink 0.599em,
+     which measured CORRECT against apple.com; size deliberately unchanged. */
+  .link-glyph-arrow {
+    height: 0.78em;
+    width: 0.78em;
+    margin-left: 0.26em;
+    vertical-align: -0.035em;
+  }
+
+  /* chevron-down-in-circle / arrow-down-in-circle -- square viewBox 21 x 21,
+     stroke 1.6. Ink (the ring's outer diameter) 1.009em. */
+  .link-glyph-circle {
+    height: 1.19em;
+    width: 1.19em;
+    margin-left: 0.29em;
+    vertical-align: -0.2395em;
+  }
+
+  /* A LEADING glyph sits before its label, so its side bearing is on the
+     other side. Same target gap, mirrored. */
+  .link-glyph-leading {
+    margin-left: 0;
+    margin-right: 0.26em;
   }
 
   /* Pills. Radius 980px, never outlined; feedback lands on pointer-down. */
