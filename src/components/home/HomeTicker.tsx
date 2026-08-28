@@ -12,7 +12,24 @@ const TICKER_ITEMS: TickerItem[] = [
   { symbol: 'PYTORCH', rest: 'TENSORFLOW' },
   { symbol: 'CUDA', rest: 'C++', stat: '35.31×' },
   { symbol: 'PYTHON', rest: 'NUMPY' },
+  /*
+   * Both added 2026-08-27 and confirmed interview-defensible by Omar, per the
+   * skills-defensibility rule in .claude/CLAUDE.md. Each is verbatim-grounded in
+   * the locked About copy.
+   *
+   * `1.5B LLM / ON A16` is an ACCOMPLISHMENT WITH A NUMBER, deliberately not a
+   * competency label: CLAUDE.md holds that on-device ML is "a direction and
+   * interest ... never list it as a claimed competency", so this must never be
+   * restyled to CORE ML or ON-DEVICE ML.
+   *
+   * `AWS / 1M+ DATA POINT/MIN` keeps the unit in words on purpose. The
+   * abbreviation-only form `1M+/MIN` was tested on Omar and he could not parse
+   * it; naming the thing being counted is what makes the rate readable at
+   * ticker speed, so the words stay even though the number is abbreviated.
+   */
+  { symbol: '1.5B LLM', stat: 'ON A16' },
   { symbol: 'APP STORE', stat: '5.0★' },
+  { symbol: 'AWS', stat: '1M+ DATA POINT/MIN' },
   { symbol: 'MECHANICAL', stat: '7 YRS' },
 ];
 
@@ -56,6 +73,16 @@ const TICKER_ITEMS: TickerItem[] = [
  * discontinuity occurs never was. That is what this changes, which is why it is
  * a different technique rather than a fifth variation.
  *
+ * WHY THE SEQUENCE IS AS WIDE AS IT IS. A viewport wider than one sequence shows
+ * the same item twice at once, once at each end. Repeating the sequence does not
+ * help -- it only adds more duplicates. Two real fixes exist: contain the strip,
+ * or widen the sequence. Contained variants (a hairline band and an Apple-style
+ * rounded tile, both in the page-wrap column) were built and REJECTED: they give
+ * up the full-bleed seam without gaining a surface, and full-bleed is the only
+ * non-card rhythm on Home. So the sequence widens instead -- mostly with content
+ * (two more items), finished with air (30px -> 50px of inline padding), since
+ * spacing alone would have had to grow absurdly to clear a wide display.
+ *
  * WHY EACH TAPE REPEATS THE SEQUENCE. The two tapes cover a contiguous 2W span
  * whose right edge falls to W just before each reset, so a viewport wider than
  * ONE tape shows an empty strip at the right edge once per cycle. The strip is
@@ -86,24 +113,56 @@ const TICKER_ITEMS: TickerItem[] = [
 /** Widest viewport the full-bleed strip must cover without gapping: 4K. */
 const TARGET_TAPE_PX = 3840;
 
-/** Measured width of one six-item sequence. Drifts if the items change; the
- *  e2e coverage assertion measures the real thing and is the actual guard. */
-const SEQUENCE_PX = 1290;
+/** MEASURED width of one sequence: 8 items at 50px inline padding each side,
+ *  2064.64px on 2026-08-27. Re-measure whenever the items or their padding
+ *  change -- both move it, and it feeds BOTH the copy count and the duration.
+ *  (Item text is part of that: this figure moved 0.84px when the AWS stat was
+ *  reworded, which rounds to the same constant but was measured, not assumed.) */
+const SEQUENCE_PX = 2065;
 
-/** Derived, never hardcoded -- see TARGET_TAPE_PX above. Currently 3. */
+/** Derived, never hardcoded -- see TARGET_TAPE_PX above. Currently 2. */
 const COPIES_PER_TAPE = Math.ceil(TARGET_TAPE_PX / SEQUENCE_PX);
 
+/**
+ * The approved scroll speed, and the constant everything else bends to.
+ * 43.009px/s is what the original design measured: 2580.54px of travel over 60s.
+ */
+const TARGET_PX_PER_SECOND = 43.009;
+
+/*
+ * Seconds per copy, DERIVED from the speed and the measured sequence -- this is
+ * the fix for a trap that a hardcoded duration walked straight into.
+ *
+ * Travel is 2x the tape width and the tape is SEQUENCE_PX * copies, so
+ *
+ *     px/s = 2 * SEQUENCE_PX * copies / (secondsPerCopy * copies)
+ *          = 2 * SEQUENCE_PX / secondsPerCopy
+ *
+ * The copy count CANCELS. That is why the old hardcoded `60s` per copy survived
+ * every change to the copy count and still held 43px/s -- and why widening the
+ * SEQUENCE broke it invisibly: at 2065px the same 60s yields 68.8px/s, a 60%
+ * speed-up that no copy-count guard could see. Inverting the equation makes the
+ * speed a constant of the design and the duration the thing that follows.
+ */
+const SECONDS_PER_COPY = Math.round(((2 * SEQUENCE_PX) / TARGET_PX_PER_SECOND) * 1000) / 1000;
+
 const TAPES = ['a', 'b'] as const;
+
 
 export default function HomeTicker() {
   return (
     <div className="home-ticker" aria-hidden="true">
-      {/* `--tape-copies` is the single source of truth for the tape's size AND
-          its timing: the stylesheet derives both duration and tape B's delay
-          from it, so the scroll speed cannot drift when the copy count does. */}
+      {/* The stylesheet derives the duration and tape B's delay from these two,
+          so neither the copy count NOR the sequence width can move the scroll
+          speed -- both are already accounted for in `--tape-seconds-per-copy`. */}
       <div
         className="home-tape-track"
-        style={{ '--tape-copies': COPIES_PER_TAPE } as CSSProperties}
+        style={
+          {
+            '--tape-copies': COPIES_PER_TAPE,
+            '--tape-seconds-per-copy': `${SECONDS_PER_COPY}s`,
+          } as CSSProperties
+        }
       >
         {TAPES.map((tape) => (
           <div

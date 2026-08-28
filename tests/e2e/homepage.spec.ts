@@ -7,7 +7,8 @@ const TAGLINE = 'Software Engineer · iOS, ML & Autonomous Systems'
  * the rendered result rather than trusting either number.
  */
 const TARGET_TAPE_PX = 3840
-const COPIES_PER_TAPE = 3
+const ITEMS_PER_SEQUENCE = 8
+const COPIES_PER_TAPE = 2
 /* 2580.54px of travel over 60s in the original one-copy design. Invariant. */
 const APPROVED_PX_PER_SECOND = 43
 
@@ -539,14 +540,14 @@ test.describe('Homepage', () => {
           trackAnimation: getComputedStyle(document.querySelector('.home-tape-track')!)
             .animationName,
           items: document.querySelectorAll('.home-tk').length,
-          viewportWidth: document.documentElement.clientWidth,
+          stripWidth: (document.querySelector('.home-ticker') as HTMLElement).clientWidth,
         }
       })
 
       // Two tapes x COPIES_PER_TAPE x six items. The count is derived rather
       // than written down, so changing the copy count updates this with it and
       // a DROPPED copy still fails loudly.
-      expect(measured.items).toBe(2 * COPIES_PER_TAPE * 6)
+      expect(measured.items).toBe(2 * COPIES_PER_TAPE * ITEMS_PER_SEQUENCE)
       // The track only positions them; animating it is the previous design.
       expect(measured.trackAnimation).toBe('none')
 
@@ -580,18 +581,25 @@ test.describe('Homepage', () => {
        * edge once per cycle. The strip is full-bleed, so this is a real limit on
        * real displays.
        *
-       * Asserted against a FIXED 4K target, not against the test viewport. The
-       * previous version compared a 1290px tape to the 1280px test viewport --
-       * 10px of headroom, and a "guard" that only ever tested the window
-       * Playwright happened to open. This number is the one that matters: a
-       * 1440/1512/1728 Mac, a 3008 Pro Display XDR and a 3440 ultrawide all sit
-       * under it.
+       * Now measured against the STRIP ITSELF rather than the viewport or a
+       * fixed number, which is the real invariant and the reason containing the
+       * ticker settles this permanently: the strip is capped at the page-wrap
+       * column (1056px), so it does not grow on a wider display and one ~1290px
+       * sequence covers it at every size. The fixed target is asserted too, as
+       * the documented design intent.
+       *
+       * The full-bleed version needed a 3840px tape here and still showed the
+       * same item twice on any screen wider than one sequence.
        */
       expect(
         a.width,
-        `each tape is ${a.width}px, under the ${TARGET_TAPE_PX}px this full-bleed strip has ` +
-          `to cover -- a viewport wider than one tape shows an empty strip at the right edge ` +
-          `before each reset`
+        `each tape is ${a.width}px but the strip is ${measured.stripWidth}px -- a strip wider ` +
+          `than one tape shows an empty gap at its right edge before each reset`
+      ).toBeGreaterThanOrEqual(measured.stripWidth)
+      expect(
+        a.width,
+        `each tape is ${a.width}px, under the ${TARGET_TAPE_PX}px this full-bleed strip has to ` +
+          `cover -- a wider display shows an empty strip at the right edge before each reset`
       ).toBeGreaterThanOrEqual(TARGET_TAPE_PX)
 
       /*

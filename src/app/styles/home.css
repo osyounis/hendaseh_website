@@ -188,13 +188,12 @@
     padding-block: 15px;
   }
 
-  /* Phase-offset double buffering. Each tape carries a full copy of the items
-     and travels TWICE its own width, +100% -> -100%, over 60s. Speed is
-     therefore one tape-width per 30s, unchanged from every previous design.
+  /* Phase-offset double buffering. Each tape carries whole copies of the item
+     sequence and travels TWICE its own width, +100% -> -100%.
 
-     Tape B runs the same animation at `animation-delay: -30s`, i.e. exactly
-     half a period ahead, so the two are always one tape-width apart: as one
-     exits left the other enters right and their edges meet at the seam.
+     Tape B runs the same animation exactly half a period ahead, so the two are
+     always one tape-width apart: as one exits left the other enters right and
+     their edges meet at the seam.
 
      The point of the whole arrangement is WHERE the reset happens. Each tape
      jumps from -100% back to +100% at the moment it is entirely off-screen to
@@ -202,25 +201,31 @@
      discontinuity still exists -- it is simply never on screen. Every earlier
      design reset while the animated element was covering the viewport, which
      is the one variable none of them varied. */
-  /* Duration is DERIVED from the copy count, never hardcoded. Travel is 2x the
-     tape's width, so both the distance and the time scale with `--tape-copies`
-     and the perceived speed stays at the ~43px/s Omar approved. Hardcoding a
-     duration is exactly how widening the tape silently doubles the speed.
-     HomeTicker.tsx sets `--tape-copies`; the fallback keeps this rule sane if
-     the variable is ever missing. */
+  /* Duration is DERIVED, and from BOTH variables -- never hardcoded. It used to
+     be a literal `60s` per copy, which held the approved speed through every
+     change to the copy count (the count cancels: px/s = 2 * sequence /
+     secondsPerCopy) and then broke silently the first time the SEQUENCE widened,
+     at which point the same 60s meant 68.8px/s instead of 43. HomeTicker.tsx now
+     computes `--tape-seconds-per-copy` from the target speed and the measured
+     sequence, so the speed is a constant of the design and the duration follows
+     it. The fallbacks reproduce the original one-copy geometry if either
+     variable is ever missing. */
   .home-tape {
     grid-area: tape;
     justify-self: start;
     display: inline-flex;
     width: max-content;
-    animation: home-tape calc(60s * var(--tape-copies, 1)) linear infinite;
+    animation: home-tape
+      calc(var(--tape-seconds-per-copy, 60s) * var(--tape-copies, 1)) linear infinite;
   }
 
-  /* Half a period, derived the same way. This is what keeps the two tapes edge
-     to edge; any other offset opens a gap or overlaps them, so the test asserts
-     it as a RATIO of the duration rather than as a literal. */
+  /* Exactly half a period, derived the same way. This is what keeps the two
+     tapes edge to edge; any other offset opens a gap or overlaps them, so the
+     test asserts it as a RATIO of the duration rather than as a literal. */
   .home-tape-b {
-    animation-delay: calc(-30s * var(--tape-copies, 1));
+    animation-delay: calc(
+      var(--tape-seconds-per-copy, 60s) * var(--tape-copies, 1) * -0.5
+    );
   }
 
   /* Fine pointers only. Ungated, this is the touch `:hover` trap: a tap applies
@@ -247,7 +252,7 @@
     display: inline-flex;
     align-items: baseline;
     gap: 9px;
-    padding-inline: 30px;
+    padding-inline: 50px;
     border-right: 1px solid var(--edge-soft);
   }
 
