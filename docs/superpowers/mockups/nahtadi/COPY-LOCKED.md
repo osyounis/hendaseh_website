@@ -15,6 +15,30 @@ line. It is not a draft and it is not a starting point.
 Scope: `/nahtadi`, `/nahtadi/privacy`, `/nahtadi/support`, their metadata and JSON-LD,
 plus four sitewide description fixes found in the secondary sweep (§5).
 
+## Amendment 1 — 2026-08-28, JSON-LD `offers`
+
+**One row changed after the first lock.** F6 originally removed the `offers` block
+from the SoftwareApplication JSON-LD. That was wrong and is struck.
+
+Google's SoftwareApplication rich result requires **name + `offers` +
+`aggregateRating` together**. Removing `offers` would not merely drop the price from
+search results — it would drop the page out of rich-result eligibility entirely,
+**taking the star rating with it**. That is a search regression on the one page whose
+SEO must not regress.
+
+The reasoning that a priceless `Offer` is invalid structured data was sound; the ruling
+it served was not. The real defect — markup representing content users cannot see — is
+now fixed from the other end: **`offers` stays exactly as it is, and the price becomes
+visible content.** That also handles the original staleness concern better, because a
+visible price is self-correcting: Omar would notice a wrong number on his own page,
+where an invisible one can sit wrong indefinitely.
+
+Consequences, all recorded in place below: **A1's locked string is amended** to carry
+the amount (§1 — a re-approval, not a silent edit); F6 in §2 is rewritten; the old
+removal moves to §7 with its dependency spelled out; §6 gains an exemption for
+`offers`; §8's ledger line is corrected. The §3 Last Updated rule also gains a
+publication-timing clause.
+
 ## Audit ID traceability
 
 Row IDs match the N1 audit table so approvals can be traced back. Two notes:
@@ -41,10 +65,33 @@ not hand-edit `faqLd`.
 
 | # | Type | BEFORE (exact) | AFTER (exact final text) |
 |---|---|---|---|
-| A1 | COPY | `Many prayer apps are "free" because they make money from ads and your data. Nahtadi is a one-time purchase because we believe your worship shouldn't be monetized. No ads means no incentive to track you. One payment means we don't nag you with subscription prompts during salat.` | `Many prayer apps are free because they make money from ads and your data. Your worship should not be a revenue stream. Nahtadi is a one-time purchase: no ads, so there is nothing to gain from tracking you, and no subscription prompts arriving in the middle of salat.` |
+| A1 | COPY | `Many prayer apps are "free" because they make money from ads and your data. Nahtadi is a one-time purchase because we believe your worship shouldn't be monetized. No ads means no incentive to track you. One payment means we don't nag you with subscription prompts during salat.` | `Many prayer apps are free because they make money from ads and your data. Your worship should not be a revenue stream. Nahtadi is a one-time $3.99 purchase: no ads, so there is nothing to gain from tracking you, and no subscription prompts arriving in the middle of salat.` |
 | A2 | COPY | `Yes. Nahtadi collects zero personal data. Everything — your location, settings, and preferences — stays on your device. There are no analytics, no third-party trackers, and no accounts to create.` | `Yes. Nahtadi collects zero personal data. Your location, settings, and preferences stay on your device. There are no analytics, no third-party trackers, and no accounts to create.` |
 | A3 | COPY | `Nahtadi supports all major calculation methods including ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), Egyptian General Authority (EGAS), and more — with high-latitude adjustments for extreme latitudes.` | `Nahtadi supports the major calculation methods: ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), the Egyptian General Authority (EGAS), and others. It also applies high-latitude adjustments beyond 48.5 degrees north or south, where the standard methods can fail during certain seasons.` |
 | A4 | COPY | `Completely. Prayer times are calculated on-device using astronomical algorithms, so Nahtadi works offline anywhere in the world once installed.` | `Prayer times are calculated on your device using astronomical algorithms, so Nahtadi works offline anywhere in the world once installed.` |
+
+**A1 carries the price — amended 2026-08-28, re-approval required.** Omar approved
+A1's wording before Amendment 1, so the inserted amount is called out rather than
+slipped in. The delta against the approved string is exactly six characters:
+`a one-time purchase` → `a one-time $3.99 purchase`.
+
+- **Why here.** A pricing answer that never states the price is odd on its own terms,
+  and this row is what makes `offers` in the JSON-LD represent visible content.
+  `one-time purchase` survives intact as a phrase — it is in the locked description,
+  the "Why" card, and now this answer.
+- **Placement is N2's call; the string is this document's.** N2 may surface the amount
+  somewhere additional or better (the `One-Time Purchase` card is the obvious
+  alternative). What N2 may **not** do is leave the price invisible everywhere — that
+  is the constraint the row exists to satisfy, and it is load-bearing for §2's F6.
+- **The amount must be confirmed against the live App Store listing before N3 ships.**
+  `$3.99` is carried over from the existing JSON-LD, which is precisely the value the
+  audit flagged as unverified. It was low-stakes while invisible; it is not now. If the
+  real price differs, change the number in **both** places (this string and
+  `offers.price`) — they are two renderings of one fact and must agree.
+- **This string feeds the FAQPage JSON-LD** via the `faqs` array, so after this change
+  the price appears in two structured-data blocks. Same fact, same number, always.
+- Currency: the visible string carries `$` only, while `offers.priceCurrency` stays
+  `'USD'`. Standard and correct — the markup is explicit where machines read it.
 
 **A1 source-encoding note:** the BEFORE literal is a double-quoted JS string with
 escaped inner quotes (`\"free\"`). The AFTER text has no quotes and no apostrophes,
@@ -213,23 +260,38 @@ pages. All three read `Nahtadi - Islamic Prayer Times` afterwards.
 
 | # | Type | Location | BEFORE | AFTER |
 |---|---|---|---|---|
-| F6 | METADATA | `jsonLd.offers` in `page.tsx` | `offers: { '@type': 'Offer', price: '3.99', priceCurrency: 'USD' }` | **Delete the entire `offers` property.** |
+| F6 | METADATA | `jsonLd.offers` in `page.tsx` | `offers: { '@type': 'Offer', price: '3.99', priceCurrency: 'USD' }` | **UNCHANGED. Keep the block exactly as it is.** |
 
-**Delete the whole block, not just the two fields.** Removing `price` and
-`priceCurrency` leaves `offers: { '@type': 'Offer' }` — an Offer with no price, which
-is invalid structured data and worse than no offer at all. The mechanical instruction
-is: remove the `offers` key and its object.
+**Amended 2026-08-28. The original F6 deleted this block; that ruling is struck.**
 
-**Why:** `3.99` appears **only** in this JSON-LD and nowhere in visible page content.
-That is a structured-data guidelines mismatch — markup must represent content the user
-can see — and because it is machine-read it reaches Google directly, so it goes stale
-silently on any price change or sale. The **pricing model** is what the page actually
-communicates (`One-Time Purchase` card, the "Why isn't it free?" FAQ, and the locked
-description's "One-time purchase"), and all of that is visible and stays.
+**Do not remove `offers`.** Google's SoftwareApplication rich result requires
+**name + `offers` + `aggregateRating` together**. This page has all three, so it is
+eligible. Deleting `offers` would not just drop the price from the search result — it
+would drop the page out of rich-result eligibility entirely, **taking the 5.0 star
+rating with it**. That is a search regression on the one page whose SEO must not
+regress, and it is the exact opposite of what the original ruling was trying to buy.
 
-The `aggregateRating` block is **UNCHANGED** — it is sourced from
-`projects.json` (`appStoreRating`, 5.0 / 8) and matches the visible ratings badge, so
-it satisfies the same guideline that the price failed.
+**The real defect is fixed from the other end.** The genuine problem was that `3.99`
+appeared only in markup and nowhere a user could see it — a structured-data guidelines
+mismatch, since markup must represent visible content. **Row A1 now states the price in
+the pricing FAQ**, which resolves the mismatch while keeping the rich result whole.
+
+This also beats deletion on the original staleness concern. A **visible** price is
+self-correcting: Omar reads his own page and would notice a wrong number. An invisible
+one, machine-read straight into Google, can sit wrong indefinitely.
+
+**Standing dependency — `offers`, `aggregateRating` and A1 are now one unit:**
+
+- `offers` may not be deleted while the rich result is wanted.
+- `offers.price` and A1's visible `$3.99` are two renderings of one fact. **Change one,
+  change the other**, or the guidelines mismatch returns in reverse.
+- If a future task ever does remove `offers` deliberately, it is accepting the loss of
+  the star rating in search. That is a decision for Omar, not a cleanup.
+
+The `aggregateRating` block is **UNCHANGED** — sourced from `projects.json`
+(`appStoreRating`, 5.0 / 8) and matching the visible ratings badge, so it already
+satisfied the guideline the price failed. It is also the half of the rich result with
+real value, which is why the original ruling's collateral damage was disqualifying.
 
 ---
 
@@ -275,8 +337,21 @@ correct at the time and is now void: it was conditioned on the policy body havin
 changes, and C4 changes it. A policy whose text changed while its stamp did not is a
 worse defect than the sentence C4 removes.
 
-Set it to the actual merge date. If N3 merges on 2026-08-28, the exact string is
-`'August 28, 2026'`. Do not pre-date it and do not carry `February 13, 2026` forward.
+**The date must reflect when the policy goes PUBLIC, not when N3 runs.** N3 works on
+`dev`; the policy is not published until the dev → main merge, which B6 owns and which
+may land days later. A stamp reading the day the code was written, on a page that went
+live the following week, is wrong in the same way the stale stamp was.
+
+**Division of labour:** N3 sets the date to its best estimate of the publication date.
+**B6 verifies it at merge** and corrects it if the merge slipped. Do not pre-date it,
+and do not carry `February 13, 2026` forward. Format stays `Month D, YYYY` — if
+publication lands on 2026-08-28, the exact string is `'August 28, 2026'`.
+
+**No user notification is implied.** C4 narrows an overreaching claim; it alters **no
+data practice**. Nothing Nahtadi collects, stores, transmits or shares changes, so the
+"Changes to This Privacy Policy" section's existing terms ("Any updates … will be
+posted on this page with a revised Last Updated date") are fully satisfied by the date
+bump alone. No email, no in-app notice, no App Store submission is triggered.
 
 ### Privacy metadata
 
@@ -429,7 +504,8 @@ these, that is a new decision for Omar, not a cleanup.
 | **Feature: `Accurate calculations for Fajr, Dhuhr, Asr, Maghrib, and Isha using astronomical algorithms.`** | Concrete and correct. |
 | **Screenshots: Prayer Times, Qibla Compass, Settings captions** | Accurate and specific; no AI cadence. |
 | **`Questions or feedback?`** + the `support@hendaseh.com` mailto | Fine as written. |
-| **`aggregateRating` in JSON-LD** (5.0 / 8, from `projects.json`) | Matches the visible ratings badge, so it satisfies the structured-data guideline that F6's price failed. Data-layer sourced; never hardcode it. |
+| **`aggregateRating` in JSON-LD** (5.0 / 8, from `projects.json`) | Matches the visible ratings badge, so it satisfies the structured-data guideline. Data-layer sourced; never hardcode it. |
+| **`offers` in JSON-LD** (`'@type': 'Offer'`, `price: '3.99'`, `priceCurrency: 'USD'`) | **Looks like dead weight; is not.** Google's SoftwareApplication rich result needs name + `offers` + `aggregateRating` **together**, so deleting `offers` silently kills the star rating in search along with the price. Kept deliberately. Row A1 now states the price in visible content, so the markup represents something a user can see. `offers.price` and A1's `$3.99` move together, always. Full reasoning in §2 (F6) and §7. |
 | **`keywords` array** in `layout.tsx` | Untouched. |
 | **`alt="Nahtadi App Icon"`** on the hero icon | Adequate alt text. Not worth churn. |
 
@@ -486,7 +562,8 @@ Breaking all five would have been over-correction. Do not "finish the job".
 | D9 alt | Keep a softer SLA: `…usually within a couple of days.` | Dropped with the SLA itself. No response-time promise is published. |
 | C4 alt | Cite the **App Store 4+ age rating** in the privacy policy | 4+ is a **content** rating. Using it to support a data claim re-imports the exact category error C4 exists to remove. Explicitly rejected. |
 | F2 | `Choose from 9+ calculation methods for your region.` | The count is unconfirmed. A *confirmed* number may return later (see §1); `9+` may not. |
-| F6 partial | Remove only `price` and `priceCurrency`, keep `offers` | Leaves an Offer with no price — invalid structured data. The whole `offers` block goes. |
+| **F6 (original ruling, STRUCK 2026-08-28)** | **Delete the `offers` block from the SoftwareApplication JSON-LD**, because `3.99` appeared only in markup and nowhere visible | **Do not re-propose this.** Google's SoftwareApplication rich result requires **name + `offers` + `aggregateRating` together**. Deleting `offers` drops the page out of rich-result eligibility entirely and **takes the 5.0 star rating with it** — a search regression on the one page whose SEO must not regress, in exchange for tidying a field nobody sees. The premise was right (markup must represent visible content) and the fix was backwards: **row A1 makes the price visible instead.** A future reader will find `offers` carrying a price that duplicates the FAQ and think it redundant. It is not; it is half of the rich-result contract. See §2 (F6) and §6. |
+| F6 partial | Remove only `price` and `priceCurrency`, keep `offers` | Moot now that `offers` stays whole, and it was never viable on its own: it leaves an Offer with no price — invalid structured data, and worse than either alternative. |
 | Audit C6 (original) | Keep `Last Updated: February 13, 2026` | Void. It was conditioned on zero policy-body changes; C4 changes the body. The date now moves — see §3. |
 
 ---
@@ -540,16 +617,31 @@ time (previously in `keywords` only). `Qibla` enters the support description.
   shipping them together).
 - FAQPage JSON-LD updates automatically from the `faqs` array — no drift possible.
 - `aggregateRating` stays data-layer sourced and matches visible content.
-- `offers` removal *improves* guideline compliance (markup must represent visible
-  content); it removes a rich-result eligibility that was invalid to begin with.
+- **`offers` is retained, and rich-result eligibility is preserved.** The
+  SoftwareApplication rich result needs name + `offers` + `aggregateRating` together;
+  all three remain. Guideline compliance improves without touching the markup, because
+  **row A1 moves the price into visible content** — the mismatch is resolved from the
+  copy side, at no cost to the star rating in search. This is a net SEO *gain*: the
+  page keeps its rich result and stops asserting an invisible price.
 - OG card images unchanged, so no `npm run generate:og` run is required.
 
 ---
 
-## 9. Notes for N3 — not copy, not blocking
+## 9. Gates and notes for N3
 
-Recorded so they are decisions rather than oversights. None of these are approved
-changes; each needs its own ruling if acted on.
+### Blocking — these must be settled before the work ships
+
+- **Confirm the App Store price before writing row A1.** `$3.99` comes from the
+  existing JSON-LD, which is the value the audit flagged as unverified. Amendment 1
+  makes it user-visible, so an unchecked number now misleads a reader as well as
+  Google. Check the live listing. If it differs, correct **both** A1's string and
+  `offers.price` — one fact, two renderings.
+- **Set the policy's `Last Updated` to the publication date**, not the day N3 runs, and
+  hand B6 the job of verifying it at the dev → main merge (§3).
+
+### Not blocking — recorded so they are decisions, not oversights
+
+None of the following are approved changes; each needs its own ruling if acted on.
 
 1. **`EmailSignup.tsx` may be lying.** It posts to Buttondown with `mode: 'no-cors'`
    and sets `success` on any non-network outcome. An opaque response cannot confirm the
