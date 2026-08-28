@@ -22,15 +22,14 @@
      every page sky. Specificity is unchanged at (0,2,0) and Home's computed
      style was measured identical before and after the move. */
 
-  .home-aurora {
-    position: absolute;
-    inset: -40% -20%;
-    pointer-events: none;
-    opacity: var(--aurora-opacity);
-    background: var(--aurora-image);
-    filter: blur(70px);
-    animation: home-drift 14s ease-in-out infinite alternate;
-  }
+  /* `.home-aurora` MOVED TO shared.css (Task B4). Contact's approved ground
+     draws the same aurora one step quieter, and copying the rule would have
+     made it the third character-for-character duplicate on this page's
+     furniture -- the same reason `.pill-secondary`'s sky treatment and
+     `.home-tile` already live there. The class keeps its `home-` name for the
+     same reason `.home-tile` does: renaming it buys nothing and breaks every
+     call site at once. `@keyframes home-drift` and its reduced-motion
+     `animation: none` travelled with it. */
 
   .home-stars {
     position: absolute;
@@ -131,15 +130,6 @@
   .home-sat-img-nahtadi {
     background: var(--nahtadi-tile);
     padding: 9%;
-  }
-
-  @keyframes home-drift {
-    from {
-      transform: translate3d(-3%, -2%, 0);
-    }
-    to {
-      transform: translate3d(3%, 3%, 0) scale(1.06);
-    }
   }
 
   @keyframes home-orbit {
@@ -458,12 +448,12 @@
    * authored pose, pop-in resolved to its end state, aurora parked, tape
    * stopped at offset 0. Pure CSS so server and client render identical HTML.
    *
-   * `.home-tile`'s reduced-motion override is NOT here -- it moved to
-   * shared.css with the rest of `.home-tile`'s rules (see the comment there).
+   * `.home-tile`'s and `.home-aurora`'s reduced-motion overrides are NOT here
+   * -- each moved to shared.css with the rest of its own rules (see the
+   * comments there).
    * ---------------------------------------------------------------------- */
 
   @media (prefers-reduced-motion: reduce) {
-    .home-aurora,
     .home-swarm,
     .home-sat,
     .home-sat-img,

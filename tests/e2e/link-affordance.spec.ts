@@ -25,6 +25,7 @@ const PAGES = [
   '/projects/collision-avoidance-radar',
   '/nahtadi',
   '/nahtadi/support',
+  '/contact',
 ]
 
 const BANNED = ['→', '↗', '↓', '←'] // → ↗ ↓ ←
@@ -45,6 +46,32 @@ for (const path of PAGES) {
     expect(offenders).toEqual([])
   })
 }
+
+/**
+ * THE ONE RECORDED EXEMPTION from grammar v2 (contact/APPROVED.md, amended
+ * 2026-08-28).
+ *
+ * The Contact page's email address is a `mailto:` link set at display size
+ * (26-52px). It carries NO affordance glyph: the grammar governs links and
+ * pills, and an arrow hung off a 52px address would be absurd at that scale.
+ *
+ * This test exists so the exemption is ENFORCED rather than remembered. It
+ * fails in both directions -- if a later pass "fixes" the address by adding a
+ * glyph, and if the address stops being a link at all (which is what would
+ * make a glyph look necessary in the first place).
+ */
+test('the Contact address is a bare mailto: at display size, with no glyph', async ({ page }) => {
+  await page.goto('/contact')
+
+  const addr = page.locator('a.contact-addr')
+  await expect(addr).toHaveAttribute('href', 'mailto:omar@hendaseh.com')
+  await expect(addr.locator('svg')).toHaveCount(0)
+
+  // Guard the guard: it is display type, so the exemption's premise holds.
+  expect(
+    await addr.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))
+  ).toBeGreaterThanOrEqual(26)
+})
 
 /**
  * Sizes are PER GLYPH, not one shared value -- Apple sizes these by role and

@@ -29,7 +29,10 @@ test.describe('Site Navigation', () => {
     // Navigate to Contact using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'Contact' }).click()
     await expect(page).toHaveURL('/contact')
-    await expect(page.getByRole('heading', { name: /contact/i })).toBeVisible()
+    // Same rule as About and Projects above: the Contact h1 is the approved
+    // contract's statement heading, and "CONTACT" is the eyebrow over it.
+    // Task B4.
+    await expect(page.getByRole('heading', { name: 'Say hello.', level: 1 })).toBeVisible()
 
     // Navigate back to Home using logo
     await page.getByRole('navigation').getByRole('link', { name: 'Hendaseh' }).click()

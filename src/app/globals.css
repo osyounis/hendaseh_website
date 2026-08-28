@@ -4,6 +4,7 @@
 @import "./styles/projects.css";
 @import "./styles/case-study.css";
 @import "./styles/about.css";
+@import "./styles/contact.css";
 
 /* Dark mode is opt-in via data-theme, NOT prefers-color-scheme, until
    sub-project 4 applies tokens to every page. Flipping on media query now
@@ -161,6 +162,22 @@
      Dark has no such problem (#57b4ff on #081c33 is 7.66:1), so it keeps the
      mockup's full-height fade. */
   --about-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100px);
+  /* The Contact page ground.
+
+     The approved v2-light pair draws a full-height wash (haze at 0% to the
+     page ground at 100%, i.e. Home's light sky exactly), and this resolves the
+     tint at 100px instead -- the SAME measured correction --projects-sky and
+     --about-sky already carry, at the same length, for the same reason. The
+     "CONTACT" eyebrow is --accent (#0071e3) at 12px/900 and its top edge sits
+     at 154px (70px of nav + 84px of band padding). Measured on the wash's
+     interpolated colour at that height (#f1f5fb) it is 4.29:1 -- under the 4.5
+     floor for normal text. Killing the tint at a LENGTH puts every word of
+     header copy on plain --surface (4.54:1) and does not move when the band's
+     height changes. Everything else on the band was measured and clears AA on
+     the wash regardless: the sub and the quiet lines at 4.68:1, and the tinted
+     `@` is 52px display type against a 3:1 floor.
+     Dark has no such problem and is the mockup's flat sky verbatim. */
+  --contact-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100px);
   --ticker-surface: #ffffff;
   --cta-surface: #ffffff;
 
@@ -229,6 +246,12 @@
     radial-gradient(30% 26% at 68% 30%, rgb(87 180 255 / 0.28), transparent 60%),
     radial-gradient(46% 34% at 55% 62%, rgb(143 208 255 / 0.3), transparent 65%);
   --aurora-opacity: 0.4;
+  /* Contact runs the same aurora one step quieter -- its ground carries a
+     display-size email address rather than a set-piece, and the approved v2
+     pair draws 0.35 / 0.45 against Home's 0.4 / 0.5. Consumed by
+     `.contact-sky`, which overrides `--aurora-opacity` for the subtree, so the
+     shared `.home-aurora` rule stays the only place that reads it. */
+  --contact-aurora-opacity: 0.35;
   --stars-opacity: 0.25;
   --core-bg: linear-gradient(160deg, #ffffff, var(--color-haze-200));
   --core-shadow: 0 0 0 1px rgb(0 118 209 / 0.25), 0 22px 50px rgb(10 26 47 / 0.18);
@@ -243,6 +266,33 @@
   /* A gray pill melts into a tinted ground, so on the hero sky it goes white. */
   --pill-sky-bg: #ffffff;
   --pill-sky-shadow: inset 0 0 0 1px var(--color-ink-300), 0 2px 8px rgb(0 0 0 / 0.06);
+
+  /* The Contact copy button's confirmed state (Task B4).
+
+     DELIBERATE, MEASURED DEVIATION FROM THE MOCKUP HEX. The approved v2-light
+     pair draws Apple's Green (Dark) `#248a3d`, which carries white 15px/600
+     label text at 4.39:1 -- under the 4.5 AA floor for normal text. This is
+     the same call the light footer already records: where a mockup value and
+     the AA floor disagree, the floor wins (see --fg-subtle's note above and
+     docs/superpowers/mockups/home/APPROVED.md). `#20803a` is that green
+     darkened one notch to 4.99:1 on white, which is a step the eye does not
+     read as a different colour. Dark needs no such correction: #4ade80 under
+     near-black text is 12.4:1. */
+  --copy-ok-bg: #20803a;
+  --copy-ok-fg: #ffffff;
+
+  /* Contact's quiet lines: the clipboard hint, the sign-off, and each channel
+     card's handle. One step below --fg-muted's role but NOT --fg-faint, whose
+     light value (#aeaeb2, 2.2:1 here) is a separator-glyph colour and fails as
+     text. Same pair --about-when ships; named for its own page because that
+     is how every other page-scoped text token in this file is named.
+     Measured: 4.91:1 light on --surface, 5.19:1 dark on the sky. */
+  --contact-quiet: var(--color-ink-600);
+
+  /* The destination marks on the channel cards (LinkedIn wordmark, octocat,
+     document). Filled glyphs, so they sit a step off the card's title rather
+     than at full strength. */
+  --contact-mark: var(--color-ink-800);
 
   /* Private-project badge (USCG). The Projects mockup leaves its dark-theme
      gold (#e8b84b) unchanged in light, where it measures 1.9:1 on white; the
@@ -331,6 +381,7 @@
     var(--color-deep-about-sky) 0%,
     var(--color-deep-page) 100%
   );
+  --contact-sky: var(--color-deep-sky);
   --ticker-surface: var(--color-deep-ticker);
   --cta-surface: radial-gradient(60% 120% at 50% 0%, rgb(0 147 255 / 0.1), transparent 70%);
 
@@ -369,10 +420,16 @@
     radial-gradient(30% 26% at 68% 30%, rgb(87 180 255 / 0.32), transparent 60%),
     radial-gradient(46% 34% at 55% 62%, rgb(0 90 166 / 0.42), transparent 65%);
   --aurora-opacity: 0.5;
+  --contact-aurora-opacity: 0.45;
   --stars-opacity: 0.5;
   --core-bg: linear-gradient(160deg, var(--color-deep-core-top), var(--color-deep-core-bottom));
   --core-shadow: 0 0 0 1px rgb(143 208 255 / 0.22), 0 22px 50px rgb(0 40 90 / 0.55);
   --sat-shadow: 0 12px 28px rgb(0 0 0 / 0.5);
+
+  --copy-ok-bg: #4ade80;
+  --copy-ok-fg: var(--color-deep-page);
+  --contact-quiet: var(--color-navy-450);
+  --contact-mark: var(--color-navy-200);
 
   --pill-primary-bg: var(--color-brand-500);
   --pill-primary-fg: var(--color-deep-page);

@@ -46,3 +46,25 @@ Chevrons = movement within the experience; arrows = actions or leaving it (Apple
 - Links: LinkedIn `https://www.linkedin.com/in/omar-younis/`, GitHub `https://github.com/osyounis`, résumé `/omar_younis_resume_2026.pdf` (or its post-audit replacement path) — `target="_blank" rel="noopener"` on the externals.
 - No em dashes, no AI cadence; metadata untouched (B5 owns it).
 - Both themes; Apple gray ladder rules apply.
+
+## Amendment — the email address is a `mailto:` link (2026-08-28, approved at the B4 checkpoint)
+
+The section above fixes the page's interactive inventory at **the Copy button plus three channel cards**, with the address as display text. This amendment adds a **fourth interactive element**: the address itself is now `<a href="mailto:omar@hendaseh.com">`.
+
+**Why.** The page's own thesis is "Email is the fastest way to reach me." On a phone the address was the one thing a thumb would try first and the one thing that did nothing.
+
+**Copy is RETAINED, not replaced.** The two are not redundant: a `mailto:` can launch an unconfigured client on desktop, and a clipboard write needs a secure context and is meaningless on a phone that has a mail app. Each input type gets the affordance that suits it.
+
+**It keeps the display treatment, which means it takes none of a link's default dress:**
+
+- **Colour is set explicitly** to the heading colour. The treatment is body-coloured type with **only the `@` in accent**; a default link colour would turn the whole address blue and destroy it. Verified in both themes.
+- **No underline at rest.** An underline under 52px type reads as broken.
+- **Hover affordance, gated to fine pointers:** the underline is always present and merely `transparent`, fading to `--accent` over 200ms on hover — no layout shift (a decoration appearing on hover cannot transition and would snap), and it reuses the accent the `@` already carries rather than introducing a second colour. A link that is visually identical to plain text and answers nothing is an invisible link: a thumb will try it regardless, a pointer user never learns it is there.
+- **Standard interactive treatment**, per the sitewide grammar: `:focus-visible` is the built 2px accent ring at 3px offset, and `:active` is `scale(.98)` (the `.home-tile` value, dropped under reduced motion the way that rule drops its own).
+- **Server-rendered.** A `mailto:` is plain HTML; the client boundary stays around `CopyEmailButton` alone.
+
+### Glyph exemption — EXPLICIT, do not "fix" this
+
+**The address carries NO affordance glyph.** Grammar v2 governs **links and pills, not display type**, and an arrow hung off a 52px address would be absurd at that scale.
+
+This is enforced, not remembered: `tests/e2e/link-affordance.spec.ts` asserts the address is a bare `mailto:` at display size with zero `<svg>` inside it, and fails in both directions — if a later pass adds a glyph, and if the address stops being a link at all.

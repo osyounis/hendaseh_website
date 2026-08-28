@@ -320,6 +320,53 @@
   }
 
   /* ---------------------------------------------------------------------- *
+   * Aurora
+   *
+   * The soft drifting glow behind a page's tinted sky. The `home-` prefix is
+   * historical (it was born on the Home hero) but this is SHARED, exactly like
+   * `.home-tile` below: Contact (Task B4) draws the same aurora on its own
+   * ground, one step quieter, and copying the rule into contact.css would have
+   * made it the third verbatim duplicate of a piece of Home furniture -- the
+   * mistake `.pill-secondary`'s sky treatment already had to be undone for.
+   *
+   * The QUIETER is expressed as a variable override on the scoping element
+   * (`.contact-sky { --aurora-opacity: var(--contact-aurora-opacity) }`), not
+   * as a second `opacity` declaration, so this rule stays the only place that
+   * reads the token and the two themes keep resolving from globals.css.
+   *
+   * The element is decorative and `pointer-events: none`; every call site
+   * renders it `aria-hidden`.
+   * ---------------------------------------------------------------------- */
+
+  .home-aurora {
+    position: absolute;
+    inset: -40% -20%;
+    pointer-events: none;
+    opacity: var(--aurora-opacity);
+    background: var(--aurora-image);
+    filter: blur(70px);
+    animation: home-drift 14s ease-in-out infinite alternate;
+  }
+
+  @keyframes home-drift {
+    from {
+      transform: translate3d(-3%, -2%, 0);
+    }
+    to {
+      transform: translate3d(3%, 3%, 0) scale(1.06);
+    }
+  }
+
+  /* Parked, not slowed. Travels with the rule above for the same reason
+     `.home-tile`'s override does: a future page that reuses the aurora must
+     not have to remember to re-suppress it. */
+  @media (prefers-reduced-motion: reduce) {
+    .home-aurora {
+      animation: none;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
    * Tiles
    *
    * The `home-` prefix is historical (born on the Home work grid) but this
