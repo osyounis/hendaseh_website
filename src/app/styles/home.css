@@ -437,10 +437,33 @@
     box-shadow: var(--cta-shadow);
   }
 
+  /* The tile is a WRAPPER around the icon, not the icon itself, and that is
+     load-bearing rather than cosmetic. `padding: 9%` resolves against the
+     CONTAINING BLOCK's width, never the element's own -- so the padded element
+     has to sit inside something that IS the tile. This class used to be on the
+     <img>, which was the grid item: its containing block was the grid track,
+     exactly 200px at desktop (so 9% coincidentally equalled 9% of the tile)
+     and the full column below the 880px breakpoint, where the tile is capped
+     at 120px. On a half-screen laptop that resolved to ~53px a side inside a
+     120px box and collapsed the glyph to ~14px.
+
+     Splitting ground-and-size from inset makes the ratio hold BY CONSTRUCTION
+     at any tile width, which px values per breakpoint would not -- those drift
+     the moment a tile size changes. `.projects-nahtadi-tile` hit the same trap
+     and took the px route; this is the version that survives a resize.
+
+     Guarded at three widths spanning the breakpoint by
+     tests/e2e/percentage-padding.spec.ts. */
   .home-nahtadi-tile {
     background: var(--nahtadi-tile-flagship);
-    padding: 9%;
     box-shadow: var(--nahtadi-tile-shadow);
+  }
+
+  .home-nahtadi-glyph {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 9%;
   }
 
   /* ---------------------------------------------------------------------- *

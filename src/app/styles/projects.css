@@ -257,11 +257,15 @@
      white -- the contrast rule recorded beside `--nahtadi-tile-flagship` in
      globals.css. Same tokens as Home's flagship band; only the class is
      page-local. */
-  /* The inset is in px, not the 9% Home uses. Percentage padding resolves
-     against the CONTAINING BLOCK's width, not the element's own: on Home the
-     tile sits in a 200px grid track so 9% lands at 18px, but here the flex
-     row is ~1000px wide, so 9% became ~95px a side, overflowed the 104px
-     box, and squeezed the arch to zero width -- a blank white tile. */
+  /* The inset is in px here, and this class stays on the <img> itself.
+     Percentage padding resolves against the CONTAINING BLOCK's width, not the
+     element's own: this flex row is ~1000px wide, so a 9% inset became ~95px a
+     side, overflowed the 104px box, and squeezed the arch to zero width -- a
+     blank white tile. Home hit the same trap later and took the structural
+     route instead (a wrapper sized to the tile, the inset on the image inside
+     it, so the percentage resolves against the tile at any width) -- see
+     `.home-nahtadi-tile` in home.css. Either is correct; px is fine while
+     these two sizes are literals a few lines above. */
   .projects-nahtadi-tile {
     background: var(--nahtadi-tile-flagship);
     padding: 9px;
