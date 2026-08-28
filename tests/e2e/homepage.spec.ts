@@ -1,6 +1,16 @@
 import { test, expect, type Page } from '@playwright/test'
 
 const TAGLINE = 'Software Engineer · iOS, ML & Autonomous Systems'
+/*
+ * Ticker geometry. Kept in step with src/components/home/HomeTicker.tsx, which
+ * derives its copy count from the same 4K target; the assertions below measure
+ * the rendered result rather than trusting either number.
+ */
+const TARGET_TAPE_PX = 3840
+const COPIES_PER_TAPE = 3
+/* 2580.54px of travel over 60s in the original one-copy design. Invariant. */
+const APPROVED_PX_PER_SECOND = 43
+
 const MOBILE_VIEWPORT = { width: 390, height: 844 }
 const MOBILE_CONTEXT = { viewport: MOBILE_VIEWPORT, isMobile: true, hasTouch: true }
 
@@ -22,6 +32,9 @@ const readAnimationNames = () => {
     swarm: pick('.home-swarm'),
     satellite: pick('[data-testid="hero-satellite"]'),
     satelliteIcon: pick('[data-testid="hero-satellite"] img'),
+    // `.home-tape`, not the track: the tapes are the animated elements and the
+    // track only stacks them in one grid cell. This reads the first tape; the
+    // dedicated ticker test below covers both.
     tape: pick('.home-tape'),
   }
 }
@@ -471,80 +484,129 @@ test.describe('Homepage', () => {
     })
 
     /*
-     * The ticker tape is split into two independently-composited halves so no
-     * single animated layer exceeds iOS's ~4096px GPU texture limit (see the
-     * header comment in src/components/home/HomeTicker.tsx). That only holds if
-     * there really are two of them, they are the same width, and each one
-     * translates by its OWN full width -- if any of that drifts the seam breaks
-     * or the oversized layer comes back.
+     * The tape is two identical tapes phase-offset by half a period, so that
+     * each one's reset happens while it is entirely off-screen. The invariants
+     * that make that true are all asserted here, because every one of them is a
+     * silent failure if it drifts: a wrong delay opens a gap or overlaps the
+     * tapes, unequal widths misalign the seam, and a tape narrower than the
+     * viewport leaves a strip of empty ground before each reset.
      *
-     * Engine caveat: playwright.config.ts defines only a `chromium` project, so
-     * the `width * 3 <= 4096` guard below (and the menu timing assertions
-     * elsewhere in this file) are evaluated against Chromium's font metrics --
-     * while the bug this guards against, and every measurement in the fix
-     * report behind it, were taken in WebKit (iOS Safari is WebKit). The two
-     * engines currently agree (WebKit measures 1290.27px per half, i.e.
-     * 3870.8 device px at DPR 3, matching what Chromium reports here), and that
-     * agreement was verified by hand on 2026-08-27 -- it is not assumed to hold
-     * forever. A future font or metrics change could drift the two engines
-     * apart and leave this guard silently watching the wrong number.
+     * WHAT THIS REPLACED. Earlier versions asserted exactly ONE animated
+     * element and that the halves had `animationName: none`. That was right for
+     * the previous design and is wrong for this one, which needs two animated
+     * tapes by necessity. It is rewritten rather than relaxed to "one or more":
+     * the count is still exact, just exactly two.
+     *
+     * Before that it asserted `halfWidth * 3 <= 4096`, iOS's GPU texture limit
+     * at DPR 3, on the theory that an oversized layer was tiling and evicting
+     * tiles. Four designs have since falsified that: the two-half design met the
+     * limit with ~5.5% to spare and flickered anyway, and removing the promotion
+     * hints changed nothing. It is deliberately not re-expressed in another
+     * form -- a guard encoding a disproven cause is worse than no guard, because
+     * it reads as protection.
+     *
+     * Engine caveat, still live: playwright.config.ts defines only a `chromium`
+     * project, so these measurements come from Chromium's font metrics while the
+     * bug itself is a WebKit one (iOS Safari is WebKit). The two engines agreed
+     * by hand on 2026-08-27 (WebKit measures 1290.27px per tape, matching
+     * Chromium) -- verified, not assumed.
      */
-    test('the ticker tape is two equal, independently-animated halves', async ({ page }) => {
+    test('the ticker is two identical tapes phase-offset by half a period', async ({ page }) => {
       await page.goto('/')
 
-      const halves = page.locator('.home-tape')
-      await expect(halves).toHaveCount(2)
+      await expect(page.locator('.home-tape')).toHaveCount(2)
 
-      // Layout metrics, not client rects: the tape is mid-animation, so a
-      // client rect would report wherever the translate happens to have
-      // carried it. offsetLeft/offsetWidth are the untransformed positions.
+      /*
+       * Widths from getComputedStyle, not offsetWidth: `offsetWidth` is
+       * integer-rounded (a tape rounds 1290.27 to 1290), and percentages in
+       * `translate` resolve against the fractional used value, so the fractional
+       * number is the one the geometry actually depends on.
+       */
       const measured = await page.evaluate(() => {
-        const track = document.querySelector('.home-tape-track') as HTMLElement
+        const tapes = [...document.querySelectorAll('.home-tape')] as HTMLElement[]
         return {
-          trackAnimation: getComputedStyle(track).animationName,
-          halves: [...document.querySelectorAll('.home-tape')].map((el) => {
+          tapes: tapes.map((el) => {
             const cs = getComputedStyle(el)
             return {
-              left: (el as HTMLElement).offsetLeft,
-              width: (el as HTMLElement).offsetWidth,
+              width: parseFloat(cs.width),
               animationName: cs.animationName,
-              duration: cs.animationDuration,
-              delay: cs.animationDelay,
+              duration: parseFloat(cs.animationDuration),
+              delay: parseFloat(cs.animationDelay),
+              timing: cs.animationTimingFunction,
+              iteration: cs.animationIterationCount,
             }
           }),
+          trackAnimation: getComputedStyle(document.querySelector('.home-tape-track')!)
+            .animationName,
           items: document.querySelectorAll('.home-tk').length,
+          viewportWidth: document.documentElement.clientWidth,
         }
       })
 
-      // Nothing may animate the full-width track -- that is the oversized layer.
+      // Two tapes x COPIES_PER_TAPE x six items. The count is derived rather
+      // than written down, so changing the copy count updates this with it and
+      // a DROPPED copy still fails loudly.
+      expect(measured.items).toBe(2 * COPIES_PER_TAPE * 6)
+      // The track only positions them; animating it is the previous design.
       expect(measured.trackAnimation).toBe('none')
-      expect(measured.items).toBe(12)
 
-      const [a, b] = measured.halves
-      expect(a.width).toBe(b.width)
-      expect(a.animationName).toBe('home-tape')
-      expect(b.animationName).toBe('home-tape')
-      expect(a.duration).toBe(b.duration)
-      // The two halves stay in sync only because both start with the same
-      // animation-delay (0s). A delay on just one half is the exact edit that
-      // would reopen the seam, and nothing else in this test would catch it.
-      expect(a.delay).toBe(b.delay)
-      // Half B starts exactly one half-width along, so -100% on each half puts
-      // the tape back where it began and the restart is invisible.
-      expect(b.left - a.left).toBe(a.width)
-
-      // The number the whole fix hinges on. Every current iPhone is DPR 3, so
-      // each half's backing store is width x 3 device px and has to stay inside
-      // iOS's ~4096px GPU texture limit. 1290 x 3 = 3870 leaves only ~5.5%, so
-      // it is asserted rather than assumed: if the tape ever grows past
-      // 1365 CSS px the flicker comes straight back.
-      const IOS_MAX_TEXTURE_PX = 4096
+      const [a, b] = measured.tapes
       expect(
-        a.width * 3,
-        `each ticker half rasterises to ${a.width * 3} device px at DPR 3, past iOS's ` +
-          `~${IOS_MAX_TEXTURE_PX}px GPU texture limit -- the tape has grown and the tile ` +
-          `eviction that caused the flicker is back`
-      ).toBeLessThanOrEqual(IOS_MAX_TEXTURE_PX)
+        measured.tapes.map((t) => t.animationName),
+        'both tapes must be animated -- one animated tape is the design this replaced'
+      ).toEqual(['home-tape', 'home-tape'])
+      expect(a.width).toBe(b.width)
+      expect(a.duration).toBe(b.duration)
+      expect(measured.tapes.map((t) => t.timing)).toEqual(['linear', 'linear'])
+      expect(measured.tapes.map((t) => t.iteration)).toEqual(['infinite', 'infinite'])
+
+      /*
+       * THE assertion of this design. The tapes are edge to edge only because B
+       * runs exactly half a period ahead of A. Any other delay is a gap or an
+       * overlap that would show as a stutter at the seam, and nothing else here
+       * would catch it. Expressed as a relationship to the duration rather than
+       * as the literal -30s, so changing the period keeps the test honest.
+       */
+      expect(
+        b.delay - a.delay,
+        `tape B is offset by ${b.delay - a.delay}s but half a ${a.duration}s period is ` +
+          `${-a.duration / 2}s -- the two tapes are no longer edge to edge and the seam will stutter`
+      ).toBeCloseTo(-a.duration / 2, 3)
+
+      /*
+       * Coverage, and the reason each tape repeats the sequence. The pair spans
+       * a contiguous 2W, but that span's right edge falls to W just before each
+       * reset, so a viewport wider than ONE tape shows empty ground at the right
+       * edge once per cycle. The strip is full-bleed, so this is a real limit on
+       * real displays.
+       *
+       * Asserted against a FIXED 4K target, not against the test viewport. The
+       * previous version compared a 1290px tape to the 1280px test viewport --
+       * 10px of headroom, and a "guard" that only ever tested the window
+       * Playwright happened to open. This number is the one that matters: a
+       * 1440/1512/1728 Mac, a 3008 Pro Display XDR and a 3440 ultrawide all sit
+       * under it.
+       */
+      expect(
+        a.width,
+        `each tape is ${a.width}px, under the ${TARGET_TAPE_PX}px this full-bleed strip has ` +
+          `to cover -- a viewport wider than one tape shows an empty strip at the right edge ` +
+          `before each reset`
+      ).toBeGreaterThanOrEqual(TARGET_TAPE_PX)
+
+      /*
+       * Speed is the number Omar approved, and it is the thing most easily lost
+       * when the tape is resized: travel is 2x the tape width, so a hardcoded
+       * duration would make a 3x wider tape scroll 3x faster. Measured here from
+       * the real width and the real duration rather than trusted from the CSS
+       * `calc`, which is the whole point of asserting it.
+       */
+      const pxPerSecond = (a.width * 2) / a.duration
+      expect(
+        pxPerSecond,
+        `the tape scrolls at ${pxPerSecond.toFixed(1)}px/s, not the approved ` +
+          `~${APPROVED_PX_PER_SECOND}px/s -- resizing the tape changed the speed`
+      ).toBeCloseTo(APPROVED_PX_PER_SECOND, 0)
     })
   })
 
@@ -581,12 +643,37 @@ test.describe('Homepage', () => {
       tape: 'none',
     })
 
-    // Both halves of the tape, not just the first one the selector finds.
+    /*
+     * BOTH tapes, and parked at the START rather than frozen wherever the
+     * animation happened to be. `readAnimationNames` above only reads the first
+     * tape and only reads its animation-name; neither says the tapes are at
+     * offset 0, and a tape stopped mid-scroll renders a half-item at the edge.
+     *
+     * With the animation off, both tapes resolve to no transform and sit in the
+     * same grid cell showing identical content, which is the intended static
+     * state: it reads as one tape starting at x=0.
+     */
     expect(
       await page.evaluate(() =>
-        [...document.querySelectorAll('.home-tape')].map((el) => getComputedStyle(el).animationName)
-      )
-    ).toEqual(['none', 'none'])
+        [...document.querySelectorAll('.home-tape')].map((el) => {
+          const cs = getComputedStyle(el)
+          return { animationName: cs.animationName, transform: cs.transform, display: cs.display }
+        })
+      ),
+      'under reduced motion tape A must be static and parked at its start offset, and tape B hidden'
+    ).toEqual([
+      { animationName: 'none', transform: 'none', display: 'flex' },
+      /*
+       * Tape B is display:none, and that is load-bearing rather than tidiness.
+       * Both tapes share one grid cell at `justify-self: start`, so with the
+       * animation off they would stack exactly on top of each other at x=0 --
+       * a full strip of double-painted content that is invisible only because
+       * every ticker colour is currently a solid hex, and becomes a visible
+       * double-image the moment one gains alpha. One 3870px tape covers the
+       * strip alone.
+       */
+      { animationName: 'none', transform: 'none', display: 'none' },
+    ])
 
     // ...and the pop-in has resolved to its end state rather than leaving the
     // set-piece invisible.

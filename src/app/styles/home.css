@@ -177,34 +177,66 @@
     background: var(--ticker-surface);
   }
 
-  /* The track lays the two halves out side by side and is deliberately NOT
-     animated and NOT promoted -- nothing here may create a layer as wide as
-     the whole tape. See the header comment in HomeTicker.tsx. */
+  /* A single grid cell that both tapes occupy, so they share one origin and
+     their transforms are directly comparable. Side-by-side flow would put tape
+     B at x=W in layout and its translate would be measured from there, which
+     is the previous design. The track is not animated. */
   .home-tape-track {
-    display: inline-flex;
+    display: grid;
+    grid-template-areas: "tape";
     width: max-content;
     padding-block: 15px;
   }
 
-  /* One compositor layer per half: 1290 CSS px, i.e. 2581 device px at DPR 2
-     and 3871 at DPR 3, both inside iOS's ~4096px GPU texture limit. */
+  /* Phase-offset double buffering. Each tape carries a full copy of the items
+     and travels TWICE its own width, +100% -> -100%, over 60s. Speed is
+     therefore one tape-width per 30s, unchanged from every previous design.
+
+     Tape B runs the same animation at `animation-delay: -30s`, i.e. exactly
+     half a period ahead, so the two are always one tape-width apart: as one
+     exits left the other enters right and their edges meet at the seam.
+
+     The point of the whole arrangement is WHERE the reset happens. Each tape
+     jumps from -100% back to +100% at the moment it is entirely off-screen to
+     the left, and reappears entirely off-screen to the right. The
+     discontinuity still exists -- it is simply never on screen. Every earlier
+     design reset while the animated element was covering the viewport, which
+     is the one variable none of them varied. */
+  /* Duration is DERIVED from the copy count, never hardcoded. Travel is 2x the
+     tape's width, so both the distance and the time scale with `--tape-copies`
+     and the perceived speed stays at the ~43px/s Omar approved. Hardcoding a
+     duration is exactly how widening the tape silently doubles the speed.
+     HomeTicker.tsx sets `--tape-copies`; the fallback keeps this rule sane if
+     the variable is ever missing. */
   .home-tape {
+    grid-area: tape;
+    justify-self: start;
     display: inline-flex;
-    flex: 0 0 auto;
-    animation: home-tape 30s linear infinite;
-    will-change: transform;
-    backface-visibility: hidden;
+    width: max-content;
+    animation: home-tape calc(60s * var(--tape-copies, 1)) linear infinite;
   }
 
-  .home-ticker:hover .home-tape {
-    animation-play-state: paused;
+  /* Half a period, derived the same way. This is what keeps the two tapes edge
+     to edge; any other offset opens a gap or overlaps them, so the test asserts
+     it as a RATIO of the duration rather than as a literal. */
+  .home-tape-b {
+    animation-delay: calc(-30s * var(--tape-copies, 1));
   }
 
-  /* Each half shifts left by exactly its own width, so the arrangement at the
-     end of a cycle is identical to the start and the restart is invisible. */
+  /* Fine pointers only. Ungated, this is the touch `:hover` trap: a tap applies
+     :hover, the tape freezes, and it only resumes when the user taps somewhere
+     else -- which is what Omar hit on the phone. A sticky tap was never a valid
+     pause mechanism, so gating it is a fix rather than a loss; the WCAG 2.2.2
+     obligation it leaves open on touch is met by the pause control. */
+  @media (hover: hover) and (pointer: fine) {
+    .home-ticker:hover .home-tape {
+      animation-play-state: paused;
+    }
+  }
+
   @keyframes home-tape {
     from {
-      transform: translate3d(0, 0, 0);
+      transform: translate3d(100%, 0, 0);
     }
     to {
       transform: translate3d(-100%, 0, 0);
@@ -271,6 +303,18 @@
     .home-core,
     .home-tape {
       animation: none;
+    }
+
+    /* One tape is enough when nothing moves, and two is actively wrong.
+       Both tapes share a grid cell at `justify-self: start`, so with the
+       animation off they stack exactly on top of each other at x=0 -- which the
+       old side-by-side flex layout could not do, because B sat at x=W. Every
+       ticker colour is currently a solid hex, so the overlap is invisible
+       rather than broken, but it is a full strip of wasted paint and it turns
+       into a visible double-image the moment any of those colours gains alpha.
+       A single 3870px tape covers the strip on its own. */
+    .home-tape-b {
+      display: none;
     }
   }
 }
