@@ -3,8 +3,14 @@
 import { useEffect } from 'react';
 
 /**
- * Scroll reveal for the case-study template: sections and figures rise 14px
- * and fade in once as they enter the viewport.
+ * Scroll reveal for the case-study template and the About page: blocks rise
+ * 20px and fade in once as they enter the viewport.
+ *
+ * The CODE here is unchanged since Task B2.4 -- Task B3 reused it verbatim and
+ * changed only the CSS, which now lives in `src/app/styles/shared.css` and
+ * rides on the `translate` property rather than `transform` (About's cards
+ * hover on `transform`; read that file's header for why the two cannot share
+ * one property).
  *
  * THE POINT OF THIS COMPONENT IS WHAT IT DOES NOT DO.
  *
@@ -14,7 +20,8 @@ import { useEffect } from 'react';
  * rather than an enhancement: with JavaScript off, or on any device where the
  * observer callback did not fire, the page was blank.
  * `tests/e2e/projects-no-js.spec.ts` exists because of that, and now covers the
- * case-study routes too.
+ * case-study routes too; `tests/e2e/about.spec.ts` makes the same assertions
+ * for About.
  *
  * So the hidden state is never rendered on the server and never lives in the
  * base stylesheet. `[data-reveal]` with no value is fully visible; only

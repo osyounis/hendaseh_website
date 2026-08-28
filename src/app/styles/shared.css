@@ -264,6 +264,27 @@
     box-shadow: var(--pill-secondary-shadow);
   }
 
+  /* On a tinted hero sky the gray secondary pill melts into the ground, so it
+     goes white with a hairline (v11 Apple audit; both approved mockup pairs
+     draw exactly this). This lives beside `.pill-secondary` rather than in a
+     page stylesheet because it is no longer page-scoped: Home shipped it in
+     home.css when `.home-sky` was its only consumer, About (B3) added a
+     character-for-character copy, and Contact (B4) would have made a third.
+     Same reason `.home-tile` and `[data-reveal]` live in this file.
+
+     Adding a page's sky here is the whole edit -- do not re-declare these two
+     properties in a page stylesheet. Specificity is (0,2,0) either way, so
+     nothing about the cascade changed when this moved: it still beats the
+     `.pill-secondary` rule above regardless of import order. Verified by
+     measuring Home's hero pill before and after the move (Task B3 fix round 1:
+     background, box-shadow, colour, geometry and transition all identical in
+     both themes). */
+  .home-sky .pill-secondary,
+  .about-sky .pill-secondary {
+    background: var(--pill-sky-bg);
+    box-shadow: var(--pill-sky-shadow);
+  }
+
   .pill-on-flagship {
     background: var(--flagship-pill-bg);
     color: var(--flagship-pill-fg);
@@ -366,6 +387,100 @@
       .home-tile:hover {
         transform: none;
       }
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Scroll reveal
+   *
+   * READ THIS BEFORE CHANGING IT.
+   *
+   * Shared by the case-study template (`/projects/[slug]`, Task B2.4) and the
+   * About page (Task B3). It was written in case-study.css and moved here when
+   * About became its second consumer -- the same reason `.home-tile` lives in
+   * this file rather than in home.css.
+   *
+   * 1. THE RESTING STATE IS VISIBLE. There is deliberately no rule that hides
+   *    `[data-reveal]`. Only `[data-reveal="pending"]` hides, and the only
+   *    thing that can write that value is `ScrollReveal.tsx` after it has
+   *    confirmed JavaScript, an IntersectionObserver and no reduced-motion
+   *    preference, and only for elements below the fold. Adding `opacity: 0`
+   *    to a bare `[data-reveal]` rule would turn this back into the content
+   *    gate that `tests/e2e/projects-no-js.spec.ts` was written to catch.
+   *
+   * 2. THE MOTION RIDES ON `translate`, NEVER ON `transform`, AND THAT IS
+   *    LOAD-BEARING. About reveals its cards, and every card on that page is a
+   *    `.home-tile`, whose hover IS `transform: translateY(-6px)`. `transform`
+   *    is a single property: a reveal written as one would clobber the hover
+   *    (or be clobbered by it) for any card that is hovered while it reveals,
+   *    and there is no way to express "both" without composing the matrices by
+   *    hand. `translate` is an independent, independently-animatable property
+   *    that the browser composes WITH `transform`, so the two never fight.
+   *    Any change here that reaches for `transform` reintroduces that
+   *    collision.
+   * ---------------------------------------------------------------------- */
+
+  [data-reveal="pending"] {
+    opacity: 0;
+    translate: 0 20px;
+  }
+
+  [data-reveal="in"] {
+    opacity: 1;
+    translate: 0 0;
+    /* A transition, not a keyframe: it retargets from wherever the value
+       currently is if anything interrupts it. Strong ease-out, so the motion
+       is fastest at the moment the eye arrives. */
+    transition:
+      opacity 0.6s var(--ease-brand),
+      translate 0.6s var(--ease-brand);
+    /* Longhand AFTER the shorthand, which resets delay to 0. This is what lets
+       a grid express a staggered cascade: the call site sets `--reveal-delay`
+       inline per card and nothing here needs to know how many cards there are.
+       Unset, it is 0s and the element reveals immediately. */
+    transition-delay: var(--reveal-delay, 0s);
+  }
+
+  /* A `.home-tile` that is ALSO a reveal target carries two independent
+     motions: the reveal (opacity + translate) and the hover (transform +
+     border-color + box-shadow). `transition` is a single shorthand, and both
+     rules sit at specificity (0,1,0) -- so the reveal rule above, being later
+     in source order, replaced the tile's list wholesale and a revealed card's
+     hover snapped instead of easing over 280ms. Every card on the About page
+     is exactly this combination.
+
+     There is no way to append to `transition`, so the two lists are restated
+     together here, at (0,2,0) so it does not depend on source order. Nothing
+     is re-implemented: the durations and easings are the same values the two
+     rules they come from already use, and only the reveal's two entries take
+     the stagger delay (a delay on the hover entries would make a card lag
+     behind the pointer). Change either rule and change this one with it. */
+  .home-tile[data-reveal="in"] {
+    transition:
+      opacity 0.6s var(--ease-brand) var(--reveal-delay, 0s),
+      translate 0.6s var(--ease-brand) var(--reveal-delay, 0s),
+      transform 0.28s var(--ease-brand),
+      border-color 0.28s var(--ease-brand),
+      box-shadow 0.28s var(--ease-brand);
+  }
+
+  /* Belt and braces for a preference flipped after load: `ScrollReveal`
+     checks the same query before it arms anything, but it does not re-run.
+     `translate` AND `transform` are both neutralised -- the reveal moved from
+     one to the other, and leaving the old one out would silently strand any
+     element that still carries it. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal],
+    [data-reveal="pending"],
+    [data-reveal="in"],
+    /* (0,2,0), so it has to be named explicitly -- a media query adds no
+       specificity and the bare `[data-reveal="in"]` selector above would lose
+       to the compound rule. */
+    .home-tile[data-reveal="in"] {
+      opacity: 1;
+      translate: none;
+      transform: none;
+      transition: none;
     }
   }
 }

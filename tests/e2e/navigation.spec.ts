@@ -9,7 +9,12 @@ test.describe('Site Navigation', () => {
     // Navigate to About using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'About' }).click()
     await expect(page).toHaveURL('/about')
-    await expect(page.getByRole('heading', { name: 'Omar Younis', level: 1 })).toBeVisible()
+    // The About h1 is the approved contract's statement heading, not the name
+    // (which is the site-wide h1 on Home only). "ABOUT" is the eyebrow above
+    // it, and eyebrows are not headings. Task B3.
+    await expect(
+      page.getByRole('heading', { name: 'I build software people rely on.', level: 1 })
+    ).toBeVisible()
 
     // Navigate to Projects using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'Projects', exact: true }).click()

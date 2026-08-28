@@ -62,25 +62,39 @@ test.describe('projects page without JavaScript', () => {
 /**
  * Same guarantee, extended to the case-study routes (Task B2.4).
  *
- * `/projects/[slug]` now has the scroll reveal the approved contract asks for:
- * sections rise 14px and fade in as they enter the viewport. That is exactly
+ * `/projects/[slug]` has the scroll reveal the approved contract asks for:
+ * sections rise 20px and fade in as they enter the viewport. That is exactly
  * the shape of the bug above, so it is built the other way round -- the
  * server-rendered resting state of every section is fully visible, and
  * `ScrollReveal.tsx` is the only thing that can ever hide one, only after it
  * has confirmed JavaScript, an IntersectionObserver and no reduced-motion
  * preference, and only for elements below the fold.
  *
- * This spec pins that resting state. It was verified RED against the gated
- * implementation (adding `opacity: 0; transform: translateY(14px)` to the base
- * `[data-reveal]` rule in `src/app/styles/case-study.css`): both slugs failed
- * on effective opacity, naming every hidden section. A test that passes either
- * way is how the original bug survived.
+ * WHERE THE RULES LIVE. The `[data-reveal]` rules were written in
+ * `src/app/styles/case-study.css` and MOVED to `src/app/styles/shared.css` in
+ * Task B3, when the About page became their second consumer. That is where to
+ * inject a defect to re-verify this spec, and where to read why the reveal
+ * rides on the `translate` property rather than on `transform` (About's cards
+ * are `.home-tile`, whose hover IS a `transform`, and one property cannot
+ * carry both). B3 also retuned the reveal: 14px/0.45s on `transform` became
+ * 20px/0.6s on `translate`.
+ *
+ * This spec pins that resting state. Verified RED twice, both times by adding
+ * a gate to the BASE `[data-reveal]` rule in `shared.css`:
+ *   - `opacity: 0; translate: 0 20px` -- both slugs failed on effective
+ *     opacity, naming every hidden section.
+ *   - `translate: 0 20px` alone -- both slugs failed on offset. This is the
+ *     one the pre-B3 version of this file would have MISSED: it read only
+ *     `transform`, which computes to `none` now, so it would have reported a
+ *     0px offset for a page genuinely gated on 20px.
+ * A test that passes either way is how the original bug survived.
  *
  * It measures two things per section:
  *   - EFFECTIVE opacity (the element's own multiplied by every ancestor's),
  *     because a section can be `opacity: 1` inside a zeroed wrapper.
- *   - the vertical translation from its computed transform, because "gated"
- *     could also be spelled as a permanent offset.
+ *   - the vertical offset, summed from BOTH `translate` and `transform`,
+ *     because "gated" could also be spelled as a permanent offset -- and
+ *     which of the two properties carries it has already changed once.
  */
 const CASE_STUDY_SLUGS = ['brent-cuda', 'collision-avoidance-radar'] as const
 
@@ -96,10 +110,19 @@ async function measureRevealBlocks(page: import('@playwright/test').Page) {
       ) {
         effectiveOpacity *= parseFloat(getComputedStyle(node).opacity)
       }
-      const { transform } = getComputedStyle(el)
+      const cs = getComputedStyle(el)
+      // Read BOTH properties. The reveal moved from `transform` to `translate`
+      // when it became shared with About (see src/app/styles/shared.css: About's
+      // cards hover on `transform`, and one property cannot carry both), so a
+      // transform-only reading would now be silently vacuous -- it would report
+      // 0 for a page that is in fact gated on a 20px offset.
       // `matrix(a, b, c, d, tx, ty)` -- ty is the last component.
-      const translateY =
-        transform === 'none' ? 0 : parseFloat(transform.split(',').pop() ?? '0')
+      const fromTransform =
+        cs.transform === 'none' ? 0 : parseFloat(cs.transform.split(',').pop() ?? '0')
+      // `none` | `<x>` | `<x> <y>`; a single value means y is 0.
+      const fromTranslate =
+        cs.translate === 'none' ? 0 : parseFloat(cs.translate.split(/\s+/)[1] ?? '0')
+      const translateY = fromTransform + fromTranslate
       return {
         heading: el.querySelector('h2')?.textContent?.trim() ?? el.tagName.toLowerCase(),
         state: el.getAttribute('data-reveal'),
@@ -173,7 +196,8 @@ test.describe('case study scroll reveal with JavaScript', () => {
       ).toBeGreaterThan(0)
 
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-      // The reveal is 450ms; give the observer and the transition room.
+      // The reveal is 600ms plus its per-element stagger; give the observer and
+      // the transition room.
       await page.waitForTimeout(1200)
 
       const blocks = await measureRevealBlocks(page)

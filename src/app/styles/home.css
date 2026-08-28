@@ -14,16 +14,13 @@
     background: var(--home-sky);
   }
 
-  /* On the tinted hero sky the secondary pill goes white, per the v11 audit.
-     This overrides `.pill-secondary` (shared.css) but only ever matches
-     inside `.home-sky`, which is Home-only, so it lives here rather than
-     with the rest of the `.pill*` family. Specificity (0,2,0) beats the
-     shared rule's (0,1,0) regardless of file/import order, so this is safe
-     to file separately from `.pill-secondary` itself. */
-  .home-sky .pill-secondary {
-    background: var(--pill-sky-bg);
-    box-shadow: var(--pill-sky-shadow);
-  }
+  /* The tinted-sky treatment for `.pill-secondary` (white pill + hairline)
+     USED TO LIVE HERE, justified as "only ever matches inside `.home-sky`,
+     which is Home-only". That stopped being true when About (Task B3) grew a
+     tinted sky of its own and copied the rule verbatim, so it moved to
+     shared.css beside `.pill-secondary`, where its selector list now names
+     every page sky. Specificity is unchanged at (0,2,0) and Home's computed
+     style was measured identical before and after the move. */
 
   .home-aurora {
     position: absolute;

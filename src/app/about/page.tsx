@@ -1,6 +1,12 @@
 import { Metadata } from 'next'
-import AboutClient from '@/components/AboutClient'
 import StructuredData from '@/components/StructuredData'
+import ScrollReveal from '@/components/projects/ScrollReveal'
+import AboutHero from '@/components/about/AboutHero'
+import AboutArc from '@/components/about/AboutArc'
+import AboutHighlights from '@/components/about/AboutHighlights'
+import AboutEducation from '@/components/about/AboutEducation'
+import AboutOffTheClock from '@/components/about/AboutOffTheClock'
+import AboutCTA from '@/components/about/AboutCTA'
 
 export const metadata: Metadata = {
   title: 'About Omar Younis - Software Engineer (iOS & ML) | Hendaseh',
@@ -61,11 +67,32 @@ const personSchema = {
   ],
 }
 
+/** The subtree `ScrollReveal` looks inside for `[data-reveal]` elements. The
+ *  hero is deliberately outside it: it has its own entrance cascade and is
+ *  always above the fold, so it is never armed. */
+const BODY_ID = 'about-body'
+
 export default function About() {
   return (
     <>
       <StructuredData data={personSchema} />
-      <AboutClient />
+
+      <AboutHero />
+
+      <div id={BODY_ID}>
+        <AboutArc />
+        <AboutHighlights />
+        {/* Education and Off the clock share one band of page padding, the way
+            the approved mockup lays them out; the closing card sits inside it
+            so its 40px top margin reads against the last card grid. */}
+        <div className="page-wrap about-edu">
+          <AboutEducation />
+          <AboutOffTheClock />
+          <AboutCTA />
+        </div>
+      </div>
+
+      <ScrollReveal rootId={BODY_ID} />
     </>
   )
 }

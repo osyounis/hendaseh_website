@@ -1,0 +1,502 @@
+/* About-page furniture (Task B3). Page-scoped, so it lives beside home.css and
+   projects.css rather than in shared.css.
+
+   Three things on this page are deliberately SHARED and are NOT re-implemented
+   here:
+     - `.home-tile` (shared.css) is the ground, hairline, shadow, hover and
+       focus of every card. The M3 contract names it by name. Nothing below
+       declares `transition`, a hover `transform`, a hover `box-shadow` or a
+       `:focus-visible` for a card -- the rules here are layout and ground only.
+     - `.pill` / `.pill-primary` / `.pill-secondary` (shared.css) are the
+       buttons, including their `:active` press and `:focus-visible`.
+     - `[data-reveal]` (shared.css) is the scroll reveal. It rides on the
+       `translate` property precisely so it composes with `.home-tile`'s hover
+       `transform` instead of fighting it. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * Hero band
+   *
+   * Reaches up under the transparent nav the same way `.home-sky` and
+   * `.projects-sky` do, so the tinted ground starts at the top of the
+   * viewport rather than at a seam under the logo.
+   * ---------------------------------------------------------------------- */
+
+  .about-sky {
+    background: var(--about-sky);
+  }
+
+  /* The sky treatment for this band's secondary pill (white + hairline) is NOT
+     declared here: `.about-sky .pill-secondary` is part of the shared
+     tinted-sky selector list in shared.css, beside `.pill-secondary` itself.
+     Only the closing CTA card's `Get in touch` keeps the plain secondary fill,
+     because that card is not on the sky -- which is what the mockup draws. */
+
+  .about-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 60px;
+    align-items: center;
+    padding-top: 48px;
+  }
+
+  .about-hero-eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .about-hero-title {
+    color: var(--fg-strong);
+    font-size: clamp(36px, 5.4vw, 60px);
+    font-weight: 900;
+    line-height: 1.06;
+    /* Tracking is size-specific: display type reads too loose as it grows. */
+    letter-spacing: -0.015em;
+  }
+
+  .about-intro {
+    margin-top: 22px;
+    max-width: 56ch;
+    color: var(--about-intro);
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  .about-intro strong {
+    color: var(--fg-strong);
+    font-weight: 700;
+  }
+
+  .about-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 34px;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Hero portrait
+   * ---------------------------------------------------------------------- */
+
+  .about-pic {
+    position: relative;
+    width: 300px;
+  }
+
+  .about-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 28px;
+    box-shadow: var(--about-photo-shadow);
+  }
+
+  /* The dashed accent ring the contract asks for. Decorative and inset OUTSIDE
+     the photo, so it never crops it. */
+  .about-pic::after {
+    content: "";
+    position: absolute;
+    inset: -14px;
+    border: 1px dashed var(--about-photo-ring);
+    border-radius: 38px;
+    pointer-events: none;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * The arc: a dotted vertical timeline of three chapters
+   * ---------------------------------------------------------------------- */
+
+  .about-arc {
+    padding-block: 72px 8px;
+  }
+
+  .about-chapter {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 44px;
+    max-width: 980px;
+    margin-bottom: 72px;
+  }
+
+  .about-chapter-side {
+    position: relative;
+  }
+
+  /* The connector runs from under this chapter's dot to the next chapter's,
+     so it has to reach the full 72px of gutter between them. */
+  .about-chapter-side::after {
+    content: "";
+    position: absolute;
+    top: 44px;
+    bottom: -72px;
+    left: 8px;
+    width: 1px;
+    background: var(--about-connector);
+  }
+
+  .about-chapter:last-child .about-chapter-side::after {
+    display: none;
+  }
+
+  .about-chapter-side .section-eyebrow {
+    margin-top: 14px;
+  }
+
+  /* Radar blip. The dot is the node; the ring is a `::after` that pulses out
+     of it on a 3s cycle. `scale` and `opacity` only -- no layout, no paint of
+     anything but the ring. */
+  .about-dot {
+    position: relative;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--color-brand-500);
+    box-shadow: 0 0 0 5px var(--about-dot-halo);
+    transition:
+      scale 0.4s var(--ease-brand),
+      opacity 0.4s var(--ease-brand);
+  }
+
+  .about-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--color-brand-400);
+    border-radius: 50%;
+    animation: about-blip 3s var(--ease-brand) infinite;
+  }
+
+  /* An ARMED chapter has not been seen yet: its dot is small and invisible and
+     its ring is parked, so the pop and the first pulse both land when the
+     reader arrives. Every other state -- above the fold, no JavaScript, no
+     IntersectionObserver, reduced motion -- leaves the dot at full size with
+     the ring already cycling, which is the correct resting state rather than a
+     frame of a paused animation. */
+  [data-reveal="pending"] .about-dot {
+    scale: 0.4;
+    opacity: 0;
+  }
+
+  [data-reveal="pending"] .about-dot::after {
+    animation: none;
+  }
+
+  @keyframes about-blip {
+    0% {
+      opacity: 0.7;
+      scale: 1;
+    }
+    70% {
+      opacity: 0;
+      scale: 2.6;
+    }
+    100% {
+      opacity: 0;
+      scale: 2.6;
+    }
+  }
+
+  .about-chapter-title {
+    margin-bottom: 14px;
+    color: var(--fg-strong);
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  .about-chapter-p {
+    max-width: 64ch;
+    margin-bottom: 13px;
+    color: var(--about-prose);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .about-chapter-p strong {
+    color: var(--fg-strong);
+    font-weight: 700;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * List sections: Career highlights, Education, Off the clock
+   *
+   * Statement headlines belong to the narrative beats above; a list section
+   * gets a plain heading (M3 contract).
+   * ---------------------------------------------------------------------- */
+
+  .about-highlights {
+    padding-block: 56px;
+  }
+
+  .about-edu {
+    padding-block: 40px 56px;
+  }
+
+  .about-tblock {
+    margin-bottom: 36px;
+  }
+
+  /* The second block in the Education section sits between two card grids and
+     needs air above it as well as below. */
+  .about-tblock-mid {
+    margin-block: 56px 20px;
+  }
+
+  .about-section-title {
+    color: var(--fg-strong);
+    font-size: clamp(26px, 3.4vw, 36px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .about-tblock .section-eyebrow + .about-section-title {
+    margin-top: 12px;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* Ground, hairline, shadow, hover and focus all come from `.home-tile`.
+     This adds shape and padding only. */
+  .about-card {
+    border-radius: 18px;
+    padding: 24px;
+  }
+
+  /* Education and Off the clock sit one step quieter than the career cards --
+     a recessed ground in the dark theme, the same white as everything else in
+     the light one. Compound selector so it beats `.home-tile`'s background on
+     specificity rather than on import order. */
+  .about-card.about-card-quiet {
+    background: var(--about-card-quiet);
+  }
+
+  .about-org {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  /* Rendered as an <h3> so the outline never skips a level; the mockup's h4
+     visual style is carried verbatim. */
+  .about-org-name {
+    color: var(--fg-strong);
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .about-when {
+    color: var(--about-when);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .about-role {
+    margin-block: 5px 10px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* Mandatory on the Coast Guard card: the role is unpaid and must never read
+     as employment. */
+  .about-volunteer {
+    display: inline-block;
+    margin-left: 8px;
+    border-radius: 6px;
+    padding: 2px 8px;
+    background: var(--badge-volunteer-bg);
+    color: var(--badge-volunteer-fg);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .about-card-p {
+    color: var(--fg-muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .about-quiet-name {
+    color: var(--fg-strong);
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .about-sub {
+    margin-block: 5px 8px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Closing CTA card
+   *
+   * Same ground/hairline/shadow tokens as Home's CTA card. The class is not
+   * reused because `.home-cta-card` is Home-scoped furniture (unlike
+   * `.home-tile`, which the contracts name as shared); the TOKENS are what is
+   * shared, so the two cards cannot drift apart.
+   * ---------------------------------------------------------------------- */
+
+  .about-cta {
+    margin-top: 40px;
+    border: 1px solid var(--edge);
+    border-radius: 22px;
+    padding: 64px 40px;
+    text-align: center;
+    background: var(--cta-surface);
+    box-shadow: var(--cta-shadow);
+  }
+
+  .about-cta-title {
+    color: var(--fg-strong);
+    font-size: clamp(26px, 3.4vw, 38px);
+    font-weight: 900;
+    line-height: 1.15;
+  }
+
+  .about-cta-meta {
+    margin-block: 12px 28px;
+    color: var(--fg-muted);
+  }
+
+  .about-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Hero entrance
+   *
+   * A staggered rise, authored as keyframes with `both` fill so the delayed
+   * elements hold the `from` state rather than flashing in at full opacity
+   * first. Nothing here is a content gate: `opacity: 0` lives only inside a
+   * keyframe, never on a base rule, so an element whose animation never runs
+   * rests fully visible.
+   * ---------------------------------------------------------------------- */
+
+  .about-enter {
+    animation: about-enter 0.6s var(--ease-brand) var(--enter-delay, 0s) both;
+  }
+
+  @keyframes about-enter {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The portrait scales up instead of rising, so it settles as the copy beside
+     it arrives. On the standalone `scale` property, not `transform`, so it
+     stays independent of anything else placed on the element. */
+  .about-enter-pic {
+    animation: about-enter-pic 0.7s var(--ease-brand) var(--enter-delay, 0s) both;
+  }
+
+  @keyframes about-enter-pic {
+    from {
+      opacity: 0;
+      scale: 0.94;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Narrow viewports (sub-880, per the contract's explicit phone pane)
+   * ---------------------------------------------------------------------- */
+
+  @media (max-width: 880px) {
+    .about-hero-grid {
+      grid-template-columns: 1fr;
+      gap: 44px;
+      text-align: left;
+    }
+
+    /* Photo below the text at 220px, per the contract. */
+    .about-pic {
+      width: 220px;
+      margin: 0;
+    }
+
+    /* The timeline collapses: the dot and its eyebrow go inline above the
+       chapter and the vertical connector is dropped, because there is no
+       gutter left to draw it in. */
+    .about-chapter {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .about-chapter-side {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .about-chapter-side::after {
+      display: none;
+    }
+
+    .about-chapter-side .section-eyebrow {
+      margin-top: 0;
+    }
+
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about-cta-row {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Reduced motion
+   *
+   * Every animated thing on this page resolves to its END state, which is also
+   * its correct resting state: the hero is fully visible and unshifted, the
+   * portrait is at full size, the timeline dots are full size and opaque, and
+   * the blip ring is simply gone rather than frozen mid-pulse (a parked ring
+   * would sit on screen as a permanent halo the design never draws).
+   *
+   * `[data-reveal]`'s own reduced-motion override lives in shared.css with the
+   * rest of its rules.
+   * ---------------------------------------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-enter,
+    .about-enter-pic {
+      animation: none;
+      opacity: 1;
+      transform: none;
+      scale: none;
+    }
+
+    .about-dot,
+    [data-reveal="pending"] .about-dot {
+      scale: none;
+      opacity: 1;
+      transition: none;
+    }
+
+    .about-dot::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
+}

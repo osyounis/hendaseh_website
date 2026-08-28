@@ -3,6 +3,7 @@
 @import "./styles/home.css";
 @import "./styles/projects.css";
 @import "./styles/case-study.css";
+@import "./styles/about.css";
 
 /* Dark mode is opt-in via data-theme, NOT prefers-color-scheme, until
    sub-project 4 applies tokens to every page. Flipping on media query now
@@ -52,6 +53,11 @@
   --color-ink-400: #aeaeb2; /* tertiary / separator glyphs */
   --color-ink-500: #86868b; /* footer text */
   --color-ink-600: #6e6e73; /* muted text floor */
+  /* Apple's secondary-label gray. Added by Task B3: the About page sets its
+     long-form prose (the hero lede and the arc's chapter paragraphs) one step
+     off primary rather than at full #1d1d1f, which is what the approved
+     v9-light mockup draws and what a 64ch measure wants. */
+  --color-ink-800: #3a3a3c;
   --color-ink-900: #1d1d1f; /* primary text */
 
   /* ---- Light blue tints: hero sky gradient stop + centre-tile gradient stop ---- */
@@ -70,6 +76,15 @@
   --color-deep-sky: #050e1a;
   --color-deep-ticker: #060f1c;
   --color-deep-card: #0b1c30;
+  /* One step below --color-deep-card. The About page's Education and
+     "Off the clock" cards are deliberately quieter than its career cards;
+     in the light theme both are plain white, so the distinction exists only
+     here. */
+  --color-deep-card-quiet: #081627;
+  /* Top stop of the About hero sky. Distinct from --color-deep-core-bottom
+     (#071a30, the Projects sky's top stop) by design -- the About sky is the
+     taller band of the two and is authored a shade lighter. */
+  --color-deep-about-sky: #081c33;
   --color-deep-hairline: #0d1e33;
   --color-deep-core-top: #0d2c4d;
   --color-deep-core-bottom: #071a30;
@@ -133,6 +148,19 @@
      tinted stop, i.e. under the 4.5 floor. The nav sits in the tinted 100px,
      and its own colours have far more headroom. */
   --projects-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100px);
+  /* The About page hero band. It resolves at 100px for the SAME measured
+     reason --projects-sky does, and the number is deliberately identical:
+     the "ABOUT" eyebrow is --accent (#0071e3) at 12px/900 and its top edge
+     sits at 118px (70px of nav + 48px of grid padding). On the tinted stop
+     (#eef4fb) that measures 4.24:1 and on the interpolated colour at 118px
+     of a ~570px hero it is still only ~4.28:1 -- under the 4.5 floor for
+     normal text either way. Resolving the tint at a LENGTH rather than a
+     percentage puts every word of hero copy on plain --surface (4.54:1) and
+     does not move when the hero's height changes. The nav sits inside the
+     tinted 100px and its own colours have far more headroom.
+     Dark has no such problem (#57b4ff on #081c33 is 7.66:1), so it keeps the
+     mockup's full-height fade. */
+  --about-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100px);
   --ticker-surface: #ffffff;
   --cta-surface: #ffffff;
 
@@ -156,6 +184,26 @@
      #5c5c61 on #e8e8ed = 5.44:1. Dark is unchanged (--fg-muted on
      --surface-sunken there is 9.42:1, already fine) and stays var(--fg-muted). */
   --fg-muted-on-tint: #5c5c61;
+  /* About-page prose. Two steps, because the mockup pair gives them two
+     different dark values even though they share one light value:
+     the hero lede sits at --fg-muted's weight in dark, the arc's chapter
+     paragraphs at --fg-body's. Both are #3a3a3c in light. */
+  --about-intro: var(--color-ink-800);
+  --about-prose: var(--color-ink-800);
+  /* The date stamp on a career card: one step below the card's body copy in
+     dark, but pinned to the muted-text FLOOR in light, where --fg-faint
+     (#aeaeb2) would measure 2.32:1 on white. Measured: 5.07:1 light,
+     4.60:1 dark. */
+  --about-when: var(--color-ink-600);
+  /* Quieter card ground for Education / Off the clock. Identical to
+     --surface-raised in light by design; only dark recesses them. */
+  --about-card-quiet: #ffffff;
+  /* The arc's vertical timeline connector. --edge in light and --edge-soft in
+     dark rather than one token in both: --edge-soft (#e8e8ed) is invisible as
+     a 1px hairline on the #fbfbfd page ground, and --edge (#2b425b) is far too
+     loud against #04101e. This is the "connector contrast" fix the v9 round
+     made. */
+  --about-connector: var(--color-ink-300);
   --accent: var(--color-apple-blue);
   --accent-strong: var(--color-brand-700);
 
@@ -164,6 +212,12 @@
   --edge-soft: var(--color-ink-100);
 
   /* Elevation */
+  /* The mockup pair leaves the portrait's drop shadow at the dark theme's
+     50%-black in light too, which is far outside the Apple ladder on a
+     near-white ground. The light value follows the pair this file already
+     ships for --core-shadow / --sat-shadow: navy at ~0.18 rather than black
+     at 0.5. */
+  --about-photo-shadow: 0 30px 70px rgb(10 26 47 / 0.18);
   --card-shadow: 0 2px 12px rgb(0 0 0 / 0.04);
   --cta-shadow: 0 2px 16px rgb(0 0 0 / 0.05);
   --tile-hover-edge: var(--color-brand-600);
@@ -196,6 +250,22 @@
      badge's own tinted ground: 4.70:1 light, 7.44:1 dark. */
   --badge-private-fg: #8a6100;
   --badge-private-bg: rgb(138 97 0 / 0.12);
+
+  /* VOLUNTEER badge (About, Coast Guard card). Same gold and the same measured
+     contrast as the private-repo badge above -- kept as its own token because
+     the two badges say different things and may need to diverge, and because
+     an alias (`var(--badge-private-fg)`) would resolve at :root and so read
+     the LIGHT value inside /dev/tokens' element-scoped dark pane.
+     Measured on the badge's own tinted ground: 4.70:1 light, 7.41:1 dark. */
+  --badge-volunteer-fg: #8a6100;
+  --badge-volunteer-bg: rgb(138 97 0 / 0.12);
+
+  /* About hero portrait and timeline node. Decorative and deliberately
+     theme-agnostic: the mockup pair leaves both unchanged between themes, and
+     a pale brand tint reads on the near-white ground as well as on the navy
+     one. */
+  --about-photo-ring: rgb(87 180 255 / 0.25); /* brand-400 at 25% */
+  --about-dot-halo: rgb(0 147 255 / 0.18); /* brand-500 at 18% */
 
   /* Navigation */
   --nav-fg: rgb(10 26 47 / 0.8);
@@ -248,6 +318,13 @@
     var(--color-deep-core-bottom) 0%,
     var(--color-deep-page) 100%
   );
+  /* Dark keeps the mockup's full-height fade -- the light theme's 100px stop
+     is a contrast fix that dark does not need (see the light definition). */
+  --about-sky: linear-gradient(
+    180deg,
+    var(--color-deep-about-sky) 0%,
+    var(--color-deep-page) 100%
+  );
   --ticker-surface: var(--color-deep-ticker);
   --cta-surface: radial-gradient(60% 120% at 50% 0%, rgb(0 147 255 / 0.1), transparent 70%);
 
@@ -262,12 +339,21 @@
      unset under [data-theme="dark"] would carry the light theme's #5c5c61
      forward, which measures only 2.91:1 on the dark sunken ground. */
   --fg-muted-on-tint: var(--fg-muted);
+  /* Every About token below MUST be restated here even where it happens to
+     alias another semantic token: custom properties inherit, so anything left
+     out would carry its light value into the dark theme. */
+  --about-intro: var(--color-navy-300);
+  --about-prose: var(--color-navy-200);
+  --about-when: var(--color-navy-450);
+  --about-card-quiet: var(--color-deep-card-quiet);
+  --about-connector: var(--color-deep-hairline);
   --accent: var(--color-brand-400);
   --accent-strong: var(--color-brand-300);
 
   --edge: var(--color-navy-800);
   --edge-soft: var(--color-deep-hairline);
 
+  --about-photo-shadow: 0 30px 70px rgb(0 0 0 / 0.5);
   --card-shadow: none;
   --cta-shadow: none;
   --tile-hover-shadow: 0 22px 52px rgb(0 40 90 / 0.45);
@@ -291,6 +377,9 @@
 
   --badge-private-fg: #e8b84b;
   --badge-private-bg: rgb(232 184 75 / 0.12);
+
+  --badge-volunteer-fg: #e8b84b;
+  --badge-volunteer-bg: rgb(232 184 75 / 0.12);
 
   --nav-fg: var(--color-navy-200);
   --nav-fg-active: #ffffff;
