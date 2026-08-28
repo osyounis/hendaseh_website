@@ -43,7 +43,7 @@ function siteCard(): OgCard {
     icon: { src: 'hendaseh-mark', tile: false },
     name: 'Omar Younis',
     nameSize: 88,
-    tagline: 'Software Engineer · iOS & Machine Learning',
+    tagline: 'Software Engineer · iOS, ML & Autonomous Systems',
     taglineColor: BLUE,
     footer: 'hendaseh.com',
     textColor: WHITE,

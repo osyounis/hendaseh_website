@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  // `absolute`, not `default`: the root layout carries a `%s - Omar Younis`
+  // title template, and a `default` here would be augmented by it -- appending
+  // ` - Omar Younis` to a FROZEN title the App Store links to. `absolute`
+  // ignores the parent template, so this renders byte-identical to before,
+  // while `template` below still applies to /nahtadi/privacy and /support.
   title: {
-    default: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
+    absolute: 'Nahtadi — Islamic Prayer Times. No Ads. No Tracking.',
     template: '%s | Nahtadi',
   },
   description:

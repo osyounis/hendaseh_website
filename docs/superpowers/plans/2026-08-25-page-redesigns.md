@@ -62,9 +62,11 @@
 
 **Files:** `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/about/page.tsx`, `src/app/contact/page.tsx`, `src/app/projects/page.tsx`, `src/lib/ogCards.ts`, `src/components/StructuredData.tsx`, `public/og/*`
 
-- [ ] Every `metadata` title/OG/twitter tagline segment → new string (keep prefixes/suffix); all descriptions rewritten ≤160 chars (drafts pre-written, Omar skims once ⏸); JSON-LD `jobTitle`/description aligned.
-- [ ] `ogCards.ts` site-card tagline → new string; `npm run generate:og`; commit regenerated PNGs (per the standing OG-staleness rule).
-- [ ] e2e: og.spec still green; grep: zero occurrences of `iOS & Machine Learning` / `iOS & ML` remain in `src/`.
+- [x] Every `metadata` title/OG/twitter tagline segment → new string; all descriptions rewritten ≤160 chars (drafts pre-written, Omar skims once ⏸); JSON-LD `jobTitle`/description aligned. **Titles were RESTRUCTURED rather than given the new tagline verbatim** — the string is 20 chars longer and the old shape truncated at ~72 chars. Site-name slot is now `Omar Younis` (not `Hendaseh`), sub-pages are `<Page> · Omar Younis` from a single `title.template` in `layout.tsx`, and only the homepage keeps the tagline. Deviation and reasoning recorded in `docs/ROADMAP.md`.
+- [x] Also fixed the ROADMAP-tracked description bug: `/projects/[slug]` now uses `project.tagline` (≤120 chars) for meta/OG description instead of the 261-char `description`.
+- [x] `/nahtadi` opts out of the new title template with `title.absolute`, so its three frozen titles render byte-identical.
+- [x] `ogCards.ts` site-card tagline → new string; `npm run generate:og`; commit regenerated PNGs (per the standing OG-staleness rule).
+- [x] e2e: og.spec still green; grep: zero occurrences of `iOS & Machine Learning` / `iOS & ML` remain in `src/`.
 
 ### Task B6: Theme flip + Nahtadi pass + closeout
 

@@ -4,26 +4,32 @@ import { getAllProjects } from '@/lib/projects';
 import { getCategoryChips } from '@/lib/projectCategories';
 import FilterableProjectList from '@/components/projects/FilterableProjectList';
 
+/** Reused for `description`, `og:` and `twitter:`. 149 chars. The old copy was
+ *  a category list ("data engineering tools, machine learning applications");
+ *  this names the actual work instead. */
+const DESCRIPTION =
+  'Selected work by Omar Younis: a shipped iOS app in Swift and SwiftUI, CUDA scientific computing, machine-learning models, and radar and data tooling.';
+
 export const metadata: Metadata = {
-  title: 'Projects - Software Portfolio | Hendaseh',
-  description: 'Portfolio of software engineering projects including data engineering tools, machine learning applications, iOS apps, and scientific computing solutions.',
-  keywords: ['Portfolio', 'Software Projects', 'Data Engineering', 'Machine Learning', 'iOS Apps', 'Python Projects'],
+  title: 'Projects',
+  description: DESCRIPTION,
+  keywords: ['Portfolio', 'Software Projects', 'iOS Apps', 'Machine Learning', 'Autonomous Systems', 'Data Engineering', 'CUDA', 'Python Projects'],
   alternates: {
     canonical: 'https://hendaseh.com/projects',
   },
   openGraph: {
-    title: 'Projects - Software Portfolio | Hendaseh',
-    description: 'Portfolio of software engineering projects',
+    title: 'Projects - Omar Younis',
+    description: DESCRIPTION,
     url: 'https://hendaseh.com/projects',
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'website',
-    images: [{ url: '/og/site.png', width: 1200, height: 630, alt: 'Omar Younis — Software Portfolio' }],
+    images: [{ url: '/og/site.png', width: 1200, height: 630, alt: 'Omar Younis - Software Engineer · iOS, ML & Autonomous Systems' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Projects - Software Portfolio | Hendaseh',
-    description: 'Portfolio of software engineering projects',
+    title: 'Projects - Omar Younis',
+    description: DESCRIPTION,
     images: ['/og/site.png'],
   },
 };

@@ -76,16 +76,13 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 - Nahtadi pages: visual consistency pass, URLs and SEO untouched.
 - Both themes, `prefers-reduced-motion`, WCAG-conscious contrast, no SEO regressions (metadata, JSON-LD, sitemap preserved).
 
-**Open question — meta descriptions are too long (measured 2026-08-26).** `/projects/[slug]` emits each
+**RESOLVED 2026-08-28 (Task B5) — meta descriptions were too long.** `/projects/[slug]` emitted each
 project's full `description` from `projects.json` as both `description` and `og:description`. Measured on
-`/projects/collision-avoidance-radar`: **261 characters**. Google truncates around 150–160, and social
-previews show roughly 125 — so the tail is cut on every surface. The page `<title>`/`og:title` are fine
-at 58 characters; only the description is over.
-
-Sub-project 3 added a **`tagline`** to all 13 projects, which is written for exactly this length
-(`"Radar plotting for collision avoidance"` = 37 chars). Using `tagline` for the meta/OG description and
-keeping the full `description` for page body copy fixes every project at once. Pre-existing, not a
-regression from sub-project 3.
+`/projects/collision-avoidance-radar`: **261 characters**, against Google's ~150–160 and a social preview
+cut around 125, so the tail was lost on every surface. The prescribed fix shipped: the route now reads
+`project.tagline` for `description`/`og:description`/`twitter:description` and leaves `description` to the
+page body. The whole catalog fits — the longest tagline is `brent-cuda` at 120 characters, the two live
+case studies measure 120 and 98. Every other page's description was rewritten to ≤160 in the same pass.
 
 **Open question — the positioning tagline (raised by Omar 2026-08-25).** The locked surface string is
 `Software Engineer · iOS & Machine Learning`, and it currently appears on the home hero, the OG site card
@@ -98,6 +95,45 @@ Whatever is chosen must land on every surface at once: `src/components/home/Home
 `src/lib/ogCards.ts` (site card tagline), `src/app/layout.tsx` (OG image `alt` + metadata titles),
 `src/app/page.tsx`, `src/app/contact/page.tsx`, and `src/app/about/page.tsx`. The OG card is a
 pre-rendered PNG and needs `npm run generate:og` re-run and committed.
+
+**RESOLVED 2026-08-28.** The new locked surface string is
+`Software Engineer · iOS, ML & Autonomous Systems`. It landed on the hero in Task B1 and on every
+remaining surface in Task B5, with the site OG card regenerated and committed.
+
+**Deviation from the paragraph above, recorded deliberately (Task B5).** That line lists "metadata
+titles" among the surfaces the string must land on. **Sub-page titles no longer carry a tagline at all.**
+The new string is 20 characters longer than `iOS & ML`; pasted into the old title shape it produced
+`Hendaseh - Omar Younis | Software Engineer · iOS, ML & Autonomous Systems` at ~72 characters against a
+~60-character truncation point, so every sub-page title would have been cut mid-string. Titles were
+restructured instead, on Apple's and YouTube's observed pattern (`Apple Fitness+ - Apple`):
+
+- Site-name slot is `Omar Younis`, not `Hendaseh` — nobody searches the domain, and the domain already
+  renders beneath the title in a result. `Hendaseh` survives in `og:site_name` and in the homepage
+  description.
+- Sub-pages are `<Page> - Omar Younis` (19–42 chars), emitted from a single
+  `title: { default, template: '%s - Omar Younis' }` in `src/app/layout.tsx` so the suffix cannot drift
+  across five files again.
+- The **homepage keeps the full tagline** — `Omar Younis - Software Engineer · iOS, ML & Autonomous
+  Systems`, 62 chars. Apple's one-word homepage title rides on brand recognition this site does not have,
+  and the title is the highest-value line in a search result.
+- **The separator is a plain hyphen-minus (U+002D) with spaces**, one separator sitewide, matching the
+  Apple/YouTube precedent the structure came from. Omar changed it from `·` on 2026-08-28. It is not an
+  en dash, not an em dash, not a middot: an en dash is near-indistinguishable in a diff and would break
+  every match silently. `·` now survives **only inside the locked tagline**, never as a title separator,
+  so the two-separator-levels rationale that briefly existed no longer applies. `src/lib/ogCards.ts`
+  carries no separator (name, tagline and footer are three rendered lines), so the OG PNGs were
+  unaffected by this change.
+
+The intent of "every surface at once" was **convergence — no surface still showing the old string** — and
+that is fully satisfied: `grep -rn "iOS & Machine Learning\|iOS & ML" src/` returns zero hits. Repeating
+the tagline in all five titles would additionally be repetitive boilerplate of the kind Google's own title
+guidance calls out. **Do not "restore" the tagline to every title** — it reintroduces the length problem
+this restructure exists to solve.
+
+One consequential side effect, handled: a `title.template` on the root layout would have appended
+` · Omar Younis` to `/nahtadi`'s frozen title. `src/app/nahtadi/layout.tsx` now declares
+`title: { absolute, template }` instead of `{ default, template }`, which ignores the parent template.
+Verified against the built HTML: all three `/nahtadi*` titles render byte-identical to before.
 
 **Exit:** all pages shipped in both themes, Lighthouse/axe clean, SEO parity confirmed.
 

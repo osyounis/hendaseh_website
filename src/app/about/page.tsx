@@ -8,26 +8,34 @@ import AboutEducation from '@/components/about/AboutEducation'
 import AboutOffTheClock from '@/components/about/AboutOffTheClock'
 import AboutCTA from '@/components/about/AboutCTA'
 
+/** Reused for `description`, `og:` and `twitter:`. 149 chars. Leads with the
+ *  arc, because that is what is distinctive; the degree comes after. */
+const DESCRIPTION =
+  'From seven years in mechanical engineering to shipping iOS apps, machine learning, and autonomous systems work. M.S. Computer Science, CSU Fullerton.';
+
+/** `title` is the bare page word; `app/layout.tsx`'s template resolves it to
+ *  `About - Omar Younis`. `openGraph.title` has to spell that out -- OG has no
+ *  template inheritance from the resolved `<title>`. */
 export const metadata: Metadata = {
-  title: 'About Omar Younis - Software Engineer (iOS & ML) | Hendaseh',
-  description: 'Software engineer and problem-solver: a shipped iOS app (Swift/SwiftUI), machine-learning and data-engineering work, and seven years in mechanical engineering. M.S. Computer Science, CSUF (May 2026).',
-  keywords: ['Omar Younis', 'Software Engineer', 'iOS', 'Swift', 'Machine Learning', 'Data Engineering', 'CUDA', 'Qualcomm', 'Python', 'AWS'],
+  title: 'About',
+  description: DESCRIPTION,
+  keywords: ['Omar Younis', 'Software Engineer', 'iOS', 'Swift', 'Machine Learning', 'Autonomous Systems', 'Data Engineering', 'CUDA', 'Qualcomm', 'Python', 'AWS'],
   alternates: {
     canonical: 'https://hendaseh.com/about',
   },
   openGraph: {
-    title: 'About Omar Younis - Software Engineer (iOS & ML)',
-    description: 'Software engineer and problem-solver — iOS (Swift/SwiftUI), machine learning, data engineering, and a mechanical-engineering background.',
+    title: 'About - Omar Younis',
+    description: DESCRIPTION,
     url: 'https://hendaseh.com/about',
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'profile',
-    images: [{ url: '/og/site.png', width: 1200, height: 630, alt: 'Omar Younis — Software Engineer · iOS & Machine Learning' }],
+    images: [{ url: '/og/site.png', width: 1200, height: 630, alt: 'Omar Younis - Software Engineer · iOS, ML & Autonomous Systems' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'About Omar Younis - Software Engineer (iOS & ML)',
-    description: 'Software engineer and problem-solver — iOS (Swift/SwiftUI), machine learning, data engineering, and a mechanical-engineering background.',
+    title: 'About - Omar Younis',
+    description: DESCRIPTION,
     images: ['/og/site.png'],
   },
 }
@@ -36,7 +44,12 @@ const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Omar Younis',
+  // `jobTitle` stays the plain role. schema.org wants a job title here, not a
+  // marketing line, and the specifics live in `description` and `knowsAbout`
+  // -- which is where Task B5 aligned them with the surface string.
   jobTitle: 'Software Engineer',
+  description:
+    'Software engineer and problem-solver. Ships iOS apps in Swift and SwiftUI, with machine-learning, autonomous-systems and data-engineering range, plus seven years in mechanical engineering.',
   url: 'https://hendaseh.com',
   sameAs: [
     'https://www.linkedin.com/in/omar-younis/',
@@ -57,6 +70,7 @@ const personSchema = {
     'Swift',
     'SwiftUI',
     'Machine Learning',
+    'Autonomous Systems',
     'Data Engineering',
     'Python',
     'PyTorch',

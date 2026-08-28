@@ -33,31 +33,36 @@ import CopyEmailButton from '@/components/contact/CopyEmailButton';
  *   - `NewTabHint` carries the "(opens in a new tab)" the arrow only says
  *     visually.
  *
- * METADATA IS TASK B5's, NOT THIS TASK'S. The block below is untouched --
- * tagline convergence, the description rewrite and the OG regeneration all
- * happen there, in one pass across every page.
+ * Metadata was converged in Task B5: the title is now the bare page word and
+ * `app/layout.tsx`'s template resolves it to `Contact - Omar Younis`.
  */
 
+/** Reused for `description`, `og:` and `twitter:`. 125 chars, so it survives
+ *  the ~125-char social preview cut intact. The address is in the string on
+ *  purpose: for this page the answer IS the address. */
+const DESCRIPTION =
+  'Reach Omar Younis at omar@hendaseh.com, or on LinkedIn and GitHub. Open to full-time and contract software engineering roles.';
+
 export const metadata: Metadata = {
-  title: 'Contact - Omar Younis | Software Engineer — iOS & ML',
-  description: 'Get in touch with Omar Younis for software engineering opportunities, contract work, or project inquiries.',
+  title: 'Contact',
+  description: DESCRIPTION,
   keywords: ['contact', 'hire software engineer', 'contract development', 'software engineering services'],
   alternates: {
     canonical: 'https://hendaseh.com/contact',
   },
   openGraph: {
-    title: 'Contact - Omar Younis | Software Engineer — iOS & ML',
-    description: 'Get in touch with Omar Younis for software engineering opportunities, contract work, or project inquiries.',
+    title: 'Contact - Omar Younis',
+    description: DESCRIPTION,
     url: 'https://hendaseh.com/contact',
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'website',
-    images: [{ url: '/og/site.png', width: 1200, height: 630, alt: 'Omar Younis — Software Engineer · iOS & Machine Learning' }],
+    images: [{ url: '/og/site.png', width: 1200, height: 630, alt: 'Omar Younis - Software Engineer · iOS, ML & Autonomous Systems' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contact - Omar Younis | Software Engineer — iOS & ML',
-    description: 'Get in touch with Omar Younis for software engineering opportunities, contract work, or project inquiries.',
+    title: 'Contact - Omar Younis',
+    description: DESCRIPTION,
     images: ['/og/site.png'],
   },
 };

@@ -22,11 +22,48 @@ const robotoRegular = Roboto({
   display: 'swap',
 });
 
+/** One description string per surface, reused for `description`, `og:` and
+ *  `twitter:` so the three cannot drift apart (they already had). 160 chars is
+ *  the ceiling; social previews cut around 125, so the point comes first. */
+const SITE_DESCRIPTION =
+  'Omar Younis is a software engineer and problem-solver: shipped iOS apps in Swift and SwiftUI, machine learning, and autonomous systems work.';
+
+/** Alt text for the shared site OG card, which renders the name over the
+ *  locked surface string. Every page pointing at `/og/site.png` uses this. */
+const OG_ALT = 'Omar Younis - Software Engineer · iOS, ML & Autonomous Systems';
+
+/**
+ * TITLE STRUCTURE (Task B5). The site-name slot is `Omar Younis`, not
+ * `Hendaseh`: Hendaseh is the domain and the mark, not what anyone searches,
+ * and the domain already renders under the title in a result. So it is dropped
+ * from title TEXT and lives on in the `siteName`/`og:site_name` slot only.
+ *
+ * `template` puts the suffix in ONE place, so it cannot drift across five
+ * files the way the old hand-written suffix did. Sub-pages set a bare
+ * `title: 'About'` and resolve to `About - Omar Younis`.
+ *
+ * ONE separator sitewide: a plain hyphen-minus (U+002D) with spaces, the
+ * Apple/YouTube shape (`Apple Fitness+ - Apple`). Not an en dash, not an em
+ * dash, not a middot -- an en dash is near-identical in a diff and would break
+ * every match silently. `·` now appears ONLY inside the locked surface
+ * string, never as a title separator.
+ *
+ * Next only applies `template` to CHILD segments, so `app/page.tsx` -- the same
+ * segment as this layout -- never receives it. That is why the homepage title
+ * is `default` here and `app/page.tsx` sets no `title` at all: the homepage
+ * keeps the full tagline (a bare name tells a recruiter nothing, and Apple's
+ * one-word homepage title rides on brand recognition this site does not have).
+ * `app/nahtadi/layout.tsx` opts out with `title.absolute` so its frozen titles
+ * render byte-identical to before.
+ */
 export const metadata: Metadata = {
   metadataBase: new URL('https://hendaseh.com'),
-  title: 'Omar Younis | Software Engineer — iOS & ML',
-  description: 'Omar Younis — software engineer and problem-solver. Ships iOS apps in Swift/SwiftUI, with machine-learning, data-engineering, and scientific-computing range, plus seven years in mechanical engineering. M.S. Computer Science, CSUF (May 2026).',
-  keywords: ['Omar Younis', 'Software Engineer', 'iOS', 'Swift', 'SwiftUI', 'Machine Learning', 'Data Engineering', 'Python', 'PyTorch', 'AWS', 'CUDA'],
+  title: {
+    default: 'Omar Younis - Software Engineer · iOS, ML & Autonomous Systems',
+    template: '%s - Omar Younis',
+  },
+  description: SITE_DESCRIPTION,
+  keywords: ['Omar Younis', 'Software Engineer', 'iOS', 'Swift', 'SwiftUI', 'Machine Learning', 'Autonomous Systems', 'Data Engineering', 'Python', 'PyTorch', 'AWS', 'CUDA'],
   authors: [{ name: 'Omar Younis' }],
   icons: {
     icon: [
@@ -39,18 +76,18 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'Omar Younis | Software Engineer — iOS & ML',
-    description: 'Software engineer and problem-solver — iOS (Swift/SwiftUI), machine learning, data engineering, and scientific computing.',
+    title: 'Omar Younis - Software Engineer · iOS, ML & Autonomous Systems',
+    description: SITE_DESCRIPTION,
     url: 'https://hendaseh.com',
     siteName: 'Hendaseh',
     locale: 'en_US',
     type: 'website',
-    images: [{ url: '/og/site.png', width: 1200, height: 630, alt: 'Omar Younis — Software Engineer · iOS & Machine Learning' }],
+    images: [{ url: '/og/site.png', width: 1200, height: 630, alt: OG_ALT }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Omar Younis | Software Engineer — iOS & ML',
-    description: 'Software engineer and problem-solver — iOS (Swift/SwiftUI), machine learning, data engineering, and scientific computing.',
+    title: 'Omar Younis - Software Engineer · iOS, ML & Autonomous Systems',
+    description: SITE_DESCRIPTION,
     images: ['/og/site.png'],
   },
 };

@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!project) {
     return {
-      title: 'Project Not Found | Omar Younis',
+      title: 'Project Not Found',
     };
   }
 
@@ -84,15 +84,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alt: project.title,
   };
 
+  // `tagline`, NOT `description`. The full `description` is body copy and runs
+  // long -- 261 characters on collision-avoidance-radar -- so Google (~150-160)
+  // and social previews (~125) cut the tail off on every surface. Sub-project 3
+  // wrote a `tagline` for all 13 projects at exactly this length (longest in
+  // the catalog: 120). Body copy still reads `description`; only meta uses
+  // `tagline`. Closes the ROADMAP open question raised 2026-08-26.
+  //
+  // The bare `title` is resolved to `<title> - Omar Younis` by the root
+  // layout's template; `og:`/`twitter:` have no such inheritance and spell the
+  // suffix out.
+  const socialTitle = `${project.title} - Omar Younis`;
+
   return {
-    title: `${project.title} | Omar Younis`,
-    description: project.description,
+    title: project.title,
+    description: project.tagline,
     alternates: {
       canonical: url,
     },
     openGraph: {
-      title: `${project.title} | Omar Younis`,
-      description: project.description,
+      title: socialTitle,
+      description: project.tagline,
       url,
       siteName: 'Hendaseh',
       locale: 'en_US',
@@ -101,8 +113,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${project.title} | Omar Younis`,
-      description: project.description,
+      title: socialTitle,
+      description: project.tagline,
       images: [ogImage.url],
     },
   };
