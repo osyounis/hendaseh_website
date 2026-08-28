@@ -138,6 +138,78 @@
   }
 
   /* ---------------------------------------------------------------------- *
+   * Hero entrance cascade (added 2026-08-28)
+   *
+   * The same pattern Home, About, Contact and Projects ship: a CSS animation,
+   * 0.6s, `--ease-brand`, `both` fill, per-element `--enter-delay`. It is CSS,
+   * so it runs and settles with no JavaScript and nothing is served hidden as
+   * a permanent state.
+   *
+   * SCOPE IS THE HERO. The body below keeps `[data-reveal]` and is untouched.
+   * The two systems stay separate on purpose -- the reveal is scroll-armed by
+   * `ScrollReveal` and deliberately only arms BELOW-FOLD elements, which is
+   * exactly why the hero was never animated by it. A hero element takes
+   * `.case-enter`; it never takes `data-reveal`.
+   *
+   * FIVE BEATS, 100ms apart, in the hero's own reading order:
+   *   0s    the breadcrumb
+   *   0.1s  the project icon
+   *   0.2s  the title AND its thesis, as one beat -- they are one statement
+   *         and one block element, and splitting them 100ms apart reads as
+   *         fussy rather than as sequence
+   *   0.3s  the action buttons
+   *   0.4s  the stat row
+   *
+   * ---------------------------------------------------------------------- *
+   * IT RIDES ON `translate`, AND THE BUTTONS ARE ANIMATED BY THEIR WRAPPER.
+   *
+   * Both of those are protection against the same defect, which has already
+   * bitten this codebase twice (B3's `.home-tile` hover, and the note in
+   * contact.css). An animation's FILLED end state beats every normal
+   * declaration in the cascade. So a `transform`-based entrance ending at
+   * `transform: none`, left on an element that also hovers or presses with a
+   * transform, silently kills that response forever -- nothing errors, nothing
+   * looks wrong until you press the button.
+   *
+   * The hero's action buttons are `.pill`s, and `.pill:active` IS
+   * `transform: scale(0.97)`.
+   *
+   *   1. The entrance animates `translate`, an independent property the
+   *      browser composes WITH `transform`, so the two can never collide.
+   *   2. `.case-enter` is applied to `.case-actions`, the WRAPPER, and never
+   *      to a pill itself, so the buttons carry no animation at all.
+   *
+   * Either alone would be sufficient; both together mean this cannot regress
+   * by someone changing one of them. `tests/e2e/case-study-entrance.spec.ts`
+   * presses a hero pill AFTER the entrance has finished and asserts the scale
+   * still applies -- that is the assertion that catches this class of bug.
+   * ---------------------------------------------------------------------- */
+
+  .case-enter {
+    animation: case-enter 0.6s var(--ease-brand) var(--enter-delay, 0s) both;
+  }
+
+  @keyframes case-enter {
+    from {
+      opacity: 0;
+      translate: 0 18px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* Fully static, like every other page: the end state, never a paused frame. */
+  @media (prefers-reduced-motion: reduce) {
+    .case-enter {
+      animation: none;
+      opacity: 1;
+      translate: none;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
    * Stat row (three real numbers)
    * ---------------------------------------------------------------------- */
 

@@ -76,3 +76,38 @@ This is load-bearing, not styling. The Search rule above mandates **live, unanim
 Verified, not assumed: the entrance spec asserts no ancestor of the bar has an animation, parks the bar's own animation mid-flight and confirms it still sticks (top within its own remaining offset while a `translate` is applied), then confirms `top: 0` exactly once settled and again at the bottom of the page.
 
 **Reduced motion:** fully static, like the other three pages — the end state, never a paused frame.
+
+## Amendment — case-study hero entrance cascade (2026-08-28)
+
+The case-study template above specifies the hero **without** an entrance. It gets one now, for the same reason `/projects` did: every other hero on the site animates in and this one did not. **Scope is the hero only** — the body's `[data-reveal]` scroll reveals are a separate system and are untouched. `ScrollReveal` deliberately arms only below-fold elements, which is precisely why `.case-hero` was never animated by it.
+
+**The pattern is the established one:** `0.6s`, `--ease-brand`, `both` fill, per-element `--enter-delay`, `opacity 0 → 1` and `translate 0 18px → 0`. Pure CSS, so it runs and settles with no JavaScript.
+
+**Five beats, 100ms apart, in the hero's own reading order:**
+
+| Delay | Element |
+| --- | --- |
+| `0s` | breadcrumb (`All projects`) |
+| `0.1s` | project icon |
+| `0.2s` | **title and thesis together** |
+| `0.3s` | action buttons |
+| `0.4s` | stat row |
+
+Six beats were specified; the title and its thesis are **one** beat because they are one statement inside one block element, and 100ms apart they read as fussy rather than as sequence. Five is between About's four and Contact's seven.
+
+**Hero elements take `.case-enter`; they never take `data-reveal`.** The two systems animate different properties for different reasons and are not mixed on one element. Both directions are asserted in `tests/e2e/case-study-entrance.spec.ts`.
+
+### The wrapper-vs-`translate` decision: BOTH
+
+An animation's filled end state beats every normal declaration in the cascade. A `transform`-based entrance ending at `transform: none`, left on an element that also hovers or presses with a transform, kills that response permanently and silently. **This codebase has been bitten by it twice** — B3's `.home-tile` hover, and the note that now stands in `contact.css` — and the hero's action buttons are `.pill`s whose `:active` **is** `transform: scale(0.97)`.
+
+Both available defences are used, not one:
+
+1. **The entrance rides on `translate`**, an independent property the browser composes *with* `transform`, so the two can never collide. This is the same choice the reveal system made in B3.
+2. **`.case-enter` is applied to `.case-actions`, the wrapper** — never to a pill. The buttons carry no animation at all.
+
+Either alone would be sufficient. Together, the behaviour cannot regress from someone changing just one of them.
+
+**Enforced, not remembered:** the spec presses each hero pill *after* the entrance has finished and requires the live computed `transform` to reach `matrix(0.97, 0, 0, 0.97, 0, 0)`, and separately requires each pill to rest at `transform: none`. Reintroducing a transform-based entrance on the buttons fails both. (Verified by doing exactly that and watching it go red.)
+
+**Reduced motion:** fully static — the end state, never a paused frame.

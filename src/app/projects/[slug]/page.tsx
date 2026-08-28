@@ -45,6 +45,11 @@ interface PageProps {
 const GITHUB_MARK =
   'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z';
 
+/** Per-element delay for the hero entrance cascade (see `.case-enter` in
+ *  case-study.css). Hero only -- the body below is `[data-reveal]`, a separate
+ *  system, and the two are never mixed on one element. */
+const ENTER = (delay: string) => ({ '--enter-delay': delay }) as CSSProperties;
+
 /** The id of the in-page demo, and the target the hero button anchors to. */
 const EMBED_ID = 'live-demo';
 
@@ -175,7 +180,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         }
       >
         <div className="page-wrap">
-          <Link href="/projects" className="case-crumb">
+          <Link href="/projects" className="case-crumb case-enter" style={ENTER('0s')}>
             <LeadingAffordanceLabel label="All projects" glyph={<ChevronLeft />} />
           </Link>
 
@@ -186,16 +191,23 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               alt=""
               width={132}
               height={132}
-              className="case-icon"
+              className="case-icon case-enter"
+              style={ENTER('0.1s')}
               priority
             />
 
-            <div>
+            {/* Title and thesis are ONE beat: one statement, one block, and
+                100ms apart they would read as fussy rather than as sequence. */}
+            <div className="case-hero-copy case-enter" style={ENTER('0.2s')}>
               <h1 className="case-title">{project.title}</h1>
               <p className="case-thesis">{caseStudy.thesis}</p>
             </div>
 
-            <div className="case-actions">
+            {/* The entrance goes on this WRAPPER, never on the pills inside
+                it. `.pill:active` is a `transform`, and an animation's filled
+                end state would beat it -- see the block comment on
+                `.case-enter` in case-study.css. */}
+            <div className="case-actions case-enter" style={ENTER('0.3s')}>
               {/* Primary only when there is something to launch. Without an
                   embed the repository is the page's main action, so GitHub
                   takes the solid button instead of the ghost one. */}
@@ -224,7 +236,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
           {/* Three real numbers. Every value is traceable to the project's own
               record; nothing here is rounded up or invented. */}
-          <ul className="case-stats">
+          <ul className="case-stats case-enter" style={ENTER('0.4s')}>
             {caseStudy.stats.map((stat) => (
               <li key={stat.label} className="case-stat">
                 <span className="case-stat-value">{stat.value}</span>
