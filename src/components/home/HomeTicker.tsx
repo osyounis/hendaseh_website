@@ -148,10 +148,62 @@ const SECONDS_PER_COPY = Math.round(((2 * SEQUENCE_PX) / TARGET_PX_PER_SECOND) *
 
 const TAPES = ['a', 'b'] as const;
 
+/** Ties the visually-hidden checkbox to its label. */
+const PAUSE_INPUT_ID = 'home-ticker-pause';
+
+/*
+ * Pause and play, drawn here rather than in LinkAffordance.tsx. That file holds
+ * the five LINK-affordance glyphs, whose stroke weight and viewBox clearance are
+ * a locked, test-guarded family; a media control is not one of them. These are
+ * filled rather than stroked, matching how Apple draws transport controls, and
+ * sized so the filled mass reads at the same optical weight as the stroked
+ * family beside it. Both are aria-hidden -- the label's text is the accessible
+ * name.
+ */
+function PauseGlyph() {
+  return (
+    <svg className="home-ticker-icon home-ticker-icon-pause" viewBox="0 0 14 14" aria-hidden="true">
+      <rect x="3.4" y="2" width="2.6" height="10" rx="0.7" fill="currentColor" />
+      <rect x="8" y="2" width="2.6" height="10" rx="0.7" fill="currentColor" />
+    </svg>
+  );
+}
+
+function PlayGlyph() {
+  return (
+    <svg className="home-ticker-icon home-ticker-icon-play" viewBox="0 0 14 14" aria-hidden="true">
+      <path d="M4.2 2.4 11.4 7l-7.2 4.6Z" fill="currentColor" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 
 export default function HomeTicker() {
   return (
-    <div className="home-ticker" aria-hidden="true">
+    /*
+     * `aria-hidden` is NOT on this wrapper any more. It moved down onto the
+     * tapes: the tape is decorative, but the pause control inside this strip
+     * must reach assistive technology, and anything inside an aria-hidden
+     * subtree is invisible to it no matter what else it does.
+     */
+    <div className="home-ticker">
+      {/*
+       * A real checkbox, visually hidden, with the label as its visible control.
+       * Pause/play IS a persistent two-state setting the user makes and that
+       * stays made, which is what a checkbox is -- so this borrows native
+       * keyboard handling and native state announcement rather than
+       * reimplementing them with aria-*, and the component stays server-rendered
+       * with no hydration. It must precede the tape and the label: the pause
+       * itself is `:checked ~ .home-ticker-viewport .home-tape`.
+       */}
+      <input type="checkbox" id={PAUSE_INPUT_ID} className="home-ticker-check" />
+      {/*
+       * Clips and fades the tape. Separate from `.home-ticker` because the strip
+       * owns the background and the two hairlines, which must run edge to edge:
+       * masking the strip itself would fade them out, and its `overflow: hidden`
+       * would have clipped the control's focus ring.
+       */}
+      <div className="home-ticker-viewport">
       {/* The stylesheet derives the duration and tape B's delay from these two,
           so neither the copy count NOR the sequence width can move the scroll
           speed -- both are already accounted for in `--tape-seconds-per-copy`. */}
@@ -167,6 +219,7 @@ export default function HomeTicker() {
         {TAPES.map((tape) => (
           <div
             key={tape}
+            aria-hidden="true"
             className={tape === 'b' ? 'home-tape home-tape-b' : 'home-tape'}
           >
             {Array.from({ length: COPIES_PER_TAPE }, (_, copy) =>
@@ -193,7 +246,22 @@ export default function HomeTicker() {
             )}
           </div>
         ))}
+        </div>
       </div>
+      {/*
+       * Two icons and two words, one pair shown per state. `display: none`
+       * removes a node from the accessible name computation as well as from the
+       * page, so exactly one word is ever both visible-to-AT and current -- the
+       * name says "Play" at the same moment the icon does. The words are
+       * clipped rather than hidden so they name the control without adding text
+       * to a deliberately quiet strip.
+       */}
+      <label className="home-ticker-toggle" htmlFor={PAUSE_INPUT_ID}>
+        <PauseGlyph />
+        <PlayGlyph />
+        <span className="home-ticker-word home-ticker-word-pause">Pause the ticker</span>
+        <span className="home-ticker-word home-ticker-word-play">Play the ticker</span>
+      </label>
     </div>
   );
 }

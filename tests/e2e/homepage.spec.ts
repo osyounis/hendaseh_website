@@ -83,7 +83,21 @@ test.describe('Homepage', () => {
 
     await expect(page.locator('[data-testid="hero-satellite"]')).toHaveCount(7)
     await expect(page.locator('.home-cluster')).toHaveAttribute('aria-hidden', 'true')
-    await expect(page.locator('.home-ticker')).toHaveAttribute('aria-hidden', 'true')
+
+    /*
+     * The ticker's `aria-hidden` sits on the TAPES, not on the strip. It used to
+     * be on the strip, and moving it down is what lets the pause control inside
+     * the strip reach assistive technology at all -- see the "ticker pause
+     * control" tests below. The decorative half of the contract is unchanged:
+     * the scrolling content is still hidden from AT, and the same facts are
+     * stated as real content in the bands underneath.
+     */
+    await expect(page.locator('.home-ticker')).not.toHaveAttribute('aria-hidden', 'true')
+    expect(
+      await page
+        .locator('.home-tape')
+        .evaluateAll((els) => els.map((el) => el.getAttribute('aria-hidden')))
+    ).toEqual(['true', 'true'])
   })
 
   test('flagship band links to the frozen /nahtadi URL', async ({ page }) => {
@@ -615,6 +629,158 @@ test.describe('Homepage', () => {
         `the tape scrolls at ${pxPerSecond.toFixed(1)}px/s, not the approved ` +
           `~${APPROVED_PX_PER_SECOND}px/s -- resizing the tape changed the speed`
       ).toBeCloseTo(APPROVED_PX_PER_SECOND, 0)
+    })
+  })
+
+  /*
+   * The ticker's pause control. It exists for WCAG 2.2.2 (Pause, Stop, Hide,
+   * Level A): the tape starts automatically, never stops, and sits alongside
+   * other content. Hover-pause is gated to fine pointers, so without this a
+   * touch user has no mechanism at all -- and `aria-hidden` is not an exemption,
+   * because 2.2.2 is about visual distraction rather than screen-reader
+   * exposure.
+   *
+   * It is a real checkbox with a styled label, no JavaScript: pause/play is a
+   * persistent two-state setting, which is what a checkbox is.
+   */
+  test.describe('ticker pause control', () => {
+    const tapeStates = (page: Page) =>
+      page
+        .locator('.home-tape')
+        .evaluateAll((els) => els.map((el) => getComputedStyle(el).animationPlayState))
+
+    test('pauses and resumes both tapes, and is operable by keyboard', async ({ page }) => {
+      await page.goto('/')
+
+      const control = page.getByRole('checkbox', { name: /ticker/i })
+      await expect(control).toHaveCount(1)
+      expect(await tapeStates(page)).toEqual(['running', 'running'])
+
+      // Pointer: the label is the visible control; the input itself is clipped.
+      await page.locator('.home-ticker-toggle').click()
+      await expect(control).toBeChecked()
+      expect(await tapeStates(page), 'both tapes must pause, not just the first').toEqual([
+        'paused',
+        'paused',
+      ])
+
+      /*
+       * Resumes immediately, with the pointer still sitting on the control.
+       * There is no hover-pause any more, so nothing can hold the tape behind
+       * the checkbox's back -- if this ever needs a `mouse.move` to pass, a
+       * hover rule has come back (see the note in home.css).
+       */
+      await page.locator('.home-ticker-toggle').click()
+      await expect(control).not.toBeChecked()
+      expect(await tapeStates(page)).toEqual(['running', 'running'])
+
+      // Keyboard: Space is the native checkbox activation, and getting it for
+      // free is the whole reason this is a checkbox rather than a div.
+      await control.focus()
+      await page.keyboard.press('Space')
+      expect(await tapeStates(page)).toEqual(['paused', 'paused'])
+      await page.keyboard.press('Space')
+      expect(await tapeStates(page)).toEqual(['running', 'running'])
+    })
+
+    /*
+     * The icon and the accessible name must agree. A control whose name is
+     * frozen at "Pause" while it shows a play triangle is a defect, so the name
+     * is read in BOTH states rather than assumed from the markup.
+     */
+    test('the accessible name follows the state', async ({ page }) => {
+      await page.goto('/')
+
+      const control = page.getByRole('checkbox', { name: /ticker/i })
+      await expect(control).toHaveAccessibleName('Pause the ticker')
+      await expect(control).not.toBeChecked()
+
+      await page.locator('.home-ticker-toggle').click()
+      await expect(control).toBeChecked()
+      await expect(
+        control,
+        'paused: the icon reads play, so the name must too'
+      ).toHaveAccessibleName('Play the ticker')
+
+      // ...and the visible icon agrees with it.
+      expect(
+        await page
+          .locator('.home-ticker-icon-play')
+          .evaluate((el) => getComputedStyle(el).display)
+      ).not.toBe('none')
+      expect(
+        await page
+          .locator('.home-ticker-icon-pause')
+          .evaluate((el) => getComputedStyle(el).display)
+      ).toBe('none')
+    })
+
+    /*
+     * The whole point of moving `aria-hidden` off the strip wrapper. A control
+     * inside an aria-hidden subtree is invisible to assistive technology no
+     * matter how well it is built, which would defeat the reason it exists.
+     */
+    test('the control is not inside an aria-hidden subtree', async ({ page }) => {
+      await page.goto('/')
+
+      const hiddenAncestors = await page
+        .locator('.home-ticker-toggle')
+        .evaluate((el) => {
+          const named: string[] = []
+          for (let n = el as HTMLElement | null; n; n = n.parentElement) {
+            if (n.getAttribute('aria-hidden') === 'true') named.push(n.className || n.tagName)
+          }
+          return named
+        })
+      expect(
+        hiddenAncestors,
+        'the pause control has an aria-hidden ancestor, so assistive technology cannot see it'
+      ).toEqual([])
+
+      // The tape itself must still be decorative -- that part does not change.
+      expect(
+        await page.locator('.home-tape').evaluateAll((els) =>
+          els.map((el) => el.getAttribute('aria-hidden'))
+        )
+      ).toEqual(['true', 'true'])
+    })
+
+    /*
+     * The control is the ONLY pause mechanism. Hover-pause was deleted: the
+     * full-bleed strip spans the viewport, so any cursor travel down the page
+     * incidentally paused and resumed the tape, and every one of those toggles
+     * was a chance to hit the compositor artifact behind the reported jump.
+     * This asserts the tape is indifferent to the pointer.
+     */
+    test('the pointer alone cannot pause the tape', async ({ page }) => {
+      await page.goto('/')
+
+      await page.locator('.home-ticker-viewport').hover()
+      expect(
+        await tapeStates(page),
+        'hovering the tape must not pause it -- hover-pause was deleted on purpose'
+      ).toEqual(['running', 'running'])
+
+      await page.locator('.home-ticker-toggle').hover()
+      expect(
+        await tapeStates(page),
+        'hovering the control must not pause it either; only activating it may'
+      ).toEqual(['running', 'running'])
+    })
+
+    test('is hidden under reduced motion, where there is nothing to pause', async ({ browser }) => {
+      const context = await browser.newContext({ reducedMotion: 'reduce' })
+      const page = await context.newPage()
+      await page.goto('/')
+
+      await expect(page.locator('.home-ticker-toggle')).toBeHidden()
+      // The input goes too: an invisible, purposeless control must not stay in
+      // the tab order.
+      expect(
+        await page.locator('.home-ticker-check').evaluate((el) => getComputedStyle(el).display)
+      ).toBe('none')
+
+      await context.close()
     })
   })
 

@@ -169,12 +169,164 @@
    * Ticker
    * ---------------------------------------------------------------------- */
 
+  /* The strip owns the ground and the two hairlines, and deliberately does NOT
+     clip: `overflow: hidden` moved to `.home-ticker-viewport` so the pause
+     control's focus ring (outline-offset 3px, at the strip's edge) is not cut
+     off by it. */
   .home-ticker {
-    overflow: hidden;
+    position: relative;
     white-space: nowrap;
     border-top: 1px solid var(--edge);
     border-bottom: 1px solid var(--edge);
     background: var(--ticker-surface);
+  }
+
+  /* Clips the tape, and fades it at both ends.
+     The mask does two jobs. It softens the hard cut where a full-bleed strip
+     meets the viewport edge, and -- the reason it is here rather than a nicety
+     -- it clears the ground under the pause control. The strip runs edge to
+     edge, so items scroll directly beneath wherever the control sits; a glyph
+     over moving text is unreadable. Fading the tape out before it reaches the
+     control is quieter than giving the control an opaque slab of its own, which
+     is what "quiet ticker" asks for. The trailing fade is wider than the
+     leading one because it has to clear the whole control, not just an edge.
+     Masked here rather than on `.home-ticker` because that element carries the
+     background and hairlines, which must NOT fade. */
+  .home-ticker-viewport {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 40px,
+      #000 calc(100% - 124px),
+      transparent calc(100% - 12px)
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 40px,
+      #000 calc(100% - 124px),
+      transparent calc(100% - 12px)
+    );
+  }
+
+  /* Visually hidden, still focusable and still a real checkbox. Never
+     `display: none` or `visibility: hidden` -- both would take it out of the
+     tab order and defeat the entire mechanism. */
+  .home-ticker-check {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The visible control. 44px of hit target per Apple HIG and WCAG 2.5.5, held
+     20px clear of the right edge -- iOS reserves roughly the outer 20px for its
+     own back-swipe gesture, the same lesson the nav toggle learned. */
+  .home-ticker-toggle {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 20px;
+    z-index: 2;
+    display: flex;
+    width: 44px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--ticker-secondary);
+    transition: color 0.2s ease;
+  }
+
+  /* The control's own ground -- a filled circle, as Apple gives theirs.
+     The tape fade alone was not enough to find the button.
+
+     Two parts do the work, and the RING does most of it. Measured against the
+     strip: the fill is 1.22:1 in light and 1.12:1 in dark, which is a presence
+     rather than a shape, while the `--edge` ring is 1.51:1 light and 1.86:1
+     dark and is what actually reads as an object. `--edge-soft` was tried first
+     and is too faint at this size. Deliberately quiet either way -- the contract
+     calls this a quiet ticker, so the control should be findable, not
+     prominent.
+
+     The fill also guarantees no ticker item can show through behind the glyph
+     if `mask-image` is ever unsupported. */
+  .home-ticker-toggle::before {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--ticker-control-bg);
+    box-shadow: inset 0 0 0 1px var(--edge);
+  }
+
+  .home-ticker-icon {
+    position: relative;
+    width: 14px;
+    height: 14px;
+  }
+
+  .home-ticker-icon-play {
+    display: none;
+  }
+
+  /* Clipped, not hidden: the label's text is the checkbox's accessible name, so
+     it has to stay in the accessibility tree while staying off a quiet strip. */
+  .home-ticker-word {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .home-ticker-word-play {
+    display: none;
+  }
+
+  /* THE MECHANISM. A sibling combinator plus a descendant step, because the
+     tapes sit inside the viewport wrapper rather than beside the input. */
+  .home-ticker-check:checked ~ .home-ticker-viewport .home-tape {
+    animation-play-state: paused;
+  }
+
+  /* Icon and accessible name flip together. `display: none` is what makes the
+     name honest -- it removes the inactive word from the name computation, so
+     the control cannot say "Pause" while showing a play triangle. */
+  .home-ticker-check:checked ~ .home-ticker-toggle .home-ticker-icon-pause,
+  .home-ticker-check:checked ~ .home-ticker-toggle .home-ticker-word-pause {
+    display: none;
+  }
+
+  .home-ticker-check:checked ~ .home-ticker-toggle .home-ticker-icon-play {
+    display: block;
+  }
+
+  .home-ticker-check:checked ~ .home-ticker-toggle .home-ticker-word-play {
+    display: inline;
+  }
+
+  /* The built focus pattern, on the label, since the input itself is clipped. */
+  .home-ticker-check:focus-visible ~ .home-ticker-toggle {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 999px;
+  }
+
+  .home-ticker-toggle:active {
+    transform: scale(0.97);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .home-ticker-toggle:hover {
+      color: var(--fg-strong);
+    }
   }
 
   /* A single grid cell that both tapes occupy, so they share one origin and
@@ -228,16 +380,26 @@
     );
   }
 
-  /* Fine pointers only. Ungated, this is the touch `:hover` trap: a tap applies
-     :hover, the tape freezes, and it only resumes when the user taps somewhere
-     else -- which is what Omar hit on the phone. A sticky tap was never a valid
-     pause mechanism, so gating it is a fix rather than a loss; the WCAG 2.2.2
-     obligation it leaves open on touch is met by the pause control. */
-  @media (hover: hover) and (pointer: fine) {
-    .home-ticker:hover .home-tape {
-      animation-play-state: paused;
-    }
-  }
+  /* THERE IS NO HOVER-PAUSE. Deleted 2026-08-27, and deliberately not replaced.
+     Do not add one back.
+
+     The strip is full-bleed, so it spans the entire viewport width: any cursor
+     travel down the page crossed it and incidentally paused, then resumed, the
+     tape. Each of those toggles is a chance to hit a real compositor artifact --
+     pausing a composited animation forces the main thread to compute a position,
+     and where its clock has drifted from the compositor's you see a jump to the
+     main thread's notion, then a jump back on resume. That is why it was
+     intermittent and why it read as forward-then-back.
+
+     Removing hover does not fix that artifact. It removes the accidental,
+     high-frequency trigger for it. If the jump ever appears on a DELIBERATE
+     press of the pause control, that is worth reporting rather than working
+     around.
+
+     The pause control is now the only pause mechanism, which is the point: one
+     mechanism, explicit and discoverable, identical on every input type. It also
+     retires the touch `:hover` trap for good -- a tap used to apply :hover and
+     freeze the tape until the user tapped elsewhere. */
 
   @keyframes home-tape {
     from {
@@ -319,6 +481,14 @@
        into a visible double-image the moment any of those colours gains alpha.
        A single 3870px tape covers the strip on its own. */
     .home-tape-b {
+      display: none;
+    }
+
+    /* No motion, no 2.2.2 obligation, and a pause control for a static tape is
+       just a confusing button. The checkbox goes with it -- leaving it focusable
+       would put an invisible, purposeless control in the tab order. */
+    .home-ticker-check,
+    .home-ticker-toggle {
       display: none;
     }
   }

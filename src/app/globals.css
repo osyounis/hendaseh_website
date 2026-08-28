@@ -273,6 +273,12 @@
 
   /* Ticker: the secondary run of each pair sits one step down from the symbol */
   --ticker-secondary: var(--fg-muted);
+  /* Ground for the ticker's pause control. Composed from existing surface
+     tokens rather than a new colour, and it flips DIRECTION between themes:
+     the light strip is white, so the control recesses (surface-sunken); the
+     dark strip is near-black, so it lifts (surface-raised). One token cannot
+     be both, which is why this exists as its own semantic step. */
+  --ticker-control-bg: var(--surface-sunken);
 
   /* Flagship band — identical in both themes by design */
   --flagship-bg: linear-gradient(
@@ -385,6 +391,7 @@
   --nav-fg-active: #ffffff;
 
   --ticker-secondary: var(--fg-faint);
+  --ticker-control-bg: var(--surface-raised);
 }
 
 /* Register semantic tokens as Tailwind utilities. */

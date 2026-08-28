@@ -226,6 +226,7 @@ const COLOUR_TOKENS = [
   '--nav-fg',
   '--nav-fg-active',
   '--ticker-secondary',
+  '--ticker-control-bg',
   '--flagship-fg',
   '--flagship-meta',
   '--flagship-body',
