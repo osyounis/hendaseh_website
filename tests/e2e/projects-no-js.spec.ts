@@ -11,9 +11,24 @@ import { test, expect } from '@playwright/test'
  * which is exactly the "only Nahtadi's image renders" report from the phone
  * review.
  *
- * This test pins the resting state. It measures EFFECTIVE opacity (the product
- * of the element's own opacity and every ancestor's), because a card can be
- * `opacity: 1` itself and still be invisible inside a zeroed wrapper.
+ * This test pins the RESTING state -- deliberately not the state at `load`.
+ * It measures EFFECTIVE opacity (the product of the element's own opacity and
+ * every ancestor's), because a card can be `opacity: 1` itself and still be
+ * invisible inside a zeroed wrapper.
+ *
+ * WHY IT POLLS (changed 2026-08-28, when /projects gained its entrance
+ * cascade). The grid container carries a CSS animation with `both` fill and a
+ * 0.36s delay, so during that delay it is legitimately at `opacity: 0` -- with
+ * JavaScript or without it, because CSS animations do not need a script to
+ * run. A single read taken on `load` catches that frame and says "every card
+ * is invisible without JavaScript", which is false.
+ *
+ * The gate this test exists to catch is UNAFFECTED, because the gate is
+ * "invisible FOREVER", not "invisible for 960ms": a card left at 0 by an
+ * IntersectionObserver callback that never fires never reaches 1, so the poll
+ * times out and this still goes red. The assertion after the poll pins the
+ * transient to its known, script-free cause, so a future reveal that happens
+ * to settle within the poll window cannot hide behind it.
  *
  * Cards are located by `[data-testid="project-card"]` (the root of
  * `AnimatedProjectCard`), not a bare `h2` locator. A bare `h2` only happened
@@ -36,26 +51,45 @@ test.describe('projects page without JavaScript', () => {
     // opacity assertion below would vacuously pass.
     expect(count).toBeGreaterThanOrEqual(13)
 
-    const measured = await cards.evaluateAll((cardEls) =>
-      cardEls.map((card) => {
-        let effective = 1
-        for (
-          let node: Element | null = card;
-          node && node !== document.documentElement;
-          node = node.parentElement
-        ) {
-          effective *= parseFloat(getComputedStyle(node).opacity)
-        }
-        const title = card.querySelector('h2')?.textContent?.trim() ?? '(untitled)'
-        return { title, effective }
-      })
-    )
+    const measureInvisible = () =>
+      cards.evaluateAll((cardEls) =>
+        cardEls
+          .map((card) => {
+            let effective = 1
+            for (
+              let node: Element | null = card;
+              node && node !== document.documentElement;
+              node = node.parentElement
+            ) {
+              effective *= parseFloat(getComputedStyle(node).opacity)
+            }
+            const title = card.querySelector('h2')?.textContent?.trim() ?? '(untitled)'
+            return { title, effective }
+          })
+          .filter((card) => card.effective === 0)
+          .map((card) => card.title)
+      )
 
-    const invisible = measured.filter((card) => card.effective === 0)
+    await expect
+      .poll(measureInvisible, {
+        message: 'cards never became visible without JavaScript',
+      })
+      .toEqual([])
+
+    // The only thing that may hold a card at zero on the way there is the
+    // page's own entrance cascade, which is pure CSS. Pinning that here stops
+    // the poll above from silently absorbing a future JS-gated reveal that
+    // happens to resolve quickly.
     expect(
-      invisible,
-      `these cards are invisible without JavaScript: ${invisible.map((c) => c.title).join(', ')}`
-    ).toEqual([])
+      await page.evaluate(() => {
+        const grid = document.querySelector('[data-testid="project-card"]')!.closest(
+          '.projects-enter'
+        )
+        if (!grid) return 'no .projects-enter ancestor'
+        const names = grid.getAnimations().map((a) => (a as CSSAnimation).animationName)
+        return names.length === 1 && names[0] === 'projects-enter' ? 'ok' : names.join(',')
+      })
+    ).toBe('ok')
   })
 })
 

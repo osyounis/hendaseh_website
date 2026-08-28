@@ -76,7 +76,15 @@ export default function FilterableProjectList({ projects, chips }: FilterablePro
         onQueryChange={setQuery}
       />
 
-      <div className="page-wrap">
+      {/* Beat 4 of the entrance cascade, the same delay the filter bar carries.
+          THE ANIMATION LIVES HERE, ON A CONTAINER WHOSE IDENTITY NEVER
+          CHANGES, and never on the cards: this element is not keyed and is not
+          conditionally swapped, so filter state changes re-render it without
+          remounting it and the cascade cannot replay per keystroke. Cards ARE
+          keyed by project id and do remount as the filtered set changes, which
+          is exactly why they carry no entrance of their own -- see the block
+          comment on `.projects-enter` in projects.css. */}
+      <div className="page-wrap projects-enter projects-enter-body">
         {/* One atomic status message, not a bare number, so a screen reader
             hears "4 of 13 projects" rather than "4". */}
         <p role="status" aria-atomic="true" className="text-muted pt-[18px] text-[13px] font-semibold">

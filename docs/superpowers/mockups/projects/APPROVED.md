@@ -49,3 +49,30 @@
 - Live search must remain client-side and instant; no debounce animation.
 - Both themes; all Apple-calibration rules from the Home contract apply (pills, contrast floors, hairlines).
 - Radar embed keeps the synthetic-data line: "Everything on screen is synthetic training data."
+
+## Amendment — entrance cascade (2026-08-28)
+
+The contract above specifies **no entrance** for this page. It gets one now: Home, About and Contact all animate in, and Omar caught the odd one out unprompted. Apple's Familiarity principle makes that an inconsistency defect rather than a preference, so the fix is to reuse the established pattern, not to invent a new one for this page.
+
+**The pattern is the one `.about-enter` and `.contact-enter` already ship:** a CSS animation, `0.6s`, `--ease-brand`, `opacity 0 → 1` and `translate 0 18px → 0`, with `both` fill and a per-element `--enter-delay`. It is CSS, so it runs and settles with no JavaScript, and nothing is served at `opacity: 0` as a permanent state.
+
+**Four beats, ~120ms apart:**
+
+1. `0s` — the `PROJECTS` eyebrow
+2. `0.12s` — `Everything I've built.`
+3. `0.24s` — the lede beneath it
+4. `0.36s` — **the sticky filter bar and the grid, arriving together as one unit**
+
+### Why beat 4 is one unit, and why NO CARD may ever be animated
+
+This is load-bearing, not styling. The Search rule above mandates **live, unanimated filtering — instant reflow, no card animations on filter.** Cards are keyed by project id, so React remounts them as the filtered set changes; an entrance on a card (or on any container carrying a query-dependent `key`) would therefore **restart on every keystroke**, which is the behaviour that rule forbids, arrived at from the other direction. Animating the block **once**, on containers whose identity never changes, is what makes the replay structurally impossible instead of merely avoided.
+
+**Do not "improve" this into a per-card stagger.** `tests/e2e/projects-filter.spec.ts` requires zero animations on every card before and during filtering, and `tests/e2e/projects-entrance.spec.ts` stamps each animated container and re-reads the stamp after four successive keystrokes — a remount destroys it and the test goes red.
+
+### Why the bar and the grid are siblings, not one wrapper
+
+`.projects-bar` is `position: sticky; top: 0`, and a `transform` **or** a `translate` on an **ancestor** creates a containing block that can break sticky positioning. One animated wrapper around the bar and the grid would inherit exactly that for the length of the animation. They are animated as **siblings** instead, so the bar has no animated ancestor at all and only carries the animation on itself, where sticky is unaffected. Beat 4's delay is declared **once**, in the `.projects-enter-body` class, because the two elements live in two different components and a number written twice is a number that drifts.
+
+Verified, not assumed: the entrance spec asserts no ancestor of the bar has an animation, parks the bar's own animation mid-flight and confirms it still sticks (top within its own remaining offset while a `translate` is applied), then confirms `top: 0` exactly once settled and again at the bottom of the page.
+
+**Reduced motion:** fully static, like the other three pages — the end state, never a paused frame.

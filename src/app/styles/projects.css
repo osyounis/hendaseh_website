@@ -272,6 +272,66 @@
    * Accessibility preferences
    * ---------------------------------------------------------------------- */
 
+  /* ---------------------------------------------------------------------- *
+   * Entrance cascade (added 2026-08-28)
+   *
+   * The same pattern About (`.about-enter`) and Contact (`.contact-enter`)
+   * already ship, deliberately not a new one: a CSS animation with `both`
+   * fill and a per-element `--enter-delay`. Nothing renders at `opacity: 0`
+   * from the server and nothing is gated on JavaScript -- with animations
+   * disabled every element rests at its end state.
+   *
+   * FOUR BEATS, ~120ms apart: eyebrow (0s) -> heading (0.12s) -> lede (0.24s)
+   * -> THE FILTER BAR AND THE GRID TOGETHER (0.36s).
+   *
+   * WHY THE BAR AND GRID ARRIVE AS ONE UNIT, AND WHY THE CARDS CARRY NOTHING.
+   * The Projects contract mandates live, unanimated filtering: "instant
+   * reflow, no card animations on filter". A per-card entrance stagger would
+   * put an animation on an element React remounts on every keystroke (cards
+   * are keyed by project id, and the filtered set changes as you type), so the
+   * cascade would replay per keystroke -- the forbidden behaviour, reached
+   * from the other direction. Animating the block ONCE, on containers whose
+   * identity never changes, is what makes that structurally impossible rather
+   * than merely avoided. `tests/e2e/projects-filter.spec.ts` counts
+   * `getAnimations({subtree: true})` on every card and requires zero, before
+   * and during filtering. Do not "improve" this into a per-card stagger.
+   *
+   * WHY TWO SIBLINGS RATHER THAN ONE WRAPPER. `.projects-bar` is
+   * `position: sticky; top: 0`, and a `transform` OR a `translate` on an
+   * ANCESTOR creates a containing block that can break sticky positioning.
+   * Wrapping the bar and the grid in one animated element would inherit that
+   * for the length of the animation. They are animated as siblings instead,
+   * so the bar has no animated ancestor at all and its own sticky behaviour
+   * is untouched. They still arrive in perfect unison because the delay is
+   * set ONCE, by the class below, rather than written twice at two call sites
+   * in two different components where the values could drift apart.
+   * ---------------------------------------------------------------------- */
+
+  .projects-enter {
+    animation: projects-enter 0.6s var(--ease-brand) var(--enter-delay, 0s) both;
+  }
+
+  /* Beat 4's delay, shared by the bar and the grid. One declaration, so the
+     two cannot be changed independently. */
+  .projects-enter-body {
+    --enter-delay: 0.36s;
+  }
+
+  /* On `translate`, not `transform`: the sitewide rule since Task B3. The grid
+     is an ancestor of every `.home-tile` card, whose hover IS a transform, and
+     an independent property is what keeps a future change from putting the two
+     on a collision course. */
+  @keyframes projects-enter {
+    from {
+      opacity: 0;
+      translate: 0 18px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .projects-chip,
     .projects-mini,
@@ -282,6 +342,14 @@
     .projects-chip:active,
     .projects-mini:active {
       transform: none;
+    }
+
+    /* Fully static, like the other three pages: the end state, not a paused
+       mid-animation frame. */
+    .projects-enter {
+      animation: none;
+      opacity: 1;
+      translate: none;
     }
   }
 

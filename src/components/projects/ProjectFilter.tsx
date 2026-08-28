@@ -31,7 +31,11 @@ export default function ProjectFilter({
   onQueryChange,
 }: ProjectFilterProps) {
   return (
-    <div className="projects-bar">
+    // `projects-enter-body` is beat 4 of the page's entrance cascade, shared
+    // with the grid in `FilterableProjectList` so the two arrive in unison.
+    // The animation is on the sticky element ITSELF, never on an ancestor --
+    // an animated ancestor's containing block is what breaks sticky.
+    <div className="projects-bar projects-enter projects-enter-body">
       <div className="page-wrap">
         <div className="flex flex-wrap items-center gap-3.5 py-3.5">
           <div className="relative min-w-[260px] flex-1">

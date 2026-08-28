@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
 import { getAllProjects } from '@/lib/projects';
 import { getCategoryChips } from '@/lib/projectCategories';
@@ -33,6 +34,13 @@ export const metadata: Metadata = {
  *  follow, and the rest of the catalog runs in its own order underneath. */
 const TIER_ORDER = { flagship: 0, showcase: 1, card: 2 } as const;
 
+/** Per-element delay for the entrance cascade (see `.projects-enter` in
+ *  projects.css). Beats 1-3 are here; beat 4 -- the filter bar and the grid
+ *  arriving together -- takes its delay from the `.projects-enter-body` class
+ *  instead, because those two elements live in two different components and a
+ *  number written twice is a number that drifts. */
+const ENTER = (delay: string) => ({ '--enter-delay': delay }) as CSSProperties;
+
 export default function Projects() {
   const projects = [...getAllProjects()].sort(
     (a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]
@@ -55,14 +63,22 @@ export default function Projects() {
           instead of at a seam below the logo. */}
       <header className="projects-sky mt-[calc(var(--nav-h)*-1)] pt-[calc(var(--nav-h)+40px)] pb-8">
         <div className="page-wrap">
-          <span className="section-eyebrow">PROJECTS</span>
+          <span className="section-eyebrow projects-enter" style={ENTER('0s')}>
+            PROJECTS
+          </span>
           {/* Count-free by rule: no number here can go stale when a project is
               added. The only count on this page is the computed line above
               the grid. */}
-          <h1 className="text-primary mt-2.5 text-[clamp(34px,5vw,54px)] leading-[1.1] font-black tracking-[-0.015em]">
+          <h1
+            className="text-primary projects-enter mt-2.5 text-[clamp(34px,5vw,54px)] leading-[1.1] font-black tracking-[-0.015em]"
+            style={ENTER('0.12s')}
+          >
             Everything I&apos;ve built.
           </h1>
-          <p className="text-muted mt-3.5 max-w-[56ch] leading-[1.6]">
+          <p
+            className="text-muted projects-enter mt-3.5 max-w-[56ch] leading-[1.6]"
+            style={ENTER('0.24s')}
+          >
             iOS apps, ML models, GPU kernels, and the tools in between. Case studies where there
             is a real story to tell. Straight to the code everywhere else.
           </p>
