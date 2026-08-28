@@ -66,21 +66,25 @@
       transform 220ms var(--ease-brand);
   }
 
-  /* Rows settle into place 35ms apart. The stagger rides on `transform` only,
-     so the row's `:active` press -- which rides on opacity -- is never delayed
-     and a tap still answers on pointer-down. */
-  .nav-menu-item {
-    transform: translateY(-6px);
-    transition:
-      opacity 100ms ease-out,
-      transform 160ms var(--ease-brand);
-  }
+  /* Rows have NO entrance motion. The panel above is the only thing that
+     moves, and the rows ride inside it.
 
-  .nav-menu[data-state="open"] .nav-menu-item {
-    transform: none;
-    transition:
-      opacity 100ms ease-out,
-      transform 220ms var(--ease-brand) calc(var(--nav-item-index, 0) * 35ms);
+     They used to slide translateY(-6px) -> 0 on a 35ms per-row stagger. With
+     four rows the last one started 105ms into the open and finished at 325ms:
+     105ms AFTER its own container had already settled, sliding DOWN while the
+     panel scaled OUT. Two compounding motions in opposite directions, contents
+     outlasting their container -- which is what read as broken on device. A
+     four-item nav popover is one object, and staggering the children of an
+     animating container is what makes it feel unglued.
+
+     The `opacity` transition that remains is NOT entrance motion: it is the
+     row's `:active` press feedback (`active:opacity-60` in Navigation.tsx), and
+     at 100ms it answers on pointer-down. That is why this rule survives the
+     stagger's removal, and why `tests/e2e/homepage.spec.ts` asserts opacity is
+     the ONLY transitioned property here -- a `transform` reappearing on a row
+     is the bug coming back. */
+  .nav-menu-item {
+    transition: opacity 100ms ease-out;
   }
 
   /* Reduced motion: opacity only, 150ms, no transform anywhere. The closed
@@ -100,11 +104,13 @@
       transition: opacity 150ms ease;
     }
 
-    .nav-menu-item,
-    .nav-menu[data-state="open"] .nav-menu-item {
-      transform: none;
-      transition: opacity 100ms ease-out;
-    }
+    /* No `.nav-menu-item` override is needed or wanted here. The rows carry no
+       transform and no delay in the base rules, so there is nothing left for
+       reduced motion to neutralise -- and their remaining `opacity 100ms`
+       transition is press feedback, which reduced motion keeps (it is a
+       non-vestibular opacity change that tells the user the tap registered).
+       An override repeating the base declarations would read as if it were
+       suppressing something. */
   }
 
   /* ---------------------------------------------------------------------- *

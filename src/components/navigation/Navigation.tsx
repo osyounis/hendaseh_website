@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { HiMenu, HiX } from 'react-icons/hi';
 
@@ -127,14 +127,20 @@ export default function Navigation() {
         {/* Each link is a full-width row, not a 22px-tall line of text. The
             panel's inset moves onto the rows themselves (p-2 + px-3 = the
             same 20px text inset as before) so the rows can carry the 44px
-            height a thumb needs. `--nav-item-index` is the row's place in the
-            35ms stagger. */}
+            height a thumb needs.
+
+            The rows have no entrance motion of their own: the panel scales and
+            fades as one object and they ride inside it. They used to carry a
+            `--nav-item-index` inline for a 35ms per-row stagger; that stagger
+            was removed because it finished after its own container had settled
+            and moved the rows against the panel's direction (see the
+            `.nav-menu-item` comment in src/app/styles/shared.css). Nothing in
+            CSS reads a row index any more, so nothing sets one. */}
         <div className="nav-menu-panel bg-surface-raised border-edge flex flex-col gap-1 rounded-2xl border p-2 text-[15px] font-semibold shadow-lg">
-          {NAV_LINKS.map(({ href, label }, index) => (
+          {NAV_LINKS.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              style={{ '--nav-item-index': index } as CSSProperties}
               className={`nav-menu-item flex min-h-11 items-center rounded-xl px-3 py-3 active:opacity-60 ${linkColorClassName(href)}`}
               onClick={() => setMobileMenuOpen(false)}
               aria-current={isCurrent(href) ? 'page' : undefined}

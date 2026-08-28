@@ -298,8 +298,9 @@ test.describe('Homepage', () => {
      * no transition at all. These two tests read the motion that is ACTUALLY
      * applied in each state rather than trusting the stylesheet, and they are
      * what stops the spec -- 220ms in / 160ms out, transitions and not
-     * keyframes, scale from 0.97 and never 0, origin at the hamburger, a 35ms
-     * row stagger, opacity-only under reduced motion -- from quietly rotting.
+     * keyframes, scale from 0.97 and never 0, origin at the hamburger, rows
+     * with no entrance motion of their own, opacity-only under reduced motion
+     * -- from quietly rotting.
      */
     const readPanelMotion = (page: Page) =>
       page.locator('#site-nav-mobile-menu .nav-menu-panel').evaluate((el) => {
@@ -349,29 +350,48 @@ test.describe('Homepage', () => {
 
       await settleMenu(page)
 
-      // Rows land 35ms apart, and the stagger rides on transform only so the
-      // row's opacity press feedback is never delayed behind it.
+      /*
+       * The rows carry NO entrance motion of their own -- the panel scales and
+       * fades as one object and the rows ride inside it.
+       *
+       * This replaces a 35ms per-row stagger that shipped in B2 and read as
+       * broken on device. With four rows the last one started 105ms in and
+       * finished at 325ms, i.e. 105ms AFTER its own container had settled, and
+       * it slid DOWN while the panel scaled OUT: two compounding motions in
+       * different directions, with the contents outlasting the container. A
+       * four-item nav popover is a single object; staggering the children of an
+       * animating container is what makes it feel unglued.
+       *
+       * All three properties are asserted because any one alone can hold while
+       * the bug returns: a delay with nothing to delay animates nothing, and a
+       * row transform with no delay is still a second motion inside the panel.
+       */
       const rows = await menu.locator('.nav-menu-item').evaluateAll((els) =>
         els.map((el) => {
           const cs = getComputedStyle(el)
           return {
             properties: cs.transitionProperty.split(',').map((p) => p.trim()),
             delays: cs.transitionDelay.split(',').map((d) => parseFloat(d)),
+            transform: cs.transform,
           }
         })
       )
+      // Opacity only, and it is not entrance motion: it is the row's `:active`
+      // press feedback, which must still answer on pointer-down.
       expect(rows.map((r) => r.properties)).toEqual([
-        ['opacity', 'transform'],
-        ['opacity', 'transform'],
-        ['opacity', 'transform'],
-        ['opacity', 'transform'],
+        ['opacity'],
+        ['opacity'],
+        ['opacity'],
+        ['opacity'],
       ])
-      expect(rows.map((r) => r.delays)).toEqual([
-        [0, 0],
-        [0, 0.035],
-        [0, 0.07],
-        [0, 0.105],
-      ])
+      expect(
+        rows.flatMap((r) => r.delays),
+        'no menu row may carry a transition-delay -- that is the stagger coming back'
+      ).toEqual([0, 0, 0, 0])
+      expect(
+        rows.map((r) => r.transform),
+        'rows must not transform: the panel is the only thing that moves'
+      ).toEqual(['none', 'none', 'none', 'none'])
 
       // Close it again, and prove the exit is not just a visual fade: mid-exit
       // (well inside the 160ms transition), the panel must already be out of
