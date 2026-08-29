@@ -421,19 +421,113 @@ test.describe('Homepage', () => {
         'rows must not transform: the panel is the only thing that moves'
       ).toEqual(['none', 'none', 'none', 'none'])
 
-      // Close it again, and prove the exit is not just a visual fade: mid-exit
-      // (well inside the 160ms transition), the panel must already be out of
-      // the tab order. `visibility` alone does not do this -- it only flips
-      // once the 160ms exit transition finishes -- so this is the assertion
-      // that catches a missing `inert`. Mirrors the real measurement: 60ms
-      // into the exit, a programmatic `.focus()` on a menu link still took.
+      /*
+       * Close it again, and prove the exit is not just a visual fade: DURING
+       * the 160ms exit the panel must ALREADY be out of the tab order.
+       * `visibility` cannot be what does that -- it only flips once the exit
+       * finishes -- so this is the assertion that catches a missing `inert`,
+       * which was a real B2 finding.
+       *
+       * THIS OBSERVER IS ARMED BEFORE THE TAP AND SAMPLES PAGE-SIDE, AND BOTH
+       * HALVES OF THAT ARE LOAD-BEARING. The version this replaces slept a
+       * fixed `waitForTimeout(60)` after the tap and then resolved
+       * `menu.getByRole('link')` from Node, which made it a wall-clock sample
+       * of a real animation with only ~100ms of margin. Under parallel-worker
+       * contention it flaked roughly one run in seven, and it did not fail --
+       * it HUNG for the full 30s test timeout, on
+       * `waiting for locator('#site-nav-mobile-menu').getByRole('link').first()`.
+       *
+       * MEASURED ROOT CAUSE, not inferred: Playwright's role engine honours
+       * `visibility: hidden` but IGNORES `inert`. The panel's `visibility`
+       * flips at 160ms (`transition: visibility 0s linear 160ms`), so once the
+       * real elapsed time from tap to query crossed 160ms -- which is all
+       * contention has to do -- `getByRole('link')` matched nothing and
+       * retried until the test died. Sampling at 0/30/60/100/140/155/170/200ms
+       * showed the locator resolving at every offset up to 170 and never again
+       * from 200; a plain CSS `a` locator resolved at all of them. The
+       * assertion itself would still have been TRUE at 200ms. The test hung
+       * before it could make it, so this was never an application bug.
+       *
+       * The replacement removes the wall clock entirely. A page-side observer
+       * is armed WHILE THE MENU IS STILL OPEN, so it cannot miss the window;
+       * it polls `requestAnimationFrame` until React commits `data-state`
+       * `closed`, and then reads the state AND attempts the focus IN THE SAME
+       * TASK, so no round trip can open a gap between observing the exit and
+       * testing it. It also drops `getByRole` for a page-side `querySelector`,
+       * because the role engine's `visibility` filtering is the trap and it
+       * was never testing anything about the a11y tree here anyway.
+       *
+       * WHAT THIS STILL GUARANTEES -- strictly more than the version it
+       * replaces, which only showed that focus did not take at one arbitrary
+       * offset:
+       *   1. `inert` is present at the FIRST frame after the closed state is
+       *      committed, i.e. at the very start of the exit rather than 60ms
+       *      into it.
+       *   2. `visibility` is still `visible` at that same instant, which is
+       *      what proves `visibility` is not what is keeping focus out. If
+       *      someone deleted `inert` and leaned on `visibility`, this stays
+       *      true and assertion 3 fails -- loudly, and for the right reason.
+       *   3. A programmatic `.focus()` on a real menu link at that instant
+       *      does not take.
+       * A missing `inert` now fails on an assertion instead of timing out, so
+       * the regression it exists to catch reports itself.
+       */
+      type ExitSample = {
+        visibility: string
+        inert: boolean
+        focusTook: boolean
+      }
+
+      await page.evaluate(() => {
+        const el = document.getElementById('site-nav-mobile-menu')
+        if (!el) throw new Error('the mobile menu is not in the DOM')
+        const link = el.querySelector('a')
+        if (!link) throw new Error('the mobile menu has no link to focus')
+
+        ;(window as unknown as { __navExit: Promise<ExitSample> }).__navExit = new Promise(
+          (resolve, reject) => {
+            let frames = 0
+            const sample = () => {
+              frames += 1
+              if (el.dataset.state === 'closed') {
+                // Read and act in ONE task: whatever this observes about the
+                // panel is true of the same frame the focus is attempted in.
+                const visibility = getComputedStyle(el).visibility
+                const inert = el.hasAttribute('inert')
+                link.focus()
+                resolve({ visibility, inert, focusTook: document.activeElement === link })
+                return
+              }
+              // ~10s of frames. Only reachable if the tap never lands, and it
+              // reports that rather than hanging.
+              if (frames > 600) {
+                reject(new Error('the mobile menu never entered its closed state'))
+                return
+              }
+              requestAnimationFrame(sample)
+            }
+            requestAnimationFrame(sample)
+          }
+        )
+      })
+
       await toggle.tap()
-      await page.waitForTimeout(60)
-      const firstLink = menu.getByRole('link').first()
-      await firstLink.evaluate((el) => (el as HTMLElement).focus())
+
+      const exit = await page.evaluate(
+        () => (window as unknown as { __navExit: Promise<ExitSample> }).__navExit
+      )
+
       expect(
-        await firstLink.evaluate((el) => document.activeElement === el),
-        'a menu link took focus 60ms into the close transition -- the panel is not yet out of the tab order'
+        exit.visibility,
+        'the sample must land DURING the exit -- if visibility has already flipped, the rest proves nothing'
+      ).toBe('visible')
+      expect(
+        exit.inert,
+        'the closing panel must take `inert` immediately, not after the 160ms fade'
+      ).toBe(true)
+      expect(
+        exit.focusTook,
+        'a menu link took focus during the close transition -- the panel is not out of the tab order'
       ).toBe(false)
     })
 
