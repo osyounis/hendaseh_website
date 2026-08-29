@@ -13,7 +13,7 @@ The master plan for the full redesign of hendaseh.com. Every design and implemen
 | 1 | Foundation reset | **Complete** — 2026-08-23 |
 | 2 | Hosting migration | **Complete** — 2026-08-24 |
 | 3 | Asset engine | **Complete** — 2026-08-25 |
-| 4 | Page redesigns | Not started |
+| 4 | Page redesigns | **Complete** — 2026-08-29 |
 | 5 | Case-study content | Not started |
 
 Each sub-project gets its own design → spec → implementation-plan cycle when it starts. Statuses here get updated as phases complete.
@@ -44,7 +44,11 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 
 **Needs from Omar:** done — Cloudflare account created, `wrangler login` completed, GoDaddy nameservers repointed. Three manual steps remain his:
 
-1. **Enable Cloudflare Web Analytics** in the dashboard — until then the site collects no analytics at all.
+1. ~~**Enable Cloudflare Web Analytics** in the dashboard~~ — **DONE.** Corrected 2026-08-29: analytics is
+   live. Note the bullet above ("auto-injected on the proxied zone — no script tag in the repo") describes
+   the *plan*, and the plan was wrong: auto-injection rewrites HTML passing through the proxy and never
+   reaches Worker responses, so the beacon did not appear until it was installed as a manual `<script>` in
+   `src/app/layout.tsx`. It deliberately carries no `integrity`/SRI hash.
 2. **Delete the Vercel project** once the ~24h rollback window closes.
 3. **Revoke the Resend API key** in the Resend dashboard and delete the stale local `.env.local` that holds it. The key was never committed (`.env.local` is gitignored and appears in no commit), so this is routine cleanup and revocation of a credential for a decommissioned service — not an exposure.
 
@@ -76,7 +80,7 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 - Nahtadi pages: visual consistency pass, URLs and SEO untouched.
 - Both themes, `prefers-reduced-motion`, WCAG-conscious contrast, no SEO regressions (metadata, JSON-LD, sitemap preserved).
 
-**RESOLVED 2026-08-28 (Task B5) — meta descriptions were too long.** `/projects/[slug]` emitted each
+**CLOSED 2026-08-28 (Task B5) — meta descriptions were too long.** `/projects/[slug]` emitted each
 project's full `description` from `projects.json` as both `description` and `og:description`. Measured on
 `/projects/collision-avoidance-radar`: **261 characters**, against Google's ~150–160 and a social preview
 cut around 125, so the tail was lost on every surface. The prescribed fix shipped: the route now reads
@@ -84,7 +88,9 @@ cut around 125, so the tail was lost on every surface. The prescribed fix shippe
 page body. The whole catalog fits — the longest tagline is `brent-cuda` at 120 characters, the two live
 case studies measure 120 and 98. Every other page's description was rewritten to ≤160 in the same pass.
 
-**Open question — the positioning tagline (raised by Omar 2026-08-25).** The locked surface string is
+**CLOSED 2026-08-28 — the positioning tagline (raised by Omar 2026-08-25).** The question below is kept
+for its reasoning, not because anything is still open; the resolution is two paragraphs down. The
+superseded locked surface string was
 `Software Engineer · iOS & Machine Learning`, and it currently appears on the home hero, the OG site card
 (`src/lib/ogCards.ts`), and `layout.tsx`'s OG `alt`. Omar wants it reconsidered: he does and will do more
 than iOS and ML, and the pair may read as narrower than his actual range — possibly just
@@ -135,7 +141,35 @@ One consequential side effect, handled: a `title.template` on the root layout wo
 `title: { absolute, template }` instead of `{ default, template }`, which ignores the parent template.
 Verified against the built HTML: all three `/nahtadi*` titles render byte-identical to before.
 
-**Exit:** all pages shipped in both themes, Lighthouse/axe clean, SEO parity confirmed.
+**Exit:** met 2026-08-29 (Task B6). All five surfaces shipped in both themes; dark flipped from
+`data-theme` to `prefers-color-scheme` sitewide in one commit; SEO parity confirmed (all three frozen
+`/nahtadi*` titles byte-identical, every redirect and the sitemap still guarded by e2e).
+
+**Measured at exit, on the local Worker preview (`npm run preview`), Lighthouse mobile — actual numbers,
+not a pass mark:**
+
+| Route | Perf | A11y | Best Practices | SEO |
+| --- | --- | --- | --- | --- |
+| `/` | **82** | 100 | 96 | 100 |
+| `/about` | 90 | 100 | 96 | 100 |
+| `/projects` | 96 | 100 | 96 | 100 |
+| `/projects/brent-cuda` | **89** | 100 | 96 | 100 |
+| `/contact` | 98 | 100 | 96 | 100 |
+| `/nahtadi` | 92 | 100 | 96 | 100 |
+
+**A11y ≥95 and SEO 100 are met everywhere. Performance ≥90 is NOT met on `/` (82) or
+`/projects/brent-cuda` (89)** — recorded as a miss rather than rounded up. Diagnosed, not guessed: the
+LCP element on `/` is the hero `<h1>`, a static text node with no animation on it, and measured
+unthrottled against the same build **LCP = FCP = 204 ms** with the h1 as the only candidate. There is no
+rendering defect. The 4.8 s figure is Lighthouse's simulated mobile throttling applied to a critical path
+that includes seven hero icons fetched from **ImageKit over the real internet** (400–900 ms each in the
+trace) — latency a localhost run cannot model the way the production edge does.
+
+**Re-measure on the Cloudflare preview URL before treating this as the real number.** That is the
+representative environment (real edge, real caching, real CDN adjacency) and the PR provides one. Also
+outstanding on the same page if the score needs lifting for real: 94 KiB of unused JavaScript and 13 KiB
+of legacy JavaScript, both from the framework/Framer Motion bundles, neither touched here — bundle surgery
+on the eve of a production merge is a worse trade than an 82.
 
 ## 5 — Case-study content
 
