@@ -66,9 +66,39 @@ on 2026-08-28** — `https://itunes.apple.com/lookup?id=6755970888` plus App Sto
 Connect. The ledger is §10. Amendment 1's blocking price gate is **closed**: `$3.99`
 is confirmed, so A1 ships as written.
 
+## Amendment 3 — 2026-08-28, the `PRIVACY` eyebrow
+
+**One row added. It is NEW COPY, not a replacement, and that is why it is here.**
+
+N2's mockup applies the sitewide section-header pattern — small blue eyebrow plus
+statement heading (`docs/superpowers/mockups/home/APPROVED.md`, "Section header
+pattern") — to the privacy section, which introduces one word this document did not
+contain: **`PRIVACY`**.
+
+It is recorded rather than left in the mockup because a string that ships without a
+row here would make this document stop being the single source of truth for
+`/nahtadi`, which is its only job. **N3 must not implement the eyebrow on the
+strength of the mockup alone; this row is the authority.**
+
+**Why the page gets exactly one eyebrow.** Four of the five section headings are
+already **labels** that name their own section — `Why Nahtadi?`, `Everything You
+Need for Salat`, `App Preview`, `Frequently Asked Questions` — and About's contract
+forbids rendering an eyebrow identical to its heading. Exactly one heading is a
+**statement** that does not name its topic: A15's `Nothing leaves your device.`
+That is the case the eyebrow pattern exists for, so it gets one and nothing else
+on the page does.
+
+**Why `PRIVACY` and not something written.** The eyebrow slot sitewide carries a
+one-word category label (`FLAGSHIP`, `WORK`, `PROJECTS`, `CONTACT`), never prose.
+`PRIVACY` names the section in the same register and adds no claim — which matters
+on this page, where every sentence about data handling is matched to the privacy
+policy's own wording.
+
+The row is **A23** in §1.
+
 ## Audit ID traceability
 
-Row IDs match the N1 audit table so approvals can be traced back. Four notes:
+Row IDs match the N1 audit table so approvals can be traced back. Five notes:
 
 - The audit's **F3** was the "Always accurate" screenshot caption and **F6** was the
   JSON-LD price. Omar's ruling message labelled the price ruling "F3". Both are
@@ -82,6 +112,11 @@ Row IDs match the N1 audit table so approvals can be traced back. Four notes:
   the original copy pass. Both are in §1.
 - **A19, A20 and A21 are STRUCK**, not missing. They rewrote copy for the newsletter
   section that H2 deletes. They are in §7 with the reason.
+- **A23 is Amendment 3's, and it has no audit-table ancestor either.** It is the only
+  row in this document that ADDS a string rather than replacing one — the `PRIVACY`
+  eyebrow that N2's design introduced. It is numbered in the `A` (page copy) series
+  because that is what it is, and it is recorded here rather than left living only in
+  a mockup.
 
 ---
 
@@ -177,6 +212,13 @@ precisely wrong after travelling.
 | A16 | COPY | Privacy section sub | `Nahtadi is designed with privacy-first principles. Your data stays on your device.` | `Nahtadi collects nothing and transmits nothing. Your data stays on your device.` |
 | ~~A19~~ | **STRUCK** | Email section `<h2>` | ~~`Stay in the Loop`~~ | **Section deleted by H2. See §7.** |
 | ~~A20~~ | **STRUCK** | Email section sub | ~~`Get notified about new features and updates.`~~ | **Section deleted by H2. See §7.** |
+| A23 | **NEW COPY** | Privacy section eyebrow, immediately above A15's `<h2>` | *(no such element today)* | `PRIVACY` |
+
+**A23 is an ADDITION, not a replacement** — the only row in this document that
+creates a string rather than rewriting one. Added by Amendment 3 (2026-08-28);
+the reasoning for why this section and only this section carries an eyebrow is
+recorded there. It renders in the sitewide `.section-eyebrow` treatment, and on
+the green flagship band its colour is `--flagship-meta`, not `--accent`.
 
 **Section `<h2>` values NOT listed here are unchanged:** `Why Nahtadi?`,
 `Everything You Need for Salat`, `App Preview`, `Frequently Asked Questions`. See §6.
