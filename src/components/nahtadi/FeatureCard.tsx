@@ -1,22 +1,46 @@
-import React from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 interface FeatureCardProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
+  /** Per-card stagger for the scroll reveal, in seconds. */
+  revealDelay?: number;
 }
 
-export default function FeatureCard({ icon, title, description }: FeatureCardProps) {
+/**
+ * One tile in "Everything You Need for Salat".
+ *
+ * IT WEARS `.home-tile`, which is the sitewide shared card: ground, hairline,
+ * shadow, hover lift, press and focus ring all come from there and NONE of
+ * them is re-implemented in `.nh-fcard`. That is the standing rule — the
+ * Projects contract states it as "Card hover is SHARED CODE ... never
+ * re-implement the hover" — and it is why this card animates identically to
+ * every other card on the site without anyone maintaining a second copy.
+ * `.nh-fcard` adds only radius, padding, the icon chip and type.
+ *
+ * The card is NOT a link. It has no destination, so it takes no press
+ * affordance (`a.home-tile:active` is scoped to the anchor case precisely so
+ * a non-interactive tile does not advertise a tap that does nothing).
+ */
+export default function FeatureCard({
+  icon,
+  title,
+  description,
+  revealDelay = 0,
+}: FeatureCardProps) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-md transition-all duration-300">
-      {/* Icon */}
-      <div className="text-[#0093FF] mb-4 text-3xl">{icon}</div>
-
-      {/* Title */}
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-
-      {/* Description */}
-      <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+    // The stagger is a custom property read by `[data-reveal="in"]`'s
+    // transition-delay, so the grid expresses a cascade without the stylesheet
+    // needing to know how many cards there are.
+    <div
+      className="nh-fcard home-tile"
+      data-reveal
+      style={{ '--reveal-delay': `${revealDelay}s` } as CSSProperties}
+    >
+      <div className="nh-ico">{icon}</div>
+      <h3>{title}</h3>
+      <p>{description}</p>
     </div>
   );
 }

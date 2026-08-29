@@ -1,0 +1,1638 @@
+/* /nahtadi furniture (Task N3). Page-scoped, so it lives beside about.css and
+   contact.css rather than in shared.css.
+
+   VISUAL CONTRACT: docs/superpowers/mockups/nahtadi/APPROVED.md and the v4
+   pair. The mockup is authored as a single file rendered twice, with
+   `data-theme` as the ONLY difference between the light and dark drawings --
+   which means theme parity there is structural rather than hand-matched. This
+   file inherits that property by using a semantic token for every colour.
+   A HEX LITERAL APPEARING BELOW IS THE PROPERTY BEING LOST. The one exception
+   is `.nh-device`, whose bezel is a physical object rather than a surface --
+   see the note there.
+
+   WHY THIS PAGE NEEDED REDESIGNING AT ALL: it used raw Tailwind palette
+   colours (blue-50, gray-700, indigo-50, text-gray-500, a hardcoded #0093FF)
+   instead of semantic tokens, so it did not respond to theme and was
+   effectively light-only.
+
+   Four things on this page are deliberately SHARED and are NOT re-implemented
+   here:
+     - `.home-tile` (shared.css) is the ground, hairline, shadow, hover, press
+       and focus of every feature card. Nothing below declares a `transition`,
+       a hover `transform`, a hover `box-shadow` or a `:focus-visible` for one.
+     - `.section-eyebrow` / `.section-heading` (shared.css) are the section
+       header pattern.
+     - `.link-glyph*` (shared.css) sizes the affordance glyphs.
+     - `[data-reveal]` (shared.css) is the scroll reveal, riding on `translate`
+       precisely so it composes with `.home-tile`'s hover `transform`.
+
+   The mockup uses container queries so its 390px phone pane renders the same
+   markup through the same rules; the build uses `@media (max-width: 880px)`
+   and `vw` for the same breakpoints. Every sub-880 value below is
+   CONTRACTUAL (APPROVED.md "Mobile rules (sub-880)"), not implementer
+   judgement. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * Section headers
+   *
+   * `.section-eyebrow` and `.section-heading` are shared; the centring and the
+   * sub are not, because no other page centres a section header. Named for
+   * this page rather than promoted, per the contract's rule that a value is
+   * not promoted to a shared step until there is a second consumer.
+   * ---------------------------------------------------------------------- */
+
+  .nh-head {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+
+  .nh-sub {
+    margin: 16px auto 0;
+    max-width: 52ch;
+    color: var(--fg-muted);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Region cards
+   *
+   * ROUNDED CARDS, NEVER FULL-BLEED BANDS. An earlier revision built these
+   * regions as square full-bleed bands, which was wrong twice over: no other
+   * page on this site uses full-bleed regions (Home's flagship band and CTA
+   * card are `rounded-[22px]`, every grid everywhere is `.home-tile`), and in
+   * dark it made the page read flat -- three near-black grounds striped across
+   * the viewport give the eye no edge to catch.
+   *
+   * GROUND NEVER TRAVELS ALONE. Measured contrast between the three surface
+   * tokens:
+   *       light  page|sunken 1.182   page|raised 1.034   sunken|raised 1.221
+   *       dark   page|sunken 1.013   page|raised 1.114   sunken|raised 1.128
+   * `sunken|raised` is the ONLY pairing that reads in both themes, so a band
+   * set against the page ground carries in one theme and vanishes in the
+   * other: a ground delta alone can never carry a boundary. An `--edge`
+   * hairline measures 1.46-1.88 at every one of those boundaries, always more
+   * than the ground delta it sits on. Ground plus hairline is `.home-tile`'s
+   * own recipe and is how the built light theme already separates every card
+   * from the page.
+   *
+   * Every value here is Home's and none was minted: radius 22px and padding
+   * 42px from `HomeFlagship`/`HomeCTA`, `32px 22px` from its
+   * `max-[880px]:p-8`.
+   * ---------------------------------------------------------------------- */
+
+  .nh-band {
+    border-radius: 22px;
+    border: 1px solid var(--edge);
+    padding: 42px;
+  }
+
+  .nh-band-sunken {
+    background: var(--surface-sunken);
+  }
+
+  .nh-band-raised {
+    background: var(--surface-raised);
+    box-shadow: var(--card-shadow);
+  }
+
+  /* The green card, opening and closing the page. The SAME OBJECT as
+     `.home-flagship`: same gradient, same edge, same glow, same 22px. It is
+     the card the visitor pressed "The story ›" on to get here, expanded into
+     the page it opens.
+
+     It also removes a deferred problem instead of adding one. A full-bleed
+     dark green hero reaching under the nav would need adaptive nav link
+     colours -- the nav-over-hero item deferred to B6. Inside `.page-wrap` the
+     nav sits on `--surface` in both themes and there is no seam to defer. Do
+     not "improve" this into a full-bleed hero. */
+  .nh-band-flagship {
+    position: relative;
+    overflow: hidden;
+    background: var(--flagship-bg);
+    border-color: var(--flagship-edge);
+    box-shadow: none;
+    color: var(--flagship-fg);
+  }
+
+  .nh-band-flagship::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--flagship-glow);
+  }
+
+  .nh-band-flagship > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Section rhythm
+   *
+   * BOXES MAKE SPACE LEGIBLE. On Home the space between sections is
+   * unbounded, so the eye reads rhythm rather than a gap and 80px a side
+   * (`py-20`) is right. Here two rounded card edges turn the same air into a
+   * MEASURABLE DISTANCE, and the edge does the separating the space used to do
+   * alone -- so the space gives some back: 40px a side, 80px between cards.
+   *
+   * Within-region (Why -> Everything You Need) is 24px a side, deliberately
+   * NOT halved as far. Those two are UNCONTAINED sections on the page ground
+   * with no edges at all, so air is their only separator and has to carry more
+   * of the work than it does between two cards. The ratio is 1:1.67, not 1:2,
+   * and tightening it would make two full headed sections collide.
+   *
+   * No section starts at 0 padding. Every value already existed in the
+   * codebase (40 and 56 in about.css, 32 is Home's mobile `p-8`, 20 is
+   * `page-wrap`'s phone inset); they were picked by drawing, not arithmetic.
+   * ---------------------------------------------------------------------- */
+
+  .nh-hero-region {
+    padding-block: 8px 40px;
+  }
+
+  .nh-shots,
+  .nh-reviews,
+  .nh-faq,
+  .nh-privacy {
+    padding-block: 40px;
+  }
+
+  .nh-why {
+    padding-block: 40px 24px;
+  }
+
+  .nh-features {
+    padding-block: 24px 40px;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * 1. HERO
+   *
+   * The hero adds only its own scale -- it is the same object as every other
+   * region card, just the tallest.
+   * ---------------------------------------------------------------------- */
+
+  .nh-hero {
+    padding-block: 76px 68px;
+    text-align: center;
+  }
+
+  /* The shipped icon is transparent except for its arch glyph, so it is never
+     placed bare. Contrast rule (home/APPROVED.md, generalized 2026-08-26): a
+     tile on this band must CONTRAST its ground, so here it is WHITE.
+     Green-on-green was the original blend bug. Measured: white is 7.57:1
+     against the band's lightest stop, far above the 3:1 non-text floor. */
+  .nh-hero-tile {
+    width: 128px;
+    margin: 0 auto;
+    background: var(--nahtadi-tile-flagship);
+    /* HomeFlagship's own tile radius at its small size. Nothing minted: an
+       earlier revision had a 28px hero radius sitting one step off the region
+       cards at the same visual scale, and it was removed. */
+    border-radius: 24px;
+    box-shadow: var(--nahtadi-tile-shadow);
+  }
+
+  /* The 9% inset sits on the <img>, and the ground/radius/shadow on the
+     wrapper that IS the tile -- percentage padding resolves against the
+     containing block, so the padded element has to sit inside something sized
+     to the tile. See tests/e2e/percentage-padding.spec.ts. */
+  .nh-hero-tile img {
+    width: 100%;
+    height: auto;
+    padding: 9%;
+  }
+
+  /* The ratings badge. Quiet by ruling: "more emphasis on the hero's 5.0 star
+     rating" was raised and Omar declined -- the rating inherits the Home
+     flagship band's meta treatment and stays a meta detail. */
+  .nh-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 26px;
+    padding: 11px 18px;
+    border-radius: 980px;
+    background: rgb(255 255 255 / 0.12);
+    border: 1px solid rgb(255 255 255 / 0.28);
+    color: var(--flagship-fg);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    transition:
+      background-color 0.2s ease,
+      transform 100ms ease-out;
+  }
+
+  .nh-badge:active {
+    transform: scale(0.97);
+  }
+
+  /* White, not `--accent`: the focus ring has to read on the green band, where
+     the accent blue has no business. Same reasoning as the eyebrow's colour. */
+  .nh-badge:focus-visible {
+    outline: 2px solid var(--flagship-fg);
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nh-badge:hover {
+      background: rgb(255 255 255 / 0.2);
+    }
+  }
+
+  .nh-hero-title {
+    margin-top: 22px;
+    font-size: clamp(44px, 7vw, 76px);
+    font-weight: 900;
+    line-height: 1.02;
+    /* Tracking is size-specific (Apple typography rule): the 76px wordmark is
+       tight, the 21px line under it is not. */
+    letter-spacing: -0.03em;
+    color: var(--flagship-fg);
+  }
+
+  .nh-hero-kicker {
+    margin-top: 10px;
+    font-size: clamp(17px, 2vw, 21px);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--flagship-meta);
+  }
+
+  .nh-hero-sub {
+    margin: 18px auto 0;
+    max-width: 34ch;
+    font-size: clamp(16px, 1.7vw, 19px);
+    line-height: 1.55;
+    color: var(--flagship-body);
+  }
+
+  .nh-hero-cta {
+    margin-top: 34px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* The official Apple badge, used UNMODIFIED per Apple's marketing guidelines
+     and the projects contract: this is the one page it appears on. */
+  /* 172px is the badge's rendered width; `height: auto` keeps Apple's ratio
+     rather than letting the `width`/`height` attributes on the <img> fight the
+     CSS width and squash the artwork. */
+  .nh-hero-cta img {
+    width: 172px;
+    height: auto;
+  }
+
+  .nh-hero-cta a {
+    display: inline-block;
+    transition:
+      transform 100ms ease-out,
+      opacity 0.2s ease;
+  }
+
+  .nh-hero-cta a:active {
+    transform: scale(0.97);
+  }
+
+  .nh-hero-cta a:focus-visible {
+    outline: 2px solid var(--flagship-fg);
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nh-hero-cta a:hover {
+      opacity: 0.85;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * 2. APP PREVIEW
+   *
+   * Directly after the hero, because the App Store puts screenshots
+   * immediately after the title -- the format every visitor arriving from that
+   * listing already knows. For an app the screenshots ARE the proof, and they
+   * used to sit behind reviews and feature copy.
+   *
+   * LIGHT-THEME CONTRAST, MEASURED. `--surface-sunken` is #e8e8ed in light,
+   * and on it `--accent` measures 3.85:1 and `--fg-muted` 4.15:1 -- both under
+   * the 4.5 floor for normal text. So this band carries NO accent text and no
+   * eyebrow, and its captions use `--fg-muted-on-tint` (5.44:1), the token
+   * that exists for exactly this pairing.
+   * ---------------------------------------------------------------------- */
+
+  .nh-shots .nh-sub {
+    color: var(--fg-muted-on-tint);
+  }
+
+  .nh-shots .nh-band {
+    overflow: hidden;
+  }
+
+  /* Negative margins pull the rail out to the card's inner border edge so the
+     leading item's own padding, not the card's, sets the inset -- and so the
+     last screenshot can peek past the card's rounded edge. */
+  .nh-gallery {
+    position: relative;
+    margin-inline: -42px;
+  }
+
+  /* THE RAIL IS LEFT-ALIGNED. An earlier revision centred the first and last
+     item with `padding-inline: calc(50% - 105px)` -- a snap-centred carousel
+     technique, which IS the dead space at both ends, by construction.
+     Measured leading padding before the fix: 61.5px at 390, 214.5px at 720,
+     42px at 1024 and above. The calc lived in the sub-880 rule, so it bit from
+     390 all the way up to 880 -- half-laptop widths -- and stopped there.
+     Leading and trailing insets are now the card's NORMAL INNER INSET, a
+     constant, NEVER a centring calculation. That is also what the App Store's
+     own rail does: it begins at the content edge and scrolls right. */
+  .nh-rail {
+    display: flex;
+    gap: 28px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-block: 6px 10px;
+    padding-inline: 42px;
+    scrollbar-width: none;
+    /* `scroll-snap-align: start` aligns to the SNAPPORT, which is the scroll
+       container's PADDING box -- not its content box. Without this the browser
+       snaps the first item to the padding-box edge on load and SCROLLS THE
+       LEADING INSET AWAY, leaving the first screenshot flush against the
+       card's rounded border (measured: x=186, the card's inner border edge,
+       instead of 228, its content edge, where the heading starts).
+       `scroll-padding-inline` insets the snapport to match the visual inset so
+       the two agree, and IT MUST TRACK `padding-inline` AT EVERY BREAKPOINT.
+       Nothing in CSS couples them; tests/e2e/nahtadi.spec.ts is what does. */
+    scroll-padding-inline: 42px;
+  }
+
+  .nh-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nh-shot {
+    flex: none;
+    width: 250px;
+    scroll-snap-align: start;
+  }
+
+  /* The device frame. The screenshots are raw light-mode iOS captures, so in
+     the dark theme six near-white rectangles would glow off the page; a real
+     bezel is what gives them an edge to end at.
+
+     THE ONE PLACE ON THIS PAGE WITH LITERAL COLOURS, and deliberately so: an
+     iPhone is the same physical object on both grounds, exactly as the
+     flagship band is the same object in both themes. These are not surfaces
+     participating in the theme, so there is no token for them to take. */
+  .nh-device {
+    position: relative;
+    border-radius: 42px;
+    padding: 9px;
+    background: linear-gradient(160deg, #2a2f36, #0b0e12);
+    box-shadow:
+      0 22px 44px rgb(0 0 0 / 0.28),
+      0 0 0 1px rgb(255 255 255 / 0.1) inset;
+  }
+
+  .nh-device img {
+    border-radius: 34px;
+    width: 100%;
+    /* The captures are 1206x2622 (iPhone 17 Pro). 9/19.55 against the images'
+       own 9/19.567 is a 0.1% difference, which `object-fit: cover` absorbs to
+       a fraction of a pixel. */
+    aspect-ratio: 9 / 19.55;
+    object-fit: cover;
+    object-position: top;
+    background: #f2f2f7;
+  }
+
+  .nh-shot-cap {
+    margin-top: 18px;
+    text-align: center;
+    padding-inline: 4px;
+  }
+
+  .nh-shot-cap h3 {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--fg-strong);
+  }
+
+  .nh-shot-cap p {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--fg-muted-on-tint);
+  }
+
+  /* Scroll buttons, present at EVERY width with no breakpoint gating. That is
+     what made the old `Scroll to see more →` line redundant, and the verified
+     reason COPY-LOCKED row E1 deletes it rather than swapping its arrow for a
+     glyph. */
+  .nh-scroll {
+    position: absolute;
+    top: 38%;
+    z-index: 3;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-raised);
+    color: var(--fg-strong);
+    box-shadow:
+      0 6px 20px rgb(0 0 0 / 0.18),
+      inset 0 0 0 1px var(--edge);
+    transition:
+      transform 0.2s var(--ease-brand),
+      opacity 0.2s ease;
+  }
+
+  .nh-scroll svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .nh-scroll:active {
+    transform: scale(0.94);
+  }
+
+  .nh-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .nh-scroll[disabled] {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .nh-scroll-l {
+    left: 10px;
+  }
+
+  .nh-scroll-r {
+    right: 10px;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * 3. REVIEWS
+   *
+   * THE STACK. Every review occupies ONE grid cell, so the container sizes to
+   * the tallest permanently and NEVER changes height as they rotate. The old
+   * `min-h-[300px]` is gone: it was a FLOOR, not a ceiling -- the reviews run
+   * 122 to 200 characters, taller ones pushed past it, and everything below
+   * the carousel jumped. There is no magic number in the replacement; add a
+   * seventh review and the floor rises on its own. Same technique the Home
+   * ticker's two tapes use.
+   * ---------------------------------------------------------------------- */
+
+  .nh-rv {
+    max-width: 780px;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .nh-rv-stack {
+    display: grid;
+  }
+
+  .nh-rv-slide {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    /* Short reviews are centred in the cell rather than stranded at the top. */
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    /* `visibility` is DISCRETE, so it flips instantly ON and is delayed by the
+       fade duration OFF -- exactly the technique `.nav-menu` already uses in
+       shared.css to keep a closed panel inert without popping. Inert matters:
+       an invisible slide must not be focusable or reachable by assistive
+       technology. */
+    transition:
+      opacity 0.32s ease,
+      visibility 0s linear 0.32s;
+  }
+
+  .nh-rv-slide[data-current="true"] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 0.32s ease,
+      visibility 0s linear 0s;
+  }
+
+  .nh-rv-stars {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    margin-bottom: 18px;
+  }
+
+  /* Apple's own review stars are this yellow on both grounds; it is a rating
+     mark rather than a surface, like the device bezel above. */
+  .nh-rv-stars svg {
+    width: 17px;
+    height: 17px;
+    fill: #ffd60a;
+  }
+
+  .nh-rv-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.005em;
+  }
+
+  .nh-rv-quote {
+    margin-top: 14px;
+    font-size: clamp(20px, 2.6vw, 28px);
+    font-weight: 500;
+    line-height: 1.38;
+    letter-spacing: -0.01em;
+    color: var(--fg-strong);
+    text-wrap: balance;
+  }
+
+  /* `--fg-quiet`, not `--fg-faint`: the byline on --fg-faint measured 2.14:1
+     in light, the value globals.css itself warns is "a separator-glyph colour
+     [that] fails as text". This byline is the page's third consumer of that
+     pair and is why it became a shared token. */
+  .nh-rv-who {
+    margin-top: 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg-quiet);
+  }
+
+  .nh-rv-controls {
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .nh-rv-btn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--fg-muted);
+    border-radius: 999px;
+    transition:
+      color 0.2s ease,
+      transform 100ms ease-out;
+  }
+
+  /* A 30px chip inside a 44px target: the same construction the Home ticker's
+     pause control uses, down to the token. The target stays 44 for WCAG 2.5.8
+     while the drawn control stays quiet. */
+  .nh-rv-btn::before {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--ticker-control-bg);
+    box-shadow: inset 0 0 0 1px var(--edge);
+  }
+
+  .nh-rv-btn svg {
+    position: relative;
+    width: 13px;
+    height: 13px;
+  }
+
+  .nh-rv-btn:active {
+    transform: scale(0.94);
+  }
+
+  .nh-rv-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nh-rv-btn:hover {
+      color: var(--fg-strong);
+    }
+  }
+
+  .nh-rv-dots {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-inline: 6px;
+  }
+
+  /* 26x44 is an ACCEPTED CONSTRAINT, not a defect. These clear WCAG 2.5.8's
+     24x24 minimum with non-overlapping spacing; widening them to 44 overflows
+     the control row at 390px. The 44 is on the height axis only. */
+  .nh-rv-dot {
+    position: relative;
+    width: 26px;
+    height: 44px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    background: none;
+    border-radius: 8px;
+  }
+
+  .nh-rv-dot::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    height: 9px;
+    width: 9px;
+    border-radius: 999px;
+    background: var(--edge);
+    transition:
+      width 0.24s var(--ease-brand),
+      background-color 0.24s ease;
+  }
+
+  .nh-rv-dot[aria-selected="true"]::before {
+    width: 20px;
+    background: var(--accent);
+  }
+
+  .nh-rv-dot:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  /* THE PAUSE CONTROL. Icon and accessible name flip together via
+     `display: none`, which removes a node from the accessible NAME
+     COMPUTATION as well as from the page -- so the name can never say "Pause"
+     while the icon shows a play triangle. Same mechanism the Home ticker's
+     toggle uses; the glyphs themselves are the same shared drawing (see
+     `src/components/home/TransportGlyphs.tsx`), filled as Apple draws
+     transport controls and deliberately NOT members of the five-glyph
+     link-affordance family. */
+  .nh-rv-pause svg {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .nh-rv-pause .nh-ico-play {
+    display: none;
+  }
+
+  .nh-rv-pause[aria-pressed="true"] .nh-ico-pause {
+    display: none;
+  }
+
+  .nh-rv-pause[aria-pressed="true"] .nh-ico-play {
+    display: block;
+  }
+
+  /* Clipped rather than hidden, so the words name the control without adding
+     visible text to a quiet control row. Matches `.home-ticker-word`. */
+  .nh-rv-word {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * 4. WHY NAHTADI? — ONE card, five cells, hairline separated
+   *
+   * Not five tiles. The section below it is already an eight-tile grid, and
+   * two card grids back to back is the "card soup" this page had. Five facts
+   * about one product are one object, so they get one object: Apple's spec-row
+   * pattern. On phone the vertical hairlines become horizontal ones and the
+   * same object becomes a list.
+   *
+   * This section and the one after it are UNCONTAINED, on the page ground, and
+   * they deliberately share it. They are one argument -- why the app exists,
+   * then what it does -- and PROXIMITY IS HOW THAT GETS SAID. It is the same
+   * shape Home's WORK section already has. Do not give either one a card.
+   * ---------------------------------------------------------------------- */
+
+  .nh-why-card {
+    border-radius: 22px;
+    background: var(--surface-raised);
+    border: 1px solid var(--edge);
+    box-shadow: var(--card-shadow);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    overflow: hidden;
+  }
+
+  .nh-why-cell {
+    padding: 32px 24px;
+    text-align: center;
+    border-left: 1px solid var(--edge);
+  }
+
+  .nh-why-cell:first-child {
+    border-left: none;
+  }
+
+  .nh-why-cell h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--fg-strong);
+    letter-spacing: -0.005em;
+  }
+
+  .nh-why-cell p {
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--fg-muted);
+  }
+
+  /* THE PRICE. COPY-LOCKED row A1 requires the amount to be visible somewhere
+     and names this card as the obvious place; the pricing FAQ carries it too,
+     and the two are additive rather than duplicative -- the FAQ answer feeds
+     the FAQPage JSON-LD, which Google surfaces DETACHED from the page, where
+     this card does not exist.
+     It is set as DATA -- a value line above its own label -- rather than as
+     prose, so no locked string is touched. `offers.price` in the
+     SoftwareApplication JSON-LD and this number are two renderings of one
+     fact: change one, change the other. */
+  .nh-why-price {
+    display: block;
+    margin: 10px 0 2px;
+    line-height: 1;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * 5. EVERYTHING YOU NEED FOR SALAT — eight tiles
+   * ---------------------------------------------------------------------- */
+
+  .nh-fgrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .nh-fcard {
+    border-radius: 18px;
+    padding: 26px 22px;
+  }
+
+  /* `--icon-chip` is the one genuinely new token this page produced. Eight
+     large bare-accent glyphs were the loudest thing on the page; the chip
+     seats each one on its card. */
+  .nh-fcard .nh-ico {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: var(--icon-chip);
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .nh-fcard .nh-ico svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .nh-fcard h3 {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--fg-strong);
+    letter-spacing: -0.005em;
+  }
+
+  .nh-fcard p {
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * 6. FAQ — hairline disclosure rows, not four boxes
+   *
+   * The rhythm break. Everything above this point is cards; the FAQ is a
+   * narrow column of hairline-separated rows, which is what Apple ships.
+   *
+   * ROW HAIRLINES TAKE `--edge`, NEVER `--edge-soft`. On the dark raised
+   * ground `--edge-soft` (#0d1e33 on #0b1c30) measures 1.023 -- invisible --
+   * and this is a section whose entire structure IS its hairlines. `--edge`
+   * reads 1.506 light / 1.662 dark.
+   * ---------------------------------------------------------------------- */
+
+  .nh-faq-list {
+    max-width: 760px;
+    margin-inline: auto;
+    border-top: 1px solid var(--edge);
+  }
+
+  .nh-q {
+    border-bottom: 1px solid var(--edge);
+  }
+
+  .nh-q summary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 4px;
+    cursor: pointer;
+    list-style: none;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--fg-strong);
+    letter-spacing: -0.01em;
+    transition: color 0.2s ease;
+  }
+
+  .nh-q summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .nh-q summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nh-q summary:hover {
+      color: var(--accent);
+    }
+  }
+
+  /* A rotating plus, self-drawn. NOT one of the five link-affordance glyphs:
+     grammar v2 assigns chevron-right to internal navigation, and a disclosure
+     is neither navigation nor a link. Same ruling that keeps the transport
+     glyphs out of LinkAffordance.tsx. */
+  .nh-q-mark {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    color: var(--accent);
+    transition: transform 0.28s var(--ease-brand);
+  }
+
+  .nh-q-mark svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .nh-q[open] .nh-q-mark {
+    transform: rotate(45deg);
+  }
+
+  .nh-q-body {
+    padding: 0 44px 26px 4px;
+    color: var(--fg-muted);
+    font-size: 15.5px;
+    line-height: 1.7;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * 7. PRIVACY — the closing green band
+   *
+   * The page's second and last green surface, and the reason the page has a
+   * FRAME rather than a top. Green bookends: the hero expands out of Home's
+   * flagship card and this closes it.
+   *
+   * "Nothing leaves your device." is the only heading on the page that is a
+   * STATEMENT rather than a label, which is precisely when the sitewide
+   * eyebrow pattern earns its keep -- hence the page's ONE eyebrow, and no
+   * others (COPY-LOCKED row A23). Its colour is `--flagship-meta`, NOT
+   * `--accent`: on the green ground the accent blue has no business, and the
+   * meta mint measures 5.75:1 on the band's lightest stop.
+   * ---------------------------------------------------------------------- */
+
+  .nh-priv-card {
+    padding-block: 66px 52px;
+  }
+
+  .nh-priv-head {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+
+  .nh-priv-head .section-eyebrow {
+    color: var(--flagship-meta);
+  }
+
+  .nh-priv-head .section-heading {
+    color: var(--flagship-fg);
+  }
+
+  .nh-priv-head .nh-sub {
+    color: var(--flagship-body);
+    max-width: 46ch;
+  }
+
+  .nh-priv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    max-width: 820px;
+    margin-inline: auto;
+  }
+
+  /* A SOLID WHITE TILE, not a translucent one. An earlier revision used
+     translucent white, which is a light surface stacked on the band -- exactly
+     what home/APPROVED.md's generalized contrast rule ("green-on-green was the
+     blend bug") and Apple's "never stack a light translucent surface on
+     another" both forbid. Measured: white is 7.57:1 against the band's
+     lightest stop.
+
+     INK COMES FROM THE BAND'S OWN PALETTE, never `--fg-*`. The card is
+     theme-agnostic because the band is, and `--fg-*` would put navy-200 body
+     text on a white card in dark. Title, body and action all take
+     `--flagship-pill-fg`; hierarchy comes from size and weight (18/700
+     against 14/400), which is how a card is set. Contrast 12.33:1.
+
+     THE CARD IS THE LINK, so the class carries only what `.home-tile` cannot:
+     `.home-tile`'s ground is `--surface-raised`, which would flip navy in dark
+     on a band that does not change. It reuses that tile's exact curve,
+     duration and -6px. */
+  .nh-priv-tile {
+    display: block;
+    border-radius: 18px;
+    padding: 28px 26px;
+    background: var(--flagship-pill-bg);
+    color: var(--flagship-pill-fg);
+    box-shadow: var(--nahtadi-tile-shadow);
+    transition: transform 0.28s var(--ease-brand);
+  }
+
+  .nh-priv-tile:active {
+    transform: scale(0.98);
+  }
+
+  .nh-priv-tile:focus-visible {
+    outline: 2px solid var(--flagship-meta);
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nh-priv-tile:hover {
+      transform: translateY(-6px);
+    }
+  }
+
+  .nh-priv-tile .nh-ico {
+    width: 26px;
+    height: 26px;
+    color: var(--flagship-pill-fg);
+    margin-bottom: 16px;
+  }
+
+  .nh-priv-tile .nh-ico svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .nh-priv-tile h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--flagship-pill-fg);
+    letter-spacing: -0.01em;
+  }
+
+  .nh-priv-tile p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* HOME'S FLAGSHIP PILL, INVERTED: the same two tokens swapped, so a white
+     pill with green ink on the band becomes a green pill with white ink on a
+     white card. Same contrast rule applied to an action instead of an icon,
+     and nothing minted. White on nahtadi-700 measures 12.33:1.
+
+     A link COLOUR was considered here and REJECTED: the site's link signal is
+     the GLYPH, not colour (Contact's channel cards work identically), and
+     #0071e3 clashes on a dark green band. The signal was strengthened with
+     this inverted pill instead.
+
+     `inline-block`, NOT `inline-flex`: flex makes each text node a flex item
+     and collapses the space between them, rendering `GetSupport`. */
+  .nh-priv-tile .nh-go {
+    margin-top: 18px;
+    display: inline-block;
+    border-radius: 980px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--flagship-pill-fg);
+    color: var(--flagship-pill-bg);
+    transition: background-color 0.2s ease;
+  }
+
+  /* The pill answers the hover WITH the card, which is what makes it read as
+     the card's action rather than as a second target. It is a `<span>` inside
+     the card's `<a>` -- never a nested link or button. */
+  @media (hover: hover) and (pointer: fine) {
+    .nh-priv-tile:hover .nh-go {
+      background: var(--color-nahtadi-900);
+    }
+  }
+
+  .nh-priv-foot {
+    margin-top: 36px;
+    text-align: center;
+  }
+
+  .nh-priv-foot p {
+    font-size: 14px;
+    color: var(--flagship-body);
+  }
+
+  .nh-priv-foot a {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--flagship-fg);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color 0.2s ease,
+      transform 100ms ease-out;
+  }
+
+  .nh-priv-foot a:active {
+    transform: scale(0.98);
+  }
+
+  .nh-priv-foot a:focus-visible {
+    outline: 2px solid var(--flagship-fg);
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nh-priv-foot a:hover {
+      border-bottom-color: var(--flagship-meta);
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * DOCUMENT PAGES — /nahtadi/privacy and /nahtadi/support
+   *
+   * These got NO mockup, deliberately: they are documents. They take token
+   * adoption, the link-affordance glyph grammar, the entrance cascade and the
+   * locked copy, and nothing else. They previously used raw Tailwind palette
+   * colours and so did not respond to theme at all.
+   *
+   * They share this file rather than getting one each because they are ONE
+   * form -- a titled column of prose on a raised card -- and two stylesheets
+   * would guarantee drift between two pages the App Store links to side by
+   * side.
+   * ---------------------------------------------------------------------- */
+
+  .nh-doc {
+    padding-block: 56px 72px;
+  }
+
+  .nh-doc-card {
+    max-width: 820px;
+    margin-inline: auto;
+    border-radius: 22px;
+    background: var(--surface-raised);
+    border: 1px solid var(--edge);
+    box-shadow: var(--card-shadow);
+    padding: 48px;
+  }
+
+  .nh-doc-card + .nh-doc-card {
+    margin-top: 24px;
+  }
+
+  .nh-doc-title {
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--fg-strong);
+  }
+
+  /* The policy's own stamp. `--fg-quiet` for the same reason the review byline
+     takes it: this is quiet metadata, and `--fg-faint` fails as text. */
+  .nh-doc-stamp {
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg-quiet);
+  }
+
+  .nh-doc-lede {
+    margin-top: 18px;
+    max-width: 60ch;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--fg-muted);
+  }
+
+  .nh-doc-section {
+    margin-top: 40px;
+  }
+
+  /* A card whose first child IS a section already has the card's own 48px of
+     padding above it, so the section margin would double it. Only the support
+     page's second card hits this — the other three open with a title. */
+  .nh-doc-section:first-child {
+    margin-top: 0;
+  }
+
+  /* A hairline above each section, so the document reads as a sequence of
+     clauses rather than a wall. `--edge`, not `--edge-soft`, for the reason
+     recorded on the FAQ rows: `--edge-soft` is invisible on the dark raised
+     ground. */
+  .nh-doc-section + .nh-doc-section {
+    border-top: 1px solid var(--edge);
+    padding-top: 36px;
+  }
+
+  .nh-doc-section h2 {
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--fg-strong);
+  }
+
+  .nh-doc-section h3 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    color: var(--fg-strong);
+  }
+
+  .nh-doc-section p {
+    margin-top: 14px;
+    max-width: 68ch;
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--fg-muted);
+  }
+
+  .nh-doc-section ul {
+    margin-top: 14px;
+    max-width: 68ch;
+    padding-left: 20px;
+    list-style: disc;
+  }
+
+  .nh-doc-section ul ul {
+    margin-top: 8px;
+    list-style: circle;
+  }
+
+  .nh-doc-section li {
+    margin-top: 8px;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--fg-muted);
+  }
+
+  .nh-doc-section li::marker {
+    color: var(--fg-faint);
+  }
+
+  .nh-doc-section strong {
+    color: var(--fg-body);
+    font-weight: 700;
+  }
+
+  /* An inline link inside prose. This is the ONE place on these pages where a
+     link is not an affordance-glyph construction: grammar v2 governs
+     standalone link ELEMENTS, and a mid-sentence anchor has no room for a
+     glyph without breaking the line. The underline is the affordance, in the
+     accent, which is the web's own convention for prose links. */
+  .nh-doc-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s ease;
+  }
+
+  .nh-doc-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nh-doc-link:hover {
+      text-decoration-color: var(--accent);
+    }
+  }
+
+  /* The support page's FAQ: the same hairline-row form as /nahtadi's, minus
+     the disclosure. These answers are technical instructions a reader scans
+     for, so they are open. */
+  /* The section heading needs more air beneath it than a paragraph would: the
+     first thing under it is another heading, and at 8px the two read as one
+     stacked title rather than as a heading and its first item. */
+  .nh-doc-faq {
+    margin-top: 26px;
+  }
+
+  .nh-doc-faq > * + * {
+    margin-top: 28px;
+    border-top: 1px solid var(--edge);
+    padding-top: 28px;
+  }
+
+  .nh-doc-faq h3 + p {
+    margin-top: 12px;
+  }
+
+  /* Technical Information. `auto-fit` rather than a fixed two-column grid:
+     COPY-LOCKED row D10 deletes the App Version row, leaving THREE items in
+     what was a two-column grid, and the contract leaves the ragged trailing
+     cell or a reflow to this task's judgement. Reflowing is the better answer
+     because it is not a judgement about three -- the grid now fits whatever it
+     is given, so removing or adding a row can never strand a cell again. */
+  .nh-doc-specs {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px 24px;
+  }
+
+  .nh-doc-specs dt {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-quiet);
+  }
+
+  .nh-doc-specs dd {
+    margin-top: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fg-body);
+  }
+
+  /* The email card: a sunken well inside the raised card, which is the
+     `sunken|raised` pairing -- the only one of the three that reads in BOTH
+     themes (1.221 light / 1.128 dark). Ground plus hairline, never ground
+     alone. */
+  .nh-doc-mail {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 18px;
+    align-items: start;
+    border-radius: 18px;
+    background: var(--surface-sunken);
+    border: 1px solid var(--edge);
+    padding: 24px 26px;
+  }
+
+  .nh-doc-mail .nh-ico {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: var(--icon-chip);
+    color: var(--accent);
+  }
+
+  .nh-doc-mail .nh-ico svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* On `--surface-sunken` in light (#e8e8ed) `--fg-muted` measures 4.15:1 and
+     `--accent` 3.85:1, both under the floor -- the same measurement that keeps
+     the App Preview band free of accent text. The body here takes
+     `--fg-muted-on-tint` (5.44:1) for that reason. */
+  .nh-doc-mail p {
+    color: var(--fg-muted-on-tint);
+    max-width: 52ch;
+  }
+
+  .nh-doc-back {
+    max-width: 820px;
+    margin: 28px auto 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .nh-doc-back a {
+    display: inline-block;
+    transition: transform 100ms ease-out;
+  }
+
+  .nh-doc-back a:active {
+    transform: scale(0.98);
+  }
+
+  .nh-doc-back a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Entrance
+   *
+   * The established pattern, character for character with `.contact-enter`:
+   * a 0.6s rise on `--enter-delay`, with `both` fill. It is a CSS animation,
+   * NOT a hidden-until-JS state -- nothing renders at `opacity: 0` from the
+   * server, and with animations disabled every element rests at its end state.
+   *
+   * IT RIDES ON `translate`, NEVER ON `transform`, AND THAT IS LOAD-BEARING.
+   * An animation's filled end state wins over every declaration in the
+   * cascade, so a `transform`-based entrance on anything carrying
+   * `.home-tile`'s `translateY(-6px)` hover would pin it at `transform: none`
+   * and kill the lift outright, with nothing failing to say so.
+   * ---------------------------------------------------------------------- */
+
+  .nh-enter {
+    animation: nh-enter 0.6s var(--ease-brand) var(--enter-delay, 0s) both;
+  }
+
+  @keyframes nh-enter {
+    from {
+      opacity: 0;
+      translate: 0 18px;
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Mobile (sub-880). CONTRACTUAL, not implementer judgement --
+   * APPROVED.md "Mobile rules (sub-880)". Verified at 390px: no horizontal
+   * overflow, rail leading inset 0, action pill 175x44.
+   * ---------------------------------------------------------------------- */
+
+  @media (max-width: 1000px) {
+    .nh-fgrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 880px) {
+    .nh-band {
+      padding: 32px 22px;
+    }
+
+    .nh-hero {
+      padding-block: 56px 52px;
+    }
+
+    .nh-hero-tile {
+      width: 104px;
+      border-radius: 24px;
+    }
+
+    .nh-hero-region {
+      padding-block: 8px 32px;
+    }
+
+    .nh-shots,
+    .nh-reviews,
+    .nh-faq,
+    .nh-privacy {
+      padding-block: 32px;
+    }
+
+    .nh-why {
+      padding-block: 32px 20px;
+    }
+
+    .nh-features {
+      padding-block: 20px 32px;
+    }
+
+    /* The card collapses to one column and its cells become left-aligned rows,
+       so the vertical hairlines become horizontal ones and the same object
+       becomes a list. */
+    .nh-why-card {
+      grid-template-columns: 1fr;
+    }
+
+    .nh-why-cell {
+      text-align: left;
+      padding: 20px 22px;
+      border-left: none;
+      border-top: 1px solid var(--edge);
+    }
+
+    .nh-why-cell:first-child {
+      border-top: none;
+    }
+
+    .nh-why-price {
+      font-size: 24px;
+      margin: 8px 0 2px;
+    }
+
+    /* Compact horizontal tiles -- icon left, text right -- NEVER full-width
+       sprawl, per the Home contract's mobile rules. */
+    .nh-fgrid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .nh-fcard {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 16px;
+      padding: 18px 20px;
+    }
+
+    .nh-fcard .nh-ico {
+      margin-bottom: 0;
+      grid-row: span 2;
+    }
+
+    .nh-fcard p {
+      margin-top: 5px;
+    }
+
+    .nh-gallery {
+      margin-inline: -22px;
+    }
+
+    /* The card's own inner inset -- a CONSTANT, never a function of width, and
+       `scroll-padding-inline` tracks `padding-inline` here exactly as it does
+       at desktop. Changing one without the other is the snapport bug. */
+    .nh-rail {
+      gap: 18px;
+      padding-inline: 22px;
+      scroll-padding-inline: 22px;
+    }
+
+    .nh-shot {
+      width: 210px;
+    }
+
+    .nh-device {
+      border-radius: 36px;
+      padding: 7px;
+    }
+
+    .nh-device img {
+      border-radius: 30px;
+    }
+
+    .nh-scroll-l {
+      left: 4px;
+    }
+
+    .nh-scroll-r {
+      right: 4px;
+    }
+
+    .nh-q summary {
+      font-size: 16px;
+      padding: 20px 2px;
+    }
+
+    .nh-q-body {
+      padding: 0 8px 22px 2px;
+      font-size: 15px;
+    }
+
+    .nh-priv-card {
+      padding-block: 48px 44px;
+    }
+
+    .nh-priv-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .nh-priv-tile {
+      padding: 22px 20px;
+    }
+
+    .nh-doc {
+      padding-block: 40px 56px;
+    }
+
+    .nh-doc-card {
+      padding: 32px 22px;
+    }
+
+    .nh-doc-mail {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 22px 20px;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Reduced motion — THE END STATE, never a paused frame
+   * ---------------------------------------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .nh-enter {
+      animation: none;
+      opacity: 1;
+      translate: none;
+    }
+
+    /* THE PAUSE CONTROL IS HIDDEN ENTIRELY HERE. Auto-advance is already off
+       under this preference, so there is nothing to pause: a pause button for
+       something that is not moving is a confusing control, and leaving it
+       focusable would put a purposeless stop in the tab order. `display: none`
+       takes it out of both the page and the tab order at once. prev/next and
+       the dots remain -- the carousel simply becomes manual.
+
+       IN CSS AND NOT IN REACT, deliberately. The component already knows the
+       preference, but the server renders `false` by construction (see
+       `useReducedMotion`), so conditionally rendering this button would make
+       the first client render disagree with the server -- the exact hydration
+       mismatch tests/e2e/reduced-motion-hydration.spec.ts was written to
+       catch, on this exact page. The Home ticker hides its checkbox the same
+       way. */
+    .nh-rv-pause {
+      display: none;
+    }
+
+    .nh-rv-slide,
+    .nh-rv-slide[data-current="true"],
+    .nh-rv-dot::before,
+    .nh-q-mark,
+    .nh-priv-tile,
+    .nh-priv-tile .nh-go,
+    .nh-scroll,
+    .nh-badge,
+    .nh-rv-btn {
+      transition: none;
+    }
+
+    /* The press SCALE goes; colour and state changes stay, because they carry
+       information rather than vestibular motion. */
+    .nh-priv-tile:active,
+    .nh-badge:active,
+    .nh-hero-cta a:active,
+    .nh-rv-btn:active,
+    .nh-scroll:active,
+    .nh-priv-foot a:active {
+      transform: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .nh-priv-tile:hover {
+        transform: none;
+      }
+    }
+  }
+}

@@ -11,7 +11,7 @@
       "detailPath": "/nahtadi",
       "featured": true,
       "private": false,
-      "stats": "v1.1.0 • Available on App Store",
+      "stats": "Available on App Store",
       "category": "mobile",
       "image": "/images/projects/nahtadi/card.png",
       "imageAlt": "Nahtadi's mihrab-arch mark in teal-green on a dark green gradient",
@@ -22,7 +22,7 @@
         "gradient": { "from": "#0F5F50", "to": "#022E28" }
       },
       "appStoreLive": true,
-      "appStoreRating": { "value": "5.0", "count": 8 }
+      "appStoreRating": { "value": "5.0", "count": 7 }
     },
     {
       "id": "brent-cuda",

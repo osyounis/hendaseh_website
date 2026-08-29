@@ -8,7 +8,7 @@ import FilterableProjectList from '@/components/projects/FilterableProjectList';
  *  a category list ("data engineering tools, machine learning applications");
  *  this names the actual work instead. */
 const DESCRIPTION =
-  'Selected work by Omar Younis: a shipped iOS app in Swift and SwiftUI, CUDA scientific computing, machine-learning models, and radar and data tooling.';
+  'Selected work by Omar Younis: a shipped iOS app in Swift and SwiftUI, CUDA scientific computing, machine-learning models, radar and data tooling.';
 
 export const metadata: Metadata = {
   title: 'Projects',

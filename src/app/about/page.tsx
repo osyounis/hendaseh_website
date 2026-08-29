@@ -8,10 +8,21 @@ import AboutEducation from '@/components/about/AboutEducation'
 import AboutOffTheClock from '@/components/about/AboutOffTheClock'
 import AboutCTA from '@/components/about/AboutCTA'
 
-/** Reused for `description`, `og:` and `twitter:`. 149 chars. Leads with the
- *  arc, because that is what is distinctive; the degree comes after. */
+/** Reused for `description`, `og:` and `twitter:`. 154 chars. Leads with the
+ *  arc, because that is what is distinctive; the degree comes after.
+ *
+ *  IT FIXES TWO THINGS. The old plural `iOS apps` contradicted the canonical
+ *  fact (one shipped app, Nahtadi) AND contradicted the Home description
+ *  written in the same pass, which says `a shipped iOS app`; both now say the
+ *  same true thing. The broken parallel is gone too — `to shipping iOS apps,
+ *  machine learning, and autonomous systems work` parsed as "shipping machine
+ *  learning". `a full retrain` echoes About's own locked hero copy.
+ *
+ *  `M.S. Computer Science, CSU Fullerton` is preserved in full: the degree is
+ *  a canonical fact and `Computer Science` is a keyword phrase, so it was not
+ *  abbreviated to fit. */
 const DESCRIPTION =
-  'From seven years in mechanical engineering to shipping iOS apps, machine learning, and autonomous systems work. M.S. Computer Science, CSU Fullerton.';
+  'Seven years in mechanical engineering, then a full retrain: a shipped iOS app, machine learning, autonomous systems. M.S. Computer Science, CSU Fullerton.';
 
 /** `title` is the bare page word; `app/layout.tsx`'s template resolves it to
  *  `About - Omar Younis`. `openGraph.title` has to spell that out -- OG has no

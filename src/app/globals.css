@@ -5,6 +5,7 @@
 @import "./styles/case-study.css";
 @import "./styles/about.css";
 @import "./styles/contact.css";
+@import "./styles/nahtadi.css";
 
 /* Dark mode is opt-in via data-theme, NOT prefers-color-scheme, until
    sub-project 4 applies tokens to every page. Flipping on media query now
@@ -191,6 +192,18 @@
      Do not "restore" ink-500 here without re-checking contrast. */
   --fg-subtle: var(--color-ink-600);
   --fg-faint: var(--color-ink-400);
+  /* One step below --fg-muted's ROLE but emphatically NOT --fg-faint, whose
+     light value (#aeaeb2) measures ~2.1:1 as text and is a separator-glyph
+     colour. Task N3 PROMOTED this out of two page-scoped aliases rather than
+     minting a third: `--about-when` (a career card's date stamp) and
+     `--contact-quiet` (Contact's clipboard hint, sign-off and handles) were
+     already the same ink-600 / navy-450 pair, and /nahtadi's review byline
+     needed it as a third consumer. Three consumers on two pages is a semantic
+     step, not a page detail, so the two page tokens now alias THIS and the
+     pair is declared once. Do not mint a fourth alias -- add a consumer.
+     Measured: 4.91:1 light on --surface, 5.07:1 on --surface-raised;
+     4.60:1 dark on a card. */
+  --fg-quiet: var(--color-ink-600);
   /* B2 fix round: `.case-caption` sits on `--surface-sunken` (ink-100,
      #e8e8ed), not `--surface`/white — a pairing `--fg-muted` never had a
      consumer for. ink-600 (#6e6e73) on ink-100 measures 4.15:1, under the
@@ -210,8 +223,12 @@
   /* The date stamp on a career card: one step below the card's body copy in
      dark, but pinned to the muted-text FLOOR in light, where --fg-faint
      (#aeaeb2) would measure 2.32:1 on white. Measured: 5.07:1 light,
-     4.60:1 dark. */
-  --about-when: var(--color-ink-600);
+     4.60:1 dark. Now an ALIAS of --fg-quiet (Task N3) rather than a second
+     declaration of the same pair -- the values are unchanged in both themes.
+     It keeps its own name because a career date and a review byline are
+     different things that may yet diverge, which is the same reason
+     --badge-volunteer-fg is not --badge-private-fg. */
+  --about-when: var(--fg-quiet);
   /* Quieter card ground for Education / Off the clock. Identical to
      --surface-raised in light by design; only dark recesses them. */
   --about-card-quiet: #ffffff;
@@ -282,12 +299,11 @@
   --copy-ok-fg: #ffffff;
 
   /* Contact's quiet lines: the clipboard hint, the sign-off, and each channel
-     card's handle. One step below --fg-muted's role but NOT --fg-faint, whose
-     light value (#aeaeb2, 2.2:1 here) is a separator-glyph colour and fails as
-     text. Same pair --about-when ships; named for its own page because that
-     is how every other page-scoped text token in this file is named.
+     card's handle. Now an ALIAS of --fg-quiet (Task N3), which is the pair
+     this and --about-when had each declared separately; the values are
+     unchanged in both themes.
      Measured: 4.91:1 light on --surface, 5.19:1 dark on the sky. */
-  --contact-quiet: var(--color-ink-600);
+  --contact-quiet: var(--fg-quiet);
 
   /* The destination marks on the channel cards (LinkedIn wordmark, octocat,
      document). Filled glyphs, so they sit a step off the card's title rather
@@ -316,6 +332,17 @@
      one. */
   --about-photo-ring: rgb(87 180 255 / 0.25); /* brand-400 at 25% */
   --about-dot-halo: rgb(0 147 255 / 0.18); /* brand-500 at 18% */
+
+  /* The ground behind a feature card's accent glyph (Task N3, /nahtadi's
+     eight-tile grid -- the ONE genuinely new value that page produced).
+     Eight large bare-accent glyphs were the loudest thing on the page; a
+     chip at ~10% seats each one on the card instead of floating it.
+     It is a token rather than an inline `color-mix()` or a magic rgba
+     because the standing rule is that a value missing from the scale becomes
+     a token FIRST. Derived from --accent in each theme at the opacity that
+     reads on that theme's card ground: light needs less tint on white, dark
+     needs slightly more to lift off #0b1c30. */
+  --icon-chip: rgb(0 113 227 / 0.1);
 
   /* Navigation */
   --nav-fg: rgb(10 26 47 / 0.8);
@@ -390,6 +417,7 @@
   --fg-muted: var(--color-navy-300);
   --fg-subtle: var(--color-navy-300);
   --fg-faint: var(--color-navy-450);
+  --fg-quiet: var(--color-navy-450);
   /* Unlike light, dark's --fg-muted (navy-300) already clears AA on
      --surface-sunken (9.42:1) -- no new step needed, but this MUST be
      redefined here anyway: custom properties are inherited, so leaving it
@@ -401,7 +429,12 @@
      out would carry its light value into the dark theme. */
   --about-intro: var(--color-navy-300);
   --about-prose: var(--color-navy-200);
-  --about-when: var(--color-navy-450);
+  /* Restated even though it is an alias, for the reason the block comment
+     above gives: a `var()` is substituted using the referencing element's own
+     value, so an alias declared only at `:root` would compute against the
+     LIGHT --fg-quiet and inherit that value into this theme. Same trap
+     --badge-volunteer-fg records. tests/e2e/nahtadi.spec.ts guards it. */
+  --about-when: var(--fg-quiet);
   --about-card-quiet: var(--color-deep-card-quiet);
   --about-connector: var(--color-deep-hairline);
   --accent: var(--color-brand-400);
@@ -428,7 +461,7 @@
 
   --copy-ok-bg: #4ade80;
   --copy-ok-fg: var(--color-deep-page);
-  --contact-quiet: var(--color-navy-450);
+  --contact-quiet: var(--fg-quiet);
   --contact-mark: var(--color-navy-200);
 
   --pill-primary-bg: var(--color-brand-500);
@@ -443,6 +476,8 @@
 
   --badge-volunteer-fg: #e8b84b;
   --badge-volunteer-bg: rgb(232 184 75 / 0.12);
+
+  --icon-chip: rgb(87 180 255 / 0.12);
 
   --nav-fg: var(--color-navy-200);
   --nav-fg-active: #ffffff;

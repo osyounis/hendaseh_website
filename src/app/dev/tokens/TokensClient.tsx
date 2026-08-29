@@ -202,6 +202,11 @@ const COLOUR_TOKENS = [
   '--fg-muted',
   '--fg-subtle',
   '--fg-faint',
+  // The promoted quiet step and its two page-scoped aliases, listed together
+  // on purpose: the point of the promotion is that all three read the SAME
+  // swatch in each theme, and three rows side by side is how that is checked
+  // by eye. tests/e2e/nahtadi.spec.ts checks it by machine.
+  '--fg-quiet',
   '--accent',
   '--accent-strong',
   '--edge',
@@ -210,6 +215,7 @@ const COLOUR_TOKENS = [
   '--about-intro',
   '--about-prose',
   '--about-when',
+  '--contact-quiet',
   '--about-card-quiet',
   '--about-connector',
   '--about-photo-ring',
@@ -232,6 +238,7 @@ const COLOUR_TOKENS = [
   '--flagship-body',
   '--flagship-pill-bg',
   '--flagship-pill-fg',
+  '--icon-chip',
 ];
 
 const VALUE_TOKENS = [

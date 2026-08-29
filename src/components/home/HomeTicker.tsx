@@ -1,4 +1,7 @@
 import type { CSSProperties } from 'react';
+// The two transport glyphs moved to their own module when /nahtadi's reviews
+// carousel became their second consumer (Task N3); the drawings are unchanged.
+import { PauseGlyph, PlayGlyph } from './TransportGlyphs';
 
 /**
  * Quiet monochrome pairs and uncostumed real stats. Decorative — the same facts
@@ -151,32 +154,6 @@ const TAPES = ['a', 'b'] as const;
 /** Ties the visually-hidden checkbox to its label. */
 const PAUSE_INPUT_ID = 'home-ticker-pause';
 
-/*
- * Pause and play, drawn here rather than in LinkAffordance.tsx. That file holds
- * the five LINK-affordance glyphs, whose stroke weight and viewBox clearance are
- * a locked, test-guarded family; a media control is not one of them. These are
- * filled rather than stroked, matching how Apple draws transport controls, and
- * sized so the filled mass reads at the same optical weight as the stroked
- * family beside it. Both are aria-hidden -- the label's text is the accessible
- * name.
- */
-function PauseGlyph() {
-  return (
-    <svg className="home-ticker-icon home-ticker-icon-pause" viewBox="0 0 14 14" aria-hidden="true">
-      <rect x="3.4" y="2" width="2.6" height="10" rx="0.7" fill="currentColor" />
-      <rect x="8" y="2" width="2.6" height="10" rx="0.7" fill="currentColor" />
-    </svg>
-  );
-}
-
-function PlayGlyph() {
-  return (
-    <svg className="home-ticker-icon home-ticker-icon-play" viewBox="0 0 14 14" aria-hidden="true">
-      <path d="M4.2 2.4 11.4 7l-7.2 4.6Z" fill="currentColor" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 
 export default function HomeTicker() {
   return (
@@ -257,8 +234,8 @@ export default function HomeTicker() {
        * to a deliberately quiet strip.
        */}
       <label className="home-ticker-toggle" htmlFor={PAUSE_INPUT_ID}>
-        <PauseGlyph />
-        <PlayGlyph />
+        <PauseGlyph className="home-ticker-icon home-ticker-icon-pause" />
+        <PlayGlyph className="home-ticker-icon home-ticker-icon-play" />
         <span className="home-ticker-word home-ticker-word-pause">Pause the ticker</span>
         <span className="home-ticker-word home-ticker-word-play">Play the ticker</span>
       </label>
