@@ -98,10 +98,20 @@ The row is **A23** in §1.
 
 ## Amendment 4 — 2026-08-29, the page describes v1.1.0
 
-**PROPOSED, NOT YET LOCKED.** Every row below awaits Omar's line-by-line
-approval. Unlike the rest of this document, **N3 must not lift a J-row until it
-is approved**; the rows are written in final form so approval is a yes/no per
-line rather than a redraft.
+**STATUS after Omar's rulings, 2026-08-29:**
+
+| Row | Status |
+|---|---|
+| **J1** | **LOCKED VERBATIM** |
+| **J2** | **LOCKED VERBATIM**, after the naming check below changed one word |
+| **J3** | **LOCKED VERBATIM**, with a post-approval naming correction recorded below |
+| **J4** | **PROPOSED** — restated in full, awaiting Omar |
+| **J5** | **PROPOSED** — restated in full, awaiting Omar |
+| **J6** | **LOCKED VERBATIM**, rewritten to Omar's two requirements |
+
+A LOCKED row carries the same status as the rest of this document: N3 lifts it
+verbatim and does not re-edit it. **N3 must not lift J4 or J5 until they are
+locked.**
 
 **Why this amendment exists.** The N1 audit checked the copy for voice and for
 accuracy against the canonical facts sheet — but that sheet predates **v1.2.0**.
@@ -116,7 +126,7 @@ claims 21). Read out of `~/Documents/github/nahtadi_ios_app`:
 | Fact | Value | Source |
 |---|---|---|
 | Calculation methods | **22** | `Nahtadi/Nahtadi/Utilities/CalculationMethods.swift` — 22 entries in `CalculationMethods.all`, and 23 `static let` declarations minus the `all` map itself. Two independent counts. |
-| The 22, in source order | ISNA · MWL · Egyptian General Authority · Umm Al-Qura · University of Islamic Sciences Karachi · University of Tehran · Leva Research Institute Qum · Gulf Region · JAKIM Malaysia · Kuwait · Qatar · MUIS Singapore · France (UOIF) · Diyanet Turkiye · Russia · UAE · Tunisia · Algeria · Kemenag Indonesia · Morocco · Portugal · Jordan Awqaf | same file |
+| The 22 as `name` (full legal names, NOT the UI labels — see §0) | ISNA · MWL · Egyptian General Authority · Umm Al-Qura · University of Islamic Sciences Karachi · University of Tehran · Leva Research Institute Qum · Gulf Region · JAKIM Malaysia · Kuwait · Qatar · MUIS Singapore · France (UOIF) · Diyanet Turkiye · Russia · UAE · Tunisia · Algeria · Kemenag Indonesia · Morocco · Portugal · Jordan Awqaf | same file. **The picker shows `shortName`, not these.** §0 lists all 22. |
 | Onboarding steps | **7** — `welcome, location, method, adjustments, hijri, notifications, done` | `ViewModels/OnboardingViewModel.swift:18` |
 | Re-run entry point | `Set Up Again` | `Views/SettingsView.swift:220`; copy at `Views/OnboardingPermissionSteps.swift:293` |
 | Notification window | `scheduleDays = 10`, `appReminderDayOffset = 9` | `Utilities/Constants.swift` |
@@ -128,6 +138,39 @@ recorded in that repo's `docs/ROADMAP.md` line 35. Out of scope here; noted so t
 discrepancy is not mistaken for a conflict.
 
 ---
+
+### 0. NAMING RULE — name an authority as the APP names it
+
+**Raised as a check on J2 and it caught a real defect, so it is recorded here as a
+rule rather than as a one-off fix.**
+
+`CalculationMethod` carries two name fields (`CalculationMethods.swift:14-15`):
+`name`, the full legal name "for documentation/accessibility", and **`shortName`,
+"Abbreviated name for UI display"**. `shortName` is what the picker actually shows,
+and it is what `screenshot-3.png` on this very page displays.
+
+**The rule: any authority named in site copy must be findable in the app's picker.**
+The recognition moment this copy is built on only works if the word on the site is a
+word in the app; a name that is not there converts recognition into confusion, which
+is worse than the generic wording it replaced.
+
+The 22 `shortName` values, which are the only names site copy may use:
+
+> ISNA · MWL · EGAS · Umm Al-Qura (UQU) · Karachi (UISK) · Tehran University ·
+> Leva Institute, Qum · Gulf Region · JAKIM, Malaysia · Kuwait · Qatar ·
+> MUIS, Singapore · France (UOIF) · Turkiye · Russia · UAE · Tunisia · Algeria ·
+> Indonesia (Kemenag) · Morocco · Portugal (Lisboa) · Jordan Awqaf
+
+**What it caught: `Diyanet` is not in the app.** The picker says **`Turkiye`**. A
+Turkish reader who saw "Diyanet" on the site and then scanned the picker for it
+would not find it. `Diyanet` is struck from every row in this amendment. It was the
+better-reading word and it is still the wrong one, so no ruling is sought: the row
+exists to be recognised, and an unrecognisable name defeats it.
+
+`JAKIM` and `Kemenag` both survive as substrings of real labels (`JAKIM, Malaysia`
+and `Indonesia (Kemenag)`), so both remain findable. Where this amendment writes
+`Indonesia (Kemenag)` rather than `Kemenag (Indonesia)`, that is the picker's own
+word order, chosen over this document's own parenthetical style for the same reason.
 
 ### 1. The calculation-method count returns, at 22
 
@@ -142,16 +185,16 @@ this lock."* J1 is that sentence with N = 22.
 | # | Type | Location | BEFORE (the currently-locked string) | AFTER (proposed) | Chars |
 |---|---|---|---|---|---|
 | J1 | COPY | `screenshots` array, Calculation Methods caption (**supersedes F2**) | `Choose the method your region follows.` | `Choose from 22 calculation methods for your region.` | 38 → 51 |
-| J2 | COPY | `features` array, Multiple Calculation Methods (**supersedes A5**) | `ISNA, MWL, UQU, EGAS, and more. Pick the method your region follows.` | `22 methods, from ISNA and MWL to JAKIM and Diyanet. Pick the one your region follows.` | 68 → 85 |
+| J2 | COPY | `features` array, Multiple Calculation Methods (**supersedes A5**) | `ISNA, MWL, UQU, EGAS, and more. Pick the method your region follows.` | `22 methods, from ISNA and MWL to JAKIM and Turkiye. Pick the one your region follows.` | 68 → 85 |
 
 **Why the LIST does more work than the count, and how J2 uses both.** 22 is a
-number; *ISNA, MWL, JAKIM, Diyanet* is a claim of worldwide reach that a specific
+number; *ISNA, MWL, JAKIM, Turkiye* is a claim of worldwide reach that a specific
 reader recognises. The page currently names only the four "usual" authorities, so
 its worldwide coverage reads as generic. Naming two non-obvious ones — Malaysia's
-JAKIM and Turkiye's Diyanet — is what turns "and more" into evidence, and it is the
+JAKIM and Turkiye — is what turns "and more" into evidence, and it is the
 moment of recognition for exactly the users the generic version leaves out.
 
-**J2 length check:** 85 characters, inside the existing feature-card envelope (the
+**J2 length check:** 85 characters (unchanged by the naming fix), inside the existing feature-card envelope (the
 unchanged five-prayer card is 92; A7 is 83). No layout consequence.
 
 **J2 alternative, if Omar prefers the smallest possible delta from approved copy:**
@@ -201,12 +244,20 @@ snippet is worth more than a card nobody scrolls to.
 
 | # | Type | Location | BEFORE (the currently-locked string) | AFTER (proposed) |
 |---|---|---|---|---|
-| J3 | COPY | `faqs` array, "Which calculation methods are supported?" (**supersedes A3**) | `Nahtadi supports the major calculation methods: ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), the Egyptian General Authority (EGAS), and others. It also applies high-latitude adjustments beyond 48.5 degrees north or south, where the standard methods can fail during certain seasons.` | `Nahtadi supports 22 calculation methods, including ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), the Egyptian General Authority (EGAS), JAKIM (Malaysia), Diyanet (Turkiye) and Kemenag (Indonesia). Setup walks you through choosing one the first time you open the app, and you can run it again from Settings. It also applies high-latitude adjustments beyond 48.5 degrees north or south, where the standard methods can fail during certain seasons.` |
+| J3 | COPY | `faqs` array, "Which calculation methods are supported?" (**supersedes A3**) | `Nahtadi supports the major calculation methods: ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), the Egyptian General Authority (EGAS), and others. It also applies high-latitude adjustments beyond 48.5 degrees north or south, where the standard methods can fail during certain seasons.` | `Nahtadi supports 22 calculation methods, including ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), the Egyptian General Authority (EGAS), JAKIM (Malaysia), Turkiye and Indonesia (Kemenag). Setup walks you through choosing one the first time you open the app, and you can run it again from Settings. It also applies high-latitude adjustments beyond 48.5 degrees north or south, where the standard methods can fail during certain seasons.` |
 
-**J3 is 480 characters against the current 313** — the longest answer on the page.
+**J3 carries a POST-APPROVAL NAMING CORRECTION — flagged, not slipped in.** Omar
+approved J3 as written, before the J2 naming check existed. The approved string
+named `Diyanet (Turkiye)` and `Kemenag (Indonesia)`; both fail §0. The locked string
+says `Turkiye` and `Indonesia (Kemenag)` instead. The delta is two names and nothing
+else, and it is applied rather than deferred because locking a string already known
+to fail a rule set in the same amendment would be worse than correcting it. **One
+line reverts it if Omar disagrees.**
+
+**J3 is 470 characters against the current 313** — the longest answer on the page.
 FAQ answers are long-form and this one now carries three facts, but if Omar wants it
 shorter, **the second sentence is the severable one**: dropping `Setup walks you
-through … from Settings.` returns it to 366 characters and leaves J1/J2 to carry the
+through … from Settings.` returns it to 356 characters and leaves J1/J2 to carry the
 count. That would mean the setup flow appears nowhere on `/nahtadi` and only on the
 support page (J4/J5), which is a defensible outcome — it is the weaker of the two
 placements on its own merits.
@@ -226,9 +277,19 @@ UI they describe changed in v1.2.0, so literal accuracy is what has been lost.
 
 | # | Type | Location | BEFORE (exact) | AFTER (proposed) |
 |---|---|---|---|---|
-| J4 | COPY | support FAQ 1, "How do I change the prayer calculation method?" — **one sentence replaced**, rest of the answer untouched | `You can disable this to manually choose from various methods including ISNA (Islamic Society of North America), MWL (Muslim World League), UQU (Umm al-Qura University), EGAS (Egyptian General Authority of Survey), and others.` | `You can disable this to manually choose from 22 methods including ISNA (Islamic Society of North America), MWL (Muslim World League), UQU (Umm al-Qura University), EGAS (Egyptian General Authority of Survey), JAKIM (Malaysia) and Diyanet (Turkiye). You can also re-run the guided setup at any time from Settings, then Set Up Again.` |
+| J4 | COPY | support FAQ 1, "How do I change the prayer calculation method?" — **one sentence replaced**, rest of the answer untouched | `You can disable this to manually choose from various methods including ISNA (Islamic Society of North America), MWL (Muslim World League), UQU (Umm al-Qura University), EGAS (Egyptian General Authority of Survey), and others.` | `You can disable this to manually choose from 22 methods including ISNA (Islamic Society of North America), MWL (Muslim World League), UQU (Umm al-Qura University), EGAS (Egyptian General Authority of Survey), JAKIM (Malaysia) and Turkiye. You can also re-run the guided setup at any time from Settings, then Set Up Again.` |
 | J5 | COPY | support FAQ 2, "The prayer times seem incorrect. What should I check?" — **one sentence inserted** after the calculation-method sentence, rest untouched | *(no such sentence today)* | `If you would rather be walked through it, Settings, then Set Up Again re-runs the guided setup, including the calculation method.` |
-| J6 | COPY | support FAQ 3, "How do I enable prayer time notifications?" — **final sentence replaced** | `On day 9, you'll receive a reminder notification asking you to open the app so it can automatically schedule the next batch of notifications.` | `The app refreshes that window in the background, so most people never need to do anything. If it has not managed to for nine days, you will get a reminder asking you to open the app so it can schedule the next batch.` |
+| J6 | COPY | support FAQ 3, "How do I enable prayer time notifications?" — **final sentence replaced** | `On day 9, you'll receive a reminder notification asking you to open the app so it can automatically schedule the next batch of notifications.` | `The app keeps that window topped up in the background, so you normally never need to do anything. A reminder to open the app only appears if it has not refreshed for nine days.` |
+
+**J6 is written as the better story, per Omar's ruling, not as a grudging
+correction.** The numbers are correct and unchanged and are preserved: the 10-day
+window stays in the retained sentence before it, and the nine days stays in the
+replacement. **Only the causality is corrected.** The current copy frames the app as
+something that nags you on day 9; the truth is that it schedules ten days ahead and
+tops the window up in the background, so you normally never do anything and the
+reminder only appears if the app has not run for nine days. Same facts, and it says
+"this just works" instead of "you will be nagged". The replacement leads with the
+good news for that reason.
 
 **J6 is the real defect, and it is a v1.2.0 regression in the copy rather than a
 voice problem.** The answer presents the day-9 reminder as **the** mechanism — "on
@@ -241,10 +302,40 @@ notification that will probably never arrive. **The numbers are unchanged and
 correct** (`scheduleDays = 10`, `appReminderDayOffset = 9`); only the mechanism
 described around them is wrong.
 
-**J4/J5 and the deliberate `Absolutely.` precedent.** These add a route, they do not
-remove the manual instructions — a user who wants to change one setting should not be
-sent through a seven-screen flow. Both answers keep their existing step-by-step text
-in full.
+**J4/J5 add a route, they do not remove one.** A user who wants to change one setting
+should not be sent through a seven-screen flow, so both answers keep their existing
+step-by-step instructions in full and gain a second path.
+
+### What J4 and J5 each need a ruling on
+
+**J4 — two changes in one row, and they can be taken separately.**
+
+1. **The count.** `various methods … and others` becomes `22 methods … JAKIM
+   (Malaysia) and Turkiye`. This is the same fix as J1/J2 applied to the support
+   page, which has the same vague wording. Names are `shortName` values per §0.
+2. **The `Set Up Again` route**, as a new final sentence. This is the row's real
+   content: the answer explains how to change the method manually and, since
+   v1.2.0, there is an easier path it does not mention.
+
+**Omar can approve 1 without 2.** Taking only the count leaves the answer accurate
+but still missing the easier route; taking both is the recommendation.
+
+**J5 — one inserted sentence, and the only question is whether it earns its place.**
+
+The answer is already long: Location Services, then calculation method, then
+Automatic Selection, then a support email with four things to gather. J5 adds a
+fifth step before the email. **The case for it:** this is the page's
+highest-friction question, and the guided flow is the app's own answer to it, so a
+user who is lost gets a route instead of a checklist. **The case against:** the
+answer is a diagnostic sequence, and inserting "or just re-run setup" mid-sequence
+may read as giving up on the diagnosis.
+
+**Recommendation: take it**, placed immediately after the calculation-method
+sentence and before the support-email fallback, so the order is diagnose, then
+guided fix, then contact me. That is the escalation order a reader expects.
+
+**Neither row touches the FAQPage JSON-LD on `/nahtadi`** — these are
+`/nahtadi/support` answers, which are rendered as page content only.
 
 ---
 
@@ -266,7 +357,7 @@ in full.
 
 **No keyword is lost and one is strengthened.** `calculation methods` appears in J1,
 J2, J3 and J4 where it previously appeared in three of the four; the regional
-authority names (`JAKIM`, `Diyanet`, `Kemenag`) are net-new long-tail terms with real
+authority names (`JAKIM`, `Turkiye`, `Kemenag`) are net-new long-tail terms with real
 intent behind them. `Qibla`, `offline`, `privacy` and `prayer times` are untouched.
 
 **No metadata changes.** The four description slots (B3–B6) do not mention method
@@ -300,11 +391,14 @@ Row IDs match the N1 audit table so approvals can be traced back. Six notes:
   eyebrow that N2's design introduced. It is numbered in the `A` (page copy) series
   because that is what it is, and it is recorded here rather than left living only in
   a mockup.
-- **The `J` prefix is Amendment 4's, and those rows are PROPOSED rather than locked.**
+- **The `J` prefix is Amendment 4's, and the rows are PART LOCKED, PART PROPOSED.**
   They have no audit-table ancestor because the audit could not have found them: it
   checked voice and checked the facts it had, and its facts sheet predated v1.2.0.
   J1–J3 supersede F2, A5 and A3; J4–J6 amend `/nahtadi/support` FAQs 1–3, which §6
-  had kept entire. **N3 must not lift a J-row until Omar has approved it.**
+  had kept entire. **J1, J2, J3 and J6 are LOCKED VERBATIM** (2026-08-29) and N3
+  lifts them like any other row. **J4 and J5 remain PROPOSED — N3 must not lift
+  either until it is locked.** Amendment 4's §0 also sets a durable naming rule that
+  binds any future row naming a calculation authority.
 
 ---
 
