@@ -96,9 +96,192 @@ policy's own wording.
 
 The row is **A23** in §1.
 
+## Amendment 4 — 2026-08-29, the page describes v1.1.0
+
+**PROPOSED, NOT YET LOCKED.** Every row below awaits Omar's line-by-line
+approval. Unlike the rest of this document, **N3 must not lift a J-row until it
+is approved**; the rows are written in final form so approval is a yes/no per
+line rather than a redraft.
+
+**Why this amendment exists.** The N1 audit checked the copy for voice and for
+accuracy against the canonical facts sheet — but that sheet predates **v1.2.0**.
+The page therefore describes the app as it was at **v1.1.0 (April 2026)**. The
+live app is **1.2.1** (§10). Voice was audited; the feature surface was not.
+
+### Provenance — verified from source on 2026-08-29
+
+Not reasoned about, not taken from the README (which is itself wrong — it still
+claims 21). Read out of `~/Documents/github/nahtadi_ios_app`:
+
+| Fact | Value | Source |
+|---|---|---|
+| Calculation methods | **22** | `Nahtadi/Nahtadi/Utilities/CalculationMethods.swift` — 22 entries in `CalculationMethods.all`, and 23 `static let` declarations minus the `all` map itself. Two independent counts. |
+| The 22, in source order | ISNA · MWL · Egyptian General Authority · Umm Al-Qura · University of Islamic Sciences Karachi · University of Tehran · Leva Research Institute Qum · Gulf Region · JAKIM Malaysia · Kuwait · Qatar · MUIS Singapore · France (UOIF) · Diyanet Turkiye · Russia · UAE · Tunisia · Algeria · Kemenag Indonesia · Morocco · Portugal · Jordan Awqaf | same file |
+| Onboarding steps | **7** — `welcome, location, method, adjustments, hijri, notifications, done` | `ViewModels/OnboardingViewModel.swift:18` |
+| Re-run entry point | `Set Up Again` | `Views/SettingsView.swift:220`; copy at `Views/OnboardingPermissionSteps.swift:293` |
+| Notification window | `scheduleDays = 10`, `appReminderDayOffset = 9` | `Utilities/Constants.swift` |
+| Day-9 reminder is now a FALLBACK | "it only ever fires if nothing (foreground or background) has rescheduled for 9 straight days" | `Utilities/NotificationScheduler.swift:91`; `Utilities/BackgroundRefreshManager.swift` "silently pushes the 10-day [window]" |
+| Marketing version | `1.2.1` | `Nahtadi.xcodeproj/project.pbxproj` |
+
+The README's "21 Calculation Methods" is a defect **in the app repo**, already
+recorded in that repo's `docs/ROADMAP.md` line 35. Out of scope here; noted so the
+discrepancy is not mistaken for a conflict.
+
+---
+
+### 1. The calculation-method count returns, at 22
+
+F2 dropped `9+` because the count was unverified. It is now verified, and **`9+`
+did not merely lack a source — it understated the real figure by more than half.**
+
+**J1 is pre-approved wording and needs no new ruling.** F2's own note in §1 says:
+*"If he later counts the methods … `Choose from N calculation methods for your
+region.` is pre-approved wording — restoring a confirmed number is not a re-edit of
+this lock."* J1 is that sentence with N = 22.
+
+| # | Type | Location | BEFORE (the currently-locked string) | AFTER (proposed) | Chars |
+|---|---|---|---|---|---|
+| J1 | COPY | `screenshots` array, Calculation Methods caption (**supersedes F2**) | `Choose the method your region follows.` | `Choose from 22 calculation methods for your region.` | 38 → 51 |
+| J2 | COPY | `features` array, Multiple Calculation Methods (**supersedes A5**) | `ISNA, MWL, UQU, EGAS, and more. Pick the method your region follows.` | `22 methods, from ISNA and MWL to JAKIM and Diyanet. Pick the one your region follows.` | 68 → 85 |
+
+**Why the LIST does more work than the count, and how J2 uses both.** 22 is a
+number; *ISNA, MWL, JAKIM, Diyanet* is a claim of worldwide reach that a specific
+reader recognises. The page currently names only the four "usual" authorities, so
+its worldwide coverage reads as generic. Naming two non-obvious ones — Malaysia's
+JAKIM and Turkiye's Diyanet — is what turns "and more" into evidence, and it is the
+moment of recognition for exactly the users the generic version leaves out.
+
+**J2 length check:** 85 characters, inside the existing feature-card envelope (the
+unchanged five-prayer card is 92; A7 is 83). No layout consequence.
+
+**J2 alternative, if Omar prefers the smallest possible delta from approved copy:**
+`ISNA, MWL, UQU, EGAS and 18 more. Pick the method your region follows.` (70 chars)
+— keeps the approved sentence intact and changes only `and more` → `and 18 more`.
+It is weaker: it makes the reader add 4 + 18, and it still names only the usual
+four. **Recommended: J2 as written.**
+
+**A6 (`Works Worldwide`) is deliberately NOT changed.** Its claim is about
+*latitude* ("beyond 48.5 degrees north or south"), not about regional authorities.
+Putting the count there too would duplicate J2 and blur two different facts.
+
+---
+
+### 2. v1.2.0's setup flow — one clause, and NOT a ninth card
+
+**Recommendation: it earns a mention, and the mention is a clause inside A3's FAQ
+answer. It does not earn a card.**
+
+**Why it earns a mention at all.** `/nahtadi/support`'s highest-friction question is
+"my prayer times are wrong," and the answer is choosing the right calculation
+method. v1.2.0 shipped a seven-screen flow that walks a user through exactly that,
+plus `Set Up Again` so existing users can re-run it. That is the app's answer to its
+own biggest friction. Nobody buys a prayer app because setup is pleasant — but they
+abandon one because setup was confusing, and a prospective buyer reading that the
+app walks them through it is reassured about the precise thing that makes these apps
+annoying.
+
+**Why NOT a ninth feature card — two reasons, and the second is the real one.**
+
+1. **Layout cost.** The approved grid is four columns, so eight cards are two clean
+   rows. A ninth makes three rows with a single orphan, which is a mockup revision
+   and an `APPROVED.md` note for one line of copy.
+2. **Category error.** All eight cards describe **what the app does**. Setup quality
+   is an *experience*, not a capability. A ninth card would be the only one
+   describing how it feels to use the app rather than what it computes, and that
+   inconsistency would be visible even if the grid happened to fit ten.
+
+**Why A3 and not the section sub.** A13 (`Prayer times, Qibla, Hijri dates, and
+notifications. All of it on your device.`) is a parallel contents list; setup is not
+a content and breaks the parallelism. A3 asks *"Which calculation methods are
+supported?"* — and once the answer is **22**, *"how do I pick one?"* is the reader's
+immediate next question, so the clause is on-topic rather than bolted on. **A3 also
+feeds the FAQPage JSON-LD**, which Google surfaces detached from the page — the same
+property that kept the price in A1. A setup answer that travels into a search
+snippet is worth more than a card nobody scrolls to.
+
+| # | Type | Location | BEFORE (the currently-locked string) | AFTER (proposed) |
+|---|---|---|---|---|
+| J3 | COPY | `faqs` array, "Which calculation methods are supported?" (**supersedes A3**) | `Nahtadi supports the major calculation methods: ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), the Egyptian General Authority (EGAS), and others. It also applies high-latitude adjustments beyond 48.5 degrees north or south, where the standard methods can fail during certain seasons.` | `Nahtadi supports 22 calculation methods, including ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), the Egyptian General Authority (EGAS), JAKIM (Malaysia), Diyanet (Turkiye) and Kemenag (Indonesia). Setup walks you through choosing one the first time you open the app, and you can run it again from Settings. It also applies high-latitude adjustments beyond 48.5 degrees north or south, where the standard methods can fail during certain seasons.` |
+
+**J3 is 480 characters against the current 313** — the longest answer on the page.
+FAQ answers are long-form and this one now carries three facts, but if Omar wants it
+shorter, **the second sentence is the severable one**: dropping `Setup walks you
+through … from Settings.` returns it to 366 characters and leaves J1/J2 to carry the
+count. That would mean the setup flow appears nowhere on `/nahtadi` and only on the
+support page (J4/J5), which is a defensible outcome — it is the weaker of the two
+placements on its own merits.
+
+**`faqLd` is built from the `faqs` array by `.map()`, so the FAQPage JSON-LD updates
+automatically.** Do not hand-edit it. (Same propagation note as A1–A4.)
+
+---
+
+### 3. `/nahtadi/support` — three answers that v1.2.0 made incomplete or wrong
+
+**This section was not requested and is the most consequential part of the
+amendment.** §6 currently keeps support FAQ 1, 2 and 3 verbatim, on the grounds that
+they are *"technical instructions describing real iOS UI"* where *"literal accuracy
+outranks concision."* That reasoning is exactly why they now need changing: the iOS
+UI they describe changed in v1.2.0, so literal accuracy is what has been lost.
+
+| # | Type | Location | BEFORE (exact) | AFTER (proposed) |
+|---|---|---|---|---|
+| J4 | COPY | support FAQ 1, "How do I change the prayer calculation method?" — **one sentence replaced**, rest of the answer untouched | `You can disable this to manually choose from various methods including ISNA (Islamic Society of North America), MWL (Muslim World League), UQU (Umm al-Qura University), EGAS (Egyptian General Authority of Survey), and others.` | `You can disable this to manually choose from 22 methods including ISNA (Islamic Society of North America), MWL (Muslim World League), UQU (Umm al-Qura University), EGAS (Egyptian General Authority of Survey), JAKIM (Malaysia) and Diyanet (Turkiye). You can also re-run the guided setup at any time from Settings, then Set Up Again.` |
+| J5 | COPY | support FAQ 2, "The prayer times seem incorrect. What should I check?" — **one sentence inserted** after the calculation-method sentence, rest untouched | *(no such sentence today)* | `If you would rather be walked through it, Settings, then Set Up Again re-runs the guided setup, including the calculation method.` |
+| J6 | COPY | support FAQ 3, "How do I enable prayer time notifications?" — **final sentence replaced** | `On day 9, you'll receive a reminder notification asking you to open the app so it can automatically schedule the next batch of notifications.` | `The app refreshes that window in the background, so most people never need to do anything. If it has not managed to for nine days, you will get a reminder asking you to open the app so it can schedule the next batch.` |
+
+**J6 is the real defect, and it is a v1.2.0 regression in the copy rather than a
+voice problem.** The answer presents the day-9 reminder as **the** mechanism — "on
+day 9, you'll receive a reminder" — which was true at v1.1.0. v1.2.0 added
+`BGAppRefreshTask` background refresh that *"silently pushes the 10-day window"*, and
+the scheduler's own comment now reads: *"it only ever fires if nothing (foreground or
+background) has rescheduled for 9 straight days."* So the reminder is a **fallback
+most users will never see**, and the current answer tells every reader to expect a
+notification that will probably never arrive. **The numbers are unchanged and
+correct** (`scheduleDays = 10`, `appReminderDayOffset = 9`); only the mechanism
+described around them is wrong.
+
+**J4/J5 and the deliberate `Absolutely.` precedent.** These add a route, they do not
+remove the manual instructions — a user who wants to change one setting should not be
+sent through a seven-screen flow. Both answers keep their existing step-by-step text
+in full.
+
+---
+
+### Register updates this amendment forces
+
+- **§1, F2's note** — its condition is **discharged**. The note says a confirmed
+  number may return; 22 is confirmed from source, and J1 is the pre-approved sentence
+  it authorised. `9+` still never returns, because it was wrong as well as
+  unverified.
+- **§6, "Kept on `/nahtadi`"** — the rows for A5's description and A3's answer are
+  superseded by J2 and J3.
+- **§6, "Kept on `/nahtadi/support`"** — **FAQ 1, FAQ 2 and FAQ 3 are no longer kept
+  entire.** Each keeps its structure and its step-by-step instructions; J4, J5 and J6
+  are surgical. The §6 rationale ("literal accuracy outranks concision") is not
+  overturned — it is what these rows serve.
+- **§10, the App Store ledger** — unaffected. No fact in it changes.
+
+### SEO impact
+
+**No keyword is lost and one is strengthened.** `calculation methods` appears in J1,
+J2, J3 and J4 where it previously appeared in three of the four; the regional
+authority names (`JAKIM`, `Diyanet`, `Kemenag`) are net-new long-tail terms with real
+intent behind them. `Qibla`, `offline`, `privacy` and `prayer times` are untouched.
+
+**No metadata changes.** The four description slots (B3–B6) do not mention method
+counts, so the 160-character constraint is not engaged by any row here. Titles are
+untouched.
+
+### Constraints checked
+
+No em dashes in any AFTER string. No AI cadence. Numbers written naturally (`22
+methods`, `nine days`, `48.5 degrees`). Canonical facts only, every one traced to a
+source file above. **The privacy policy is untouched.**
+
 ## Audit ID traceability
 
-Row IDs match the N1 audit table so approvals can be traced back. Five notes:
+Row IDs match the N1 audit table so approvals can be traced back. Six notes:
 
 - The audit's **F3** was the "Always accurate" screenshot caption and **F6** was the
   JSON-LD price. Omar's ruling message labelled the price ruling "F3". Both are
@@ -117,6 +300,11 @@ Row IDs match the N1 audit table so approvals can be traced back. Five notes:
   eyebrow that N2's design introduced. It is numbered in the `A` (page copy) series
   because that is what it is, and it is recorded here rather than left living only in
   a mockup.
+- **The `J` prefix is Amendment 4's, and those rows are PROPOSED rather than locked.**
+  They have no audit-table ancestor because the audit could not have found them: it
+  checked voice and checked the facts it had, and its facts sheet predated v1.2.0.
+  J1–J3 supersede F2, A5 and A3; J4–J6 amend `/nahtadi/support` FAQs 1–3, which §6
+  had kept entire. **N3 must not lift a J-row until Omar has approved it.**
 
 ---
 
