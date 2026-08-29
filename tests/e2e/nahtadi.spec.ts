@@ -22,13 +22,21 @@ import { test, expect, type Page } from '@playwright/test'
  * time on the element the declaration applies to. An alias written ONLY at
  * `:root` (`--about-when: var(--fg-quiet)`) computes against `:root`'s light
  * value and then inherits that light value into a dark subtree. Restating the
- * alias inside `[data-theme="dark"]` is what makes it track the theme, and a
+ * alias inside the dark block is what makes it track the theme, and a
  * dark-theme run of this test is what catches its absence.
+ *
+ * Task B6 flipped dark from `[data-theme="dark"]` to `prefers-color-scheme`,
+ * so the switch is now `emulateMedia` rather than an attribute write. It is
+ * applied after `goto` on purpose: the last test below reads BOTH themes off
+ * one loaded page, which is what proves the two are different values rather
+ * than one value agreeing with itself. These are computed-value reads, so
+ * switching the media query post-load resolves exactly what a fresh load
+ * under that theme would.
  * ------------------------------------------------------------------------ */
 
 /** Reads computed custom properties off `<html>`, under an explicit theme. */
 async function tokensUnder(page: Page, theme: 'light' | 'dark', names: string[]) {
-  await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme)
+  await page.emulateMedia({ colorScheme: theme })
   return page.evaluate((ns) => {
     const styles = getComputedStyle(document.documentElement)
     return Object.fromEntries(ns.map((n) => [n, styles.getPropertyValue(n).trim()]))

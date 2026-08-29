@@ -7,10 +7,13 @@
 @import "./styles/contact.css";
 @import "./styles/nahtadi.css";
 
-/* Dark mode is opt-in via data-theme, NOT prefers-color-scheme, until
-   sub-project 4 applies tokens to every page. Flipping on media query now
-   would restyle the live site inconsistently. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* Dark mode follows the OS setting. It was opt-in behind `[data-theme="dark"]`
+   for the whole of sub-project 4 so pages could move onto the token system one
+   at a time without a half-dark site; every page is on tokens now, so the
+   attribute is gone (Task B6) and the media query is the only switch. Declared
+   explicitly rather than left to Tailwind's default so the mechanism is stated
+   where the old one was, instead of being an absence a reader has to notice. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
 
 @theme {
   /* ---- Hendaseh brand core (brandbook, verbatim) ---- */
@@ -126,12 +129,21 @@
   --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Semantic tokens: light values on :root, dark values under [data-theme="dark"].
+/* Semantic tokens: light values on :root, dark values under the
+   `prefers-color-scheme: dark` block near the bottom of this file.
    Values are the v11 Apple-audit pair recorded in
    docs/superpowers/mockups/home/APPROVED.md — light is Apple's gray ladder on a
    near-white ground, dark is the navy-grounded sky. Tokens without a dark
    override are deliberately theme-agnostic. */
 :root {
+  /* Both themes are real, and the browser has to know it. This is what makes
+     the UA paint scrollbars, the text caret, autofill and any unstyled form
+     control to match the active theme; without it a dark page keeps a white
+     scrollbar and a white caret. It also sets the canvas the browser paints
+     before `body`'s background applies. Not a token — `color-scheme` is a real
+     CSS property and belongs on the root element, not in `@theme`. */
+  color-scheme: light dark;
+
   /* Layout */
   --nav-h: 70px;
 
@@ -391,99 +403,101 @@
   --nahtadi-tile-flagship: #ffffff;
 }
 
-[data-theme="dark"] {
-  --surface: var(--color-deep-page);
-  --surface-raised: var(--color-deep-card);
-  --surface-sunken: var(--color-deep-sky);
-  --home-sky: var(--color-deep-sky);
-  --projects-sky: linear-gradient(
-    180deg,
-    var(--color-deep-core-bottom) 0%,
-    var(--color-deep-page) 100%
-  );
-  /* Dark keeps the mockup's full-height fade -- the light theme's 100px stop
-     is a contrast fix that dark does not need (see the light definition). */
-  --about-sky: linear-gradient(
-    180deg,
-    var(--color-deep-about-sky) 0%,
-    var(--color-deep-page) 100%
-  );
-  --contact-sky: var(--color-deep-sky);
-  --ticker-surface: var(--color-deep-ticker);
-  --cta-surface: radial-gradient(60% 120% at 50% 0%, rgb(0 147 255 / 0.1), transparent 70%);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: var(--color-deep-page);
+    --surface-raised: var(--color-deep-card);
+    --surface-sunken: var(--color-deep-sky);
+    --home-sky: var(--color-deep-sky);
+    --projects-sky: linear-gradient(
+      180deg,
+      var(--color-deep-core-bottom) 0%,
+      var(--color-deep-page) 100%
+    );
+    /* Dark keeps the mockup's full-height fade -- the light theme's 100px stop
+       is a contrast fix that dark does not need (see the light definition). */
+    --about-sky: linear-gradient(
+      180deg,
+      var(--color-deep-about-sky) 0%,
+      var(--color-deep-page) 100%
+    );
+    --contact-sky: var(--color-deep-sky);
+    --ticker-surface: var(--color-deep-ticker);
+    --cta-surface: radial-gradient(60% 120% at 50% 0%, rgb(0 147 255 / 0.1), transparent 70%);
 
-  --fg-strong: #ffffff;
-  --fg-body: var(--color-navy-200);
-  --fg-muted: var(--color-navy-300);
-  --fg-subtle: var(--color-navy-300);
-  --fg-faint: var(--color-navy-450);
-  --fg-quiet: var(--color-navy-450);
-  /* Unlike light, dark's --fg-muted (navy-300) already clears AA on
-     --surface-sunken (9.42:1) -- no new step needed, but this MUST be
-     redefined here anyway: custom properties are inherited, so leaving it
-     unset under [data-theme="dark"] would carry the light theme's #5c5c61
-     forward, which measures only 2.91:1 on the dark sunken ground. */
-  --fg-muted-on-tint: var(--fg-muted);
-  /* Every About token below MUST be restated here even where it happens to
-     alias another semantic token: custom properties inherit, so anything left
-     out would carry its light value into the dark theme. */
-  --about-intro: var(--color-navy-300);
-  --about-prose: var(--color-navy-200);
-  /* Restated even though it is an alias, for the reason the block comment
-     above gives: a `var()` is substituted using the referencing element's own
-     value, so an alias declared only at `:root` would compute against the
-     LIGHT --fg-quiet and inherit that value into this theme. Same trap
-     --badge-volunteer-fg records. tests/e2e/nahtadi.spec.ts guards it. */
-  --about-when: var(--fg-quiet);
-  --about-card-quiet: var(--color-deep-card-quiet);
-  --about-connector: var(--color-deep-hairline);
-  --accent: var(--color-brand-400);
-  --accent-strong: var(--color-brand-300);
+    --fg-strong: #ffffff;
+    --fg-body: var(--color-navy-200);
+    --fg-muted: var(--color-navy-300);
+    --fg-subtle: var(--color-navy-300);
+    --fg-faint: var(--color-navy-450);
+    --fg-quiet: var(--color-navy-450);
+    /* Unlike light, dark's --fg-muted (navy-300) already clears AA on
+       --surface-sunken (9.42:1) -- no new step needed, but this MUST be
+       redefined here anyway: custom properties are inherited, so leaving it
+       unset in this block would carry the light theme's #5c5c61
+       forward, which measures only 2.91:1 on the dark sunken ground. */
+    --fg-muted-on-tint: var(--fg-muted);
+    /* Every About token below MUST be restated here even where it happens to
+       alias another semantic token: custom properties inherit, so anything left
+       out would carry its light value into the dark theme. */
+    --about-intro: var(--color-navy-300);
+    --about-prose: var(--color-navy-200);
+    /* Restated even though it is an alias, for the reason the block comment
+       above gives: a `var()` is substituted using the referencing element's own
+       value, so an alias declared only at `:root` would compute against the
+       LIGHT --fg-quiet and inherit that value into this theme. Same trap
+       --badge-volunteer-fg records. tests/e2e/nahtadi.spec.ts guards it. */
+    --about-when: var(--fg-quiet);
+    --about-card-quiet: var(--color-deep-card-quiet);
+    --about-connector: var(--color-deep-hairline);
+    --accent: var(--color-brand-400);
+    --accent-strong: var(--color-brand-300);
 
-  --edge: var(--color-navy-800);
-  --edge-soft: var(--color-deep-hairline);
+    --edge: var(--color-navy-800);
+    --edge-soft: var(--color-deep-hairline);
 
-  --about-photo-shadow: 0 30px 70px rgb(0 0 0 / 0.5);
-  --card-shadow: none;
-  --cta-shadow: none;
-  --tile-hover-shadow: 0 22px 52px rgb(0 40 90 / 0.45);
+    --about-photo-shadow: 0 30px 70px rgb(0 0 0 / 0.5);
+    --card-shadow: none;
+    --cta-shadow: none;
+    --tile-hover-shadow: 0 22px 52px rgb(0 40 90 / 0.45);
 
-  --aurora-image:
-    radial-gradient(38% 30% at 30% 38%, rgb(0 147 255 / 0.5), transparent 60%),
-    radial-gradient(30% 26% at 68% 30%, rgb(87 180 255 / 0.32), transparent 60%),
-    radial-gradient(46% 34% at 55% 62%, rgb(0 90 166 / 0.42), transparent 65%);
-  --aurora-opacity: 0.5;
-  --contact-aurora-opacity: 0.45;
-  --stars-opacity: 0.5;
-  --core-bg: linear-gradient(160deg, var(--color-deep-core-top), var(--color-deep-core-bottom));
-  --core-shadow: 0 0 0 1px rgb(143 208 255 / 0.22), 0 22px 50px rgb(0 40 90 / 0.55);
-  --sat-shadow: 0 12px 28px rgb(0 0 0 / 0.5);
+    --aurora-image:
+      radial-gradient(38% 30% at 30% 38%, rgb(0 147 255 / 0.5), transparent 60%),
+      radial-gradient(30% 26% at 68% 30%, rgb(87 180 255 / 0.32), transparent 60%),
+      radial-gradient(46% 34% at 55% 62%, rgb(0 90 166 / 0.42), transparent 65%);
+    --aurora-opacity: 0.5;
+    --contact-aurora-opacity: 0.45;
+    --stars-opacity: 0.5;
+    --core-bg: linear-gradient(160deg, var(--color-deep-core-top), var(--color-deep-core-bottom));
+    --core-shadow: 0 0 0 1px rgb(143 208 255 / 0.22), 0 22px 50px rgb(0 40 90 / 0.55);
+    --sat-shadow: 0 12px 28px rgb(0 0 0 / 0.5);
 
-  --copy-ok-bg: #4ade80;
-  --copy-ok-fg: var(--color-deep-page);
-  --contact-quiet: var(--fg-quiet);
-  --contact-mark: var(--color-navy-200);
+    --copy-ok-bg: #4ade80;
+    --copy-ok-fg: var(--color-deep-page);
+    --contact-quiet: var(--fg-quiet);
+    --contact-mark: var(--color-navy-200);
 
-  --pill-primary-bg: var(--color-brand-500);
-  --pill-primary-fg: var(--color-deep-page);
-  --pill-secondary-bg: rgb(199 214 230 / 0.14); /* navy-200 at 14% */
-  --pill-secondary-fg: #ffffff;
-  --pill-sky-bg: rgb(199 214 230 / 0.14);
-  --pill-sky-shadow: none;
+    --pill-primary-bg: var(--color-brand-500);
+    --pill-primary-fg: var(--color-deep-page);
+    --pill-secondary-bg: rgb(199 214 230 / 0.14); /* navy-200 at 14% */
+    --pill-secondary-fg: #ffffff;
+    --pill-sky-bg: rgb(199 214 230 / 0.14);
+    --pill-sky-shadow: none;
 
-  --badge-private-fg: #e8b84b;
-  --badge-private-bg: rgb(232 184 75 / 0.12);
+    --badge-private-fg: #e8b84b;
+    --badge-private-bg: rgb(232 184 75 / 0.12);
 
-  --badge-volunteer-fg: #e8b84b;
-  --badge-volunteer-bg: rgb(232 184 75 / 0.12);
+    --badge-volunteer-fg: #e8b84b;
+    --badge-volunteer-bg: rgb(232 184 75 / 0.12);
 
-  --icon-chip: rgb(87 180 255 / 0.12);
+    --icon-chip: rgb(87 180 255 / 0.12);
 
-  --nav-fg: var(--color-navy-200);
-  --nav-fg-active: #ffffff;
+    --nav-fg: var(--color-navy-200);
+    --nav-fg-active: #ffffff;
 
-  --ticker-secondary: var(--fg-faint);
-  --ticker-control-bg: var(--surface-raised);
+    --ticker-secondary: var(--fg-faint);
+    --ticker-control-bg: var(--surface-raised);
+  }
 }
 
 /* Register semantic tokens as Tailwind utilities. */

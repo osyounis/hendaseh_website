@@ -322,10 +322,47 @@ function EffectTokens() {
   );
 }
 
-function Panel({ theme }: { theme: 'light' | 'dark' }) {
+/**
+ * The active theme, measured rather than declared.
+ *
+ * Task B6 flipped the theme from `[data-theme="dark"]` to
+ * `prefers-color-scheme`. This page used to render two panels side by side and
+ * force one to each theme with that attribute; there is no attribute to force
+ * any more, so it renders ONE panel showing the tokens as they actually
+ * resolve for the current viewer, and says which theme that is.
+ *
+ * Starts as `null` so the server render and the first client render agree —
+ * `matchMedia` does not exist on the server, and guessing a value here is the
+ * hydration mismatch the reduced-motion hook was rewritten to avoid. It also
+ * subscribes: flipping the OS setting with the page open relabels it live,
+ * which is what makes this page usable for comparing the two themes.
+ */
+function useActiveTheme() {
+  const [theme, setTheme] = useState<'light' | 'dark' | null>(null);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const read = () => setTheme(mq.matches ? 'dark' : 'light');
+    read();
+    mq.addEventListener('change', read);
+    return () => mq.removeEventListener('change', read);
+  }, []);
+  return theme;
+}
+
+function Panel() {
+  const theme = useActiveTheme();
   return (
-    <div data-theme={theme} className="bg-surface text-secondary p-8 space-y-6">
-      <h2 className="text-primary text-2xl">Theme: {theme}</h2>
+    <div className="bg-surface text-secondary p-8 space-y-6">
+      <h2 className="text-primary text-2xl">
+        Active theme: {theme ?? 'measuring…'}
+      </h2>
+      <p className="text-muted text-sm">
+        Dark now follows the OS setting, so this panel shows whichever theme
+        this browser is in. To see the other one, change the system appearance
+        (it relabels live) or use DevTools → Rendering → “Emulate CSS
+        prefers-color-scheme”. Both themes are asserted in CI by{' '}
+        <code className="font-mono">tests/e2e/theme.spec.ts</code>.
+      </p>
       <div className="bg-surface-raised border border-edge rounded-xl p-4">
         <p className="text-primary">text-primary on surface-raised</p>
         <p className="text-secondary">text-secondary</p>
@@ -359,9 +396,8 @@ export default function TokensClient() {
         <SwatchRow name="deep (dark grounds)" swatches={DEEP_SWATCHES} />
         <SwatchRow name="nahtadi (flagship card)" swatches={NAHTADI_SWATCHES} />
       </section>
-      <section className="grid md:grid-cols-2 gap-4 rounded-2xl overflow-hidden border border-edge">
-        <Panel theme="light" />
-        <Panel theme="dark" />
+      <section className="rounded-2xl overflow-hidden border border-edge">
+        <Panel />
       </section>
     </div>
   );

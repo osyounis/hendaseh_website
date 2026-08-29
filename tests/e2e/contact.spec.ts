@@ -12,11 +12,10 @@ import { test, expect, type Page } from '@playwright/test'
  * channel targets, the résumé `download` filename (which must stay
  * byte-identical to Home's and About's), and the heading outline.
  *
- * BOTH THEMES. Dark is still opt-in behind `data-theme="dark"` until Task B6
- * flips it to `prefers-color-scheme`, so the theme is set on `<html>` after
- * load rather than through a Playwright colour-scheme project. That is a pure
- * CSS switch -- no markup depends on it -- so setting it post-hydration
- * exercises exactly the same computed styles a `data-theme` document would.
+ * BOTH THEMES. Task B6 flipped dark from `data-theme="dark"` to
+ * `prefers-color-scheme`, so the theme is now set with `emulateMedia` BEFORE
+ * navigation -- the page is parsed and painted under the theme, exactly as a
+ * viewer whose OS is in that mode would get it.
  */
 
 const EMAIL = 'omar@hendaseh.com'
@@ -56,10 +55,8 @@ function pillBackground(page: Page) {
 }
 
 async function gotoContact(page: Page, theme: Theme = 'light') {
+  await page.emulateMedia({ colorScheme: theme })
   await page.goto('/contact')
-  if (theme === 'dark') {
-    await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'))
-  }
   // The button is client-rendered furniture on an otherwise static page; wait
   // for hydration so a click is not swallowed.
   await expect(page.getByRole('button', { name: 'Copy email address' })).toBeEnabled()
