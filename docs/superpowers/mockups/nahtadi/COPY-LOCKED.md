@@ -105,13 +105,13 @@ The row is **A23** in §1.
 | **J1** | **LOCKED VERBATIM** |
 | **J2** | **LOCKED VERBATIM**, after the naming check below changed one word |
 | **J3** | **LOCKED VERBATIM**, with a post-approval naming correction recorded below |
-| **J4** | **PROPOSED** — restated in full, awaiting Omar |
-| **J5** | **PROPOSED** — restated in full, awaiting Omar |
+| **J4** | **LOCKED VERBATIM** (Amendment 5) |
+| **J5** | **LOCKED VERBATIM** (Amendment 5) — **placement changed and string rewritten**, see Amendment 5 §1 |
 | **J6** | **LOCKED VERBATIM**, rewritten to Omar's two requirements |
 
 A LOCKED row carries the same status as the rest of this document: N3 lifts it
-verbatim and does not re-edit it. **N3 must not lift J4 or J5 until they are
-locked.**
+verbatim and does not re-edit it. **All six J-rows are now locked** — Amendment 5
+closed J4 and J5.
 
 **Why this amendment exists.** The N1 audit checked the copy for voice and for
 accuracy against the canonical facts sheet — but that sheet predates **v1.2.0**.
@@ -278,7 +278,7 @@ UI they describe changed in v1.2.0, so literal accuracy is what has been lost.
 | # | Type | Location | BEFORE (exact) | AFTER (proposed) |
 |---|---|---|---|---|
 | J4 | COPY | support FAQ 1, "How do I change the prayer calculation method?" — **one sentence replaced**, rest of the answer untouched | `You can disable this to manually choose from various methods including ISNA (Islamic Society of North America), MWL (Muslim World League), UQU (Umm al-Qura University), EGAS (Egyptian General Authority of Survey), and others.` | `You can disable this to manually choose from 22 methods including ISNA (Islamic Society of North America), MWL (Muslim World League), UQU (Umm al-Qura University), EGAS (Egyptian General Authority of Survey), JAKIM (Malaysia) and Turkiye. You can also re-run the guided setup at any time from Settings, then Set Up Again.` |
-| J5 | COPY | support FAQ 2, "The prayer times seem incorrect. What should I check?" — **one sentence inserted** after the calculation-method sentence, rest untouched | *(no such sentence today)* | `If you would rather be walked through it, Settings, then Set Up Again re-runs the guided setup, including the calculation method.` |
+| ~~J5~~ | **SUPERSEDED** | support FAQ 2 | *(no such sentence today)* | **This wording and placement are superseded by Amendment 5 §1.** It was drafted to sit fourth in the answer; it now leads it, and the aside phrasing no longer fits. Do not implement this string. |
 | J6 | COPY | support FAQ 3, "How do I enable prayer time notifications?" — **final sentence replaced** | `On day 9, you'll receive a reminder notification asking you to open the app so it can automatically schedule the next batch of notifications.` | `The app keeps that window topped up in the background, so you normally never need to do anything. A reminder to open the app only appears if it has not refreshed for nine days.` |
 
 **J6 is written as the better story, per Omar's ruling, not as a grudging
@@ -334,6 +334,12 @@ may read as giving up on the diagnosis.
 sentence and before the support-email fallback, so the order is diagnose, then
 guided fix, then contact me. That is the escalation order a reader expects.
 
+> **OVERTAKEN BY THE RULING.** Omar approved J5 but reversed the placement, and he
+> was right: the onboarding flow covers *every* item this FAQ walks through by hand,
+> so it is not a fallback for failed diagnosis, it is a shortcut past the whole
+> sequence. Fourth place buries the easiest fix on the page's hardest question. The
+> locked wording and placement are in **Amendment 5 §1**.
+
 **Neither row touches the FAQPage JSON-LD on `/nahtadi`** — these are
 `/nahtadi/support` answers, which are rendered as page content only.
 
@@ -370,6 +376,160 @@ No em dashes in any AFTER string. No AI cadence. Numbers written naturally (`22
 methods`, `nine days`, `48.5 degrees`). Canonical facts only, every one traced to a
 source file above. **The privacy policy is untouched.**
 
+## Amendment 5 — 2026-08-29, J4/J5 locked, and the screenshots are real again
+
+Three things: J4 and J5 close, the six screenshot binaries are replaced from the
+live app, and two strings are mined from the app's own onboarding copy.
+
+### 1. J4 and J5 are LOCKED — J5 with a placement change
+
+**J4 is taken in full**, count and route together. The route is verified in source:
+`Views/SettingsView.swift:220` is `Button("Set Up Again")`, footered
+`"Walk through the setup steps again with your current choices."`
+
+**J5 is approved with its placement REVERSED, and the string is rewritten to suit.**
+
+Amendment 4 recommended placing the guided-setup sentence fourth — after the manual
+diagnostic steps, before the email fallback — on the reasoning that the order should
+be diagnose, then guided fix, then contact me. **That reasoning was wrong, and
+walking the flow is what showed it.** The seven onboarding screens cover Location,
+Method, Adjustments, Hijri date and Notifications: **every item the FAQ walks through
+by hand.** So it is not a fallback for when diagnosis fails, it is a shortcut past
+the entire sequence. Placed fourth, most readers never reach the easiest fix, on the
+page's highest-friction question.
+
+It therefore **leads the answer**, and because it leads rather than interrupts, the
+Amendment 4 wording no longer fits: `If you would rather be walked through it …`
+is phrased as an aside, which is exactly the wrong register for a first sentence.
+
+| # | Type | Location | BEFORE | AFTER (LOCKED) |
+|---|---|---|---|---|
+| J5 | COPY | support FAQ 2, "The prayer times seem incorrect. What should I check?" — **prepended as the answer's opening**, existing text follows unchanged | *(no such sentence today)* | `The fastest fix is to re-run the guided setup: open Settings, then Set Up Again. It covers location, calculation method, adjustments, the Hijri date and notifications, which is every check below.` |
+
+The existing answer then begins `First, verify that Location Services are enabled…`
+unchanged, and `First` now reads as the first manual check for a reader who prefers
+to do it themselves. Nothing is removed; the email fallback keeps its place last.
+
+### 2. The screenshots are replaced — the staleness workstream is CLOSED
+
+All six of `public/images/nahtadi/screenshot-1..6.png` are new captures from the
+live app at **v1.2.1**. The previous set dated from **9 April 2026**, six days before
+the v1.1.0 submission: two releases stale, and slot 4 baked `v1.1.0` into the image.
+
+**Slot mapping — caption order is deliberately preserved**, so every locked row keeps
+pointing at the right image:
+
+| Slot | Screen | Caption row |
+|---|---|---|
+| 1 | Prayer Times | unchanged |
+| 2 | Qibla Compass | unchanged |
+| 3 | Calculation Methods — now the method picker itself | **J1** |
+| 4 | Notifications | unchanged (A12) |
+| 5 | Settings | unchanged |
+| 6 | was Offline Mode, **now the guided setup** | **K1 below** |
+
+**Verified in the new binaries, not assumed:**
+
+- **One city, one date, one appearance.** Slot 1 reads `Sunnyvale, CA` /
+  `August 29, 2026` / `14 Rabi' Al-Awwal 1448`; slot 2's Qibla bearing is `19.3°`,
+  which is the correct great-circle bearing from Sunnyvale; slot 3 reads
+  `Detected country: United States`. All six are light appearance with a `09:41`
+  status bar. This is the rule that matters most and it holds.
+- **Slot 3 corroborates J1 without literally proving it.** The picker is scrolled, so
+  twelve of the twenty-two are visible (`Algeria`, `EGAS`, `France (UOIF)`,
+  `Gulf Region`, `ISNA` checked, `Indonesia (Kemenag)`, `JAKIM, Malaysia`,
+  `Jordan Awqaf`, `Karachi (UISK)`, `Kuwait`, `Leva Institute, Qum`,
+  `MUIS, Singapore`). It shows a long list that continues past the fold; it does not
+  display a count. **J1's "22" rests on the source count, not on this image**, and
+  the image should not be described anywhere as showing all 22.
+- **The visible labels are exactly the `shortName` values** Amendment 4 §0 locked,
+  which is that rule confirmed on screen rather than in source.
+
+**Resolution changed** from `1320x2868` to `1206x2622` (iPhone 17 Pro). Aspect ratio
+moves from 9:19.55 to 9:19.567 — a 0.1% difference. The approved device frame is
+`aspect-ratio: 9/19.55` with `object-fit: cover`, so the new images crop by a
+fraction of a pixel and there is **no layout consequence and no mockup revision**.
+Recorded so the number change is not mistaken for one.
+
+### 3. Slot 6's caption changes meaning — the only caption row that moves
+
+Slot 6 was `Offline Mode` / `Works without internet, using your last known location.`
+The new image is the onboarding welcome screen, so that caption is now simply wrong.
+
+| # | Type | Location | BEFORE (locked) | AFTER (LOCKED) | Chars |
+|---|---|---|---|---|---|
+| K1 | COPY | `screenshots` array, slot 6 **title** | `Offline Mode` | `Guided Setup` | 12 → 12 |
+| K1 | COPY | `screenshots` array, slot 6 **description** (supersedes **F3**) | `Works without internet, using your last known location.` | `Set up takes about two minutes, and you can run it again any time.` | 55 → 66 |
+
+**`Guided Setup` matches the language J3, J4 and J5 already use**, so the family is
+consistent. 66 characters sits inside the caption envelope (51 to 77).
+
+**The two-minute promise is the point.** It is concrete, it is the app's own claim,
+and the page makes no comparable promise anywhere else. The second clause carries the
+`Set Up Again` fact into the page copy for readers who never open the FAQ.
+
+**The offline claim is NOT lost.** It survives in the hero line (`No ads. No
+tracking. Just salat.` sits beside it), in feature card A10 (`Calculated on your
+device. No internet connection required.`), in FAQ A4, and in the new slot 6 image's
+own on-screen text (`Prayer times and Qibla work fully offline.`). Nothing that was
+said is now unsaid.
+
+**This breaks §6's register**, which kept "all six screenshot `title` values". Slot 6
+is now the single exception; the other five titles stand.
+
+### 4. Mined from the app's onboarding copy
+
+The onboarding screen says four things, in Omar's own already-shipped words. **Two
+are taken, two are not**, and the two rejections are recorded so they are decisions:
+
+| App string | Verdict |
+|---|---|
+| `Nothing is ever sent to us. No servers, no accounts.` | **TAKEN as K2**, converted out of the corporate plural. |
+| `Set up takes about two minutes.` | **TAKEN as K1.** |
+| `Prayer times and Qibla work fully offline.` | **Not taken.** A10 already says `Calculated on your device. No internet connection required.`, which is the same claim and names the mechanism. No gain. |
+| `Prayer times, Qibla, and the Hijri calendar. All on your phone.` | **Not taken.** A13 is `Prayer times, Qibla, Hijri dates, and notifications. All of it on your device.` — near-identical and it also carries notifications, so the site's version is the stronger one. |
+
+| # | Type | Location | BEFORE (locked A16) | AFTER (LOCKED) | Chars |
+|---|---|---|---|---|---|
+| K2 | COPY | Privacy section sub (**supersedes A16**) | `Nahtadi collects nothing and transmits nothing. Your data stays on your device.` | `Nahtadi collects nothing and transmits nothing. No servers, no accounts.` | 78 → 71 |
+
+**Why this is worth amending a locked row.** A16's first sentence is an assertion;
+`No servers, no accounts` is **concrete and checkable**, which is the difference
+between claiming privacy and demonstrating it. It is also **shorter**, and it removes
+a redundancy that was already there: A16's old second sentence, `Your data stays on
+your device.`, restates the section heading `Nothing leaves your device.` almost word
+for word. The replacement adds information where the original repeated itself.
+
+**THE VOICE TRAP, and it is why this row is not a verbatim lift.** The app says
+`sent to us`. Lifting that would reinstate the corporate plural **F1 spent an entire
+pass removing**, on a page whose voice is settled as first person singular (A18
+already says `how to reach me`). The fix is to drop the clause containing the plural
+rather than to rewrite it: `No servers, no accounts` carries the whole payload with
+no grammatical person at all, so it needs neither `us` nor `I`. **Checked on word
+boundaries: no `we`, `us`, `our` in any Amendment 5 string.**
+
+**A16's load-bearing note survives.** §1 records that A16 is phrased to match the
+privacy policy's own `does NOT collect, transmit, or share any personal
+information`. K2 keeps that first sentence untouched, so the alignment holds; only
+the redundant second sentence is replaced. **If the policy changes, K2 changes with
+it, exactly as A16 did.**
+
+### Register updates
+
+- **§6, "Kept on `/nahtadi`"** — "all six screenshot `title` values" now has one
+  exception (slot 6, K1). A16's row is superseded by K2.
+- **§1, F3** — superseded by K1's description. F3 was an accuracy fix to a caption
+  whose image no longer exists; the accuracy point it made stands and is simply moot.
+- **Amendment 4's `J4`/`J5` PROPOSED status** — closed. All six J-rows locked.
+- **§10** — unaffected. `1.2.1` was already the recorded live version; these captures
+  come from it.
+
+### Constraints checked
+
+No em dashes in any AFTER string. No corporate plural, verified on word boundaries.
+Numbers natural (`22 methods`, `two minutes`, `nine days`). No metadata touched. The
+privacy policy is untouched. Every fact traced to source or to the new binaries.
+
 ## Audit ID traceability
 
 Row IDs match the N1 audit table so approvals can be traced back. Six notes:
@@ -399,6 +559,12 @@ Row IDs match the N1 audit table so approvals can be traced back. Six notes:
   lifts them like any other row. **J4 and J5 remain PROPOSED — N3 must not lift
   either until it is locked.** Amendment 4's §0 also sets a durable naming rule that
   binds any future row naming a calculation authority.
+- **The `K` prefix is Amendment 5's**, and both rows are **LOCKED**. K1 supersedes F3
+  and changes the one screenshot `title` §6 had kept; K2 supersedes A16. They exist
+  because the screenshot binaries were replaced from the live app, which changed what
+  slot 6 depicts, and because the app's own onboarding copy said one thing better
+  than the site did. Amendment 5 also closes J4 and J5, so **every J-row and K-row is
+  now locked and N3 lifts all of them verbatim.**
 
 ---
 

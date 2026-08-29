@@ -389,10 +389,59 @@ review. These are contractual:
 - **The blocking pre-ship gates in `COPY-LOCKED.md` §9 still apply**, including
   running `npm run test:all` rather than assuming — H1 and H2 both touch tested
   surfaces.
-- **Screenshot staleness is a SEPARATE workstream and does not block this build.**
-  `screenshot-4.png` bakes in `Nahtadi v1.1.0` while **1.2.1** has shipped; no code
-  change fixes a number burned into an image, and the other five are likely stale
-  too. They need re-capturing from the app.
+- **Screenshot staleness: CLOSED 2026-08-29.** All six binaries were re-captured
+  from the live app at **v1.2.1** and are recorded in `COPY-LOCKED.md` Amendment 5.
+  Slot 6 changed meaning (Offline Mode → the guided setup) and took a new caption,
+  row **K1**; the other five keep their captions. Resolution moved `1320x2868` →
+  `1206x2622`, an aspect-ratio change of 0.1% that the `object-fit: cover` device
+  frame absorbs — **no layout consequence, no mockup revision.**
+
+**The approved mockups now show STALE CAPTIONS, and that is expected.** `v4.html`
+was drawn before J1 and K1 were locked, so it still renders slot 3 as `Choose the
+method your region follows.` and slot 6 as `Offline Mode` / `Works without internet,
+using your last known location.` — the latter now sitting over an onboarding
+screenshot. **Do not "fix" the mockup and do not build from it.** The precedence rule
+in *Copy* above already governs: `COPY-LOCKED.md` wins, and N3 builds from the rows
+(J1 for slot 3, K1 for slot 6). Verified 2026-08-29 that the new binaries render in
+the approved device frame with **zero** crop (rendered ratio 0.4604 against the
+frame's 0.4604) and a leading inset of 0px, so the mockup remains an accurate
+*visual* contract even where its caption text is superseded.
+
+### Screenshot capture recipe
+
+Re-shooting should be a repeat of steps, not a fresh afternoon.
+
+Device: **iPhone 17 Pro simulator, iOS 26.5** — the same device the app's own CI
+uses, so the captures match what is tested.
+
+```
+xcrun simctl privacy    <udid> grant location com.omaryounis.Nahtadi
+xcrun simctl location   <udid> set 37.3688,-122.0363          # Sunnyvale
+xcrun simctl ui         <udid> appearance light
+xcrun simctl status_bar <udid> override --time "9:41" --batteryState charged \
+    --batteryLevel 100 --cellularMode active --cellularBars 4 --wifiMode active \
+    --wifiBars 3
+xcrun simctl io         <udid> screenshot <path>              # full-res 1206x2622
+```
+
+**THE RULE THAT MATTERS MORE THAN ANY SINGLE STEP: all six must share one city, one
+date and one appearance.** A set where the Qibla points one way and the prayer times
+belong to a different city falls apart under any careful look, and that is the
+failure nobody can name but everyone feels. The 2026-08-29 set holds it — slot 1
+`Sunnyvale, CA` / `August 29, 2026`, slot 2 bearing `19.3°` which is correct for
+Sunnyvale, slot 3 `Detected country: United States`, all six light with a `09:41`
+status bar. **Check this across the set before committing, not per image.**
+
+**NEVER screenshot the About panel.** It displays the app version, which is the exact
+staleness trap that put `v1.1.0` into the old set and forced this whole workstream.
+It sits directly below `Set Up Again` in `SettingsView`, so it is easy to catch by
+accident when shooting Settings — frame slot 5 above it.
+
+**Known artifact, accepted.** `status_bar override` fakes the status bar only; the
+app's own clock stays real. In the current set slot 1 shows `09:41` with a Dhuhr
+countdown of `01:52:52` against a 13:10 Dhuhr, which implies a real capture time
+around 11:17. Apple's own marketing shots carry the same mismatch. If it ever needs
+to be exact, capture near the real 9:41 rather than trying to fake both.
 - **Entrance:** the established pattern — `0.6s var(--ease-brand) var(--enter-delay)
   both`, riding on `translate`, never `transform`. Six hero beats: icon `0s`, badge
   `.1s`, title `.2s`, kicker `.28s`, sub `.36s`, App Store badge `.46s`. Below the
