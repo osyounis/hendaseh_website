@@ -39,9 +39,36 @@ removal moves to §7 with its dependency spelled out; §6 gains an exemption for
 `offers`; §8's ledger line is corrected. The §3 Last Updated rule also gains a
 publication-timing clause.
 
+## Amendment 2 — 2026-08-28, newsletter removed and App Store facts verified
+
+**Three changes, all rulings from Omar.**
+
+**a. The newsletter section is removed entirely.** Omar does not write newsletters,
+nobody has ever subscribed, and `EmailSignup.tsx` is the site's **only runtime
+third-party dependency** — a client-side POST to `buttondown.com`. (It never violated
+`CLAUDE.md`'s literal "no server action, no API route, no runtime secret" claims — it
+is client-side and keyless — but the stack section has no line covering outbound
+client-side calls at all. See the B6 note in §9.) Removing it deletes
+a dead form, a third-party dependency, and a copy-coherence problem in one move: this
+page is about to say **"Nothing leaves your device"** (A15) and **"Nahtadi collects
+nothing and transmits nothing"** (A16) directly above a form that transmits an email
+address to a third party. **Rows A19, A20 and A21 are STRUCK** — they rewrite copy for
+a section that will not exist. They move to §7. The deletion is row **H2** in §1.
+
+**b. `appStoreRating.count` goes 8 → 7.** Row **H1** in §1. Three sources disagreed:
+App Store Connect reports **9** worldwide, Apple's public lookup API and the US
+storefront both report **7** (App Store counts are per-storefront), and
+`projects.json` said **8** — a stale snapshot matching neither. The reasoning is
+recorded at H1 because 7 looks like the wrong pick without it.
+
+**c. Every hand-maintained App Store fact on these pages was verified against source
+on 2026-08-28** — `https://itunes.apple.com/lookup?id=6755970888` plus App Store
+Connect. The ledger is §10. Amendment 1's blocking price gate is **closed**: `$3.99`
+is confirmed, so A1 ships as written.
+
 ## Audit ID traceability
 
-Row IDs match the N1 audit table so approvals can be traced back. Two notes:
+Row IDs match the N1 audit table so approvals can be traced back. Four notes:
 
 - The audit's **F3** was the "Always accurate" screenshot caption and **F6** was the
   JSON-LD price. Omar's ruling message labelled the price ruling "F3". Both are
@@ -50,6 +77,11 @@ Row IDs match the N1 audit table so approvals can be traced back. Two notes:
 - **D15 is new.** An exhaustive `we|our|us` grep after the ruling found an eighth
   plural-voice occurrence that the audit table missed. It is listed rather than
   applied silently — see §4.
+- **The `H` prefix is Amendment 2's.** H1 (ratings count) and H2 (newsletter removal)
+  have no audit-table ancestor — they came out of Omar's rulings on 2026-08-28, not
+  the original copy pass. Both are in §1.
+- **A19, A20 and A21 are STRUCK**, not missing. They rewrote copy for the newsletter
+  section that H2 deletes. They are in §7 with the reason.
 
 ---
 
@@ -143,8 +175,8 @@ precisely wrong after travelling.
 | A14 | COPY | "App Preview" sub | `Take a look at Nahtadi&apos;s beautiful and intuitive interface` | `Six screens from the app.` |
 | A15 | COPY | Privacy section `<h2>` | `Your Privacy Matters` | `Nothing leaves your device.` |
 | A16 | COPY | Privacy section sub | `Nahtadi is designed with privacy-first principles. Your data stays on your device.` | `Nahtadi collects nothing and transmits nothing. Your data stays on your device.` |
-| A19 | COPY | Email section `<h2>` | `Stay in the Loop` | `Updates by email` |
-| A20 | COPY | Email section sub | `Get notified about new features and updates.` | `Get an email when a new version ships.` |
+| ~~A19~~ | **STRUCK** | Email section `<h2>` | ~~`Stay in the Loop`~~ | **Section deleted by H2. See §7.** |
+| ~~A20~~ | **STRUCK** | Email section sub | ~~`Get notified about new features and updates.`~~ | **Section deleted by H2. See §7.** |
 
 **Section `<h2>` values NOT listed here are unchanged:** `Why Nahtadi?`,
 `Everything You Need for Salat`, `App Preview`, `Frequently Asked Questions`. See §6.
@@ -156,30 +188,80 @@ locked text, not a typo to normalise away.
 match the privacy policy's own "does NOT collect, transmit, or share any personal
 information". If the policy ever changes, this line changes with it.
 
-### Cards, badge and signup
+### Cards and badge
 
 | # | Type | Location | BEFORE (exact) | AFTER (exact final text) |
 |---|---|---|---|---|
 | A17 | COPY | Privacy Policy card body | `Learn how Nahtadi protects your privacy with no data collection.` | `What Nahtadi stores, what it never sends, and how to revoke location access.` |
 | A18 | COPY | App Support card body | `Have questions? Check our FAQ or contact our support team.` | `Setup, calculation methods, notifications, and how to reach me.` |
 | A22 | COPY | Ratings badge | `{project.appStoreRating.value}★ · {project.appStoreRating.count} Ratings on the App Store` | `{project.appStoreRating.value}★ · {project.appStoreRating.count} ratings on the App Store` |
-| A21 | COPY | `src/components/nahtadi/EmailSignup.tsx` success message | `You&apos;re in! We&apos;ll keep you posted.` | `You&apos;re on the list.` |
+| ~~A21~~ | **STRUCK** | `EmailSignup.tsx` success message | ~~`You&apos;re in! We&apos;ll keep you posted.`~~ | **Component deleted by H2. See §7.** |
 
 **A22 is a one-character change** (`Ratings` → `ratings`). The two JSX expressions are
-untouched — the numbers stay sourced from `projects.json` via the data layer.
-
-**A21 is in a different file** (`EmailSignup.tsx`, not `page.tsx`) and keeps its JSX
-entity encoding: `You&apos;re on the list.`
+untouched — the numbers stay sourced from `projects.json` via the data layer, which is
+what makes H1 a one-field edit rather than a copy edit.
 
 **A17 accuracy:** the three things named — what is stored, what is never sent, how to
 revoke location access — are each an actual section of the privacy policy. If the
 policy's sections change, this line changes with them.
 
-### Deleted line
+### Data — the ratings count
+
+| # | Type | File | BEFORE (exact) | AFTER (exact) |
+|---|---|---|---|---|
+| H1 | **DATA** | `src/data/projects.json`, Nahtadi entry | `"appStoreRating": { "value": "5.0", "count": 8 }` | `"appStoreRating": { "value": "5.0", "count": 7 }` |
+
+**One field, three consumers.** `appStoreRating.count` feeds the visible ratings badge
+(A22), the reviews section, **and** `aggregateRating.ratingCount` in the
+SoftwareApplication JSON-LD that Google reads. Editing it once updates all three; there
+is no second place to change and no copy string to touch.
+
+**Why 7 and not 9 — record this, because 7 looks like the wrong choice without it.**
+Three sources disagreed: App Store Connect reports **9 worldwide**; Apple's public
+lookup API and the US storefront both report **7** (App Store counts are
+per-storefront); `projects.json` said **8**, a stale snapshot matching neither.
+
+9 is the truer number today. It is still the wrong one to store, because **sub-project
+5 will automate these facts from Apple's public lookup API, and that API is per-country
+and cannot return a worldwide total.** Choosing 9 means either reverting to 7 when
+automation lands, or keeping this field permanently hand-maintained — which is exactly
+how it drifted to 8 in the first place. **A narrower number that is always right beats
+a truer number that is usually stale.**
+
+**`value` is unchanged at `"5.0"`** — confirmed on both sources (§10). So About's locked
+copy, the Home ticker item and the Home flagship meta line are all unaffected; none of
+them carry the count.
+
+**Do not "correct" this to 9.** The source of record is Apple's public lookup API on
+the US storefront. See §10 and the sub-project 5 entry in `docs/ROADMAP.md`.
+
+### Deletions
 
 | # | Type | Location | BEFORE (exact) | AFTER |
 |---|---|---|---|---|
 | E1 | COPY | Below the "App Preview" sub | `<p className="text-sm text-gray-500">Scroll to see more →</p>` | **Delete the entire `<p>` element.** |
+| H2 | COPY | The `Stay in the Loop` `<section>`, whole | Heading `Stay in the Loop`, sub `Get notified about new features and updates.`, `<EmailSignup />`, and the Instagram follow line | **Delete the entire `<section>`, its `EmailSignup` import, and the file `src/components/nahtadi/EmailSignup.tsx`.** |
+
+**H2 — why the newsletter goes.** Omar does not write newsletters and nobody has ever
+subscribed, so the form is dead weight. Two further reasons make removal the right call
+rather than merely a tidy one:
+
+- **It is the site's only runtime third-party dependency.** `EmailSignup.tsx` does a
+  client-side `POST` to `buttondown.com`. Deleting it removes the last one.
+- **It contradicts the page around it.** After A15 and A16, this page says
+  **"Nothing leaves your device"** and **"Nahtadi collects nothing and transmits
+  nothing"** — and then, one section later, transmitted an email address to a third
+  party. The claims are about the *app*, not the site, so it was not false; it read as
+  false, which on a privacy-first page is the same problem. The audit's §9 note that
+  the form "may be lying" about success (opaque `no-cors` response) is resolved by
+  deletion too.
+
+**Scope of H2 — three things go:** the `<section>` in `page.tsx`, the `EmailSignup`
+import at the top of that file, and the component file itself. **The Instagram follow
+line lives inside this section.** It is not newsletter copy and Omar has not ruled on
+it; it goes with the section unless N2 rehouses it. **Flagging rather than deciding:**
+if the `@Hendaseh` Instagram link should survive, N2 places it — otherwise the site
+loses that link entirely, which is a design call and not this document's to make.
 
 **Why deletion and not a glyph swap.** Grammar v2 (`docs/superpowers/mockups/contact/APPROVED.md`)
 bans Unicode arrows outright. The three options were: swap in the self-drawn
@@ -289,7 +371,7 @@ one, machine-read straight into Google, can sit wrong indefinitely.
   the star rating in search. That is a decision for Omar, not a cleanup.
 
 The `aggregateRating` block is **UNCHANGED** — sourced from `projects.json`
-(`appStoreRating`, 5.0 / 8) and matching the visible ratings badge, so it already
+(`appStoreRating`, 5.0 / 7 after H1) and matching the visible ratings badge, so it already
 satisfied the guideline the price failed. It is also the half of the rich result with
 real value, which is why the original ruling's collateral damage was disqualifying.
 
@@ -504,7 +586,7 @@ these, that is a new decision for Omar, not a cleanup.
 | **Feature: `Accurate calculations for Fajr, Dhuhr, Asr, Maghrib, and Isha using astronomical algorithms.`** | Concrete and correct. |
 | **Screenshots: Prayer Times, Qibla Compass, Settings captions** | Accurate and specific; no AI cadence. |
 | **`Questions or feedback?`** + the `support@hendaseh.com` mailto | Fine as written. |
-| **`aggregateRating` in JSON-LD** (5.0 / 8, from `projects.json`) | Matches the visible ratings badge, so it satisfies the structured-data guideline. Data-layer sourced; never hardcode it. |
+| **`aggregateRating` in JSON-LD** (5.0 / 7 after H1, from `projects.json`) | Matches the visible ratings badge, so it satisfies the structured-data guideline. Data-layer sourced; never hardcode it. |
 | **`offers` in JSON-LD** (`'@type': 'Offer'`, `price: '3.99'`, `priceCurrency: 'USD'`) | **Looks like dead weight; is not.** Google's SoftwareApplication rich result needs name + `offers` + `aggregateRating` **together**, so deleting `offers` silently kills the star rating in search along with the price. Kept deliberately. Row A1 now states the price in visible content, so the markup represents something a user can see. `offers.price` and A1's `$3.99` move together, always. Full reasoning in §2 (F6) and §7. |
 | **`keywords` array** in `layout.tsx` | Untouched. |
 | **`alt="Nahtadi App Icon"`** on the hero icon | Adequate alt text. Not worth churn. |
@@ -562,6 +644,9 @@ Breaking all five would have been over-correction. Do not "finish the job".
 | D9 alt | Keep a softer SLA: `…usually within a couple of days.` | Dropped with the SLA itself. No response-time promise is published. |
 | C4 alt | Cite the **App Store 4+ age rating** in the privacy policy | 4+ is a **content** rating. Using it to support a data claim re-imports the exact category error C4 exists to remove. Explicitly rejected. |
 | F2 | `Choose from 9+ calculation methods for your region.` | The count is unconfirmed. A *confirmed* number may return later (see §1); `9+` may not. |
+| **A19 (STRUCK 2026-08-28)** | Rewrite the newsletter heading `Stay in the Loop` → `Updates by email` | The section is deleted by H2. Do not restore the heading, and do not restore the section it headed. |
+| **A20 (STRUCK 2026-08-28)** | Rewrite the newsletter sub → `Get an email when a new version ships.` | Same: H2 deletes the section. This one is worth noting for a second reason — it promised a mailing that was never going to be sent. |
+| **A21 (STRUCK 2026-08-28)** | Rewrite `EmailSignup.tsx`'s success message → `You're on the list.` | H2 deletes the component file. The audit's separate worry that this message could display after a *failed* subscribe (opaque `no-cors` response) is resolved by deletion rather than by wording. |
 | **F6 (original ruling, STRUCK 2026-08-28)** | **Delete the `offers` block from the SoftwareApplication JSON-LD**, because `3.99` appeared only in markup and nowhere visible | **Do not re-propose this.** Google's SoftwareApplication rich result requires **name + `offers` + `aggregateRating` together**. Deleting `offers` drops the page out of rich-result eligibility entirely and **takes the 5.0 star rating with it** — a search regression on the one page whose SEO must not regress, in exchange for tidying a field nobody sees. The premise was right (markup must represent visible content) and the fix was backwards: **row A1 makes the price visible instead.** A future reader will find `offers` carrying a price that duplicates the FAQ and think it redundant. It is not; it is half of the rich-result contract. See §2 (F6) and §6. |
 | F6 partial | Remove only `price` and `priceCurrency`, keep `offers` | Moot now that `offers` stays whole, and it was never viable on its own: it leaves an Offer with no price — invalid structured data, and worse than either alternative. |
 | Audit C6 (original) | Keep `Last Updated: February 13, 2026` | Void. It was conditioned on zero policy-body changes; C4 changes the body. The date now moves — see §3. |
@@ -616,7 +701,14 @@ time (previously in `keywords` only). `Qibla` enters the support description.
 - JSON-LD `description` stays aligned with the page description (B3 ↔ B6, enforced by
   shipping them together).
 - FAQPage JSON-LD updates automatically from the `faqs` array — no drift possible.
-- `aggregateRating` stays data-layer sourced and matches visible content.
+- `aggregateRating` stays data-layer sourced and matches visible content. **H1 changes
+  `ratingCount` 8 → 7.** That is a *correction*, not a regression: 8 matched no source,
+  and Google reads this field. `ratingValue` stays 5.0. A lower count does not affect
+  rich-result eligibility — only the presence of `aggregateRating` does.
+- **H2 removes no indexable content.** The newsletter section carried no keyword the
+  page needs: its heading and sub were about email updates, not prayer times, Qibla,
+  iOS, offline or privacy. Nothing in §8's phrase table depends on it. The one link
+  lost is the outbound `@Hendaseh` Instagram link — see H2's flag in §1.
 - **`offers` is retained, and rich-result eligibility is preserved.** The
   SoftwareApplication rich result needs name + `offers` + `aggregateRating` together;
   all three remain. Guideline compliance improves without touching the markup, because
@@ -629,30 +721,132 @@ time (previously in `keywords` only). `Qibla` enters the support description.
 
 ## 9. Gates and notes for N3
 
-### Blocking — these must be settled before the work ships
+### Required work beyond the copy tables
 
-- **Confirm the App Store price before writing row A1.** `$3.99` comes from the
-  existing JSON-LD, which is the value the audit flagged as unverified. Amendment 1
-  makes it user-visible, so an unchecked number now misleads a reader as well as
-  Google. Check the live listing. If it differs, correct **both** A1's string and
-  `offers.price` — one fact, two renderings.
-- **Set the policy's `Last Updated` to the publication date**, not the day N3 runs, and
-  hand B6 the job of verifying it at the dev → main merge (§3).
+1. **Delete the newsletter (row H2).** Three things: the `Stay in the Loop`
+   `<section>` in `src/app/nahtadi/page.tsx`, the `EmailSignup` import at the top of
+   that file, and `src/components/nahtadi/EmailSignup.tsx` itself. Check whether N2 has
+   rehoused the `@Hendaseh` Instagram link that lives inside that section — if not, it
+   goes with it.
+2. **Set `appStoreRating.count` to `7` (row H1)** in `src/data/projects.json`. One
+   field; the badge, the reviews section and the JSON-LD `ratingCount` all follow.
+3. **Set the policy's `Last Updated` to the publication date**, not the day N3 runs.
+   B6 verifies it at the dev → main merge (§3).
+
+### Blocking gates — settle before the work ships
+
+- **Ratings count: the number is 7, and the source is Apple's public lookup API on the
+  US storefront** (§10, verified 2026-08-28). **Do not "correct" it to 9.** App Store
+  Connect's 9 is the worldwide total and is unreachable from the API sub-project 5 will
+  automate against. The reasoning is at H1; read it before changing the number.
+- **App Store price: gate CLOSED.** `$3.99` is confirmed against source (§10), so row
+  A1 ships as written. Recorded rather than deleted so the check is not repeated.
+
+### Note for B6 — verify, do not edit
+
+**Two files make claims about this, and only one of them was actually false.**
+
+**`docs/ROADMAP.md`, Standing notes — FALSE since 2026-08-24, true again after H2:**
+
+> the contact form and **Resend are decommissioned** (2026-08-24), so the site has no
+> server-side mutation, no secret, and **no runtime third-party dependency**.
+
+That last clause has been wrong for the whole of sub-projects 3 and 4.
+`EmailSignup.tsx` POSTs to `buttondown.com` at runtime — a third-party dependency by
+any reading. The bullet was written when Resend came out and nobody checked the one
+page that still called a third party. **H2 makes it true.** B6 confirms and leaves the
+wording alone; it needs no edit once the form is gone.
+
+**`.claude/CLAUDE.md:133` — never false, but incomplete.** It says:
+
+> There is **no contact form, no server action, no API route, and no runtime secret**.
+> The app reads no environment variables — a fresh clone needs no `.env.local`.
+
+**Read literally, `EmailSignup.tsx` never falsified those clauses.** It is a
+*client-side* POST from a `'use client'` component, so it is not a server action and
+not an API route, and Buttondown's embed endpoint takes no key, so it is not a runtime
+secret or an environment variable. Every listed claim survived it.
+
+**What the section does not have is any line about client-side third-party calls at
+all.** That is the actual gap: the passage paints a site that talks to nothing, and
+since sub-project 2 the site has been POSTing an email address to `buttondown.com` from
+the browser. It went unnoticed because the form lived on the one page nobody had
+audited. After H2 the picture and the prose agree.
+
+**B6 VERIFIES rather than edits — both files.** Grep `src/` for `fetch(`,
+`buttondown`, and any other outbound client-side call, then confirm that ROADMAP's
+Standing notes bullet and CLAUDE.md's stack section both describe reality. Neither
+needs rewriting once H2 lands. If B6 judges CLAUDE.md should *add* an explicit line
+about client-side third-party calls, that is a proposal for Omar — not a silent
+correction, and not something to retro-fit as though it had always been there.
+
+**If anything still contradicts either claim, that is a finding for Omar, not a doc
+edit.** The failure mode here was a document asserting a property nobody re-checked;
+fixing it by editing the document rather than the code would repeat it.
+
+### Open question for Omar — raised, not implemented
+
+**Add a `verifiedOn` date to `projects.json`'s `appStoreRating` block?**
+
+```
+"appStoreRating": { "value": "5.0", "count": 7, "verifiedOn": "2026-08-28" }
+```
+
+**The case for it:** the count reached 8 by drifting silently, and nothing in the repo
+recorded when it was last true. A date makes staleness *visible* — a reader can see the
+number is six months old without having to check Apple. It costs one schema field
+(`projectSchema.ts` is strict, so it must be declared) and one line of discipline.
+
+**The case against:** it is a stopgap. Sub-project 5's App Store fact sync (see
+`docs/ROADMAP.md`) replaces the need entirely, and a hand-maintained freshness stamp
+can itself go stale — a `verifiedOn` nobody updates is worse than no field, because it
+asserts a check that did not happen.
+
+**Omar's call.** Not implemented either way. If yes, it is a schema change plus a test,
+and it should land with H1 so the first stamp is honest.
 
 ### Not blocking — recorded so they are decisions, not oversights
 
 None of the following are approved changes; each needs its own ruling if acted on.
 
-1. **`EmailSignup.tsx` may be lying.** It posts to Buttondown with `mode: 'no-cors'`
-   and sets `success` on any non-network outcome. An opaque response cannot confirm the
-   subscribe worked, so A21's `You're on the list.` can display after a failed
-   subscribe. Copy cannot fix this; it needs a real success signal or a hedged message.
-2. **`support/page.tsx:188` uses a raw `<a href="/nahtadi/privacy">`** where line 81
+1. **`support/page.tsx:188` uses a raw `<a href="/nahtadi/privacy">`** where line 81
    uses `<Link>` for the same internal route. Cheap consistency fix if N3 is in the
    file anyway.
-3. **`iOS 17.0+`** drifts per release like the version row did, just far more slowly.
-   Kept deliberately; worth a periodic check rather than a mechanism.
-4. **Verification before commit:** build, unit tests, e2e and lint must all pass. The
+2. **`iOS 17.0+`** drifts per release like the version row did, just far more slowly.
+   Verified correct on 2026-08-28 (§10) and kept deliberately; worth a periodic check
+   rather than a mechanism — or, better, sub-project 5's sync.
+3. **Verification before commit:** build, unit tests, e2e and lint must all pass. The
    e2e suite already guards the frozen URLs and redirects; B1/B2 change title *text*
    only, so no redirect is implied, but run `npm run test:all` and confirm rather than
-   assume.
+   assume. **H1 and H2 both touch tested surfaces** — `projectStyles.test.ts` and
+   `projects.test.ts` read the data layer, and deleting a component changes the page
+   tree. Run them, do not assume.
+
+*(The audit's old note that `EmailSignup.tsx` "may be lying" about subscribe success is
+resolved by H2 and now lives in §7 under the struck A21.)*
+
+---
+
+## 10. App Store facts — verified against source, 2026-08-28
+
+**Sources:** `https://itunes.apple.com/lookup?id=6755970888` (Apple's public lookup
+API, no auth, US storefront) and App Store Connect.
+
+This ledger exists because three of these had silently drifted before anyone checked.
+Anything below that a future task wants to change should be re-verified against these
+sources first, not reasoned about.
+
+| Fact | Source value | Where it lives | Status |
+|---|---|---|---|
+| **Price** | `$3.99` | `offers.price` in JSON-LD; **now also visible** in A1 | ✅ CONFIRMED. Amendment 1's blocking gate is closed; A1 ships as written. |
+| **`sellerName`** | `Omar Saed Younis` | `/nahtadi/support` Technical Information | ✅ CONFIRMED verbatim. **D11 stands** — it matches the App Store listing exactly, which is the whole reason it differs from the site's `Omar Younis`. |
+| **`averageUserRating`** | `5.0` | `projects.json` `appStoreRating.value`; badge; JSON-LD `ratingValue` | ✅ CONFIRMED on both sources. Unchanged. About's locked copy, the Home ticker and the flagship meta line are unaffected. |
+| **`userRatingCount`** | `7` (US storefront) / `9` (App Store Connect, worldwide) | `projects.json` `appStoreRating.count`; badge; JSON-LD `ratingCount` | ⚠️ **8 → 7 by H1.** Stored value matched neither source. See H1 for why 7 beats 9. |
+| **`minimumOsVersion`** | `17.0` | `/nahtadi/support` Technical Information (`iOS 17.0+`) | ✅ CONFIRMED. The row is correct and **stays** (§6). |
+| **`contentAdvisoryRating`** | `4+` | **Nowhere, deliberately** | ✅ CONFIRMED as a fact — and still **explicitly REJECTED** for the privacy policy (§7). It is a **CONTENT** rating; citing it to support a data claim re-imports the exact category error C4 exists to remove. Confirming it does not license using it. |
+| **`version`** | `1.2.1` | `/nahtadi/support` showed `v1.1.0` | ⚠️ **Two releases stale.** No action needed — **D10 removes the row.** Recorded because this is the evidence *for* removal rather than maintenance: the row was wrong, and nobody noticed. |
+
+**Drift found: three of seven.** The count, the version, and (as an unverifiable
+assertion) the price. That ratio is the argument for the sub-project 5 automation, and
+it is why H1 optimises for a field that stays right over one that is momentarily
+truer.
