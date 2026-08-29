@@ -105,7 +105,27 @@ export default function ScreenshotGallery({ screenshots }: ScreenshotGalleryProp
         <Chevron direction="left" />
       </button>
 
-      <div className="nh-rail" ref={railRef}>
+      {/*
+        A horizontally scrolling container needs its own keyboard route to the
+        content. The chevrons beside it are focusable and do scroll the rail,
+        but a keyboard user cannot reach the rail itself to use the arrow keys,
+        and a screen-reader user gets no signal that the region scrolls at all
+        — axe flags it as `scrollable-region-focusable`, serious, and it is
+        right. `tabIndex={0}` makes the rail a tab stop (which is what gives it
+        arrow-key scrolling for free); `role="group"` + `aria-label` stop it
+        from being an unnamed focusable div when it gets there.
+
+        `role="group"` rather than `role="region"` on purpose: `region` is a
+        landmark and would put a sixth entry in the page's landmark list for
+        what is one figure rail inside an already-labelled section.
+      */}
+      <div
+        className="nh-rail"
+        ref={railRef}
+        tabIndex={0}
+        role="group"
+        aria-label="App screenshots"
+      >
         {screenshots.map((shot, index) => (
           <figure className="nh-shot" key={shot.title}>
             <div className="nh-device">

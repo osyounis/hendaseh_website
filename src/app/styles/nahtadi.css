@@ -374,6 +374,17 @@
     display: none;
   }
 
+  /* The rail is a tab stop (see ScreenshotGallery.tsx for why), so it needs a
+     visible focus ring like every other focusable thing on this page. Offset
+     INWARD -- a positive offset would draw the ring outside the card's padding
+     box and clip against its rounded border. Matches `.nh-scroll`'s ring,
+     which is the control sitting right next to it. */
+  .nh-rail:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    border-radius: 12px;
+  }
+
   .nh-shot {
     flex: none;
     width: 250px;
