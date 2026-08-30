@@ -38,7 +38,7 @@ Plus `/nahtadi` (flagship, its own page) = five deep pages total.
 
 ### Home page swap (amends `home/APPROVED.md`)
 
-`image-watermark-remover` leaves the Home work grid AND the hero orbit swarm; `a16-summarizer` takes both slots (card-tier row shows it with its GitHub link until... note: as showcase tier its Home tile action becomes `Case study ›` per the tier-action grammar). The swarm satellite uses a16's engine squircle icon.
+`image-watermark-remover` leaves the Home work grid AND the hero orbit swarm; `a16-summarizer` takes both slots. Since a16 is showcase tier, its Home tile carries `Case study ›` per the tier-action grammar (the compact row is not card-tier-only; tier drives the action). The swarm satellite uses a16's engine squircle icon.
 
 ### Visuals: who produces what
 
