@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 // Every swatch class is written out literally so Tailwind's scanner emits it.
 // Do NOT build class names by interpolation in this file.
@@ -30,6 +30,45 @@ const NAVY_SWATCHES: { label: string; className: string }[] = [
   { label: 'navy-800', className: 'bg-navy-800' },
   { label: 'navy-900', className: 'bg-navy-900' },
   { label: 'navy-950', className: 'bg-navy-950' },
+];
+
+const INK_SWATCHES: { label: string; className: string }[] = [
+  { label: 'ink-50', className: 'bg-ink-50' },
+  { label: 'ink-100', className: 'bg-ink-100' },
+  { label: 'ink-200', className: 'bg-ink-200' },
+  { label: 'ink-300', className: 'bg-ink-300' },
+  { label: 'ink-400', className: 'bg-ink-400' },
+  { label: 'ink-500', className: 'bg-ink-500' },
+  { label: 'ink-600', className: 'bg-ink-600' },
+  { label: 'ink-900', className: 'bg-ink-900' },
+];
+
+const HAZE_SWATCHES: { label: string; className: string }[] = [
+  { label: 'haze-100', className: 'bg-haze-100' },
+  { label: 'haze-200', className: 'bg-haze-200' },
+];
+
+const APPLE_BLUE_SWATCHES: { label: string; className: string }[] = [
+  { label: 'apple-blue', className: 'bg-apple-blue' },
+];
+
+const DEEP_SWATCHES: { label: string; className: string }[] = [
+  { label: 'deep-page', className: 'bg-deep-page' },
+  { label: 'deep-sky', className: 'bg-deep-sky' },
+  { label: 'deep-ticker', className: 'bg-deep-ticker' },
+  { label: 'deep-card', className: 'bg-deep-card' },
+  { label: 'deep-hairline', className: 'bg-deep-hairline' },
+  { label: 'deep-core-top', className: 'bg-deep-core-top' },
+  { label: 'deep-core-bottom', className: 'bg-deep-core-bottom' },
+];
+
+const NAHTADI_SWATCHES: { label: string; className: string }[] = [
+  { label: 'nahtadi-100', className: 'bg-nahtadi-100' },
+  { label: 'nahtadi-200', className: 'bg-nahtadi-200' },
+  { label: 'nahtadi-600', className: 'bg-nahtadi-600' },
+  { label: 'nahtadi-700', className: 'bg-nahtadi-700' },
+  { label: 'nahtadi-800', className: 'bg-nahtadi-800' },
+  { label: 'nahtadi-900', className: 'bg-nahtadi-900' },
 ];
 
 function SwatchRow({
@@ -127,7 +166,8 @@ function Fonts() {
   return (
     <div className="space-y-4">
       <h3 className="text-muted font-mono text-xs uppercase tracking-wide">Fonts</h3>
-      <FontSample label="font-heading (Roboto Medium 500)" className="font-heading text-h3" />
+      <FontSample label="font-heading (Roboto 500/700/900)" className="font-heading text-h3" />
+      <p className="font-heading text-h3 font-black">Roboto 900 — statement heading weight</p>
       <FontSample label="font-body (Roboto Regular 400)" className="font-body text-body" />
     </div>
   );
@@ -149,10 +189,180 @@ function Radii() {
   );
 }
 
-function Panel({ theme }: { theme: 'light' | 'dark' }) {
+// Every semantic token the redesign consumes, printed with its *computed*
+// value in each theme. Colour tokens get a swatch; gradients, shadows and
+// lengths are text-only because that is what is actually worth eyeballing.
+const COLOUR_TOKENS = [
+  '--surface',
+  '--surface-raised',
+  '--surface-sunken',
+  '--ticker-surface',
+  '--fg-strong',
+  '--fg-body',
+  '--fg-muted',
+  '--fg-subtle',
+  '--fg-faint',
+  // The promoted quiet step and its two page-scoped aliases, listed together
+  // on purpose: the point of the promotion is that all three read the SAME
+  // swatch in each theme, and three rows side by side is how that is checked
+  // by eye. tests/e2e/nahtadi.spec.ts checks it by machine.
+  '--fg-quiet',
+  '--accent',
+  '--accent-strong',
+  '--edge',
+  '--edge-soft',
+  '--tile-hover-edge',
+  '--about-intro',
+  '--about-prose',
+  '--about-when',
+  '--contact-quiet',
+  '--about-card-quiet',
+  '--about-connector',
+  '--about-photo-ring',
+  '--about-dot-halo',
+  '--badge-private-fg',
+  '--badge-private-bg',
+  '--badge-volunteer-fg',
+  '--badge-volunteer-bg',
+  '--pill-primary-bg',
+  '--pill-primary-fg',
+  '--pill-secondary-bg',
+  '--pill-secondary-fg',
+  '--pill-sky-bg',
+  '--nav-fg',
+  '--nav-fg-active',
+  '--ticker-secondary',
+  '--ticker-control-bg',
+  '--flagship-fg',
+  '--flagship-meta',
+  '--flagship-body',
+  '--flagship-pill-bg',
+  '--flagship-pill-fg',
+  '--icon-chip',
+];
+
+const VALUE_TOKENS = [
+  '--nav-h',
+  '--home-sky',
+  '--projects-sky',
+  '--about-sky',
+  '--about-photo-shadow',
+  '--cta-surface',
+  '--card-shadow',
+  '--cta-shadow',
+  '--tile-hover-shadow',
+  '--aurora-image',
+  '--aurora-opacity',
+  '--stars-opacity',
+  '--core-bg',
+  '--core-shadow',
+  '--sat-shadow',
+  '--pill-sky-shadow',
+  '--pill-secondary-shadow',
+  '--flagship-bg',
+  '--flagship-edge',
+  '--flagship-glow',
+  '--nahtadi-tile',
+  '--nahtadi-tile-flagship',
+  '--nahtadi-tile-shadow',
+];
+
+function useComputedTokens(names: string[]) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [values, setValues] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!ref.current) return;
+    const styles = getComputedStyle(ref.current);
+    setValues(Object.fromEntries(names.map((n) => [n, styles.getPropertyValue(n).trim()])));
+    // `names` is a module-level constant array; re-running on identity is noise.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return { ref, values };
+}
+
+function SemanticTokens() {
+  const { ref, values } = useComputedTokens(COLOUR_TOKENS);
   return (
-    <div data-theme={theme} className="bg-surface text-secondary p-8 space-y-6">
-      <h2 className="text-primary text-2xl">Theme: {theme}</h2>
+    <div ref={ref} className="space-y-3">
+      <h3 className="text-muted font-mono text-xs uppercase tracking-wide">Semantic colours</h3>
+      <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 font-mono text-xs">
+        {COLOUR_TOKENS.map((name) => (
+          <Fragment key={name}>
+            <dt className="text-secondary">{name}</dt>
+            <dd className="flex items-center gap-2">
+              <span className="text-muted">{values[name] ?? '…'}</span>
+              <span
+                className="border-edge inline-block h-4 w-8 shrink-0 rounded border"
+                style={{ background: `var(${name})` }}
+              />
+            </dd>
+          </Fragment>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function EffectTokens() {
+  const { ref, values } = useComputedTokens(VALUE_TOKENS);
+  return (
+    <div ref={ref} className="space-y-3">
+      <h3 className="text-muted font-mono text-xs uppercase tracking-wide">
+        Layout, gradients &amp; elevation
+      </h3>
+      <dl className="space-y-1 font-mono text-xs">
+        {VALUE_TOKENS.map((name) => (
+          <Fragment key={name}>
+            <dt className="text-secondary">{name}</dt>
+            <dd className="text-muted mb-1 break-all">{values[name] ?? '…'}</dd>
+          </Fragment>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+/**
+ * The active theme, measured rather than declared.
+ *
+ * Task B6 flipped the theme from `[data-theme="dark"]` to
+ * `prefers-color-scheme`. This page used to render two panels side by side and
+ * force one to each theme with that attribute; there is no attribute to force
+ * any more, so it renders ONE panel showing the tokens as they actually
+ * resolve for the current viewer, and says which theme that is.
+ *
+ * Starts as `null` so the server render and the first client render agree —
+ * `matchMedia` does not exist on the server, and guessing a value here is the
+ * hydration mismatch the reduced-motion hook was rewritten to avoid. It also
+ * subscribes: flipping the OS setting with the page open relabels it live,
+ * which is what makes this page usable for comparing the two themes.
+ */
+function useActiveTheme() {
+  const [theme, setTheme] = useState<'light' | 'dark' | null>(null);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const read = () => setTheme(mq.matches ? 'dark' : 'light');
+    read();
+    mq.addEventListener('change', read);
+    return () => mq.removeEventListener('change', read);
+  }, []);
+  return theme;
+}
+
+function Panel() {
+  const theme = useActiveTheme();
+  return (
+    <div className="bg-surface text-secondary p-8 space-y-6">
+      <h2 className="text-primary text-2xl">
+        Active theme: {theme ?? 'measuring…'}
+      </h2>
+      <p className="text-muted text-sm">
+        Dark now follows the OS setting, so this panel shows whichever theme
+        this browser is in. To see the other one, change the system appearance
+        (it relabels live) or use DevTools → Rendering → “Emulate CSS
+        prefers-color-scheme”. Both themes are asserted in CI by{' '}
+        <code className="font-mono">tests/e2e/theme.spec.ts</code>.
+      </p>
       <div className="bg-surface-raised border border-edge rounded-xl p-4">
         <p className="text-primary">text-primary on surface-raised</p>
         <p className="text-secondary">text-secondary</p>
@@ -167,6 +377,8 @@ function Panel({ theme }: { theme: 'light' | 'dark' }) {
       <TypeScale />
       <Fonts />
       <Radii />
+      <SemanticTokens />
+      <EffectTokens />
     </div>
   );
 }
@@ -178,10 +390,14 @@ export default function TokensClient() {
         <h1 className="text-2xl mb-4">Brand scales</h1>
         <SwatchRow name="brand" swatches={BRAND_SWATCHES} />
         <SwatchRow name="navy" swatches={NAVY_SWATCHES} />
+        <SwatchRow name="ink (Apple gray ladder, light theme)" swatches={INK_SWATCHES} />
+        <SwatchRow name="haze (light tints)" swatches={HAZE_SWATCHES} />
+        <SwatchRow name="apple-blue (light-theme accent)" swatches={APPLE_BLUE_SWATCHES} />
+        <SwatchRow name="deep (dark grounds)" swatches={DEEP_SWATCHES} />
+        <SwatchRow name="nahtadi (flagship card)" swatches={NAHTADI_SWATCHES} />
       </section>
-      <section className="grid md:grid-cols-2 gap-4 rounded-2xl overflow-hidden border border-edge">
-        <Panel theme="light" />
-        <Panel theme="dark" />
+      <section className="rounded-2xl overflow-hidden border border-edge">
+        <Panel />
       </section>
     </div>
   );

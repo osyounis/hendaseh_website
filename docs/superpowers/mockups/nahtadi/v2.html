@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>N2 v2 — Nahtadi (dark, canonical)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   N2 v1 — /nahtadi
+
+   THIS FILE AND v1-light.html ARE THE SAME FILE. The only differences are the
+   `data-theme` attribute on <html> and the <title>. That is the point of the
+   task: the page currently uses raw Tailwind palette colours (blue-50,
+   gray-700, indigo-50) and does not respond to theme at all. Every colour
+   below is a semantic token from src/app/globals.css.
+
+   Everything prefixed `--` in the two blocks below is COPIED VERBATIM from
+   src/app/globals.css. Nothing here is a new colour.
+   ========================================================================== */
+
+:root{
+  /* ---- @theme scales (globals.css, verbatim) ---- */
+  --color-brand-300:#8fd0ff; --color-brand-400:#57b4ff; --color-brand-500:#0093ff;
+  --color-brand-600:#0076d1; --color-brand-700:#005da6;
+  --color-navy-200:#c7d6e6; --color-navy-300:#9db8d1; --color-navy-450:#6a87a5;
+  --color-navy-800:#2b425b;
+  --color-ink-50:#fbfbfd;  --color-ink-100:#e8e8ed; --color-ink-200:#e3e3e8;
+  --color-ink-300:#d2d2d7; --color-ink-400:#aeaeb2; --color-ink-600:#6e6e73;
+  --color-ink-800:#3a3a3c; --color-ink-900:#1d1d1f;
+  --color-haze-100:#eef4fb;
+  --color-apple-blue:#0071e3;
+  --color-deep-page:#04101e; --color-deep-sky:#050e1a; --color-deep-card:#0b1c30;
+  --color-deep-hairline:#0d1e33;
+  --color-nahtadi-100:#cfe9e2; --color-nahtadi-200:#9ff0d9;
+  --color-nahtadi-600:#0f5f50; --color-nahtadi-700:#073c33; --color-nahtadi-900:#04241f;
+  --ease-brand:cubic-bezier(0.22,1,0.36,1);
+  --radius-card:1.5rem; --radius-control:0.75rem;
+  --nav-h:70px;
+
+  /* ---- semantic tokens, LIGHT ---- */
+  --surface:var(--color-ink-50);
+  --surface-raised:#ffffff;
+  --surface-sunken:var(--color-ink-100);
+  --fg-strong:var(--color-ink-900);
+  --fg-body:var(--color-ink-900);
+  --fg-muted:var(--color-ink-600);
+  --fg-subtle:var(--color-ink-600);
+  --fg-faint:var(--color-ink-400);
+  --fg-quiet:var(--color-ink-600);
+  --fg-muted-on-tint:#5c5c61;
+  --accent:var(--color-apple-blue);
+  --accent-strong:var(--color-brand-700);
+  --edge:var(--color-ink-300);
+  --edge-soft:var(--color-ink-100);
+  --card-shadow:0 2px 12px rgb(0 0 0 / .04);
+  --tile-hover-edge:var(--color-brand-600);
+  --tile-hover-shadow:0 22px 52px rgb(0 60 120 / .15);
+  --pill-primary-bg:var(--accent); --pill-primary-fg:#ffffff;
+  --pill-secondary-bg:var(--color-ink-200); --pill-secondary-fg:var(--color-ink-900);
+  --pill-secondary-shadow:none;
+  --nav-fg:rgb(10 26 47 / .8); --nav-fg-active:#000000;
+  --ticker-control-bg:var(--surface-sunken);
+
+  /* ---- flagship band: identical in BOTH themes by design ---- */
+  --flagship-bg:linear-gradient(210deg,
+      var(--color-nahtadi-600) 0%,
+      var(--color-nahtadi-700) 46%,
+      var(--color-nahtadi-900) 100%);
+  --flagship-edge:rgb(143 208 255 / .18);
+  --flagship-glow:radial-gradient(60% 90% at 85% 10%, rgb(143 208 255 / .12), transparent 60%);
+  --flagship-fg:#ffffff;
+  --flagship-meta:var(--color-nahtadi-200);
+  --flagship-body:var(--color-nahtadi-100);
+  --flagship-pill-bg:#ffffff; --flagship-pill-fg:var(--color-nahtadi-700);
+  --nahtadi-tile-flagship:#ffffff;
+  --nahtadi-tile-shadow:0 26px 60px rgb(0 0 0 / .5);
+
+  /* ---- NEW, proposed by this mockup (see NOTES §H) ---- */
+  --icon-chip:rgb(0 113 227 / .10);
+  /* A card sitting ON the green band takes the white-on-flagship pair that
+     already exists (--flagship-pill-bg / --flagship-pill-fg), for the same
+     reason the arch icon's tile is white there: a tile on this band must
+     CONTRAST its ground. Both are theme-agnostic, like the band itself.
+     These two are the shadow steps that pair replaces a border with. */
+  --flagship-card-body:var(--color-nahtadi-600);   /* 7.57:1 on the white tile */
+  --flagship-card-shadow:0 18px 40px rgb(0 0 0 / .22);
+  --flagship-card-shadow-hover:0 26px 56px rgb(0 0 0 / .3);
+}
+
+[data-theme="dark"]{
+  --surface:var(--color-deep-page);
+  --surface-raised:var(--color-deep-card);
+  --surface-sunken:var(--color-deep-sky);
+  --fg-strong:#ffffff;
+  --fg-body:var(--color-navy-200);
+  --fg-muted:var(--color-navy-300);
+  --fg-subtle:var(--color-navy-300);
+  --fg-faint:var(--color-navy-450);
+  --fg-quiet:var(--color-navy-450);
+  --fg-muted-on-tint:var(--fg-muted);
+  --accent:var(--color-brand-400);
+  --accent-strong:var(--color-brand-300);
+  --edge:var(--color-navy-800);
+  --edge-soft:var(--color-deep-hairline);
+  --card-shadow:none;
+  --tile-hover-shadow:0 22px 52px rgb(0 40 90 / .45);
+  --pill-primary-bg:var(--color-brand-500); --pill-primary-fg:var(--color-deep-page);
+  --pill-secondary-bg:rgb(199 214 230 / .14); --pill-secondary-fg:#ffffff;
+  --nav-fg:var(--color-navy-200); --nav-fg-active:#ffffff;
+  --ticker-control-bg:var(--surface-raised);
+  --icon-chip:rgb(87 180 255 / .12);
+  /* --flagship-* are deliberately NOT overridden. The band is the same object
+     in both themes, exactly as the Home flagship band is. */
+}
+
+/* ==========================================================================
+   Reset + page furniture (mirrors src/app/styles/shared.css)
+   ========================================================================== */
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Roboto',system-ui,-apple-system,sans-serif;
+  background:var(--surface);
+  color:var(--fg-body);
+  font-size:16px;line-height:1.6;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+em{font-style:italic}
+
+/* Container queries, NOT media queries -- so the phone pane at the bottom of
+   this file renders the SAME markup through the SAME rules at 390px. In the
+   build these become `@media (max-width: 880px)` and `vw` replaces `cqw`. */
+.cq{container-type:inline-size;container-name:page}
+
+.page-wrap{max-width:1120px;margin-inline:auto;padding-inline:32px}
+@container page (max-width:640px){ .page-wrap{padding-inline:20px} }
+
+/* --- Section header pattern (shared.css) --- */
+.section-eyebrow{
+  display:block;font-size:12px;font-weight:900;letter-spacing:.18em;color:var(--accent);
+}
+.section-heading{
+  margin-top:10px;font-size:clamp(28px,4cqw,44px);font-weight:900;line-height:1.1;
+  letter-spacing:-.02em;color:var(--fg-strong);
+}
+.section-sub{
+  margin:16px auto 0;max-width:52ch;color:var(--fg-muted);
+  font-size:17px;line-height:1.6;
+}
+.section-head{text-align:center;margin-bottom:44px}
+
+/* --- Tiles (shared.css .home-tile, verbatim behaviour) --- */
+.home-tile{
+  background:var(--surface-raised);
+  border:1px solid var(--edge);
+  box-shadow:var(--card-shadow);
+  transition:
+    transform .28s var(--ease-brand),
+    border-color .28s var(--ease-brand),
+    box-shadow .28s var(--ease-brand);
+}
+.home-tile:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+a.home-tile:active{transform:scale(.98)}
+@media (hover:hover) and (pointer:fine){
+  .home-tile:hover{
+    transform:translateY(-6px);
+    border-color:var(--tile-hover-edge);
+    box-shadow:var(--tile-hover-shadow);
+  }
+}
+
+/* --- Pills (shared.css) --- */
+.pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:980px;padding:14px 28px;font-size:15px;font-weight:600;
+  font-family:inherit;border:none;cursor:pointer;
+  transition:transform 100ms ease-out,background-color 200ms ease-out;
+}
+.pill:active{transform:scale(.97)}
+.pill:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.pill-primary{background:var(--pill-primary-bg);color:var(--pill-primary-fg)}
+.pill-secondary{background:var(--pill-secondary-bg);color:var(--pill-secondary-fg);box-shadow:var(--pill-secondary-shadow)}
+.pill-on-flagship{background:var(--flagship-pill-bg);color:var(--flagship-pill-fg)}
+
+/* --- Link-affordance glyphs (grammar v2, shared.css sizing verbatim) --- */
+.link-glyph{
+  display:inline-block;flex:none;fill:none;stroke:currentColor;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.link-glyph-chevron{height:.714em;width:.494em;margin-left:.26em;vertical-align:-.0015em}
+.link-glyph-arrow{height:.78em;width:.78em;margin-left:.26em;vertical-align:-.035em}
+.link-glyph-circle{height:1.19em;width:1.19em;margin-left:.29em;vertical-align:-.2395em}
+.weld{white-space:nowrap}
+
+/* --- Entrance (contact.css .contact-enter, verbatim -- rides on `translate`) --- */
+.nh-enter{animation:nh-enter .6s var(--ease-brand) var(--enter-delay,0s) both}
+@keyframes nh-enter{
+  from{opacity:0;translate:0 18px}
+  to{opacity:1;translate:0 0}
+}
+
+/* --- Scroll reveal (shared.css [data-reveal], verbatim) --- */
+[data-reveal="pending"]{opacity:0;translate:0 20px}
+[data-reveal="in"]{
+  opacity:1;translate:0 0;
+  transition:opacity .6s var(--ease-brand),translate .6s var(--ease-brand);
+  transition-delay:var(--reveal-delay,0s);
+}
+.home-tile[data-reveal="in"]{
+  transition:
+    opacity .6s var(--ease-brand) var(--reveal-delay,0s),
+    translate .6s var(--ease-brand) var(--reveal-delay,0s),
+    transform .28s var(--ease-brand),
+    border-color .28s var(--ease-brand),
+    box-shadow .28s var(--ease-brand);
+}
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+.nav{
+  height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:6;
+}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--fg-strong);font-size:16px}
+.nav-logo img{width:26px;height:26px}
+.nav-links{display:flex;gap:28px;font-size:14px;font-weight:600;color:var(--nav-fg)}
+.nav-burger{display:none;width:44px;height:44px;align-items:center;justify-content:center;color:var(--nav-fg)}
+@container page (max-width:880px){
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+}
+
+/* ==========================================================================
+   1. HERO — the green band, as a CARD inside .page-wrap
+
+   Why a card and not a full-bleed band: it is the SAME OBJECT as the Home
+   page's flagship band (`.home-flagship`), which is where every visitor
+   arrives from. Same --flagship-bg, same --flagship-edge, same
+   --flagship-glow. The card the visitor pressed "The story ›" on expands
+   into the page they land on.
+
+   It also removes a deferred problem instead of adding one. A full-bleed dark
+   green hero reaching under the nav needs adaptive nav link colours -- the
+   nav-over-hero item deferred to B6 in the projects contract. Inside the page
+   wrap, the nav sits on --surface in both themes and there is no seam.
+   ========================================================================== */
+.nh-hero{
+  position:relative;overflow:hidden;
+  margin-top:8px;
+  border-radius:28px;
+  border:1px solid var(--flagship-edge);
+  background:var(--flagship-bg);
+  padding:76px 40px 68px;
+  text-align:center;
+  color:var(--flagship-fg);
+}
+.nh-hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;background:var(--flagship-glow);
+}
+.nh-hero>*{position:relative;z-index:1}
+
+/* The shipped icon is transparent except for its arch glyph, so it is never
+   placed bare. Contrast rule (home/APPROVED.md §3, generalized 2026-08-26):
+   the tile must CONTRAST its ground, so on the green band it is WHITE. */
+.nh-hero-tile{
+  width:128px;margin:0 auto;
+  background:var(--nahtadi-tile-flagship);
+  border-radius:28px;
+  box-shadow:var(--nahtadi-tile-shadow);
+}
+.nh-hero-tile img{width:100%;height:auto;padding:9%}
+
+.nh-badge{
+  display:inline-flex;align-items:center;gap:8px;margin-top:26px;
+  padding:11px 18px;border-radius:980px;
+  background:rgb(255 255 255 / .12);
+  border:1px solid rgb(255 255 255 / .28);
+  color:var(--flagship-fg);
+  font-size:13px;font-weight:700;letter-spacing:.01em;
+  transition:background-color .2s ease,transform 100ms ease-out;
+}
+.nh-badge:active{transform:scale(.97)}
+.nh-badge:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media (hover:hover) and (pointer:fine){ .nh-badge:hover{background:rgb(255 255 255 / .2)} }
+
+.nh-hero-title{
+  margin-top:22px;
+  font-size:clamp(44px,7cqw,76px);font-weight:900;line-height:1.02;
+  letter-spacing:-.03em;color:var(--flagship-fg);
+}
+/* Size-specific tracking (Apple typography rule): the 76px wordmark is tight,
+   the 21px line under it is not. */
+.nh-hero-kicker{
+  margin-top:10px;font-size:clamp(17px,2cqw,21px);font-weight:500;
+  letter-spacing:.01em;color:var(--flagship-meta);
+}
+.nh-hero-sub{
+  margin:18px auto 0;max-width:34ch;
+  font-size:clamp(16px,1.7cqw,19px);line-height:1.55;color:var(--flagship-body);
+}
+.nh-hero-cta{margin-top:34px;display:flex;justify-content:center}
+/* The official badge is used unmodified, per Apple's marketing guidelines and
+   the projects contract: this is the ONE page it appears on. */
+.nh-hero-cta img{width:172px;height:auto}
+.nh-hero-cta a{display:inline-block;transition:transform 100ms ease-out,opacity .2s ease}
+.nh-hero-cta a:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){ .nh-hero-cta a:hover{opacity:.85} }
+
+@container page (max-width:880px){
+  .nh-hero{padding:56px 22px 52px;border-radius:24px}
+  .nh-hero-tile{width:104px;border-radius:23px}
+}
+
+/* ==========================================================================
+   2. REVIEWS
+
+   TWO COMPONENT BEHAVIOURS SPECIFIED HERE — see NOTES §C1 and §C2.
+
+   C1. EVERY REVIEW IS STACKED IN ONE GRID CELL. The container sizes to the
+       TALLEST review permanently and never changes height as they rotate, so
+       nothing below jumps. `min-h-[300px]` is deleted -- it was a floor, not
+       a ceiling, and the tallest review is 200 characters against the
+       shortest at 122. No magic number; add a review and the floor rises on
+       its own. Same technique the ticker's two tapes use (one grid cell).
+
+   C2. A REAL PAUSE CONTROL. Auto-advance is a setInterval that today can only
+       be stopped by hover or focus, so on touch there is NO way to stop it --
+       the identical WCAG 2.2.2 gap just closed on the Home ticker.
+   ========================================================================== */
+/* MEASURED, and it drove the whole scheme (N2 v2 change 2). Ground deltas
+   between the three surface tokens:
+       light  page|sunken 1.182   page|raised 1.034   sunken|raised 1.221
+       dark   page|sunken 1.013   page|raised 1.114   sunken|raised 1.128
+   `sunken|raised` is the ONLY pairing that reads in both themes. `page|raised`
+   is invisible in light and `page|sunken` is invisible in dark, so a band set
+   against the page ground carries in one theme and not the other. An `--edge`
+   hairline measures 1.46-1.88 at EVERY one of those boundaries -- always more
+   than the ground delta it sits on -- so ground and hairline are used together,
+   never ground alone. That is also how the built light theme already separates
+   a card from the page (1.034 plus a hairline), so this is the site's existing
+   behaviour rather than a new rule.
+
+   FIVE REGIONS, and the strongest available seam is spent on the biggest turn:
+
+     1  HERO            page ground + green card
+     2  APP PREVIEW     sunken  \  the proof. sunken|raised between them is the
+     3  REVIEWS         raised  /  page's strongest seam, in both themes.
+     4  WHY NAHTADI?    page    \  the case. ONE region on ONE ground, so the
+     5  EVERYTHING...   page    /  shared ground is the grouping signal.
+     6  FAQ             raised     the answers
+     7  PRIVACY         page ground + green card
+
+   SPACING FOLLOWS FROM THAT. Where the ground changes, the band edge IS the
+   boundary, so 80px inside each side reads as 80px. Where it does not change
+   (4|5), the air is the only signal and has to be real: 48+48 = 96px. No
+   section starts at 0 padding any more -- that was what made 3-4-5 read as one
+   block. */
+.nh-reviews{
+  background:var(--surface-raised);
+  border-bottom:1px solid var(--edge);
+  padding-block:80px;
+}
+@container page (max-width:880px){ .nh-reviews{padding-block:56px} }
+.nh-rv{max-width:780px;margin-inline:auto;text-align:center}
+
+/* THE STACK. One grid cell; every slide occupies it. */
+.nh-rv-stack{display:grid}
+.nh-rv-slide{
+  grid-area:1/1;
+  display:flex;flex-direction:column;justify-content:center;
+  opacity:0;visibility:hidden;
+  /* `visibility` is discrete, so it flips instantly ON and is delayed by the
+     fade duration OFF -- exactly the technique `.nav-menu` already uses in
+     shared.css to keep a closed panel inert without popping. Inert matters:
+     an invisible slide must not be focusable or reachable by AT. */
+  transition:opacity .32s ease,visibility 0s linear .32s;
+}
+.nh-rv-slide[data-current="true"]{
+  opacity:1;visibility:visible;
+  transition:opacity .32s ease,visibility 0s linear 0s;
+}
+.nh-rv-stars{display:flex;justify-content:center;gap:3px;margin-bottom:18px}
+.nh-rv-stars svg{width:17px;height:17px;fill:#ffd60a}
+.nh-rv-title{font-size:15px;font-weight:700;color:var(--accent);letter-spacing:.005em}
+.nh-rv-quote{
+  margin-top:14px;
+  font-size:clamp(20px,2.6cqw,28px);font-weight:500;line-height:1.38;
+  letter-spacing:-.01em;color:var(--fg-strong);
+  text-wrap:balance;
+}
+.nh-rv-who{margin-top:22px;font-size:13px;font-weight:600;color:var(--fg-quiet)}
+
+/* Control row: prev · dots · next · pause. */
+.nh-rv-controls{
+  margin-top:34px;display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.nh-rv-btn{
+  position:relative;
+  width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;
+  border:none;background:none;cursor:pointer;color:var(--fg-muted);
+  border-radius:999px;
+  transition:color .2s ease,transform 100ms ease-out;
+}
+.nh-rv-btn::before{
+  content:"";position:absolute;width:30px;height:30px;border-radius:999px;
+  background:var(--ticker-control-bg);box-shadow:inset 0 0 0 1px var(--edge);
+}
+.nh-rv-btn svg{position:relative;width:13px;height:13px}
+.nh-rv-btn:active{transform:scale(.94)}
+.nh-rv-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (hover:hover) and (pointer:fine){ .nh-rv-btn:hover{color:var(--fg-strong)} }
+.nh-rv-dots{display:flex;align-items:center;gap:2px;margin-inline:6px}
+.nh-rv-dot{
+  position:relative;width:26px;height:44px;border:none;padding:0;cursor:pointer;
+  background:none;border-radius:8px;
+}
+.nh-rv-dot::before{
+  content:"";position:absolute;top:50%;left:50%;translate:-50% -50%;
+  height:9px;width:9px;border-radius:999px;background:var(--edge);
+  transition:width .24s var(--ease-brand),background-color .24s ease;
+}
+.nh-rv-dot[aria-selected="true"]::before{width:20px;background:var(--accent)}
+.nh-rv-dot:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* The pause control's glyphs are FILLED, as Apple draws transport controls,
+   and self-drawn -- never SF Symbols, never one of the five link-affordance
+   glyphs. Icon and accessible name flip together via `display:none`, which
+   removes a node from the accessible name computation as well as the page. */
+.nh-rv-pause svg{fill:currentColor;stroke:none}
+.nh-rv-pause .ico-play{display:none}
+.nh-rv-pause[aria-pressed="true"] .ico-pause{display:none}
+.nh-rv-pause[aria-pressed="true"] .ico-play{display:block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* ==========================================================================
+   3. WHY NAHTADI? — ONE card, five columns, hairline separated
+
+   Not five tiles. The section below it is already an eight-tile grid, and two
+   card grids back to back is the "card soup" this page has today. Five facts
+   about one product are one object, so they get one object: Apple's spec-row
+   pattern. On phone the vertical hairlines become horizontal ones and the
+   same object becomes a list.
+   ========================================================================== */
+.nh-why{padding-block:80px 48px}
+.nh-why-card{
+  border-radius:var(--radius-card);
+  background:var(--surface-raised);
+  border:1px solid var(--edge);
+  box-shadow:var(--card-shadow);
+  display:grid;grid-template-columns:repeat(5,1fr);
+  overflow:hidden;
+}
+.nh-why-cell{padding:32px 24px;text-align:center;border-left:1px solid var(--edge)}
+.nh-why-cell:first-child{border-left:none}
+.nh-why-cell h3{font-size:15px;font-weight:700;color:var(--fg-strong);letter-spacing:-.005em}
+.nh-why-cell p{margin-top:8px;font-size:13.5px;line-height:1.5;color:var(--fg-muted)}
+/* THE PRICE. COPY-LOCKED A1 requires the amount to be visible somewhere and
+   names this card as the obvious place; the FAQ answer carries it too. It is
+   set as DATA (a value line above its label), not as prose, so no locked
+   string is touched. */
+.nh-why-price{
+  display:block;margin:10px 0 2px;line-height:1;
+  font-size:28px;font-weight:900;letter-spacing:-.02em;color:var(--accent);
+}
+@container page (max-width:880px){
+  .nh-hero-region{padding-block:8px 56px}
+  .nh-why{padding-block:56px 32px}
+  .nh-why-card{grid-template-columns:1fr}
+  .nh-why-cell{
+    text-align:left;padding:20px 22px;
+    border-left:none;border-top:1px solid var(--edge);
+  }
+  .nh-why-cell:first-child{border-top:none}
+  .nh-why-price{font-size:24px;margin:8px 0 2px}
+}
+
+/* ==========================================================================
+   4. EVERYTHING YOU NEED FOR SALAT — eight tiles
+   ========================================================================== */
+.nh-features{padding-block:48px 80px}
+.nh-fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.nh-fcard{border-radius:18px;padding:26px 22px}
+.nh-fcard .ico{
+  width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+  border-radius:11px;background:var(--icon-chip);
+  color:var(--accent);margin-bottom:16px;
+}
+.nh-fcard .ico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nh-fcard h3{font-size:15.5px;font-weight:700;color:var(--fg-strong);letter-spacing:-.005em}
+.nh-fcard p{margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--fg-muted)}
+@container page (max-width:1000px){ .nh-fgrid{grid-template-columns:repeat(2,1fr)} }
+@container page (max-width:880px){
+  .nh-features{padding-block:32px 56px}
+  .nh-fgrid{grid-template-columns:1fr;gap:12px}
+  /* Compact horizontal layout, never full-width sprawl (home/APPROVED.md
+     mobile rules). */
+  .nh-fcard{display:grid;grid-template-columns:auto 1fr;column-gap:16px;padding:18px 20px}
+  .nh-fcard .ico{margin-bottom:0;grid-row:span 2}
+  .nh-fcard p{margin-top:5px}
+}
+
+/* ==========================================================================
+   5. APP PREVIEW — the recessed band, and the page's one set-piece
+
+   The only section with its own ground. The screenshots are raw light-mode
+   iOS captures, so in the dark theme six near-white rectangles would glow off
+   the page; a real device frame is what gives them an edge to end at. The
+   recessed ground makes them read as objects sitting on a surface.
+
+   LIGHT-THEME CONTRAST, MEASURED. --surface-sunken is #e8e8ed in light, and
+   on it --accent measures 3.85:1 and --fg-muted 4.15:1 -- both under the 4.5
+   floor for normal text. So this band carries NO accent text at all (no
+   eyebrow), and its captions use --fg-muted-on-tint (#5c5c61, 5.44:1), the
+   token that exists for exactly this pairing. Heading is --fg-strong
+   (#1d1d1f, 13.7:1).
+   ========================================================================== */
+.nh-hero-region{padding-block:8px 80px}
+.nh-shots{
+  background:var(--surface-sunken);
+  border-block:1px solid var(--edge);
+  padding-block:80px;
+}
+.nh-shots .section-sub{color:var(--fg-muted-on-tint)}
+.nh-gallery{position:relative}
+.nh-rail{
+  display:flex;gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding-block:6px 10px;scrollbar-width:none;
+}
+.nh-rail::-webkit-scrollbar{display:none}
+.nh-shot{flex:none;width:250px;scroll-snap-align:center}
+/* Device frame: a dark bezel with an inner hairline, the screenshot inset.
+   Identical in both themes -- an iPhone is the same object on both grounds. */
+.nh-device{
+  position:relative;border-radius:42px;padding:9px;
+  background:linear-gradient(160deg,#2a2f36,#0b0e12);
+  box-shadow:0 22px 44px rgb(0 0 0 / .28), 0 0 0 1px rgb(255 255 255 / .1) inset;
+}
+.nh-device img{
+  border-radius:34px;width:100%;aspect-ratio:9/19.55;object-fit:cover;object-position:top;
+  background:#f2f2f7;
+}
+.nh-shot-cap{margin-top:18px;text-align:center;padding-inline:4px}
+.nh-shot-cap h3{font-size:14.5px;font-weight:700;color:var(--fg-strong)}
+.nh-shot-cap p{margin-top:6px;font-size:13px;line-height:1.5;color:var(--fg-muted-on-tint)}
+/* Scroll buttons — present at EVERY width. This is what made the deleted
+   `Scroll to see more →` line redundant (COPY-LOCKED E1). */
+.nh-scroll{
+  position:absolute;top:38%;z-index:3;
+  width:44px;height:44px;border-radius:999px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface-raised);color:var(--fg-strong);
+  box-shadow:0 6px 20px rgb(0 0 0 / .18), inset 0 0 0 1px var(--edge);
+  transition:transform .2s var(--ease-brand),opacity .2s ease;
+}
+.nh-scroll svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.nh-scroll:active{transform:scale(.94)}
+.nh-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.nh-scroll[disabled]{opacity:.35;cursor:default}
+.nh-scroll-l{left:-14px} .nh-scroll-r{right:-14px}
+@container page (max-width:880px){
+  .nh-shots{padding-block:56px}
+  .nh-rail{gap:18px;padding-inline:calc(50cqw - 105px)}
+  .nh-shot{width:210px}
+  .nh-device{border-radius:36px;padding:7px}
+  .nh-device img{border-radius:30px}
+  .nh-scroll-l{left:2px} .nh-scroll-r{right:2px}
+}
+
+/* ==========================================================================
+   6. FAQ — hairline disclosure rows, not four boxes
+
+   The rhythm break. Everything above this point is cards; the FAQ is a narrow
+   column of hairline-separated rows, which is what Apple ships and what the
+   About contract means by "list sections get plain headings".
+   ========================================================================== */
+.nh-faq{
+  background:var(--surface-raised);
+  border-block:1px solid var(--edge);
+  padding-block:80px;
+}
+.nh-faq-list{max-width:760px;margin-inline:auto;border-top:1px solid var(--edge)}
+.nh-q{border-bottom:1px solid var(--edge)}
+.nh-q summary{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
+  padding:24px 4px;cursor:pointer;list-style:none;
+  font-size:17px;font-weight:700;color:var(--fg-strong);letter-spacing:-.01em;
+  transition:color .2s ease;
+}
+.nh-q summary::-webkit-details-marker{display:none}
+.nh-q summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+@media (hover:hover) and (pointer:fine){ .nh-q summary:hover{color:var(--accent)} }
+/* A rotating plus, self-drawn. NOT one of the five link-affordance glyphs:
+   grammar v2 assigns chevron-right to internal navigation, and a disclosure
+   is neither navigation nor a link. Same reasoning that keeps the ticker's
+   transport glyphs out of LinkAffordance.tsx. */
+.nh-q-mark{
+  flex:none;width:20px;height:20px;margin-top:2px;color:var(--accent);
+  transition:transform .28s var(--ease-brand);
+}
+.nh-q-mark svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.nh-q[open] .nh-q-mark{transform:rotate(45deg)}
+.nh-q-body{padding:0 44px 26px 4px;color:var(--fg-muted);font-size:15.5px;line-height:1.7}
+@container page (max-width:880px){
+  .nh-faq{padding-block:56px}
+  .nh-q summary{font-size:16px;padding:20px 2px}
+  .nh-q-body{padding:0 8px 22px 2px;font-size:15px}
+}
+
+/* ==========================================================================
+   7. PRIVACY — the closing green band
+
+   The page's second and last green surface, and the reason the page has a
+   frame rather than a top. "Nothing leaves your device." is the closing
+   argument, and it is the only heading on the page that is a STATEMENT rather
+   than a label -- which is precisely when the sitewide eyebrow pattern earns
+   its keep. It is the one eyebrow on the page. See NOTES §E.
+
+   Its colour is --flagship-meta, NOT --accent: on the green ground the accent
+   blue has no business, and the meta mint measures 5.75:1 on the band's
+   lightest stop.
+   ========================================================================== */
+.nh-privacy{padding-block:80px}
+.nh-priv-card{
+  position:relative;overflow:hidden;border-radius:28px;
+  border:1px solid var(--flagship-edge);
+  background:var(--flagship-bg);
+  padding:72px 48px 52px;color:var(--flagship-fg);
+}
+.nh-priv-card::after{content:"";position:absolute;inset:0;pointer-events:none;background:var(--flagship-glow)}
+.nh-priv-card>*{position:relative;z-index:1}
+.nh-priv-head{text-align:center;margin-bottom:44px}
+.nh-priv-head .section-eyebrow{color:var(--flagship-meta)}
+.nh-priv-head .section-heading{color:var(--flagship-fg)}
+.nh-priv-head .section-sub{color:var(--flagship-body);max-width:46ch}
+.nh-priv-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:820px;margin-inline:auto}
+/* CHANGE 3 (N2 v2). These carried a translucent-white tile, which is a light
+   surface stacked on the band -- exactly what home/APPROVED.md's generalized
+   contrast rule ("green-on-green was the blend bug") and Apple's "never stack
+   a light translucent surface on another" both forbid. They now take the SAME
+   treatment the arch icon's tile already gets on this band: a solid WHITE
+   tile. No new treatment, no new colour.
+
+   MEASURED: white is 7.57:1 against the band's lightest stop, far above the
+   3:1 non-text floor, so it contrasts rather than blends. Ink comes from the
+   band's own palette rather than the neutral ladder -- the card is
+   theme-agnostic, and --fg-* would put navy-200 body text on a white card in
+   dark. */
+.nh-priv-tile{
+  display:block;border-radius:18px;padding:28px 26px;
+  background:var(--flagship-pill-bg);
+  box-shadow:var(--flagship-card-shadow);
+  /* Same curve, same duration, same -6px as `.home-tile`. The class differs
+     only because `.home-tile`'s ground is --surface-raised, which would flip
+     navy in dark on a band that does not change. */
+  transition:transform .28s var(--ease-brand),box-shadow .28s var(--ease-brand);
+}
+.nh-priv-tile:active{transform:scale(.98)}
+.nh-priv-tile:focus-visible{outline:2px solid var(--flagship-meta);outline-offset:3px}
+@media (hover:hover) and (pointer:fine){
+  .nh-priv-tile:hover{transform:translateY(-6px);box-shadow:var(--flagship-card-shadow-hover)}
+}
+.nh-priv-tile .ico{width:26px;height:26px;color:var(--flagship-pill-fg);margin-bottom:16px}
+.nh-priv-tile .ico svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nh-priv-tile h3{font-size:18px;font-weight:700;color:var(--flagship-pill-fg);letter-spacing:-.01em}
+.nh-priv-tile p{margin-top:8px;font-size:14px;line-height:1.6;color:var(--flagship-card-body)}
+.nh-priv-tile .go{margin-top:16px;display:inline-block;font-size:14px;font-weight:700;color:var(--flagship-pill-fg)}
+.nh-priv-foot{margin-top:36px;text-align:center}
+.nh-priv-foot p{font-size:14px;color:var(--flagship-body)}
+.nh-priv-foot a{
+  display:inline-block;margin-top:6px;font-size:18px;font-weight:700;color:var(--flagship-fg);
+  border-bottom:1px solid transparent;transition:border-color .2s ease,transform 100ms ease-out;
+}
+.nh-priv-foot a:active{transform:scale(.98)}
+.nh-priv-foot a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media (hover:hover) and (pointer:fine){ .nh-priv-foot a:hover{border-bottom-color:var(--flagship-meta)} }
+@container page (max-width:880px){
+  .nh-privacy{padding-block:56px}
+  .nh-priv-card{padding:52px 22px 46px;border-radius:24px}
+  .nh-priv-grid{grid-template-columns:1fr;gap:12px}
+  .nh-priv-tile{padding:22px 20px}
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.nh-foot{
+  border-top:1px solid var(--edge-soft);
+  padding-block:56px;display:flex;justify-content:space-between;gap:8px;
+  color:var(--fg-subtle);font-size:13px;
+}
+@container page (max-width:640px){ .nh-foot{flex-direction:column;align-items:center;text-align:center} }
+
+/* ==========================================================================
+   Reduced motion — the end state, never a paused frame
+   ========================================================================== */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .nh-enter,[data-reveal],[data-reveal="pending"],[data-reveal="in"],.home-tile[data-reveal="in"]{
+    opacity:1;translate:none;transform:none;
+  }
+  /* Auto-advance is off entirely, so there is nothing to pause and a pause
+     button would be a confusing control. Hidden, exactly as the Home ticker
+     hides its checkbox. prev/next/dots stay -- the carousel becomes manual. */
+  .nh-rv-pause{display:none}
+  @media (hover:hover) and (pointer:fine){
+    .home-tile:hover,.nh-priv-tile:hover{transform:none}
+  }
+}
+
+/* ==========================================================================
+   MOCKUP CHROME — not part of the design. Labels + the phone pane.
+   ========================================================================== */
+.mk-bar{
+  position:sticky;top:0;z-index:50;background:#000;color:#fff;
+  font:700 11px/1 'Roboto',sans-serif;letter-spacing:.16em;text-transform:uppercase;
+  padding:11px 20px;display:flex;justify-content:space-between;
+}
+.mk-bar span{opacity:.55;letter-spacing:.1em}
+.mk-phone-wrap{background:#111820;padding:56px 20px 72px;text-align:center}
+[data-theme="dark"] .mk-phone-wrap{background:#020a13}
+.mk-phone-label{
+  color:#8aa0b6;font:900 11px/1 'Roboto',sans-serif;letter-spacing:.22em;margin-bottom:22px;
+}
+.mk-phone{
+  width:390px;margin:0 auto;text-align:left;
+  border-radius:38px;overflow:hidden;background:var(--surface);
+  box-shadow:0 30px 80px rgb(0 0 0 / .55), 0 0 0 10px #1b2027, 0 0 0 11px #000;
+}
+.mk-phone .mk-phone-scroll{height:1180px;overflow-y:auto;overflow-x:hidden}
+.mk-phone .mk-phone-scroll::-webkit-scrollbar{width:0}
+</style>
+</head>
+<body>
+
+<div class="mk-bar">N2 v2 · /nahtadi · DARK (canonical) <span>same file as v2-light.html · only data-theme differs</span></div>
+
+<!-- ==========================================================================
+     THE PAGE
+     ========================================================================== -->
+<div id="page" class="cq">
+
+  <div class="page-wrap">
+    <nav class="nav">
+      <a class="nav-logo" href="#">
+        <img src="../../../../public/logos/hendaseh-mark.svg" alt="">Hendaseh
+      </a>
+      <div class="nav-links"><span>Home</span><span>About</span><span>Projects</span><span>Contact</span></div>
+      <button class="nav-burger" aria-label="Menu">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1h18M1 7h18M1 13h18"/></svg>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===== 1. HERO ===== -->
+  <div class="page-wrap nh-hero-region">
+    <header class="nh-hero">
+      <div class="nh-hero-tile nh-enter" style="--enter-delay:0s">
+        <img src="../../../../public/images/nahtadi/icon.png" alt="Nahtadi App Icon">
+      </div>
+
+      <a class="nh-badge nh-enter" style="--enter-delay:.1s" href="#" target="_blank" rel="noopener">
+        <span>5.0★ · 7 ratings on the App Store</span>
+      </a>
+
+      <h1 class="nh-hero-title nh-enter" style="--enter-delay:.2s">Nahtadi</h1>
+      <p class="nh-hero-kicker nh-enter" style="--enter-delay:.28s">Islamic Prayer Times</p>
+      <p class="nh-hero-sub nh-enter" style="--enter-delay:.36s">Accurate prayer times and Qibla direction. No ads. No tracking. Just salat.</p>
+
+      <div class="nh-hero-cta nh-enter" style="--enter-delay:.46s">
+        <a href="#" target="_blank" rel="noopener">
+          <img src="../../../../public/images/app-store-badge.svg" alt="Download on the App Store">
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <!-- ===== 2. APP PREVIEW — moved directly after the hero (N2 v2 change 1).
+       The App Store puts screenshots immediately after the title, which is the
+       format every visitor arriving from that listing already knows. For an app
+       the screenshots ARE the proof, and they were previously behind reviews and
+       feature copy. ===== -->
+  <section class="nh-shots">
+    <div class="page-wrap">
+      <div class="section-head" data-reveal>
+        <h2 class="section-heading">App Preview</h2>
+        <p class="section-sub">Six screens from the app.</p>
+      </div>
+      <div class="nh-gallery" data-reveal>
+        <button class="nh-scroll nh-scroll-l" data-rail-prev aria-label="Scroll left" disabled>
+          <svg viewBox="0 0 10.9 15.8"><path d="M7.9 3 3 7.9 7.9 12.8"/></svg>
+        </button>
+        <div class="nh-rail" data-rail>
+          <figure class="nh-shot">
+            <div class="nh-device"><img src="../../../../public/images/nahtadi/screenshot-1.png" alt="Prayer Times"></div>
+            <figcaption class="nh-shot-cap"><h3>Prayer Times</h3><p>View all 5 daily prayer times with countdown timer and Hijri date.</p></figcaption>
+          </figure>
+          <figure class="nh-shot">
+            <div class="nh-device"><img src="../../../../public/images/nahtadi/screenshot-2.png" alt="Qibla Compass"></div>
+            <figcaption class="nh-shot-cap"><h3>Qibla Compass</h3><p>Find the exact direction to Mecca using GPS and your device compass.</p></figcaption>
+          </figure>
+          <figure class="nh-shot">
+            <div class="nh-device"><img src="../../../../public/images/nahtadi/screenshot-3.png" alt="Calculation Methods"></div>
+            <figcaption class="nh-shot-cap"><h3>Calculation Methods</h3><p>Choose the method your region follows.</p></figcaption>
+          </figure>
+          <figure class="nh-shot">
+            <div class="nh-device"><img src="../../../../public/images/nahtadi/screenshot-4.png" alt="Notifications"></div>
+            <figcaption class="nh-shot-cap"><h3>Notifications</h3><p>Turn notifications on per prayer, Fajr through Isha.</p></figcaption>
+          </figure>
+          <figure class="nh-shot">
+            <div class="nh-device"><img src="../../../../public/images/nahtadi/screenshot-5.png" alt="Settings"></div>
+            <figcaption class="nh-shot-cap"><h3>Settings</h3><p>Full control over calculation methods, Asr timing, and Hijri date adjustment.</p></figcaption>
+          </figure>
+          <figure class="nh-shot">
+            <div class="nh-device"><img src="../../../../public/images/nahtadi/screenshot-6.png" alt="Offline Mode"></div>
+            <figcaption class="nh-shot-cap"><h3>Offline Mode</h3><p>Works without internet, using your last known location.</p></figcaption>
+          </figure>
+        </div>
+        <button class="nh-scroll nh-scroll-r" data-rail-next aria-label="Scroll right">
+          <svg viewBox="0 0 10.9 15.8"><path d="M3 3 7.9 7.9 3 12.8"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3. REVIEWS ===== -->
+  <section class="nh-reviews">
+    <div class="page-wrap">
+    <div class="nh-rv" role="group" aria-roledescription="carousel" aria-label="App Store reviews">
+      <div class="nh-rv-stack" data-rv-stack>
+        <!-- All six stacked in ONE grid cell. The tallest sets the height. -->
+        <div class="nh-rv-slide" data-current="true" aria-roledescription="slide" aria-label="1 of 6">
+          <div class="nh-rv-stars" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg></div>
+          <p class="nh-rv-title">Most Accurate</p>
+          <blockquote class="nh-rv-quote">&ldquo;I have used many prayer times Apps before but for sure Nahtadi is the most accurate one of any I have found. It is very user friendly and I like that there are no advertisements nor data gathering.&rdquo;</blockquote>
+          <p class="nh-rv-who">DinaYasin · Jan 16, 2026</p>
+        </div>
+        <div class="nh-rv-slide" aria-roledescription="slide" aria-label="2 of 6">
+          <div class="nh-rv-stars" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg></div>
+          <p class="nh-rv-title">Best prayer app!</p>
+          <blockquote class="nh-rv-quote">&ldquo;Thank you to the creator of this app that has helped me with keeping up on my prayers and not spamming me with a million ads or collecting my data!!!&rdquo;</blockquote>
+          <p class="nh-rv-who">Moodisms · Apr 24, 2026</p>
+        </div>
+        <div class="nh-rv-slide" aria-roledescription="slide" aria-label="3 of 6">
+          <div class="nh-rv-stars" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg></div>
+          <p class="nh-rv-title">Really helpful!</p>
+          <blockquote class="nh-rv-quote">&ldquo;Good for traveling both locally and abroad. Very accurate and impressive prayer time calculation methods. Highly recommend!!!&rdquo;</blockquote>
+          <p class="nh-rv-who">MohamedAB123 · Jan 11, 2026</p>
+        </div>
+        <div class="nh-rv-slide" aria-roledescription="slide" aria-label="4 of 6">
+          <div class="nh-rv-stars" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg></div>
+          <p class="nh-rv-title">Very unique and helpful app!!</p>
+          <blockquote class="nh-rv-quote">&ldquo;Honestly I&rsquo;ve used a wide array of Muslim Deen/Prayer apps and this one was very unique. Even while traveling and in Makkah this app was super helpful. I&rsquo;m very happy with my purchase!&rdquo;</blockquote>
+          <p class="nh-rv-who">HayaSH-123 · Jan 11, 2026</p>
+        </div>
+        <div class="nh-rv-slide" aria-roledescription="slide" aria-label="5 of 6">
+          <div class="nh-rv-stars" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg></div>
+          <p class="nh-rv-title">Perfect day-to-day and on-the-go prayer app</p>
+          <blockquote class="nh-rv-quote">&ldquo;Convenient app with no adds, gives you all prayer times for the day for your specific location. Qibla feature is super helpful and reliable as well.&rdquo;</blockquote>
+          <p class="nh-rv-who">tyounis18 · Jan 11, 2026</p>
+        </div>
+        <div class="nh-rv-slide" aria-roledescription="slide" aria-label="6 of 6">
+          <div class="nh-rv-stars" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg><svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/></svg></div>
+          <p class="nh-rv-title">Nahtadi app</p>
+          <blockquote class="nh-rv-quote">&ldquo;Nahtadi app is a very user friendly with clear and clean interface, privacy is maintained as it does not collect your data.&rdquo;</blockquote>
+          <p class="nh-rv-who">Daniaabubaker · Jan 8, 2026</p>
+        </div>
+      </div>
+
+      <div class="nh-rv-controls">
+        <button class="nh-rv-btn" data-rv-prev aria-label="Previous review">
+          <svg viewBox="0 0 10.9 15.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 3 3 7.9 7.9 12.8"/></svg>
+        </button>
+        <div class="nh-rv-dots" role="tablist" aria-label="Choose review">
+          <button class="nh-rv-dot" role="tab" aria-selected="true"  aria-label="Review 1: Most Accurate"></button>
+          <button class="nh-rv-dot" role="tab" aria-selected="false" aria-label="Review 2: Best prayer app!"></button>
+          <button class="nh-rv-dot" role="tab" aria-selected="false" aria-label="Review 3: Really helpful!"></button>
+          <button class="nh-rv-dot" role="tab" aria-selected="false" aria-label="Review 4: Very unique and helpful app!!"></button>
+          <button class="nh-rv-dot" role="tab" aria-selected="false" aria-label="Review 5: Perfect day-to-day and on-the-go prayer app"></button>
+          <button class="nh-rv-dot" role="tab" aria-selected="false" aria-label="Review 6: Nahtadi app"></button>
+        </div>
+        <button class="nh-rv-btn" data-rv-next aria-label="Next review">
+          <svg viewBox="0 0 10.9 15.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3 7.9 7.9 3 12.8"/></svg>
+        </button>
+        <!-- THE PAUSE CONTROL. Permanently visible, works on every input type. -->
+        <button class="nh-rv-btn nh-rv-pause" data-rv-pause aria-pressed="false">
+          <svg class="ico-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.2" y="1.6" width="3.4" height="10.8" rx="1.1"/><rect x="8.4" y="1.6" width="3.4" height="10.8" rx="1.1"/></svg>
+          <svg class="ico-play"  viewBox="0 0 14 14" aria-hidden="true"><path d="M3.4 2.1a1 1 0 0 1 1.52-.85l6.3 3.9a1 1 0 0 1 0 1.7l-6.3 3.9A1 1 0 0 1 3.4 9.9z"/></svg>
+          <span class="sr ico-pause">Pause the reviews</span>
+          <span class="sr ico-play">Play the reviews</span>
+        </button>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- ===== 4. WHY NAHTADI? ===== -->
+  <section class="page-wrap nh-why">
+    <div class="section-head" data-reveal>
+      <h2 class="section-heading">Why Nahtadi?</h2>
+      <p class="section-sub">Most prayer apps are free because <em>you</em> are the product. Nahtadi isn&rsquo;t.</p>
+    </div>
+    <div class="nh-why-card" data-reveal>
+      <div class="nh-why-cell"><div class="nh-why-txt"><h3>No Ads</h3><p>Zero interruptions during salat.</p></div></div>
+      <div class="nh-why-cell"><div class="nh-why-txt"><h3>No Data Collection</h3><p>Nothing leaves your device.</p></div></div>
+      <div class="nh-why-cell is-price">
+        <div class="nh-why-txt">
+          <h3>One-Time Purchase</h3>
+          <span class="nh-why-price">$3.99</span>
+          <p>Pay once. No subscriptions.</p>
+        </div>
+      </div>
+      <div class="nh-why-cell"><div class="nh-why-txt"><h3>Works Offline</h3><p>Calculated on-device, anywhere.</p></div></div>
+      <div class="nh-why-cell"><div class="nh-why-txt"><h3>Muslim-Built</h3><p>By a Muslim developer, for the Ummah.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ===== 5. EVERYTHING YOU NEED FOR SALAT ===== -->
+  <section class="page-wrap nh-features">
+    <div class="section-head" data-reveal>
+      <h2 class="section-heading">Everything You Need for Salat</h2>
+      <p class="section-sub">Prayer times, Qibla, Hijri dates, and notifications. All of it on your device.</p>
+    </div>
+    <div class="nh-fgrid">
+      <div class="nh-fcard home-tile" data-reveal style="--reveal-delay:0s">
+        <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg></div>
+        <h3>5 Daily Prayer Times</h3>
+        <p>Accurate calculations for Fajr, Dhuhr, Asr, Maghrib, and Isha using astronomical algorithms.</p>
+      </div>
+      <div class="nh-fcard home-tile" data-reveal style="--reveal-delay:.05s">
+        <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.6 8.4 13.8 13.8 8.4 15.6 10.2 10.2z"/></svg></div>
+        <h3>Qibla Direction</h3>
+        <p>Points to the Kaaba in Mecca from anywhere in the world, using your device compass.</p>
+      </div>
+      <div class="nh-fcard home-tile" data-reveal style="--reveal-delay:.1s">
+        <div class="ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.6h17M8.5 3.2v3.4M15.5 3.2v3.4"/></svg></div>
+        <h3>Hijri Calendar</h3>
+        <p>Hijri and Gregorian dates together, with a converter for any date.</p>
+      </div>
+      <div class="nh-fcard home-tile" data-reveal style="--reveal-delay:.15s">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M18 8.6a6 6 0 1 0-12 0c0 5-2 6.4-2 6.4h16s-2-1.4-2-6.4Z"/><path d="M10.3 19a2 2 0 0 0 3.4 0"/></svg></div>
+        <h3>Prayer Notifications</h3>
+        <p>A reminder for each prayer, switched on or off individually.</p>
+      </div>
+      <div class="nh-fcard home-tile" data-reveal style="--reveal-delay:0s">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M2.6 8.9a14 14 0 0 1 18.8 0M5.8 12.4a9.4 9.4 0 0 1 12.4 0M9 15.9a4.8 4.8 0 0 1 6 0"/><circle cx="12" cy="19.2" r="1.1" fill="currentColor" stroke="none"/></svg></div>
+        <h3>Fully Offline</h3>
+        <p>Calculated on your device. No internet connection required.</p>
+      </div>
+      <div class="nh-fcard home-tile" data-reveal style="--reveal-delay:.05s">
+        <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg></div>
+        <h3>Works Worldwide</h3>
+        <p>Works at any latitude, with adjustments beyond 48.5 degrees north or south.</p>
+      </div>
+      <div class="nh-fcard home-tile" data-reveal style="--reveal-delay:.1s">
+        <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.1"/><path d="M19.4 14.6a1.6 1.6 0 0 0 .32 1.77l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-.97 1.47V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1.05-1.47 1.6 1.6 0 0 0-1.77.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.6 1.6 0 0 0 .32-1.77 1.6 1.6 0 0 0-1.47-.97H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.47-1.05 1.6 1.6 0 0 0-.32-1.77l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.6 1.6 0 0 0 1.77.32H9a1.6 1.6 0 0 0 .97-1.47V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.32 1.77V9a1.6 1.6 0 0 0 1.47.97H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.47.97Z"/></svg></div>
+        <h3>Multiple Calculation Methods</h3>
+        <p>ISNA, MWL, UQU, EGAS, and more. Pick the method your region follows.</p>
+      </div>
+      <div class="nh-fcard home-tile" data-reveal style="--reveal-delay:.15s">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 2.8 19.6 6v5.4c0 4.6-3.1 8.1-7.6 9.8-4.5-1.7-7.6-5.2-7.6-9.8V6z"/><path d="M9 12.1l2.1 2.1 4-4"/></svg></div>
+        <h3>Privacy First</h3>
+        <p>All data stays on your device. No tracking and no data collection.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 6. FAQ ===== -->
+  <section class="nh-faq">
+    <div class="page-wrap">
+    <div class="section-head" data-reveal>
+      <h2 class="section-heading">Frequently Asked Questions</h2>
+    </div>
+    <div class="nh-faq-list" data-reveal>
+      <details class="nh-q" open>
+        <summary>Why isn&rsquo;t it free?
+          <span class="nh-q-mark"><svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12"/></svg></span>
+        </summary>
+        <p class="nh-q-body">Many prayer apps are free because they make money from ads and your data. Your worship should not be a revenue stream. Nahtadi is a one-time $3.99 purchase: no ads, so there is nothing to gain from tracking you, and no subscription prompts arriving in the middle of salat.</p>
+      </details>
+      <details class="nh-q">
+        <summary>Is my data safe?
+          <span class="nh-q-mark"><svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12"/></svg></span>
+        </summary>
+        <p class="nh-q-body">Yes. Nahtadi collects zero personal data. Your location, settings, and preferences stay on your device. There are no analytics, no third-party trackers, and no accounts to create.</p>
+      </details>
+      <details class="nh-q">
+        <summary>Does it work without internet?
+          <span class="nh-q-mark"><svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12"/></svg></span>
+        </summary>
+        <p class="nh-q-body">Prayer times are calculated on your device using astronomical algorithms, so Nahtadi works offline anywhere in the world once installed.</p>
+      </details>
+      <details class="nh-q">
+        <summary>Which calculation methods are supported?
+          <span class="nh-q-mark"><svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12"/></svg></span>
+        </summary>
+        <p class="nh-q-body">Nahtadi supports the major calculation methods: ISNA (North America), Muslim World League (MWL), Umm al-Qura (UQU, Saudi Arabia), the Egyptian General Authority (EGAS), and others. It also applies high-latitude adjustments beyond 48.5 degrees north or south, where the standard methods can fail during certain seasons.</p>
+      </details>
+    </div>
+    </div>
+  </section>
+
+  <!-- ===== 7. PRIVACY — closing green band ===== -->
+  <section class="page-wrap nh-privacy">
+    <div class="nh-priv-card" data-reveal>
+      <div class="nh-priv-head">
+        <span class="section-eyebrow">PRIVACY</span>
+        <h2 class="section-heading">Nothing leaves your device.</h2>
+        <p class="section-sub">Nahtadi collects nothing and transmits nothing. Your data stays on your device.</p>
+      </div>
+      <div class="nh-priv-grid">
+        <a class="nh-priv-tile" href="/nahtadi/privacy">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 2.8 19.6 6v5.4c0 4.6-3.1 8.1-7.6 9.8-4.5-1.7-7.6-5.2-7.6-9.8V6z"/></svg></div>
+          <h3>Privacy Policy</h3>
+          <p>What Nahtadi stores, what it never sends, and how to revoke location access.</p>
+          <span class="go">Read Privacy <span class="weld">Policy<svg class="link-glyph link-glyph-chevron" viewBox="0 0 10.9 15.8" stroke-width="2" aria-hidden="true"><path d="M3 3 7.9 7.9 3 12.8"/></svg></span></span>
+        </a>
+        <a class="nh-priv-tile" href="/nahtadi/support">
+          <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.4 9.2a2.7 2.7 0 1 1 3.6 2.5c-.6.25-1 .84-1 1.5v.4"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg></div>
+          <h3>App Support</h3>
+          <p>Setup, calculation methods, notifications, and how to reach me.</p>
+          <span class="go">Get <span class="weld">Support<svg class="link-glyph link-glyph-chevron" viewBox="0 0 10.9 15.8" stroke-width="2" aria-hidden="true"><path d="M3 3 7.9 7.9 3 12.8"/></svg></span></span>
+        </a>
+      </div>
+      <div class="nh-priv-foot">
+        <p>Questions or feedback?</p>
+        <a href="mailto:support@hendaseh.com?subject=Nahtadi App Inquiry">support@hendaseh.com</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-wrap">
+    <footer class="nh-foot">
+      <span>© 2026 Omar Younis</span>
+      <span>omar@hendaseh.com · Sunnyvale, CA</span>
+    </footer>
+  </div>
+
+</div><!-- /#page -->
+
+<!-- ==========================================================================
+     PHONE PANE — 390px, contractual per home/APPROVED.md mobile rules.
+     Not a redraw: the desktop markup above is CLONED into a 390px container,
+     so it renders through the SAME rules. It cannot drift from what is above.
+     ========================================================================== -->
+<div class="mk-phone-wrap">
+  <div class="mk-phone-label">PHONE PANE · 390px · same markup, same rules</div>
+  <div class="mk-phone">
+    <div class="mk-phone-scroll cq" id="phone"></div>
+  </div>
+</div>
+
+<script>
+/* ---- Phone pane: clone, never redraw ---- */
+(function(){
+  var src = document.getElementById('page');
+  var dst = document.getElementById('phone');
+  dst.innerHTML = src.innerHTML;
+  dst.querySelectorAll('[id]').forEach(function(n){ n.removeAttribute('id'); });
+})();
+
+/* ---- Reviews carousel — the specified behaviour, in both panes ---- */
+document.querySelectorAll('.nh-rv').forEach(function(root){
+  var slides = root.querySelectorAll('.nh-rv-slide');
+  var dots   = root.querySelectorAll('.nh-rv-dot');
+  var pause  = root.querySelector('[data-rv-pause]');
+  var i = 0, paused = false, focusHeld = false, timer = null;
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function show(n){
+    i = (n + slides.length) % slides.length;
+    slides.forEach(function(s,x){ s.setAttribute('data-current', x===i ? 'true':'false'); });
+    dots.forEach(function(d,x){ d.setAttribute('aria-selected', x===i ? 'true':'false'); });
+  }
+  function tick(){ show(i+1); }
+  function sync(){
+    clearInterval(timer);
+    /* Auto-advance is off entirely under reduced motion, off while the user
+       has paused it, and off while focus is inside the carousel. Hover is NOT
+       a pause trigger -- deleted for the same reason it was deleted on the
+       Home ticker: on touch a tap applies :hover and the content freezes
+       until you tap elsewhere. */
+    if (!reduced && !paused && !focusHeld && slides.length > 1) {
+      timer = setInterval(tick, 6000);
+    }
+  }
+  root.querySelector('[data-rv-prev]').addEventListener('click', function(){ show(i-1); sync(); });
+  root.querySelector('[data-rv-next]').addEventListener('click', function(){ show(i+1); sync(); });
+  dots.forEach(function(d,x){ d.addEventListener('click', function(){ show(x); sync(); }); });
+  pause.addEventListener('click', function(){
+    paused = !paused;
+    pause.setAttribute('aria-pressed', paused ? 'true' : 'false');
+    sync();
+  });
+  root.addEventListener('focusin',  function(){ focusHeld = true;  sync(); });
+  root.addEventListener('focusout', function(e){
+    if (!root.contains(e.relatedTarget)) { focusHeld = false; sync(); }
+  });
+  show(0); sync();
+});
+
+/* ---- Screenshot rail ---- */
+document.querySelectorAll('.nh-gallery').forEach(function(g){
+  var rail = g.querySelector('[data-rail]');
+  var prev = g.querySelector('[data-rail-prev]');
+  var next = g.querySelector('[data-rail-next]');
+  function step(){ var s = rail.querySelector('.nh-shot'); return s ? s.offsetWidth + 28 : 260; }
+  function state(){
+    prev.disabled = rail.scrollLeft <= 8;
+    next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 8;
+  }
+  prev.addEventListener('click', function(){ rail.scrollBy({left:-step(), behavior:'smooth'}); });
+  next.addEventListener('click', function(){ rail.scrollBy({left: step(), behavior:'smooth'}); });
+  rail.addEventListener('scroll', state); state();
+});
+
+/* ---- Scroll reveal (mirrors ScrollReveal.tsx: 9999px asymmetric top margin,
+        no threshold, -80px bottom) ---- */
+(function(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.setAttribute('data-reveal','in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '9999px 0px -80px 0px' });
+  document.querySelectorAll('[data-reveal]').forEach(function(el){
+    var top = el.getBoundingClientRect().top;
+    if (top > window.innerHeight) { el.setAttribute('data-reveal','pending'); io.observe(el); }
+  });
+})();
+</script>
+</body>
+</html>

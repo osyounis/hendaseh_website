@@ -6,6 +6,20 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
 
+  // Version preview URLs (https://<version-prefix>-hendaseh.hendaseh.workers.dev)
+  // for testing branch builds on real devices before anything merges to main.
+  //
+  // WARNING (verified 2026-08-29): THIS FLAG ALONE IS NOT ENOUGH AND THE URLS
+  // CURRENTLY 404. The subdomain and URL shape above are correct, but both a
+  // version preview URL and the Worker's own hendaseh.hendaseh.workers.dev
+  // return Cloudflare `error code: 1042` — Cloudflare refusing to route,
+  // because the Worker is not exposed on workers.dev at all (`workers_dev`
+  // defaults to false once `routes` are declared, and preview URLs ride on the
+  // same routing). Enabling it is a dashboard action; do NOT try to fix it by
+  // removing the `routes` below, which would detach hendaseh.com. See
+  // docs/DECISIONS.md, 2026-08-29.
+  "preview_urls": true,
+
   // Production hostnames. Declared here rather than clicked in the dashboard so
   // every deploy reconciles them: a CI deploy from a config WITHOUT these would
   // detach the custom domains and take the live site down.

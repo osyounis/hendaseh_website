@@ -1,9 +1,19 @@
 @import "tailwindcss";
+@import "./styles/shared.css";
+@import "./styles/home.css";
+@import "./styles/projects.css";
+@import "./styles/case-study.css";
+@import "./styles/about.css";
+@import "./styles/contact.css";
+@import "./styles/nahtadi.css";
 
-/* Dark mode is opt-in via data-theme, NOT prefers-color-scheme, until
-   sub-project 4 applies tokens to every page. Flipping on media query now
-   would restyle the live site inconsistently. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* Dark mode follows the OS setting. It was opt-in behind `[data-theme="dark"]`
+   for the whole of sub-project 4 so pages could move onto the token system one
+   at a time without a half-dark site; every page is on tokens now, so the
+   attribute is gone (Task B6) and the media query is the only switch. Declared
+   explicitly rather than left to Tailwind's default so the mechanism is stated
+   where the old one was, instead of being an absence a reader has to notice. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
 
 @theme {
   /* ---- Hendaseh brand core (brandbook, verbatim) ---- */
@@ -29,12 +39,69 @@
   --color-navy-200: #c7d6e6;
   --color-navy-300: #9db8d1;
   --color-navy-400: #6d94b7;
+  --color-navy-450: #6a87a5;
   --color-navy-500: #4b779f;
   --color-navy-600: #3a5f85;
   --color-navy-700: #304d6c;
   --color-navy-800: #2b425b;
   --color-navy-900: #1a2c42;
   --color-navy-950: #0a1a2f;
+
+  /* ---- Apple gray ladder (light theme, v11 audit).
+         Every step has a consumer in the semantic block below; the ladder
+         exists because "soft grays on a tinted ground" was the specific
+         failure the v11 audit corrected. ---- */
+  --color-ink-50: #fbfbfd;  /* page ground */
+  --color-ink-100: #e8e8ed; /* soft hairline (ticker items, footer rule) */
+  --color-ink-200: #e3e3e8; /* secondary pill fill on plain/white ground */
+  --color-ink-300: #d2d2d7; /* card hairline */
+  --color-ink-400: #aeaeb2; /* tertiary / separator glyphs */
+  --color-ink-500: #86868b; /* footer text */
+  --color-ink-600: #6e6e73; /* muted text floor */
+  /* Apple's secondary-label gray. Added by Task B3: the About page sets its
+     long-form prose (the hero lede and the arc's chapter paragraphs) one step
+     off primary rather than at full #1d1d1f, which is what the approved
+     v9-light mockup draws and what a 64ch measure wants. */
+  --color-ink-800: #3a3a3c;
+  --color-ink-900: #1d1d1f; /* primary text */
+
+  /* ---- Light blue tints: hero sky gradient stop + centre-tile gradient stop ---- */
+  --color-haze-100: #eef4fb;
+  --color-haze-200: #e6eef7;
+
+  /* ---- Apple system blue: the v11 light-theme accent. Named rather than
+         inlined so it shows as a swatch on /dev/tokens like every other new
+         colour; distinct from --color-brand (#0093FF, the Hendaseh mark
+         blue) — this is Apple's own accent, used only for --accent. ---- */
+  --color-apple-blue: #0071e3;
+
+  /* ---- Dark grounds. Deeper than navy-950, and role-named rather than
+         numbered because they are four separate grounds, not a ladder. ---- */
+  --color-deep-page: #04101e;
+  --color-deep-sky: #050e1a;
+  --color-deep-ticker: #060f1c;
+  --color-deep-card: #0b1c30;
+  /* One step below --color-deep-card. The About page's Education and
+     "Off the clock" cards are deliberately quieter than its career cards;
+     in the light theme both are plain white, so the distinction exists only
+     here. */
+  --color-deep-card-quiet: #081627;
+  /* Top stop of the About hero sky. Distinct from --color-deep-core-bottom
+     (#071a30, the Projects sky's top stop) by design -- the About sky is the
+     taller band of the two and is authored a shade lighter. */
+  --color-deep-about-sky: #081c33;
+  --color-deep-hairline: #0d1e33;
+  --color-deep-core-top: #0d2c4d;
+  --color-deep-core-bottom: #071a30;
+
+  /* ---- Nahtadi greens. The flagship band is a colour card that is
+         deliberately identical in both themes. ---- */
+  --color-nahtadi-100: #cfe9e2;
+  --color-nahtadi-200: #9ff0d9;
+  --color-nahtadi-600: #0f5f50;
+  --color-nahtadi-700: #073c33;
+  --color-nahtadi-800: #022e28;
+  --color-nahtadi-900: #04241f;
 
   /* ---- Typography ---- */
   --font-heading: var(--font-roboto-medium), system-ui, -apple-system, sans-serif;
@@ -62,29 +129,375 @@
   --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Semantic tokens: light values on :root, dark values under [data-theme="dark"]. */
+/* Semantic tokens: light values on :root, dark values under the
+   `prefers-color-scheme: dark` block near the bottom of this file.
+   Values are the v11 Apple-audit pair recorded in
+   docs/superpowers/mockups/home/APPROVED.md — light is Apple's gray ladder on a
+   near-white ground, dark is the navy-grounded sky. Tokens without a dark
+   override are deliberately theme-agnostic. */
 :root {
-  --surface: #ffffff;
-  --surface-raised: #f3f6fa;      /* navy-50 */
-  --surface-sunken: #e5ecf4;      /* navy-100 */
-  --fg-strong: #0a1a2f;           /* navy-950 */
-  --fg-body: #2b425b;             /* navy-800 */
-  --fg-muted: #4b779f;            /* navy-500 — 4.73:1 on surface (AA); 4.36:1 on surface-raised (AA-large only) */
-  --accent: #0076d1;              /* brand-600 — 4.65:1 on surface (AA); 4.29:1 on surface-raised (AA-large only) */
-  --accent-strong: #005da6;       /* brand-700 */
-  --edge: #c7d6e6;                /* navy-200 */
+  /* Both themes are real, and the browser has to know it. This is what makes
+     the UA paint scrollbars, the text caret, autofill and any unstyled form
+     control to match the active theme; without it a dark page keeps a white
+     scrollbar and a white caret. It also sets the canvas the browser paints
+     before `body`'s background applies. Not a token — `color-scheme` is a real
+     CSS property and belongs on the root element, not in `@theme`. */
+  color-scheme: light dark;
+
+  /* Layout */
+  --nav-h: 70px;
+
+  /* Surfaces */
+  --surface: var(--color-ink-50);
+  --surface-raised: #ffffff;
+  --surface-sunken: var(--color-ink-100);
+  --home-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100%);
+  /* The Projects page header band (the Projects contract draws a gradient
+     here where Home's dark sky is flat, so the two grounds are genuinely
+     different values and get separate tokens).
+     The light tint resolves at 100px -- a length, not a percentage, so it
+     does not move with the band's height -- which puts every word of header
+     copy on plain `--surface`. Measured: the eyebrow is `--accent` (#0071e3)
+     at 12px/900, which is 4.54:1 on `--surface` but only 4.37:1 on the
+     tinted stop, i.e. under the 4.5 floor. The nav sits in the tinted 100px,
+     and its own colours have far more headroom. */
+  --projects-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100px);
+  /* The About page hero band. It resolves at 100px for the SAME measured
+     reason --projects-sky does, and the number is deliberately identical:
+     the "ABOUT" eyebrow is --accent (#0071e3) at 12px/900 and its top edge
+     sits at 118px (70px of nav + 48px of grid padding). On the tinted stop
+     (#eef4fb) that measures 4.24:1 and on the interpolated colour at 118px
+     of a ~570px hero it is still only ~4.28:1 -- under the 4.5 floor for
+     normal text either way. Resolving the tint at a LENGTH rather than a
+     percentage puts every word of hero copy on plain --surface (4.54:1) and
+     does not move when the hero's height changes. The nav sits inside the
+     tinted 100px and its own colours have far more headroom.
+     Dark has no such problem (#57b4ff on #081c33 is 7.66:1), so it keeps the
+     mockup's full-height fade. */
+  --about-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100px);
+  /* The Contact page ground.
+
+     The approved v2-light pair draws a full-height wash (haze at 0% to the
+     page ground at 100%, i.e. Home's light sky exactly), and this resolves the
+     tint at 100px instead -- the SAME measured correction --projects-sky and
+     --about-sky already carry, at the same length, for the same reason. The
+     "CONTACT" eyebrow is --accent (#0071e3) at 12px/900 and its top edge sits
+     at 154px (70px of nav + 84px of band padding). Measured on the wash's
+     interpolated colour at that height (#f1f5fb) it is 4.29:1 -- under the 4.5
+     floor for normal text. Killing the tint at a LENGTH puts every word of
+     header copy on plain --surface (4.54:1) and does not move when the band's
+     height changes. Everything else on the band was measured and clears AA on
+     the wash regardless: the sub and the quiet lines at 4.68:1, and the tinted
+     `@` is 52px display type against a 3:1 floor.
+     Dark has no such problem and is the mockup's flat sky verbatim. */
+  --contact-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100px);
+  --ticker-surface: #ffffff;
+  --cta-surface: #ffffff;
+
+  /* Text ladder — monotonically lighter: body > muted > subtle > faint */
+  --fg-strong: var(--color-ink-900);
+  --fg-body: var(--color-ink-900);
+  --fg-muted: var(--color-ink-600);
+  /* Raised one step off APPROVED's literal ink-500 (#86868b): at 13px on
+     --surface (#fbfbfd) that value is 3.51:1, below the 4.5:1 AA floor for
+     normal text (the footer is the consumer). ink-600 clears AA at 4.91:1.
+     Do not "restore" ink-500 here without re-checking contrast. */
+  --fg-subtle: var(--color-ink-600);
+  --fg-faint: var(--color-ink-400);
+  /* One step below --fg-muted's ROLE but emphatically NOT --fg-faint, whose
+     light value (#aeaeb2) measures ~2.1:1 as text and is a separator-glyph
+     colour. Task N3 PROMOTED this out of two page-scoped aliases rather than
+     minting a third: `--about-when` (a career card's date stamp) and
+     `--contact-quiet` (Contact's clipboard hint, sign-off and handles) were
+     already the same ink-600 / navy-450 pair, and /nahtadi's review byline
+     needed it as a third consumer. Three consumers on two pages is a semantic
+     step, not a page detail, so the two page tokens now alias THIS and the
+     pair is declared once. Do not mint a fourth alias -- add a consumer.
+     Measured: 4.91:1 light on --surface, 5.07:1 on --surface-raised;
+     4.60:1 dark on a card. */
+  --fg-quiet: var(--color-ink-600);
+  /* B2 fix round: `.case-caption` sits on `--surface-sunken` (ink-100,
+     #e8e8ed), not `--surface`/white — a pairing `--fg-muted` never had a
+     consumer for. ink-600 (#6e6e73) on ink-100 measures 4.15:1, under the
+     4.5 AA floor for 13px normal text. This is a darker step used ONLY for
+     muted text on a tinted/sunken ground; --fg-muted itself is left alone
+     because its other consumers (footer, ticker, placeholder) sit on
+     --surface/--surface-raised and already clear AA there. Measured:
+     #5c5c61 on #e8e8ed = 5.44:1. Dark is unchanged (--fg-muted on
+     --surface-sunken there is 9.42:1, already fine) and stays var(--fg-muted). */
+  --fg-muted-on-tint: #5c5c61;
+  /* About-page prose. Two steps, because the mockup pair gives them two
+     different dark values even though they share one light value:
+     the hero lede sits at --fg-muted's weight in dark, the arc's chapter
+     paragraphs at --fg-body's. Both are #3a3a3c in light. */
+  --about-intro: var(--color-ink-800);
+  --about-prose: var(--color-ink-800);
+  /* The date stamp on a career card: one step below the card's body copy in
+     dark, but pinned to the muted-text FLOOR in light, where --fg-faint
+     (#aeaeb2) would measure 2.32:1 on white. Measured: 5.07:1 light,
+     4.60:1 dark. Now an ALIAS of --fg-quiet (Task N3) rather than a second
+     declaration of the same pair -- the values are unchanged in both themes.
+     It keeps its own name because a career date and a review byline are
+     different things that may yet diverge, which is the same reason
+     --badge-volunteer-fg is not --badge-private-fg. */
+  --about-when: var(--fg-quiet);
+  /* Quieter card ground for Education / Off the clock. Identical to
+     --surface-raised in light by design; only dark recesses them. */
+  --about-card-quiet: #ffffff;
+  /* The arc's vertical timeline connector. --edge in light and --edge-soft in
+     dark rather than one token in both: --edge-soft (#e8e8ed) is invisible as
+     a 1px hairline on the #fbfbfd page ground, and --edge (#2b425b) is far too
+     loud against #04101e. This is the "connector contrast" fix the v9 round
+     made. */
+  --about-connector: var(--color-ink-300);
+  --accent: var(--color-apple-blue);
+  --accent-strong: var(--color-brand-700);
+
+  /* Edges */
+  --edge: var(--color-ink-300);
+  --edge-soft: var(--color-ink-100);
+
+  /* Elevation */
+  /* The mockup pair leaves the portrait's drop shadow at the dark theme's
+     50%-black in light too, which is far outside the Apple ladder on a
+     near-white ground. The light value follows the pair this file already
+     ships for --core-shadow / --sat-shadow: navy at ~0.18 rather than black
+     at 0.5. */
+  --about-photo-shadow: 0 30px 70px rgb(10 26 47 / 0.18);
+  --card-shadow: 0 2px 12px rgb(0 0 0 / 0.04);
+  --cta-shadow: 0 2px 16px rgb(0 0 0 / 0.05);
+  --tile-hover-edge: var(--color-brand-600);
+  --tile-hover-shadow: 0 22px 52px rgb(0 60 120 / 0.15);
+
+  /* Hero set-piece */
+  --aurora-image:
+    radial-gradient(38% 30% at 30% 38%, rgb(0 147 255 / 0.35), transparent 60%),
+    radial-gradient(30% 26% at 68% 30%, rgb(87 180 255 / 0.28), transparent 60%),
+    radial-gradient(46% 34% at 55% 62%, rgb(143 208 255 / 0.3), transparent 65%);
+  --aurora-opacity: 0.4;
+  /* Contact runs the same aurora one step quieter -- its ground carries a
+     display-size email address rather than a set-piece, and the approved v2
+     pair draws 0.35 / 0.45 against Home's 0.4 / 0.5. Consumed by
+     `.contact-sky`, which overrides `--aurora-opacity` for the subtree, so the
+     shared `.home-aurora` rule stays the only place that reads it. */
+  --contact-aurora-opacity: 0.35;
+  --stars-opacity: 0.25;
+  --core-bg: linear-gradient(160deg, #ffffff, var(--color-haze-200));
+  --core-shadow: 0 0 0 1px rgb(0 118 209 / 0.25), 0 22px 50px rgb(10 26 47 / 0.18);
+  --sat-shadow: 0 12px 28px rgb(10 26 47 / 0.22);
+
+  /* Pills */
+  --pill-primary-bg: var(--accent);
+  --pill-primary-fg: #ffffff;
+  --pill-secondary-bg: var(--color-ink-200);
+  --pill-secondary-fg: var(--color-ink-900);
+  --pill-secondary-shadow: none;
+  /* A gray pill melts into a tinted ground, so on the hero sky it goes white. */
+  --pill-sky-bg: #ffffff;
+  --pill-sky-shadow: inset 0 0 0 1px var(--color-ink-300), 0 2px 8px rgb(0 0 0 / 0.06);
+
+  /* The Contact copy button's confirmed state (Task B4).
+
+     DELIBERATE, MEASURED DEVIATION FROM THE MOCKUP HEX. The approved v2-light
+     pair draws Apple's Green (Dark) `#248a3d`, which carries white 15px/600
+     label text at 4.39:1 -- under the 4.5 AA floor for normal text. This is
+     the same call the light footer already records: where a mockup value and
+     the AA floor disagree, the floor wins (see --fg-subtle's note above and
+     docs/superpowers/mockups/home/APPROVED.md). `#20803a` is that green
+     darkened one notch to 4.99:1 on white, which is a step the eye does not
+     read as a different colour. Dark needs no such correction: #4ade80 under
+     near-black text is 12.4:1. */
+  --copy-ok-bg: #20803a;
+  --copy-ok-fg: #ffffff;
+
+  /* Contact's quiet lines: the clipboard hint, the sign-off, and each channel
+     card's handle. Now an ALIAS of --fg-quiet (Task N3), which is the pair
+     this and --about-when had each declared separately; the values are
+     unchanged in both themes.
+     Measured: 4.91:1 light on --surface, 5.19:1 dark on the sky. */
+  --contact-quiet: var(--fg-quiet);
+
+  /* The destination marks on the channel cards (LinkedIn wordmark, octocat,
+     document). Filled glyphs, so they sit a step off the card's title rather
+     than at full strength. */
+  --contact-mark: var(--color-ink-800);
+
+  /* Private-project badge (USCG). The Projects mockup leaves its dark-theme
+     gold (#e8b84b) unchanged in light, where it measures 1.9:1 on white; the
+     contrast floor wins, so light gets a darkened gold. Measured on the
+     badge's own tinted ground: 4.70:1 light, 7.44:1 dark. */
+  --badge-private-fg: #8a6100;
+  --badge-private-bg: rgb(138 97 0 / 0.12);
+
+  /* VOLUNTEER badge (About, Coast Guard card). Same gold and the same measured
+     contrast as the private-repo badge above -- kept as its own token because
+     the two badges say different things and may need to diverge, and because
+     an alias (`var(--badge-private-fg)`) would resolve at :root and so read
+     the LIGHT value inside /dev/tokens' element-scoped dark pane.
+     Measured on the badge's own tinted ground: 4.70:1 light, 7.41:1 dark. */
+  --badge-volunteer-fg: #8a6100;
+  --badge-volunteer-bg: rgb(138 97 0 / 0.12);
+
+  /* About hero portrait and timeline node. Decorative and deliberately
+     theme-agnostic: the mockup pair leaves both unchanged between themes, and
+     a pale brand tint reads on the near-white ground as well as on the navy
+     one. */
+  --about-photo-ring: rgb(87 180 255 / 0.25); /* brand-400 at 25% */
+  --about-dot-halo: rgb(0 147 255 / 0.18); /* brand-500 at 18% */
+
+  /* The ground behind a feature card's accent glyph (Task N3, /nahtadi's
+     eight-tile grid -- the ONE genuinely new value that page produced).
+     Eight large bare-accent glyphs were the loudest thing on the page; a
+     chip at ~10% seats each one on the card instead of floating it.
+     It is a token rather than an inline `color-mix()` or a magic rgba
+     because the standing rule is that a value missing from the scale becomes
+     a token FIRST. Derived from --accent in each theme at the opacity that
+     reads on that theme's card ground: light needs less tint on white, dark
+     needs slightly more to lift off #0b1c30. */
+  --icon-chip: rgb(0 113 227 / 0.1);
+
+  /* Navigation */
+  --nav-fg: rgb(10 26 47 / 0.8);
+  --nav-fg-active: #000000;
+
+  /* Ticker: the secondary run of each pair sits one step down from the symbol */
+  --ticker-secondary: var(--fg-muted);
+  /* Ground for the ticker's pause control. Composed from existing surface
+     tokens rather than a new colour, and it flips DIRECTION between themes:
+     the light strip is white, so the control recesses (surface-sunken); the
+     dark strip is near-black, so it lifts (surface-raised). One token cannot
+     be both, which is why this exists as its own semantic step. */
+  --ticker-control-bg: var(--surface-sunken);
+
+  /* Flagship band — identical in both themes by design */
+  --flagship-bg: linear-gradient(
+    210deg,
+    var(--color-nahtadi-600) 0%,
+    var(--color-nahtadi-700) 46%,
+    var(--color-nahtadi-900) 100%
+  );
+  --flagship-edge: rgb(143 208 255 / 0.18); /* brand-300 at 18% */
+  --flagship-glow: radial-gradient(60% 90% at 85% 10%, rgb(143 208 255 / 0.12), transparent 60%);
+  --flagship-fg: #ffffff;
+  --flagship-meta: var(--color-nahtadi-200);
+  --flagship-body: var(--color-nahtadi-100);
+  --flagship-pill-bg: #ffffff;
+  --flagship-pill-fg: var(--color-nahtadi-700);
+  /* The shipped Nahtadi icon is transparent except for its glyph, so it is
+     always composited onto its own green tile — never placed bare. */
+  --nahtadi-tile: linear-gradient(160deg, var(--color-nahtadi-600), var(--color-nahtadi-800));
+  --nahtadi-tile-shadow: 0 26px 60px rgb(0 0 0 / 0.5);
+  /* Contrast rule (generalized 2026-08-26, APPROVED.md §3): the transparent
+     arch icon's tile must CONTRAST its ground — white on the green band or
+     any green/dark ground; a green tile is only for neutral grounds.
+     Green-on-green was the original blend bug. The flagship band sits on the
+     green Nahtadi gradient, so its tile is white here.
+     The hero swarm satellite (.home-sat-img-nahtadi, uses --nahtadi-tile
+     above) KEEPS ITS GREEN TILE IN BOTH THEMES. Resolved by Omar 2026-08-26.
+     The rule is about hue/luminance COLLISION, not "always white": green on
+     the green flagship band was the blend bug; green on the hero sky, light
+     or dark navy, collides with nothing and reads cleanly. The swarm is also
+     a family of colourful project tiles, so a lone white satellite would
+     break the set. Do not make this tile theme-conditional and do not re-merge
+     these two tokens. */
+  --nahtadi-tile-flagship: #ffffff;
 }
 
-[data-theme="dark"] {
-  --surface: #0a1a2f;             /* navy-950 */
-  --surface-raised: #1a2c42;      /* navy-900 */
-  --surface-sunken: #061120;
-  --fg-strong: #f3f6fa;           /* navy-50 */
-  --fg-body: #c7d6e6;             /* navy-200 */
-  --fg-muted: #9db8d1;            /* navy-300 */
-  --accent: #57b4ff;              /* brand-400 — AA on navy-950 */
-  --accent-strong: #8fd0ff;       /* brand-300 */
-  --edge: #2b425b;                /* navy-800 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: var(--color-deep-page);
+    --surface-raised: var(--color-deep-card);
+    --surface-sunken: var(--color-deep-sky);
+    --home-sky: var(--color-deep-sky);
+    --projects-sky: linear-gradient(
+      180deg,
+      var(--color-deep-core-bottom) 0%,
+      var(--color-deep-page) 100%
+    );
+    /* Dark keeps the mockup's full-height fade -- the light theme's 100px stop
+       is a contrast fix that dark does not need (see the light definition). */
+    --about-sky: linear-gradient(
+      180deg,
+      var(--color-deep-about-sky) 0%,
+      var(--color-deep-page) 100%
+    );
+    --contact-sky: var(--color-deep-sky);
+    --ticker-surface: var(--color-deep-ticker);
+    --cta-surface: radial-gradient(60% 120% at 50% 0%, rgb(0 147 255 / 0.1), transparent 70%);
+
+    --fg-strong: #ffffff;
+    --fg-body: var(--color-navy-200);
+    --fg-muted: var(--color-navy-300);
+    --fg-subtle: var(--color-navy-300);
+    --fg-faint: var(--color-navy-450);
+    --fg-quiet: var(--color-navy-450);
+    /* Unlike light, dark's --fg-muted (navy-300) already clears AA on
+       --surface-sunken (9.42:1) -- no new step needed, but this MUST be
+       redefined here anyway: custom properties are inherited, so leaving it
+       unset in this block would carry the light theme's #5c5c61
+       forward, which measures only 2.91:1 on the dark sunken ground. */
+    --fg-muted-on-tint: var(--fg-muted);
+    /* Every About token below MUST be restated here even where it happens to
+       alias another semantic token: custom properties inherit, so anything left
+       out would carry its light value into the dark theme. */
+    --about-intro: var(--color-navy-300);
+    --about-prose: var(--color-navy-200);
+    /* Restated even though it is an alias, for the reason the block comment
+       above gives: a `var()` is substituted using the referencing element's own
+       value, so an alias declared only at `:root` would compute against the
+       LIGHT --fg-quiet and inherit that value into this theme. Same trap
+       --badge-volunteer-fg records. tests/e2e/nahtadi.spec.ts guards it. */
+    --about-when: var(--fg-quiet);
+    --about-card-quiet: var(--color-deep-card-quiet);
+    --about-connector: var(--color-deep-hairline);
+    --accent: var(--color-brand-400);
+    --accent-strong: var(--color-brand-300);
+
+    --edge: var(--color-navy-800);
+    --edge-soft: var(--color-deep-hairline);
+
+    --about-photo-shadow: 0 30px 70px rgb(0 0 0 / 0.5);
+    --card-shadow: none;
+    --cta-shadow: none;
+    --tile-hover-shadow: 0 22px 52px rgb(0 40 90 / 0.45);
+
+    --aurora-image:
+      radial-gradient(38% 30% at 30% 38%, rgb(0 147 255 / 0.5), transparent 60%),
+      radial-gradient(30% 26% at 68% 30%, rgb(87 180 255 / 0.32), transparent 60%),
+      radial-gradient(46% 34% at 55% 62%, rgb(0 90 166 / 0.42), transparent 65%);
+    --aurora-opacity: 0.5;
+    --contact-aurora-opacity: 0.45;
+    --stars-opacity: 0.5;
+    --core-bg: linear-gradient(160deg, var(--color-deep-core-top), var(--color-deep-core-bottom));
+    --core-shadow: 0 0 0 1px rgb(143 208 255 / 0.22), 0 22px 50px rgb(0 40 90 / 0.55);
+    --sat-shadow: 0 12px 28px rgb(0 0 0 / 0.5);
+
+    --copy-ok-bg: #4ade80;
+    --copy-ok-fg: var(--color-deep-page);
+    --contact-quiet: var(--fg-quiet);
+    --contact-mark: var(--color-navy-200);
+
+    --pill-primary-bg: var(--color-brand-500);
+    --pill-primary-fg: var(--color-deep-page);
+    --pill-secondary-bg: rgb(199 214 230 / 0.14); /* navy-200 at 14% */
+    --pill-secondary-fg: #ffffff;
+    --pill-sky-bg: rgb(199 214 230 / 0.14);
+    --pill-sky-shadow: none;
+
+    --badge-private-fg: #e8b84b;
+    --badge-private-bg: rgb(232 184 75 / 0.12);
+
+    --badge-volunteer-fg: #e8b84b;
+    --badge-volunteer-bg: rgb(232 184 75 / 0.12);
+
+    --icon-chip: rgb(87 180 255 / 0.12);
+
+    --nav-fg: var(--color-navy-200);
+    --nav-fg-active: #ffffff;
+
+    --ticker-secondary: var(--fg-faint);
+    --ticker-control-bg: var(--surface-raised);
+  }
 }
 
 /* Register semantic tokens as Tailwind utilities. */
@@ -95,14 +508,17 @@
   --color-primary: var(--fg-strong);
   --color-secondary: var(--fg-body);
   --color-muted: var(--fg-muted);
+  --color-subtle: var(--fg-subtle);
+  --color-faint: var(--fg-faint);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
   --color-edge: var(--edge);
+  --color-edge-soft: var(--edge-soft);
 }
 
 body {
-  color: #171717;
-  background: #ffffff;
+  color: var(--fg-body);
+  background: var(--surface);
   font-family: var(--font-roboto-medium), sans-serif;
 }
 

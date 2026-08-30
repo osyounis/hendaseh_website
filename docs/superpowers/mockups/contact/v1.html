@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M4 v1 — Contact</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1a2f; --navy-900:#1a2c42; --navy-800:#2b425b; --navy-700:#304d6c;
+    --navy-300:#9db8d1; --navy-200:#c7d6e6;
+    --blue-300:#8fd0ff; --blue-400:#57b4ff; --blue-500:#0093ff;
+    --up:#4ade80;
+    --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-brand:cubic-bezier(.22,1,.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Roboto',-apple-system,'Helvetica Neue',sans-serif;background:#04101e;color:var(--navy-200);min-height:100vh;display:flex;flex-direction:column}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px;width:100%}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;position:relative;z-index:6}
+  .nav .links{display:flex;gap:28px;font-size:14px;font-weight:600;color:var(--navy-200)}
+  .nav .links b{color:#fff}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;color:#fff;font-size:16px}
+  .hex{width:26px;height:26px}
+  .eyebrow{display:block;font-size:12px;font-weight:900;letter-spacing:.34em;color:var(--blue-400);margin-bottom:12px}
+
+  .sky{position:relative;overflow:hidden;flex:1;display:flex;flex-direction:column;background:#050e1a}
+  .aurora{position:absolute;inset:-40% -20%;pointer-events:none;filter:blur(70px);opacity:.45;
+    background:
+      radial-gradient(38% 30% at 30% 42%,rgba(0,147,255,.5),transparent 60%),
+      radial-gradient(30% 26% at 70% 30%,rgba(87,180,255,.3),transparent 60%);
+    animation:drift 14s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translate3d(-3%,-2%,0)}to{transform:translate3d(3%,3%,0) scale(1.05)}}
+  .main{position:relative;z-index:2;text-align:center;padding:84px 0 90px}
+  h1.page{color:#fff;font-weight:900;font-size:clamp(38px,5.6vw,60px);letter-spacing:-.015em;
+    opacity:0;transform:translateY(18px);animation:hin .6s var(--ease-out) .1s forwards}
+  .sub{margin:16px auto 0;color:var(--navy-300);font-size:17px;line-height:1.6;max-width:44ch;
+    opacity:0;transform:translateY(18px);animation:hin .6s var(--ease-out) .22s forwards}
+  @keyframes hin{to{opacity:1;transform:none}}
+
+  /* THE email */
+  .mailrow{margin:52px auto 10px;opacity:0;transform:translateY(18px);animation:hin .6s var(--ease-out) .34s forwards}
+  .mail{display:inline-flex;align-items:center;gap:22px;flex-wrap:wrap;justify-content:center}
+  .addr{color:#fff;font-weight:900;font-size:clamp(26px,4.6vw,52px);letter-spacing:-.015em}
+  .addr .at{color:var(--blue-400)}
+  .copybtn{position:relative;display:inline-flex;align-items:center;gap:9px;font-family:inherit;font-weight:700;font-size:15px;
+    padding:14px 24px;border-radius:980px;border:none;cursor:pointer;background:var(--blue-500);color:#04101e;
+    transition:transform .12s var(--ease-out),background .2s}
+  .copybtn:active{transform:scale(.96)}
+  .copybtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .copybtn .lbl{transition:opacity .2s,filter .2s}
+  .copybtn.copied{background:var(--up)}
+  .copybtn.copied .lbl{animation:swap .35s var(--ease-out)}
+  @keyframes swap{0%{opacity:0;filter:blur(2px)}100%{opacity:1;filter:none}}
+  .mailhint{margin-top:14px;color:#6a87a5;font-size:13px;font-weight:600;
+    opacity:0;animation:hin .6s var(--ease-out) .46s forwards}
+
+  /* channel cards */
+  .chgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:860px;margin:56px auto 0;
+    opacity:0;transform:translateY(18px);animation:hin .6s var(--ease-out) .5s forwards}
+  .ch{display:flex;flex-direction:column;align-items:center;gap:10px;background:#0b1c30;border:1px solid var(--navy-800);
+    border-radius:18px;padding:26px 20px;transition:transform .28s var(--ease-brand),border-color .28s var(--ease-brand),box-shadow .28s var(--ease-brand)}
+  @media (hover:hover) and (pointer:fine){
+    .ch:hover{transform:translateY(-6px);border-color:#0076d1;box-shadow:0 22px 52px rgb(0 40 90 / 0.45)}
+  }
+  .ch svg{width:26px;height:26px;fill:var(--navy-200)}
+  .ch .tt{display:flex;flex-direction:column;gap:3px;align-items:center}
+  .ch b{color:#fff;font-size:15px;font-weight:700}
+  .ch span{color:#6a87a5;font-size:12.5px;font-weight:600}
+  .locline{margin-top:44px;color:#6a87a5;font-size:13px;font-weight:600;letter-spacing:.06em;
+    opacity:0;animation:hin .6s var(--ease-out) .6s forwards}
+  .foot{position:relative;z-index:2;padding:32px 0;color:var(--navy-300);font-size:13px;display:flex;justify-content:space-between;border-top:1px solid #0d1e33}
+
+  @media (max-width:880px){
+    .chgrid{grid-template-columns:1fr;max-width:420px}
+    .ch{flex-direction:row;justify-content:flex-start;text-align:left;padding:18px 20px}
+    .ch .tt{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+    .mail{gap:14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    h1.page,.sub,.mailrow,.mailhint,.chgrid,.locline{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="sky">
+  <div class="aurora"></div>
+  <div class="wrap">
+    <div class="nav">
+      <div class="logo"><svg class="hex" viewBox="0 0 24 24" fill="none"><path d="M12 1.5 21.5 7v10L12 22.5 2.5 17V7L12 1.5Z" stroke="#0093ff" stroke-width="1.6"/><path d="M8 8v8M16 8v8M8 12h8" stroke="#57b4ff" stroke-width="1.6"/></svg>Hendaseh</div>
+      <div class="links"><span>Home</span><span>About</span><span>Projects</span><b>Contact</b></div>
+    </div>
+  </div>
+  <div class="wrap main">
+    <span class="eyebrow" style="opacity:0;animation:hin .6s var(--ease-out) 0s forwards">CONTACT</span>
+    <h1 class="page">Say hello.</h1>
+    <p class="sub">Email is the fastest way to reach me. Everything below works too.</p>
+
+    <div class="mailrow">
+      <div class="mail">
+        <span class="addr">omar<span class="at">@</span>hendaseh.com</span>
+        <button class="copybtn" id="copy" aria-label="Copy email address">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <span class="lbl">Copy</span>
+        </button>
+      </div>
+      <div class="mailhint">One tap and it's in your clipboard.</div>
+    </div>
+
+    <div class="chgrid">
+      <a class="ch" href="#">
+        <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.55V9h3.57v11.45Z"/></svg>
+        <div class="tt"><b>LinkedIn</b><span>omar-younis</span></div>
+      </a>
+      <a class="ch" href="#">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        <div class="tt"><b>GitHub</b><span>osyounis</span></div>
+      </a>
+      <a class="ch" href="#" download="Omar_Younis_Resume.pdf">
+        <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm8 1.5V8h4.5L14 3.5ZM8 13h8v1.6H8V13Zm0 4h8v1.6H8V17Z"/></svg>
+        <div class="tt"><b>Résumé</b><span>PDF</span></div>
+      </a>
+    </div>
+
+    <div class="locline">SUNNYVALE, CA · I READ EVERYTHING</div>
+  </div>
+  <div class="wrap foot"><span>© 2026 Omar Younis</span><span>omar@hendaseh.com · Sunnyvale, CA</span></div>
+</div>
+
+<script>
+const btn = document.getElementById('copy');
+let t;
+btn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText('omar@hendaseh.com'); } catch(e) {}
+  btn.classList.add('copied');
+  btn.querySelector('.lbl').textContent = 'Copied';
+  btn.querySelector('svg').innerHTML = '<path d="M4 12.5 9.5 18 20 6.5"/>';
+  clearTimeout(t);
+  t = setTimeout(() => {
+    btn.classList.remove('copied');
+    btn.querySelector('.lbl').textContent = 'Copy';
+    btn.querySelector('svg').innerHTML = '<rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>';
+  }, 2000);
+});
+</script>
+</body>
+</html>

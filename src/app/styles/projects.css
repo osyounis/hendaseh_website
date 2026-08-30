@@ -1,0 +1,366 @@
+/* Projects-page furniture (Task B2.3). Page-scoped, so it lives beside
+   home.css rather than in shared.css -- shared.css is for what more than one
+   page uses. The one deliberately shared thing on this page is `.home-tile`
+   (shared.css), which the approved contract mandates by name for every
+   project card; nothing here re-implements that hover. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * Page header band
+   *
+   * Reaches up under the transparent nav the same way `.home-sky` does, so
+   * the tinted ground starts at the top of the viewport rather than at a
+   * seam under the logo.
+   * ---------------------------------------------------------------------- */
+
+  .projects-sky {
+    background: var(--projects-sky);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Sticky local navigation bar (Apple local-nav material)
+   *
+   * Translucent + blurred with the grid scrolling underneath, not an opaque
+   * strip. `--surface` is mixed with transparency rather than hardcoded per
+   * theme so the bar tracks whatever ground the page is on.
+   *
+   * The nav is `position: relative`, not fixed, so `top: 0` is correct: the
+   * nav scrolls away and this bar takes its place.
+   * ---------------------------------------------------------------------- */
+
+  .projects-bar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid var(--edge-soft);
+    /* Opaque fallback first: any engine without color-mix gets a solid bar
+       rather than a transparent one with text piling up behind it. */
+    background: var(--surface);
+    background: color-mix(in srgb, var(--surface) 84%, transparent);
+    backdrop-filter: blur(18px) saturate(160%);
+  }
+
+  /* Under 880 the six chips would wrap to three rows and the sticky bar would
+     eat half a phone screen. A single scrollable strip is the Apple local-nav
+     answer and keeps the bar one row tall at every width. */
+  .projects-chiprow {
+    /* Mirrors `.page-wrap`'s padding-inline (shared.css) so the mobile strip
+       below can bleed back out to the viewport edge. Kept in step by hand
+       because `.page-wrap` sets the padding literally rather than through a
+       custom property. */
+    --projects-gutter: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .projects-chiprow {
+      --projects-gutter: 20px;
+    }
+  }
+
+  @media (max-width: 880px) {
+    .projects-chiprow {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      /* Scrollbar hidden in all three engines (projects/APPROVED.md, mobile
+         rules): Firefox, legacy Edge, and the WebKit/Blink pseudo-element.
+         The partial last chip IS the scroll affordance -- an iOS local-nav
+         strip never shows a bar. */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      /* The strip is edge-to-edge on phones, so it bleeds past the page
+         gutter and pads itself back in. Otherwise the last chip looks clipped
+         mid-gutter instead of scrolled.
+
+         The width has to grow by BOTH gutters for that to actually reach the
+         right edge. It used to be Tailwind's `w-full` on the element: width
+         100% + a negative left margin bleeds left only, so at 390px the strip
+         ended 20px short of the screen and the cut-off chip read as clipped
+         inside a box rather than scrolled off the edge. Owned here, not in
+         the JSX, because it is the same `--projects-gutter` the margin and
+         padding are measured from -- and because a Tailwind utility would
+         win the cascade over this rule no matter what it is scoped with.
+         `calc(100% + …)` still forces its own flex line, which is the other
+         thing `w-full` was doing. */
+      width: calc(100% + var(--projects-gutter) * 2);
+      margin-inline: calc(var(--projects-gutter) * -1);
+      padding-inline: var(--projects-gutter);
+    }
+
+    .projects-chiprow::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* A focus-ring clipping concern was raised for this overflow-x: auto row.
+       The margin-based fix (5px inset on first/last chips) could not be
+       reproduced in Chromium or WebKit as installed. It caused a real,
+       visible regression: at a 390px viewport, the first chip's left edge
+       shifted to 25px while the search input above it stayed at 20px,
+       breaking the row's flush alignment with the page gutter. Trading a
+       confirmed visual regression for an unconfirmed hypothetical is the
+       wrong trade. Reverted 2026-08-26.
+       If clipping is observed on a real device, the fix should not move
+       resting layout: an inset ring (outline-offset: -3px) on chips in
+       this row is the obvious candidate. */
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Search field
+   * ---------------------------------------------------------------------- */
+
+  .projects-search-input {
+    width: 100%;
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    background: var(--surface-raised);
+    padding: 12px 16px 12px 44px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--fg-strong);
+    outline: none;
+    transition:
+      border-color 0.15s var(--ease-brand),
+      box-shadow 0.15s var(--ease-brand);
+  }
+
+  .projects-search-input::placeholder {
+    /* `--fg-faint` matches the mockup in dark but is `ink-400` in light,
+       which is 2.3:1 on white. Placeholder text is still text, so this uses
+       the muted step, which clears AA in both themes. */
+    color: var(--fg-muted);
+  }
+
+  .projects-search-input:focus-visible {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Chips and card action pills
+   *
+   * Both reuse the `--pill-*` tokens the v11 audit unified across grounds --
+   * these are the small-geometry members of the same family as `.pill`
+   * (shared.css), not a second colour system. Feedback lands on pointer-down.
+   * ---------------------------------------------------------------------- */
+
+  .projects-chip,
+  .projects-mini {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 7px;
+    border-radius: 999px;
+    font-family: inherit;
+    white-space: nowrap;
+    transition:
+      transform 0.1s ease-out,
+      background-color 0.15s ease-out;
+  }
+
+  .projects-chip:active,
+  .projects-mini:active {
+    transform: scale(0.96);
+  }
+
+  .projects-chip:focus-visible,
+  .projects-mini:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .projects-chip {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--pill-secondary-bg);
+    color: var(--pill-secondary-fg);
+    box-shadow: var(--pill-secondary-shadow);
+    cursor: pointer;
+  }
+
+  .projects-chip[aria-pressed="true"] {
+    background: var(--pill-primary-bg);
+    color: var(--pill-primary-fg);
+    box-shadow: none;
+  }
+
+  .projects-mini {
+    padding: 8px 15px;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--pill-secondary-bg);
+    color: var(--pill-secondary-fg);
+    box-shadow: var(--pill-secondary-shadow);
+  }
+
+  .projects-mini-primary {
+    background: var(--pill-primary-bg);
+    color: var(--pill-primary-fg);
+    box-shadow: none;
+  }
+
+  /* Destination marks only (octocat, Apple logo) -- filled paths. The
+     link-affordance glyphs (shared.css `.link-glyph`) are stroked outlines
+     sized in `em`; `fill: currentColor` would render them as solid blobs and
+     the fixed 15px would stop them tracking the label's font-size. */
+  .projects-mini svg:not(.link-glyph) {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Private badge (USCG)
+   *
+   * A badge, not a link: these two projects have no public repository, so the
+   * card must never grow a GitHub pill pointing nowhere. The gold is darkened
+   * in the light theme (see globals.css) because the mockup's dark-theme gold
+   * measures 1.9:1 on white.
+   * ---------------------------------------------------------------------- */
+
+  .projects-badge-private {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    background: var(--badge-private-bg);
+    color: var(--badge-private-fg);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Flagship card
+   *
+   * Wears `.home-tile` like every other card, so the hover is the shared one;
+   * this only replaces the ground. The compound selector beats `.home-tile`
+   * on specificity, so it does not depend on import order.
+   * ---------------------------------------------------------------------- */
+
+  .home-tile.projects-flagship {
+    border-color: var(--flagship-edge);
+    background: var(--flagship-bg);
+  }
+
+  .projects-flagship .projects-mini {
+    background: var(--flagship-pill-bg);
+    color: var(--flagship-pill-fg);
+    box-shadow: none;
+  }
+
+  /* The shipped Nahtadi icon is a transparent glyph, so it is always
+     composited onto its own tile. On the green flagship ground that tile is
+     white -- the contrast rule recorded beside `--nahtadi-tile-flagship` in
+     globals.css. Same tokens as Home's flagship band; only the class is
+     page-local. */
+  /* The inset is in px here, and this class stays on the <img> itself.
+     Percentage padding resolves against the CONTAINING BLOCK's width, not the
+     element's own: this flex row is ~1000px wide, so a 9% inset became ~95px a
+     side, overflowed the 104px box, and squeezed the arch to zero width -- a
+     blank white tile. Home hit the same trap later and took the structural
+     route instead (a wrapper sized to the tile, the inset on the image inside
+     it, so the percentage resolves against the tile at any width) -- see
+     `.home-nahtadi-tile` in home.css. Either is correct; px is fine while
+     these two sizes are literals a few lines above. */
+  .projects-nahtadi-tile {
+    background: var(--nahtadi-tile-flagship);
+    padding: 9px;
+    box-shadow: var(--nahtadi-tile-shadow);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Accessibility preferences
+   * ---------------------------------------------------------------------- */
+
+  /* ---------------------------------------------------------------------- *
+   * Entrance cascade (added 2026-08-28)
+   *
+   * The same pattern About (`.about-enter`) and Contact (`.contact-enter`)
+   * already ship, deliberately not a new one: a CSS animation with `both`
+   * fill and a per-element `--enter-delay`. Nothing renders at `opacity: 0`
+   * from the server and nothing is gated on JavaScript -- with animations
+   * disabled every element rests at its end state.
+   *
+   * FOUR BEATS, ~120ms apart: eyebrow (0s) -> heading (0.12s) -> lede (0.24s)
+   * -> THE FILTER BAR AND THE GRID TOGETHER (0.36s).
+   *
+   * WHY THE BAR AND GRID ARRIVE AS ONE UNIT, AND WHY THE CARDS CARRY NOTHING.
+   * The Projects contract mandates live, unanimated filtering: "instant
+   * reflow, no card animations on filter". A per-card entrance stagger would
+   * put an animation on an element React remounts on every keystroke (cards
+   * are keyed by project id, and the filtered set changes as you type), so the
+   * cascade would replay per keystroke -- the forbidden behaviour, reached
+   * from the other direction. Animating the block ONCE, on containers whose
+   * identity never changes, is what makes that structurally impossible rather
+   * than merely avoided. `tests/e2e/projects-filter.spec.ts` counts
+   * `getAnimations({subtree: true})` on every card and requires zero, before
+   * and during filtering. Do not "improve" this into a per-card stagger.
+   *
+   * WHY TWO SIBLINGS RATHER THAN ONE WRAPPER. `.projects-bar` is
+   * `position: sticky; top: 0`, and a `transform` OR a `translate` on an
+   * ANCESTOR creates a containing block that can break sticky positioning.
+   * Wrapping the bar and the grid in one animated element would inherit that
+   * for the length of the animation. They are animated as siblings instead,
+   * so the bar has no animated ancestor at all and its own sticky behaviour
+   * is untouched. They still arrive in perfect unison because the delay is
+   * set ONCE, by the class below, rather than written twice at two call sites
+   * in two different components where the values could drift apart.
+   * ---------------------------------------------------------------------- */
+
+  .projects-enter {
+    animation: projects-enter 0.6s var(--ease-brand) var(--enter-delay, 0s) both;
+  }
+
+  /* Beat 4's delay, shared by the bar and the grid. One declaration, so the
+     two cannot be changed independently. */
+  .projects-enter-body {
+    --enter-delay: 0.36s;
+  }
+
+  /* On `translate`, not `transform`: the sitewide rule since Task B3. The grid
+     is an ancestor of every `.home-tile` card, whose hover IS a transform, and
+     an independent property is what keeps a future change from putting the two
+     on a collision course. */
+  @keyframes projects-enter {
+    from {
+      opacity: 0;
+      translate: 0 18px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .projects-chip,
+    .projects-mini,
+    .projects-search-input {
+      transition: none;
+    }
+
+    .projects-chip:active,
+    .projects-mini:active {
+      transform: none;
+    }
+
+    /* Fully static, like the other three pages: the end state, not a paused
+       mid-animation frame. */
+    .projects-enter {
+      animation: none;
+      opacity: 1;
+      translate: none;
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .projects-bar {
+      background: var(--surface);
+      backdrop-filter: none;
+    }
+  }
+}

@@ -119,3 +119,50 @@ describe('project assets', () => {
     })
   })
 })
+
+/*
+ * HAND-MAINTAINED APP-STORE FACTS THAT GO STALE — the pattern, and the guard
+ * that catches the next one.
+ *
+ * THREE INSTANCES OF THE SAME FAILURE have now been found on the Nahtadi
+ * surfaces, all by hand, all after they were already wrong:
+ *
+ *   1. /nahtadi/support's `App Version` row said v1.1.0 when the live app was
+ *      1.2.1 — two releases stale, and the version was baked into a screenshot
+ *      as well. The row was DELETED (Task N3, COPY-LOCKED row D10) rather than
+ *      updated.
+ *   2. `appStoreRating.count` said 8, a stale snapshot matching NO source
+ *      (App Store Connect reports 9 worldwide, Apple's public lookup API and
+ *      the US storefront report 7). Corrected to 7 — the number the planned
+ *      automation can actually maintain.
+ *   3. This project's `stats` string said `v1.1.0 • Available on App Store`.
+ *      The version was DELETED for the reason D10 was: it is the only part
+ *      that changes per release, a static site cannot self-update it, and a
+ *      wrong version actively misleads the person most likely to be reading it.
+ *      Bumping it to 1.2.1 would only have reset the clock.
+ *
+ * THE SHARED SHAPE: a fact that changes on someone else's schedule, stored by
+ * hand, with nothing that fails when it drifts. The fix is never to update it
+ * — it is to remove it, or to source it from something that cannot go stale.
+ *
+ * So this is the assertion instead of a fourth manual discovery. A release
+ * version has no business in a hand-maintained catalogue string; if one is
+ * genuinely needed later it belongs in a field fed by sub-project 5's App
+ * Store fact sync, not here.
+ */
+describe('no hand-maintained release versions in project catalogue strings', () => {
+  // `v1.1.0` / `v2.3`, or a bare three-part semver. Deliberately NOT a
+  // two-part `\d+\.\d+`: several projects legitimately carry `GPL-3.0` and
+  // `1.0`-style licence identifiers, and a pattern that flagged those would be
+  // turned off rather than obeyed.
+  const RELEASE_VERSION = /\bv\d+(\.\d+)+\b|\b\d+\.\d+\.\d+\b/i
+
+  it('no project stat line carries a version number', () => {
+    getAllProjects().forEach((p) => {
+      expect(
+        RELEASE_VERSION.test(p.stats),
+        `${p.id}: "${p.stats}" carries a release version. It will be wrong by the next release and nothing here will notice — remove it rather than bumping it. See the note above this test.`
+      ).toBe(false)
+    })
+  })
+})

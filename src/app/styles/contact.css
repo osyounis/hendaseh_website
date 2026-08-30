@@ -1,0 +1,354 @@
+/* Contact-page furniture (Task B4). Page-scoped, so it lives beside home.css,
+   projects.css and about.css rather than in shared.css.
+
+   Four things on this page are deliberately SHARED and are NOT re-implemented
+   here:
+     - `.home-tile` (shared.css) is the ground, hairline, shadow, hover, focus
+       ring and `:active` press of every channel card. The M4 contract names it
+       by name. Nothing below declares a card `transition`, hover `transform`,
+       hover `box-shadow` or `:focus-visible`.
+     - `.pill` / `.pill-primary` (shared.css) is the Copy button, including its
+       `:active` press and focus ring. Only the confirmed state is added here.
+     - `.home-aurora` (shared.css) is the drifting glow. This page runs it one
+       step quieter, expressed as a variable override on `.contact-sky` so the
+       shared rule stays the only place that reads `--aurora-opacity`.
+     - `.section-eyebrow` (shared.css) is the eyebrow, per the sitewide section
+       header pattern.
+
+   The entrance rides on `translate`, never `transform` -- see the note on
+   `.contact-enter` at the bottom of this file. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * The ground
+   *
+   * Reaches up under the transparent nav the way every other page band does,
+   * so the tint starts at the top of the viewport rather than at a seam under
+   * the logo.
+   * ---------------------------------------------------------------------- */
+
+  .contact-sky {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    background: var(--contact-sky);
+    /* Not a second `opacity` declaration on `.home-aurora`: the token is
+       overridden for this subtree, so the shared rule keeps resolving it and
+       both themes keep coming from globals.css. */
+    --aurora-opacity: var(--contact-aurora-opacity);
+  }
+
+  .contact-main {
+    position: relative;
+    z-index: 2;
+    padding-block: 84px 90px;
+  }
+
+  .contact-eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .contact-title {
+    color: var(--fg-strong);
+    font-size: clamp(38px, 5.6vw, 60px);
+    font-weight: 900;
+    line-height: 1.1;
+    /* Tracking is size-specific: display type reads too loose as it grows. */
+    letter-spacing: -0.015em;
+  }
+
+  .contact-sub {
+    margin: 16px auto 0;
+    max-width: 44ch;
+    color: var(--fg-muted);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * The email address -- the one idea on this page
+   * ---------------------------------------------------------------------- */
+
+  .contact-mailrow {
+    margin: 52px auto 0;
+  }
+
+  /* `inline-flex` + `flex-wrap`: the address and the button sit side by side
+     until they cannot, and then the button drops under a centred address
+     rather than the address shrinking. */
+  .contact-mail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 22px;
+  }
+
+  /* The address is a `mailto:` link (contract amendment, 2026-08-28), and it
+     is display type, so it takes NONE of a link's default dress:
+
+     - COLOUR IS SET EXPLICITLY. The treatment is body-coloured type with only
+       the `@` in accent; a default link colour would turn the whole address
+       blue and destroy it. `.contact-at` below keeps the accent on the one
+       character that is meant to carry it, in both themes.
+     - NO UNDERLINE AT REST. An underline under 52px type reads as broken.
+
+     But an unstyled link that gives no feedback is an INVISIBLE link: a thumb
+     will try the address regardless, while a pointer user never learns it is
+     there. The affordance is an underline that is present at all times and
+     merely TRANSPARENT until hover, so it fades in over 200ms and costs zero
+     layout shift (a `text-decoration` appearing on hover cannot transition and
+     would snap). Its colour is `--accent` -- the same accent the `@` already
+     carries, so the hover ties into the existing treatment instead of
+     introducing a second colour. Gated to fine pointers, like every other
+     hover on the site.
+
+     Thickness and offset are set in `em` so they track a size that runs from
+     26px to 52px: at 52px they resolve to ~2.3px of rule sitting ~6px clear of
+     the baseline, where the browser default would draw ~4px hard against the
+     descenders. */
+  .contact-addr {
+    /* An inline box ignores `transform`, so the press below needs this. */
+    display: inline-block;
+    color: var(--fg-strong);
+    font-size: clamp(26px, 4.6vw, 52px);
+    font-weight: 900;
+    letter-spacing: -0.015em;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 0.045em;
+    text-underline-offset: 0.12em;
+    transition:
+      transform 100ms ease-out,
+      text-decoration-color 200ms ease-out;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .contact-addr:hover {
+      text-decoration-color: var(--accent);
+    }
+  }
+
+  /* The sitewide press and focus pattern, now that this is interactive. Both
+     are the values `.pill` and `.home-tile` already use in shared.css --
+     scale(.98) for something the size of a card or larger, and a 2px accent
+     ring at 3px of offset. */
+  .contact-addr:active {
+    transform: scale(0.98);
+  }
+
+  .contact-addr:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .contact-at {
+    color: var(--accent);
+  }
+
+  /* The Copy button is `.pill .pill-primary` -- geometry, press and focus ring
+     all come from there. This adds the icon gap and the confirmed state. */
+  .contact-copy {
+    gap: 9px;
+  }
+
+  .contact-copy-icon {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* (0,2,0), so it beats `.pill-primary` regardless of import order. The fade
+     into green is `.pill`'s own 200ms background transition. */
+  .contact-copy[data-copied="true"] {
+    background: var(--copy-ok-bg);
+    color: var(--copy-ok-fg);
+  }
+
+  /* The label blur-swaps rather than cutting, so "Copy" -> "Copied" reads as
+     the same control answering rather than as a different button. */
+  .contact-copy[data-copied="true"] .contact-copy-label {
+    animation: contact-copy-swap 0.35s var(--ease-brand);
+  }
+
+  @keyframes contact-copy-swap {
+    from {
+      opacity: 0;
+      filter: blur(2px);
+    }
+    to {
+      opacity: 1;
+      filter: none;
+    }
+  }
+
+  .contact-hint {
+    margin-top: 14px;
+    color: var(--contact-quiet);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Channel cards
+   * ---------------------------------------------------------------------- */
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 860px;
+    margin: 56px auto 0;
+  }
+
+  /* The list item, not the card: the anchor stays the only interactive thing
+     and stretches to fill its cell so a two-line label never makes one card
+     shorter than its neighbours. */
+  .contact-cell {
+    display: flex;
+  }
+
+  .contact-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 26px 20px;
+    border-radius: 18px;
+  }
+
+  /* Its own class rather than `.contact-card svg`: the destination marks are
+     FILLED paths and the affordance glyph inside the label is a stroked
+     outline that `shared.css` gives `fill: none`. A descendant-type selector
+     here would be (0,1,1), beat `.link-glyph` (0,1,0), and render the arrow as
+     a solid blob -- the same trap `.projects-mini svg` had to be scoped with
+     `:not(.link-glyph)` to avoid. */
+  .contact-card-mark {
+    width: 26px;
+    height: 26px;
+    flex: none;
+    fill: var(--contact-mark);
+  }
+
+  .contact-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .contact-card-title {
+    color: var(--fg-strong);
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .contact-card-handle {
+    color: var(--contact-quiet);
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .contact-sign {
+    margin-top: 44px;
+    color: var(--contact-quiet);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Narrow viewports (sub-880, per the contract's explicit phone pane)
+   * ---------------------------------------------------------------------- */
+
+  @media (max-width: 880px) {
+    .contact-main {
+      padding-block: 56px 72px;
+    }
+
+    /* Cards become full-width rows: mark on the left, labels left-aligned. */
+    .contact-grid {
+      grid-template-columns: 1fr;
+      max-width: 420px;
+    }
+
+    .contact-card {
+      flex-direction: row;
+      justify-content: flex-start;
+      text-align: left;
+      gap: 14px;
+      padding: 18px 20px;
+    }
+
+    .contact-card-text {
+      align-items: flex-start;
+    }
+
+    .contact-mail {
+      gap: 14px;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Entrance cascade
+   *
+   * A staggered rise driven by `--enter-delay` per element. It is a CSS
+   * animation with `both` fill, not a hidden-until-JS state: nothing here
+   * renders at `opacity: 0` from the server, and with animations disabled
+   * every element rests at its end state.
+   *
+   * IT RIDES ON `translate`, NEVER ON `transform`, AND THAT IS LOAD-BEARING --
+   * the same rule the scroll reveal in shared.css is built on. The channel
+   * cards carry this animation AND `.home-tile`, whose hover is
+   * `transform: translateY(-6px)`. An animation's filled end state wins over
+   * every declaration in the cascade, so a `transform`-based entrance would
+   * pin the cards at `transform: none` and kill the hover lift outright, with
+   * nothing failing to say so. `translate` is an independent property the
+   * browser composes WITH `transform`, so the two never meet.
+   * ---------------------------------------------------------------------- */
+
+  .contact-enter {
+    animation: contact-enter 0.6s var(--ease-brand) var(--enter-delay, 0s) both;
+  }
+
+  @keyframes contact-enter {
+    from {
+      opacity: 0;
+      translate: 0 18px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-enter {
+      animation: none;
+      opacity: 1;
+      translate: none;
+    }
+
+    /* The confirmed state keeps its colour and its label -- that is the
+       information -- and loses only the blur swap. */
+    .contact-copy[data-copied="true"] .contact-copy-label {
+      animation: none;
+    }
+
+    /* Matches `a.home-tile:active` in shared.css: the press SCALE goes, the
+       hover underline stays. The underline is a colour change carrying the
+       "this is a link" information, not vestibular motion. */
+    .contact-addr {
+      transition: text-decoration-color 200ms ease-out;
+    }
+
+    .contact-addr:active {
+      transform: none;
+    }
+  }
+}

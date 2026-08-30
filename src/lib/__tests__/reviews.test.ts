@@ -22,10 +22,19 @@ describe('getNahtadiReviews', () => {
 })
 
 describe('nahtadi appStoreRating (single source of truth)', () => {
-  it('should report 5.0 from 8 ratings, independent of review count', () => {
+  // 7, not 8 and not 9 (COPY-LOCKED.md row H1). Three sources disagreed: App
+  // Store Connect reports 9 worldwide, Apple's public lookup API and the US
+  // storefront both report 7 (App Store counts are per-storefront), and this
+  // file said 8 -- a stale snapshot matching neither. 7 is stored because
+  // sub-project 5's fact sync automates against that lookup API, which is
+  // per-country and cannot return a worldwide total: a narrower number that is
+  // always right beats a truer number that is usually stale. Re-verified live
+  // on 2026-08-29 (userRatingCount = 7, averageUserRating = 5). Do not
+  // "correct" this to 9.
+  it('should report 5.0 from 7 ratings, independent of review count', () => {
     const project = getProjectById('nahtadi')
-    expect(project?.appStoreRating).toEqual({ value: '5.0', count: 8 })
-    // Ratings (8) deliberately differ from written reviews (6).
+    expect(project?.appStoreRating).toEqual({ value: '5.0', count: 7 })
+    // Ratings (7) deliberately differ from written reviews (6).
     expect(project?.appStoreRating?.count).not.toBe(getNahtadiReviews().length)
   })
 })

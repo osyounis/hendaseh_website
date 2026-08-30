@@ -13,7 +13,7 @@ The master plan for the full redesign of hendaseh.com. Every design and implemen
 | 1 | Foundation reset | **Complete** — 2026-08-23 |
 | 2 | Hosting migration | **Complete** — 2026-08-24 |
 | 3 | Asset engine | **Complete** — 2026-08-25 |
-| 4 | Page redesigns | Not started |
+| 4 | Page redesigns | **Complete** — 2026-08-29 |
 | 5 | Case-study content | Not started |
 
 Each sub-project gets its own design → spec → implementation-plan cycle when it starts. Statuses here get updated as phases complete.
@@ -44,7 +44,11 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 
 **Needs from Omar:** done — Cloudflare account created, `wrangler login` completed, GoDaddy nameservers repointed. Three manual steps remain his:
 
-1. **Enable Cloudflare Web Analytics** in the dashboard — until then the site collects no analytics at all.
+1. ~~**Enable Cloudflare Web Analytics** in the dashboard~~ — **DONE.** Corrected 2026-08-29: analytics is
+   live. Note the bullet above ("auto-injected on the proxied zone — no script tag in the repo") describes
+   the *plan*, and the plan was wrong: auto-injection rewrites HTML passing through the proxy and never
+   reaches Worker responses, so the beacon did not appear until it was installed as a manual `<script>` in
+   `src/app/layout.tsx`. It deliberately carries no `integrity`/SRI hash.
 2. **Delete the Vercel project** once the ~24h rollback window closes.
 3. **Revoke the Resend API key** in the Resend dashboard and delete the stale local `.env.local` that holds it. The key was never committed (`.env.local` is gitignored and appears in no commit), so this is routine cleanup and revocation of a credential for a decommissioned service — not an exposure.
 
@@ -76,7 +80,17 @@ Each sub-project gets its own design → spec → implementation-plan cycle when
 - Nahtadi pages: visual consistency pass, URLs and SEO untouched.
 - Both themes, `prefers-reduced-motion`, WCAG-conscious contrast, no SEO regressions (metadata, JSON-LD, sitemap preserved).
 
-**Open question — the positioning tagline (raised by Omar 2026-08-25).** The locked surface string is
+**CLOSED 2026-08-28 (Task B5) — meta descriptions were too long.** `/projects/[slug]` emitted each
+project's full `description` from `projects.json` as both `description` and `og:description`. Measured on
+`/projects/collision-avoidance-radar`: **261 characters**, against Google's ~150–160 and a social preview
+cut around 125, so the tail was lost on every surface. The prescribed fix shipped: the route now reads
+`project.tagline` for `description`/`og:description`/`twitter:description` and leaves `description` to the
+page body. The whole catalog fits — the longest tagline is `brent-cuda` at 120 characters, the two live
+case studies measure 120 and 98. Every other page's description was rewritten to ≤160 in the same pass.
+
+**CLOSED 2026-08-28 — the positioning tagline (raised by Omar 2026-08-25).** The question below is kept
+for its reasoning, not because anything is still open; the resolution is two paragraphs down. The
+superseded locked surface string was
 `Software Engineer · iOS & Machine Learning`, and it currently appears on the home hero, the OG site card
 (`src/lib/ogCards.ts`), and `layout.tsx`'s OG `alt`. Omar wants it reconsidered: he does and will do more
 than iOS and ML, and the pair may read as narrower than his actual range — possibly just
@@ -88,7 +102,83 @@ Whatever is chosen must land on every surface at once: `src/components/home/Home
 `src/app/page.tsx`, `src/app/contact/page.tsx`, and `src/app/about/page.tsx`. The OG card is a
 pre-rendered PNG and needs `npm run generate:og` re-run and committed.
 
-**Exit:** all pages shipped in both themes, Lighthouse/axe clean, SEO parity confirmed.
+**RESOLVED 2026-08-28.** The new locked surface string is
+`Software Engineer · iOS, ML & Autonomous Systems`. It landed on the hero in Task B1 and on every
+remaining surface in Task B5, with the site OG card regenerated and committed.
+
+**Deviation from the paragraph above, recorded deliberately (Task B5).** That line lists "metadata
+titles" among the surfaces the string must land on. **Sub-page titles no longer carry a tagline at all.**
+The new string is 20 characters longer than `iOS & ML`; pasted into the old title shape it produced
+`Hendaseh - Omar Younis | Software Engineer · iOS, ML & Autonomous Systems` at ~72 characters against a
+~60-character truncation point, so every sub-page title would have been cut mid-string. Titles were
+restructured instead, on Apple's and YouTube's observed pattern (`Apple Fitness+ - Apple`):
+
+- Site-name slot is `Omar Younis`, not `Hendaseh` — nobody searches the domain, and the domain already
+  renders beneath the title in a result. `Hendaseh` survives in `og:site_name` and in the homepage
+  description.
+- Sub-pages are `<Page> - Omar Younis` (19–42 chars), emitted from a single
+  `title: { default, template: '%s - Omar Younis' }` in `src/app/layout.tsx` so the suffix cannot drift
+  across five files again.
+- The **homepage keeps the full tagline** — `Omar Younis - Software Engineer · iOS, ML & Autonomous
+  Systems`, 62 chars. Apple's one-word homepage title rides on brand recognition this site does not have,
+  and the title is the highest-value line in a search result.
+- **The separator is a plain hyphen-minus (U+002D) with spaces**, one separator sitewide, matching the
+  Apple/YouTube precedent the structure came from. Omar changed it from `·` on 2026-08-28. It is not an
+  en dash, not an em dash, not a middot: an en dash is near-indistinguishable in a diff and would break
+  every match silently. `·` now survives **only inside the locked tagline**, never as a title separator,
+  so the two-separator-levels rationale that briefly existed no longer applies. `src/lib/ogCards.ts`
+  carries no separator (name, tagline and footer are three rendered lines), so the OG PNGs were
+  unaffected by this change.
+
+The intent of "every surface at once" was **convergence — no surface still showing the old string** — and
+that is fully satisfied: `grep -rn "iOS & Machine Learning\|iOS & ML" src/` returns zero hits. Repeating
+the tagline in all five titles would additionally be repetitive boilerplate of the kind Google's own title
+guidance calls out. **Do not "restore" the tagline to every title** — it reintroduces the length problem
+this restructure exists to solve.
+
+One consequential side effect, handled: a `title.template` on the root layout would have appended
+` · Omar Younis` to `/nahtadi`'s frozen title. `src/app/nahtadi/layout.tsx` now declares
+`title: { absolute, template }` instead of `{ default, template }`, which ignores the parent template.
+Verified against the built HTML: all three `/nahtadi*` titles render byte-identical to before.
+
+**Exit:** met 2026-08-29 (Task B6). All five surfaces shipped in both themes; dark flipped from
+`data-theme` to `prefers-color-scheme` sitewide in one commit; SEO parity confirmed (all three frozen
+`/nahtadi*` titles byte-identical, every redirect and the sitemap still guarded by e2e).
+
+**Measured at exit, on the local Worker (`npm run preview`), Lighthouse mobile — actual numbers.**
+Every figure below is a **steady-state median of 3–4 runs**, not a single run; see the warning underneath,
+which cost a wrong conclusion the first time.
+
+| Route | Perf | A11y | Best Practices | SEO |
+| --- | --- | --- | --- | --- |
+| `/` | 97 | 100 | 96 | 100 |
+| `/about` | 98 | 100 | 96 | 100 |
+| `/projects` | 96 | 100 | 96 | 100 |
+| `/projects/brent-cuda` | 92 | 100 | 96 | 100 |
+| `/contact` | 98 | 100 | 96 | 100 |
+| `/nahtadi` | 92 | 100 | 96 | 100 |
+
+**All four targets met on all six routes: Perf ≥90, A11y ≥95, SEO 100.**
+
+**⚠️ DO NOT LIGHTHOUSE THIS SITE WITH A SINGLE COLD RUN. It is off by up to 15 points.** The first
+measurement taken here reported `/` at **82** and `/projects/brent-cuda` at **89**, and both were recorded
+as missing the target before repetition showed them to be cold-start artifacts. `/` measured 82, 97, 98,
+97 across four consecutive runs (LCP 4.8 s → 2.5 s → 2.4 s → 2.5 s); the case study measured 89, 92, 92,
+92. **The first run against a freshly started `workerd`, with ImageKit's transform cache cold, is the
+outlier — not the number.** Diagnosis, since the LCP element makes this unambiguous: it is the hero
+`<h1>`, a static text node carrying no animation, and measured unthrottled against the same build
+**LCP = FCP = 204 ms** with that h1 the only candidate. There was never a rendering defect to find.
+
+**Still not measured: production, or a Cloudflare preview URL.** The preview URL that would have answered
+this on real infrastructure **does not currently work** — see `docs/DECISIONS.md` (2026-08-29): the Worker
+is not exposed on workers.dev, so version preview URLs return Cloudflare `error code: 1042` despite
+`preview_urls: true`. Production should be no worse than the local Worker (edge-served HTML and a warm
+CDN, rather than localhost against a cold one), but that is an expectation, not a measurement. Confirm
+with `BASE_URL=https://hendaseh.com npm run test:e2e` and a Lighthouse run after the merge deploys.
+
+**Not done, and deliberately so:** `/` still reports ~94 KiB of unused JavaScript and ~13 KiB of legacy
+JavaScript, both from the framework and Framer Motion bundles. Untouched — bundle surgery on the eve of a
+production merge is a worse trade than a 97.
 
 ## 5 — Case-study content
 
@@ -99,11 +189,17 @@ pre-rendered PNG and needs `npm run generate:og` re-run and committed.
 - Final tier assignment for every project; card-only projects link to GitHub.
 - New `projects.json` entries added in this phase (`radar-moboard`, `a16-summarizer`) get their assets the same way as the rest of the catalog — the asset engine (sub-project 3) is already built: pick a subject, get artwork approved, `npm run assets -- <id>`. See [`README.md`, "Adding a project's assets"](../README.md#adding-a-projects-assets).
 
+- **App Store fact sync.** Apple's public lookup API (`https://itunes.apple.com/lookup?id=<id>`) returns `price`, `version`, `averageUserRating`, `userRatingCount`, `sellerName`, `contentAdvisoryRating` and `minimumOsVersion` with **no auth** — every hand-maintained App Store fact on `/nahtadi`. **Three had silently drifted before anyone checked** (N1, 2026-08-28: the ratings count matched no source, the support page's version was two releases stale, and the JSON-LD price was unverifiable because it appeared nowhere visible). **Shape:** a scheduled GitHub Action that diffs the API against `projects.json` and **opens a PR** when values change — never an auto-commit. The repo is public, price changes deserve review, and a broken API should fail loudly rather than write garbage into structured data Google reads. The site cannot poll for this itself: `open-next.config.ts` pins `staticAssetsIncrementalCache`, which forbids revalidation. **CAVEAT:** `userRatingCount` is **per-storefront and defaults to US**; the worldwide total needs the authenticated App Store Connect API. That asymmetry is why `appStoreRating.count` is deliberately stored as the US figure (7) rather than the worldwide one (9) — a narrower number the automation can keep right beats a truer number it cannot reach. See `docs/superpowers/mockups/nahtadi/COPY-LOCKED.md` §10 for the verified fact ledger and row H1 for the reasoning. Design this alongside the standing ask for a **low-friction `projects.json` intake path** — same pattern, same file, and neither should be built without the other in view.
+
 **Exit:** every repo/project accounted for at its right tier; private projects presentable without revealing anything sensitive.
 
 ## Standing notes
 
-- **Backend:** none — and now literally none: the contact form and **Resend are decommissioned** (2026-08-24), so the site has no server-side mutation, no secret, and no runtime third-party dependency. If a backend is ever needed, **Supabase** is the designated choice (see `docs/DECISIONS.md`).
+- **Backend:** none. The contact form and **Resend are decommissioned** (2026-08-24), so the site has **no server-side mutation, no server-side third-party call, and no runtime secret** — it reads no environment variables and a fresh clone needs no `.env.local`. If a backend is ever needed, **Supabase** is the designated choice (see `docs/DECISIONS.md`).
+  - **But the live site DOES depend on two third parties at runtime, and this line used to deny it.** Corrected 2026-08-29; it previously read "no runtime third-party dependency", which was true only under the unstated reading "no third-party *backend*". A standing note is worth having only if a future reader can trust it without going and checking, so it now says what is actually true:
+    - **ImageKit** (`ik.imagekit.io`) delivers **every non-SVG image** via the `next/image` loader in `src/lib/imagekitLoader.ts`. This is a genuine runtime dependency: **if ImageKit is down or misconfigured, images break sitewide.** It is also why `npm run preview` shows *production's* images and never local ones — the loader only passes `src` through when `NODE_ENV === 'development'`.
+    - **Cloudflare Web Analytics** (`static.cloudflareinsights.com`, then an XHR to `cdn-cgi/rum`) loads on every page. **It is ENABLED** — this paragraph previously claimed it was not, which the beacon in the built HTML disproves. It is installed as a manual `<script>` in `src/app/layout.tsx` because auto-injection rewrites HTML passing through the proxy and never reaches Worker responses. Non-blocking, cookieless, and deliberately carries **no `integrity`/SRI hash** (the beacon self-updates; a pinned hash would silently kill analytics).
+  - What is genuinely gone is the site making outbound calls **of its own**: there is no `fetch`, `XMLHttpRequest` or `sendBeacon` anywhere in `src/`. The last one was EmailSignup's client-side POST to `buttondown.com`, deleted by Task N3.
 - **Hosting:** Cloudflare Workers via `@opennextjs/cloudflare`; CI by Workers Builds. `open-next.config.ts` pins `incrementalCache: staticAssetsIncrementalCache`, which **forbids revalidation** — sub-projects 4–5 must move to a KV-backed cache before adding ISR, a server action, an API route, or the composable cache.
 - **Connected tooling:** GitHub MCP, ImageKit API + DevTools MCP (authenticated 2026-08-23). Asset generation (sub-project 3): **Recraft REST API**, called manually from a local key in `.env.local` — no generation code ships in the app. Higgsfield was spiked and superseded before use (see `docs/DECISIONS.md`); it remains a documented fallback for video only.
 - **Résumé + section text:** Omar supplies during the Phase 1 content audit (`docs/content/`, local-only and gitignored); the résumé in `public/` is outdated until then. Everything in `docs/content/` is **raw material only** — possibly outdated or rough by Omar's own assessment; final copy is workshopped with him during phases 4–5, never published verbatim.

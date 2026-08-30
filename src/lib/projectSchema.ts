@@ -10,6 +10,7 @@ export const ProjectSchema = z
     id: z.string().min(1),
     title: z.string().min(1),
     tagline: z.string().optional(),
+    cardStat: z.string().optional(),
     description: z.string().min(1),
     tier: TierSchema,
     featured: z.boolean(),

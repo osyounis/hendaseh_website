@@ -1,13 +1,60 @@
-import { getProjectById, getAllProjects } from '@/lib/projects';
-import { getProjectGradientClass } from '@/lib/projectStyles';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import { Fragment, type CSSProperties } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { Metadata } from 'next';
+import { getProjectById, getCaseStudyProjects, getNextCaseStudy } from '@/lib/projects';
+import {
+  getCaseStudy,
+  type CaseStudySection as CaseStudySectionData,
+  type Prose,
+} from '@/lib/caseStudies';
+import ScrollReveal from '@/components/projects/ScrollReveal';
+import NewTabHint from '@/components/NewTabHint';
+import {
+  AffordanceLabel,
+  ArrowUpRight,
+  ChevronDownCircle,
+  ChevronLeft,
+  LeadingAffordanceLabel,
+} from '@/components/LinkAffordance';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+/**
+ * ONE TEMPLATE. There is no per-project branch anywhere below, and adding one
+ * would be a regression: this page used to be two hand-written layouts whose
+ * hardcoded `<h1>` strings had drifted away from `project.title`, so the
+ * visible title and the `<title>` tag disagreed. Everything here is driven by
+ * `projects.json` (via the `src/lib/projects.ts` helpers) and by
+ * `src/lib/caseStudies.ts`.
+ *
+ * The only conditionals are on DATA PRESENCE, not on identity:
+ *   - `links.embed`   -> the live-demo button and the embed slot
+ *   - `links.github`  -> the GitHub button
+ *   - `caseStudy.figure` -> the media slot (reserved for phase-5 charts)
+ * Today `collision-avoidance-radar` is the only project with an embed and
+ * neither has figure artwork, so the two pages differ without the template
+ * knowing either slug.
+ */
+
+/* Octocat, 16x16 viewBox. Inlined rather than imported from `react-icons` so
+   the glyph is the exact path the approved mockup draws. The project cards
+   carry their own copy of this constant for the same reason. */
+const GITHUB_MARK =
+  'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z';
+
+/** Per-element delay for the hero entrance cascade (see `.case-enter` in
+ *  case-study.css). Hero only -- the body below is `[data-reveal]`, a separate
+ *  system, and the two are never mixed on one element. */
+const ENTER = (delay: string) => ({ '--enter-delay': delay }) as CSSProperties;
+
+/** The id of the in-page demo, and the target the hero button anchors to. */
+const EMBED_ID = 'live-demo';
+
+/** The subtree `ScrollReveal` looks inside for `[data-reveal]` elements. */
+const BODY_ID = 'case-study-body';
 
 // Enforces the tier contract: only `showcase` projects without their own
 // detailPath get a /projects/[slug] page. `card` tier means "no page", and the
@@ -16,10 +63,7 @@ interface PageProps {
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const projects = getAllProjects();
-  return projects
-    .filter(p => p.tier === 'showcase' && !p.detailPath)
-    .map(p => ({ slug: p.id }));
+  return getCaseStudyProjects().map((p) => ({ slug: p.id }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -28,7 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!project) {
     return {
-      title: 'Project Not Found | Omar Younis',
+      title: 'Project Not Found',
     };
   }
 
@@ -40,15 +84,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alt: project.title,
   };
 
+  // `tagline`, NOT `description`. The full `description` is body copy and runs
+  // long -- 261 characters on collision-avoidance-radar -- so Google (~150-160)
+  // and social previews (~125) cut the tail off on every surface. Sub-project 3
+  // wrote a `tagline` for all 13 projects at exactly this length (longest in
+  // the catalog: 120). Body copy still reads `description`; only meta uses
+  // `tagline`. Closes the ROADMAP open question raised 2026-08-26.
+  //
+  // The bare `title` is resolved to `<title> - Omar Younis` by the root
+  // layout's template; `og:`/`twitter:` have no such inheritance and spell the
+  // suffix out.
+  const socialTitle = `${project.title} - Omar Younis`;
+
   return {
-    title: `${project.title} | Omar Younis`,
-    description: project.description,
+    title: project.title,
+    description: project.tagline,
     alternates: {
       canonical: url,
     },
     openGraph: {
-      title: `${project.title} | Omar Younis`,
-      description: project.description,
+      title: socialTitle,
+      description: project.tagline,
       url,
       siteName: 'Hendaseh',
       locale: 'en_US',
@@ -57,377 +113,229 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${project.title} | Omar Younis`,
-      description: project.description,
+      title: socialTitle,
+      description: project.tagline,
       images: [ogImage.url],
     },
   };
 }
 
+/** Renders one paragraph, keeping the approved copy's emphasis runs. */
+function Paragraph({ prose }: { prose: Prose }) {
+  return (
+    <p className="case-p">
+      {prose.map((run, index) =>
+        typeof run === 'string' ? (
+          <Fragment key={index}>{run}</Fragment>
+        ) : (
+          <strong key={index}>{run.em}</strong>
+        )
+      )}
+    </p>
+  );
+}
+
+/**
+ * PROBLEM / APPROACH / IMPACT all use this. `children` is how the IMPACT
+ * section gets its tech chips without the section itself knowing about them.
+ */
+function CaseStudySection({
+  section,
+  children,
+}: {
+  section: CaseStudySectionData;
+  children?: React.ReactNode;
+}) {
+  return (
+    <section className="case-section" data-reveal="">
+      <span className="section-eyebrow">{section.eyebrow}</span>
+      <h2 className="case-heading">{section.heading}</h2>
+      {section.paragraphs.map((prose, index) => (
+        <Paragraph key={index} prose={prose} />
+      ))}
+      {children}
+    </section>
+  );
+}
+
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { slug } = await params;
-
   const project = getProjectById(slug);
 
+  // `dynamicParams = false` already means only the slugs above resolve, so a
+  // miss here is a catalog/content mismatch, not a bad URL. Throwing fails the
+  // build loudly instead of quietly prerendering a broken page — the same
+  // choice `/projects` makes for a project with no tagline.
   if (!project) {
-    notFound();
+    throw new Error(`Case study route rendered for unknown project "${slug}".`);
   }
 
+  const caseStudy = getCaseStudy(slug);
+  if (!caseStudy) {
+    throw new Error(
+      `Project "${slug}" is showcase tier but has no entry in src/lib/caseStudies.ts.`
+    );
+  }
+
+  const next = getNextCaseStudy(slug);
+  const embed = project.links.embed;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {project.id === 'collision-avoidance-radar' ? (
-        <>
-          {/* Hero Section for Collision Avoidance Radar */}
-          <section className="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 text-white py-20 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto text-center">
-              {/* App Icon */}
-              {project.image && (
-                <div className="mb-8 flex justify-center">
-                  <div className="w-40 h-40 rounded-3xl shadow-2xl overflow-hidden">
-                    <Image
-                      src={project.image}
-                      alt={project.imageAlt || project.title}
-                      width={160}
-                      height={160}
-                      className="w-full h-full object-cover"
-                      priority
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* App Name & Tagline */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
-                Maritime Collision Avoidance Training System
-              </h1>
-              <p className="text-xl sm:text-2xl text-gray-300 mb-3">
-                Maritime Navigation Training Tool
-              </p>
-              <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Educational application for Coast Guard navigators to practice collision avoidance using radar plotting techniques
-              </p>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-                {project.links.github && (
-                  <a
-                    href={project.links.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-3 bg-white text-[#0A1A2F] rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-lg"
-                  >
-                    View on GitHub →
-                  </a>
-                )}
-                <Link
-                  href="/projects"
-                  className="px-8 py-3 bg-white/10 backdrop-blur-sm text-white rounded-lg hover:bg-white/20 transition-colors font-medium border border-white/30"
-                >
-                  ← Back to Projects
-                </Link>
-              </div>
-
-              {/* Stats Badge */}
-              <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
-                <span className="text-sm font-medium text-white">{project.stats}</span>
-              </div>
-            </div>
-          </section>
-
-          {/* Technologies Section */}
-          <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-            <div className="max-w-6xl mx-auto">
-              <h2 className="text-2xl font-bold text-[#0A1A2F] mb-6 text-center">Built With</h2>
-              <div className="flex flex-wrap gap-3 justify-center">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-4 py-2 bg-blue-50 text-blue-700 text-sm rounded-full font-medium"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </section>
-        </>
-      ) : project.id === 'brent-cuda' ? (
-        <>
-          {/* Hero Section for Brent's Method with CUDA */}
-          <section className="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 text-white py-20 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto text-center">
-              {/* Project Icon */}
-              {project.image && (
-                <div className="mb-8 flex justify-center">
-                  <div className="w-40 h-40 rounded-3xl shadow-2xl overflow-hidden">
-                    <Image
-                      src={project.image}
-                      alt={project.imageAlt || project.title}
-                      width={160}
-                      height={160}
-                      className="w-full h-full object-cover"
-                      priority
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Project Name & Tagline */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
-                Parallelizing Brent&apos;s Method with CUDA
-              </h1>
-              <p className="text-xl sm:text-2xl text-gray-300 mb-3">
-                M.S. Graduate Project · GPU-Accelerated Root-Finding
-              </p>
-              <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                A first CUDA implementation of Brent&apos;s root-finding method — batch/ensemble parallelism running one independent solver per GPU thread.
-              </p>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-                {project.links.github && (
-                  <a
-                    href={project.links.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-3 bg-white text-[#0A1A2F] rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-lg"
-                  >
-                    View on GitHub →
-                  </a>
-                )}
-                <Link
-                  href="/projects"
-                  className="px-8 py-3 bg-white/10 backdrop-blur-sm text-white rounded-lg hover:bg-white/20 transition-colors font-medium border border-white/30"
-                >
-                  ← Back to Projects
-                </Link>
-              </div>
-
-              {/* Stats Badge */}
-              <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
-                <span className="text-sm font-medium text-white">{project.stats}</span>
-              </div>
-            </div>
-          </section>
-
-          {/* Headline Results */}
-          <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-            <div className="max-w-6xl mx-auto">
-              <h2 className="text-2xl font-bold text-[#0A1A2F] mb-8 text-center">Headline Results</h2>
-              <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                <div className="text-center p-8 bg-blue-50 rounded-2xl">
-                  <div className="text-5xl font-bold text-[#0093FF] mb-2">35.31×</div>
-                  <p className="text-gray-700 font-medium">
-                    Kernel speedup over the single-threaded CPU baseline
-                  </p>
-                </div>
-                <div className="text-center p-8 bg-blue-50 rounded-2xl">
-                  <div className="text-5xl font-bold text-[#0093FF] mb-2">8.79×</div>
-                  <p className="text-gray-700 font-medium">
-                    End-to-end speedup — median of 10 trials on an RTX 3080 at a 2<sup>22</sup> batch
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Built With */}
-          <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-            <div className="max-w-6xl mx-auto">
-              <h2 className="text-2xl font-bold text-[#0A1A2F] mb-6 text-center">Built With</h2>
-              <div className="flex flex-wrap gap-3 justify-center">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-4 py-2 bg-blue-50 text-blue-700 text-sm rounded-full font-medium"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* What It Is / Correctness / Methodology */}
-          <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-            <div className="max-w-4xl mx-auto prose prose-lg max-w-none">
-              <h2>What It Is</h2>
-              <p>
-                Brent&apos;s method is a robust scalar root-finder, but a single root solve is
-                inherently sequential. This project parallelizes it the other way — across problems
-                rather than within one — using batch/ensemble parallelism: each GPU thread runs its
-                own independent Brent&apos;s instance. Batch sizes sweep from 2<sup>10</sup> up to
-                2<sup>22</sup> (~4.19M independent problems at the top end), saturating the device
-                with millions of concurrent solves. It is, to my knowledge, the first CUDA
-                implementation of Brent&apos;s method.
-              </p>
-
-              <h2>Correctness &amp; Rigor</h2>
-              <p>
-                Performance only counts if the answers are exact. The CPU and GPU paths produce
-                bit-identical fp64 results, validated to &lt;1e-10 against a Python ground-truth
-                reference across all three languages — Python, C++, and CUDA. The test battery covers
-                22 hand-crafted cases, 16,384 randomly generated monotonic cubics, and edge cases,
-                exercised on both the CPU and GPU paths.
-              </p>
-
-              <h2>Benchmarking Methodology</h2>
-              <p>
-                Each batch size runs 3 warmup trials followed by 10 measured trials, reported as the
-                median, with an automatic retry whenever the coefficient of variation exceeds 5% to
-                keep timings stable. Benchmarks were collected on an NVIDIA RTX 3080 (Ampere, SM 8.6)
-                with CUDA Toolkit 13.1. Headline figures: 35.31× at the kernel level and 8.79×
-                end-to-end at the 2<sup>22</sup> batch.
-              </p>
-
-              <h2>Source Code &amp; Report</h2>
-              <p>
-                The complete source is on{' '}
-                <a
-                  href={project.links.github ?? '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  GitHub
-                </a>{' '}
-                (GPL-3.0). The repository also includes the full written report, presentation slides,
-                and raw benchmarks under <code>docs/</code>.
-              </p>
-            </div>
-          </section>
-        </>
-      ) : (
-        <div className="max-w-6xl mx-auto px-4 py-16">
-          {/* Back button */}
-          <Link
-            href="/projects"
-            className="text-blue-600 hover:text-blue-800 mb-8 inline-block font-medium transition-colors"
-          >
-            ← Back to Projects
+    <article>
+      <header
+        className="case-hero"
+        style={
+          {
+            '--case-hero-from': caseStudy.hero.from,
+            '--case-hero-to': caseStudy.hero.to,
+          } as CSSProperties
+        }
+      >
+        <div className="page-wrap">
+          <Link href="/projects" className="case-crumb case-enter" style={ENTER('0s')}>
+            <LeadingAffordanceLabel label="All projects" glyph={<ChevronLeft />} />
           </Link>
 
-          {/* Project hero image — object-contain so the full square artwork
-              shows uncropped; the project's own gradient fills the rest of
-              the frame. */}
-          {project.image && (
-            <div
-              className={`relative w-full h-96 mb-8 overflow-hidden rounded-3xl flex items-center justify-center ${getProjectGradientClass(project.id)}`}
-            >
-              <Image
-                src={project.image}
-                alt={project.imageAlt || project.title}
-                fill
-                className="object-contain"
-                priority
-              />
+          <div className="case-hero-row">
+            {/* Decorative: the title beside it names the project. */}
+            <Image
+              src={`/images/projects/${project.id}/icon-squircle.png`}
+              alt=""
+              width={132}
+              height={132}
+              className="case-icon case-enter"
+              style={ENTER('0.1s')}
+              priority
+            />
+
+            {/* Title and thesis are ONE beat: one statement, one block, and
+                100ms apart they would read as fussy rather than as sequence. */}
+            <div className="case-hero-copy case-enter" style={ENTER('0.2s')}>
+              <h1 className="case-title">{project.title}</h1>
+              <p className="case-thesis">{caseStudy.thesis}</p>
             </div>
-          )}
 
-          {/* Project header */}
-          <h1 className="text-4xl md:text-5xl font-bold text-[#0A1A2F] mb-4">
-            {project.title}
-          </h1>
-          <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-            {project.description}
-          </p>
+            {/* The entrance goes on this WRAPPER, never on the pills inside
+                it. `.pill:active` is a `transform`, and an animation's filled
+                end state would beat it -- see the block comment on
+                `.case-enter` in case-study.css. */}
+            <div className="case-actions case-enter" style={ENTER('0.3s')}>
+              {/* Primary only when there is something to launch. Without an
+                  embed the repository is the page's main action, so GitHub
+                  takes the solid button instead of the ghost one. */}
+              {embed && (
+                <a href={`#${EMBED_ID}`} className="pill case-btn-primary">
+                  <AffordanceLabel label="Launch live demo" glyph={<ChevronDownCircle />} />
+                </a>
+              )}
 
-          {/* Technologies */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {project.technologies.map((tech) => (
-              <span
-                key={tech}
-                className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full font-medium"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-
-          {/* Stats */}
-          {project.stats && (
-            <p className="text-sm text-gray-500 mb-8">{project.stats}</p>
-          )}
-        </div>
-      )}
-
-      {/* Embedded Streamlit App (if links.embed exists) */}
-      {project.links.embed && (
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-[#0A1A2F] mb-6 text-center">
-              Interactive Demo
-            </h2>
-            <div className="border-2 border-gray-300 rounded-lg overflow-hidden bg-white shadow-lg">
-              <iframe
-                src={project.links.embed}
-                className="w-full h-[800px]"
-                title={`${project.title} - Interactive Demo`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              />
-            </div>
-            <p className="text-sm text-gray-600 mt-4 text-center">
-              <strong>Note:</strong> The app may take 30 seconds to wake from sleep on first load
-              (Streamlit Cloud free tier).
-            </p>
-          </div>
-        </section>
-      )}
-
-      {/* Project Details Section - Only for projects without a custom layout */}
-      {project.id !== 'collision-avoidance-radar' && project.id !== 'brent-cuda' && (
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-          <div className="max-w-4xl mx-auto">
-            {/* Links */}
-            <div className="flex gap-4 mb-12 justify-center">
               {project.links.github && (
                 <a
                   href={project.links.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 bg-[#101411] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors font-medium"
+                  className={`pill ${embed ? 'case-btn-ghost' : 'case-btn-white'}`}
                 >
-                  View on GitHub →
+                  <svg viewBox="0 0 16 16" aria-hidden="true">
+                    <path d={GITHUB_MARK} />
+                  </svg>
+                  <AffordanceLabel label="GitHub" glyph={<ArrowUpRight />} />
+                  <NewTabHint />
                 </a>
-              )}
-              {project.links.live && (
-                <a
-                  href={project.links.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 border-2 border-[#101411] text-[#0A1A2F] rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                >
-                  Open in New Tab →
-                </a>
-              )}
-            </div>
-
-            {/* Project Details */}
-            <div className="prose prose-lg max-w-none">
-              <h2>About This Project</h2>
-              <p>{project.description}</p>
-
-              {project.links.github && (
-                <div className="mt-6">
-                  <h3>Source Code</h3>
-                  <p>
-                    The complete source code for this project is available on{' '}
-                    <a
-                      href={project.links.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      GitHub
-                    </a>
-                    .
-                  </p>
-                </div>
               )}
             </div>
           </div>
-        </section>
-      )}
-    </div>
+
+          {/* Three real numbers. Every value is traceable to the project's own
+              record; nothing here is rounded up or invented. */}
+          <ul className="case-stats case-enter" style={ENTER('0.4s')}>
+            {caseStudy.stats.map((stat) => (
+              <li key={stat.label} className="case-stat">
+                <span className="case-stat-value">{stat.value}</span>
+                <span className="case-stat-label">{stat.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </header>
+
+      <div id={BODY_ID} className="page-wrap case-body">
+        <CaseStudySection section={caseStudy.problem} />
+        <CaseStudySection section={caseStudy.approach} />
+
+        {/* Media slot: 16:9 figure plus caption, reserved for phase-5 charts.
+            It renders only when there is real artwork to show. */}
+        {caseStudy.figure && (
+          <figure className="case-figure" data-reveal="">
+            <Image
+              src={caseStudy.figure.src}
+              alt={caseStudy.figure.alt}
+              width={1280}
+              height={720}
+              className="case-figure-media"
+            />
+            <figcaption className="case-caption">{caseStudy.figure.caption}</figcaption>
+          </figure>
+        )}
+
+        {/* Embed slot: the demo loads in place. Deliberately NOT a reveal
+            target — the hero button jumps straight here, and arriving at a
+            block that is mid-fade is worse than arriving at a static one.
+            A plain client `<iframe>`, which is what the Workers runtime and
+            the static-assets incremental cache allow. */}
+        {embed && (
+          <div id={EMBED_ID} className="case-embed">
+            <iframe
+              src={embed}
+              title={`${project.title}: live demo`}
+              className="case-embed-frame"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            />
+            <p className="case-caption">
+              The demo runs on Streamlit&apos;s free tier, so the first load can take about 30
+              seconds to wake.
+            </p>
+          </div>
+        )}
+
+        <CaseStudySection section={caseStudy.impact}>
+          <ul className="case-techrow">
+            {project.technologies.map((tech) => (
+              <li key={tech} className="case-tech">
+                {tech}
+              </li>
+            ))}
+          </ul>
+        </CaseStudySection>
+
+        {/* Fixed slots: "All projects" is always on the left, "Next case
+            study" always on the right. No border here — the footer's hairline
+            is the only rule at the bottom of the page. */}
+        <nav className="case-nav" aria-label="Case study">
+          <Link href="/projects" className="case-nav-back">
+            <LeadingAffordanceLabel label="All projects" glyph={<ChevronLeft />} />
+          </Link>
+
+          {next && (
+            <Link href={`/projects/${next.id}`} className="home-tile case-nav-next">
+              <Image
+                src={`/images/projects/${next.id}/icon-squircle.png`}
+                alt=""
+                width={46}
+                height={46}
+                className="case-nav-next-icon"
+              />
+              <span>
+                <span className="case-nav-next-label">Next case study</span>
+                <span className="case-nav-next-title">{next.title}</span>
+              </span>
+            </Link>
+          )}
+        </nav>
+      </div>
+
+      <ScrollReveal rootId={BODY_ID} />
+    </article>
   );
 }

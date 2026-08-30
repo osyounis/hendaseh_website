@@ -1,0 +1,508 @@
+/* Home-only bands. Split out of globals.css ahead of Task B2 (Task B2.0, see
+   .superpowers/sdd/2026-08-25-page-redesigns/). Moved verbatim -- no rule
+   renamed, merged, split, or reordered for taste. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * Hero sky + swarm set-piece
+   * ---------------------------------------------------------------------- */
+
+  .home-sky {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    background: var(--home-sky);
+  }
+
+  /* The tinted-sky treatment for `.pill-secondary` (white pill + hairline)
+     USED TO LIVE HERE, justified as "only ever matches inside `.home-sky`,
+     which is Home-only". That stopped being true when About (Task B3) grew a
+     tinted sky of its own and copied the rule verbatim, so it moved to
+     shared.css beside `.pill-secondary`, where its selector list now names
+     every page sky. Specificity is unchanged at (0,2,0) and Home's computed
+     style was measured identical before and after the move. */
+
+  /* `.home-aurora` MOVED TO shared.css (Task B4). Contact's approved ground
+     draws the same aurora one step quieter, and copying the rule would have
+     made it the third character-for-character duplicate on this page's
+     furniture -- the same reason `.pill-secondary`'s sky treatment and
+     `.home-tile` already live there. The class keeps its `home-` name for the
+     same reason `.home-tile` does: renaming it buys nothing and breaks every
+     call site at once. `@keyframes home-drift` and its reduced-motion
+     `animation: none` travelled with it. */
+
+  .home-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--stars-opacity);
+    background-image:
+      radial-gradient(1.2px 1.2px at 12% 22%, var(--color-navy-300) 50%, transparent 51%),
+      radial-gradient(1px 1px at 78% 14%, var(--color-navy-300) 50%, transparent 51%),
+      radial-gradient(1.4px 1.4px at 60% 70%, var(--color-navy-200) 50%, transparent 51%),
+      radial-gradient(1px 1px at 32% 82%, var(--color-navy-300) 50%, transparent 51%),
+      radial-gradient(1px 1px at 90% 55%, var(--color-navy-300) 50%, transparent 51%);
+  }
+
+  /* The stage is authored at a fixed 520x430 and scaled down as one piece on
+     narrow viewports, so every satellite keeps its authored geometry. */
+  .home-cluster {
+    --cluster-scale: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    height: calc(430px * var(--cluster-scale));
+    margin-top: 36px;
+  }
+
+  .home-stage {
+    position: relative;
+    /* MUST NOT shrink. Every child is absolutely positioned against the
+       authored 520x430 canvas (core at left:198, orbit origin at left:260 =
+       exactly half of 520), so the flex default `flex-shrink: 1` let the box
+       collapse to the container width on phones and dragged the orbit centre
+       off-centre by ~42px at 390px. Scale the canvas, never resize it. */
+    flex: none;
+    width: 520px;
+    height: 430px;
+    transform: scale(var(--cluster-scale));
+    transform-origin: top center;
+  }
+
+  @media (max-width: 580px) {
+    .home-cluster {
+      --cluster-scale: 0.62;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .home-cluster {
+      --cluster-scale: 0.5;
+    }
+  }
+
+  .home-core {
+    position: absolute;
+    left: 198px;
+    top: 153px;
+    z-index: 6;
+    display: flex;
+    width: 124px;
+    height: 124px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 28%;
+    background: var(--core-bg);
+    box-shadow: var(--core-shadow);
+    animation: home-pop 0.5s var(--ease-brand) var(--pop-delay, 0s) both;
+  }
+
+  .home-swarm {
+    position: absolute;
+    left: 260px;
+    top: 215px;
+    width: 0;
+    height: 0;
+    animation: home-orbit 60s linear infinite;
+  }
+
+  .home-sat {
+    position: absolute;
+    width: var(--sat-size);
+    height: var(--sat-size);
+    margin: calc(var(--sat-size) / -2);
+    /* Placement lives in `transform`; the pop-in uses the standalone `scale`
+       property so the two compose instead of overwriting each other. */
+    transform: rotate(var(--sat-angle)) translateX(var(--sat-radius))
+      rotate(calc(-1 * var(--sat-angle)));
+    animation: home-pop 0.5s var(--ease-brand) var(--pop-delay, 0s) both;
+  }
+
+  .home-sat-img {
+    width: 100%;
+    height: auto;
+    border-radius: 24%;
+    box-shadow: var(--sat-shadow);
+    /* Counter-rotates at the swarm's own rate so icons stay upright. */
+    animation: home-counter-orbit 60s linear infinite;
+  }
+
+  .home-sat-img-nahtadi {
+    background: var(--nahtadi-tile);
+    padding: 9%;
+  }
+
+  @keyframes home-orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes home-counter-orbit {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes home-pop {
+    from {
+      opacity: 0;
+      scale: 0.9;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Ticker
+   * ---------------------------------------------------------------------- */
+
+  /* The strip owns the ground and the two hairlines, and deliberately does NOT
+     clip: `overflow: hidden` moved to `.home-ticker-viewport` so the pause
+     control's focus ring (outline-offset 3px, at the strip's edge) is not cut
+     off by it. */
+  .home-ticker {
+    position: relative;
+    white-space: nowrap;
+    border-top: 1px solid var(--edge);
+    border-bottom: 1px solid var(--edge);
+    background: var(--ticker-surface);
+  }
+
+  /* Clips the tape, and fades it at both ends.
+     The mask does two jobs. It softens the hard cut where a full-bleed strip
+     meets the viewport edge, and -- the reason it is here rather than a nicety
+     -- it clears the ground under the pause control. The strip runs edge to
+     edge, so items scroll directly beneath wherever the control sits; a glyph
+     over moving text is unreadable. Fading the tape out before it reaches the
+     control is quieter than giving the control an opaque slab of its own, which
+     is what "quiet ticker" asks for. The trailing fade is wider than the
+     leading one because it has to clear the whole control, not just an edge.
+     Masked here rather than on `.home-ticker` because that element carries the
+     background and hairlines, which must NOT fade. */
+  .home-ticker-viewport {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 40px,
+      #000 calc(100% - 124px),
+      transparent calc(100% - 12px)
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 40px,
+      #000 calc(100% - 124px),
+      transparent calc(100% - 12px)
+    );
+  }
+
+  /* Visually hidden, still focusable and still a real checkbox. Never
+     `display: none` or `visibility: hidden` -- both would take it out of the
+     tab order and defeat the entire mechanism. */
+  .home-ticker-check {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The visible control. 44px of hit target per Apple HIG and WCAG 2.5.5, held
+     20px clear of the right edge -- iOS reserves roughly the outer 20px for its
+     own back-swipe gesture, the same lesson the nav toggle learned. */
+  .home-ticker-toggle {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 20px;
+    z-index: 2;
+    display: flex;
+    width: 44px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--ticker-secondary);
+    transition: color 0.2s ease;
+  }
+
+  /* The control's own ground -- a filled circle, as Apple gives theirs.
+     The tape fade alone was not enough to find the button.
+
+     Two parts do the work, and the RING does most of it. Measured against the
+     strip: the fill is 1.22:1 in light and 1.12:1 in dark, which is a presence
+     rather than a shape, while the `--edge` ring is 1.51:1 light and 1.86:1
+     dark and is what actually reads as an object. `--edge-soft` was tried first
+     and is too faint at this size. Deliberately quiet either way -- the contract
+     calls this a quiet ticker, so the control should be findable, not
+     prominent.
+
+     The fill also guarantees no ticker item can show through behind the glyph
+     if `mask-image` is ever unsupported. */
+  .home-ticker-toggle::before {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--ticker-control-bg);
+    box-shadow: inset 0 0 0 1px var(--edge);
+  }
+
+  .home-ticker-icon {
+    position: relative;
+    width: 14px;
+    height: 14px;
+  }
+
+  .home-ticker-icon-play {
+    display: none;
+  }
+
+  /* Clipped, not hidden: the label's text is the checkbox's accessible name, so
+     it has to stay in the accessibility tree while staying off a quiet strip. */
+  .home-ticker-word {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .home-ticker-word-play {
+    display: none;
+  }
+
+  /* THE MECHANISM. A sibling combinator plus a descendant step, because the
+     tapes sit inside the viewport wrapper rather than beside the input. */
+  .home-ticker-check:checked ~ .home-ticker-viewport .home-tape {
+    animation-play-state: paused;
+  }
+
+  /* Icon and accessible name flip together. `display: none` is what makes the
+     name honest -- it removes the inactive word from the name computation, so
+     the control cannot say "Pause" while showing a play triangle. */
+  .home-ticker-check:checked ~ .home-ticker-toggle .home-ticker-icon-pause,
+  .home-ticker-check:checked ~ .home-ticker-toggle .home-ticker-word-pause {
+    display: none;
+  }
+
+  .home-ticker-check:checked ~ .home-ticker-toggle .home-ticker-icon-play {
+    display: block;
+  }
+
+  .home-ticker-check:checked ~ .home-ticker-toggle .home-ticker-word-play {
+    display: inline;
+  }
+
+  /* The built focus pattern, on the label, since the input itself is clipped. */
+  .home-ticker-check:focus-visible ~ .home-ticker-toggle {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 999px;
+  }
+
+  .home-ticker-toggle:active {
+    transform: scale(0.97);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .home-ticker-toggle:hover {
+      color: var(--fg-strong);
+    }
+  }
+
+  /* A single grid cell that both tapes occupy, so they share one origin and
+     their transforms are directly comparable. Side-by-side flow would put tape
+     B at x=W in layout and its translate would be measured from there, which
+     is the previous design. The track is not animated. */
+  .home-tape-track {
+    display: grid;
+    grid-template-areas: "tape";
+    width: max-content;
+    padding-block: 15px;
+  }
+
+  /* Phase-offset double buffering. Each tape carries whole copies of the item
+     sequence and travels TWICE its own width, +100% -> -100%.
+
+     Tape B runs the same animation exactly half a period ahead, so the two are
+     always one tape-width apart: as one exits left the other enters right and
+     their edges meet at the seam.
+
+     The point of the whole arrangement is WHERE the reset happens. Each tape
+     jumps from -100% back to +100% at the moment it is entirely off-screen to
+     the left, and reappears entirely off-screen to the right. The
+     discontinuity still exists -- it is simply never on screen. Every earlier
+     design reset while the animated element was covering the viewport, which
+     is the one variable none of them varied. */
+  /* Duration is DERIVED, and from BOTH variables -- never hardcoded. It used to
+     be a literal `60s` per copy, which held the approved speed through every
+     change to the copy count (the count cancels: px/s = 2 * sequence /
+     secondsPerCopy) and then broke silently the first time the SEQUENCE widened,
+     at which point the same 60s meant 68.8px/s instead of 43. HomeTicker.tsx now
+     computes `--tape-seconds-per-copy` from the target speed and the measured
+     sequence, so the speed is a constant of the design and the duration follows
+     it. The fallbacks reproduce the original one-copy geometry if either
+     variable is ever missing. */
+  .home-tape {
+    grid-area: tape;
+    justify-self: start;
+    display: inline-flex;
+    width: max-content;
+    animation: home-tape
+      calc(var(--tape-seconds-per-copy, 60s) * var(--tape-copies, 1)) linear infinite;
+  }
+
+  /* Exactly half a period, derived the same way. This is what keeps the two
+     tapes edge to edge; any other offset opens a gap or overlaps them, so the
+     test asserts it as a RATIO of the duration rather than as a literal. */
+  .home-tape-b {
+    animation-delay: calc(
+      var(--tape-seconds-per-copy, 60s) * var(--tape-copies, 1) * -0.5
+    );
+  }
+
+  /* THERE IS NO HOVER-PAUSE. Deleted 2026-08-27, and deliberately not replaced.
+     Do not add one back.
+
+     The strip is full-bleed, so it spans the entire viewport width: any cursor
+     travel down the page crossed it and incidentally paused, then resumed, the
+     tape. Each of those toggles is a chance to hit a real compositor artifact --
+     pausing a composited animation forces the main thread to compute a position,
+     and where its clock has drifted from the compositor's you see a jump to the
+     main thread's notion, then a jump back on resume. That is why it was
+     intermittent and why it read as forward-then-back.
+
+     Removing hover does not fix that artifact. It removes the accidental,
+     high-frequency trigger for it. If the jump ever appears on a DELIBERATE
+     press of the pause control, that is worth reporting rather than working
+     around.
+
+     The pause control is now the only pause mechanism, which is the point: one
+     mechanism, explicit and discoverable, identical on every input type. It also
+     retires the touch `:hover` trap for good -- a tap used to apply :hover and
+     freeze the tape until the user tapped elsewhere. */
+
+  @keyframes home-tape {
+    from {
+      transform: translate3d(100%, 0, 0);
+    }
+    to {
+      transform: translate3d(-100%, 0, 0);
+    }
+  }
+
+  .home-tk {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 9px;
+    padding-inline: 50px;
+    border-right: 1px solid var(--edge-soft);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Flagship band
+   * ---------------------------------------------------------------------- */
+
+  .home-flagship {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--flagship-edge);
+    background: var(--flagship-bg);
+  }
+
+  .home-flagship::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--flagship-glow);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * CTA card
+   * ---------------------------------------------------------------------- */
+
+  .home-cta-card {
+    border: 1px solid var(--edge);
+    background: var(--cta-surface);
+    box-shadow: var(--cta-shadow);
+  }
+
+  /* The tile is a WRAPPER around the icon, not the icon itself, and that is
+     load-bearing rather than cosmetic. `padding: 9%` resolves against the
+     CONTAINING BLOCK's width, never the element's own -- so the padded element
+     has to sit inside something that IS the tile. This class used to be on the
+     <img>, which was the grid item: its containing block was the grid track,
+     exactly 200px at desktop (so 9% coincidentally equalled 9% of the tile)
+     and the full column below the 880px breakpoint, where the tile is capped
+     at 120px. On a half-screen laptop that resolved to ~53px a side inside a
+     120px box and collapsed the glyph to ~14px.
+
+     Splitting ground-and-size from inset makes the ratio hold BY CONSTRUCTION
+     at any tile width, which px values per breakpoint would not -- those drift
+     the moment a tile size changes. `.projects-nahtadi-tile` hit the same trap
+     and took the px route; this is the version that survives a resize.
+
+     Guarded at three widths spanning the breakpoint by
+     tests/e2e/percentage-padding.spec.ts. */
+  .home-nahtadi-tile {
+    background: var(--nahtadi-tile-flagship);
+    box-shadow: var(--nahtadi-tile-shadow);
+  }
+
+  .home-nahtadi-glyph {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 9%;
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Reduced motion: the set-piece is fully static — swarm frozen in its
+   * authored pose, pop-in resolved to its end state, aurora parked, tape
+   * stopped at offset 0. Pure CSS so server and client render identical HTML.
+   *
+   * `.home-tile`'s and `.home-aurora`'s reduced-motion overrides are NOT here
+   * -- each moved to shared.css with the rest of its own rules (see the
+   * comments there).
+   * ---------------------------------------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-swarm,
+    .home-sat,
+    .home-sat-img,
+    .home-core,
+    .home-tape {
+      animation: none;
+    }
+
+    /* One tape is enough when nothing moves, and two is actively wrong.
+       Both tapes share a grid cell at `justify-self: start`, so with the
+       animation off they stack exactly on top of each other at x=0 -- which the
+       old side-by-side flex layout could not do, because B sat at x=W. Every
+       ticker colour is currently a solid hex, so the overlap is invisible
+       rather than broken, but it is a full strip of wasted paint and it turns
+       into a visible double-image the moment any of those colours gains alpha.
+       A single 3870px tape covers the strip on its own. */
+    .home-tape-b {
+      display: none;
+    }
+
+    /* No motion, no 2.2.2 obligation, and a pause control for a static tape is
+       just a confusing button. The checkbox goes with it -- leaving it focusable
+       would put an invisible, purposeless control in the tab order. */
+    .home-ticker-check,
+    .home-ticker-toggle {
+      display: none;
+    }
+  }
+}

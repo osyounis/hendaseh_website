@@ -1,0 +1,539 @@
+/* Furniture used by more than one page. Split out of globals.css ahead of
+   Task B2 (Task B2.0, see .superpowers/sdd/2026-08-25-page-redesigns/). Moved
+   verbatim -- no rule renamed, merged, split, or reordered for taste. */
+
+@layer components {
+  /* ---------------------------------------------------------------------- *
+   * Shared page furniture
+   * ---------------------------------------------------------------------- */
+
+  .page-wrap {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 32px;
+  }
+
+  @media (max-width: 640px) {
+    .page-wrap {
+      padding-inline: 20px;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Mobile navigation menu
+   *
+   * The panel stays mounted in both states. It used to be conditionally
+   * rendered, so it unmounted the instant it closed and there was nothing left
+   * to transition -- it popped. `visibility` is what makes the closed state
+   * fully inert (not focusable, not hit-testable, not in the accessibility
+   * tree); it is a discrete property, so it flips instantly on open and is
+   * delayed by the exit duration on close, which lets the fade finish.
+   *
+   * Transitions, never keyframes: the toggle can be tapped faster than the
+   * 220ms enter, and a transition retargets from wherever the value currently
+   * is, where a keyframe animation would restart from zero.
+   * ---------------------------------------------------------------------- */
+
+  .nav-menu {
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 0s linear 160ms;
+  }
+
+  .nav-menu[data-state="open"] {
+    visibility: visible;
+    pointer-events: auto;
+    transition: visibility 0s linear 0s;
+  }
+
+  /* Scales from the hamburger it came out of (top right), and never from
+     scale(0) -- nothing in the real world appears out of nothing. Exit is
+     faster than enter: 160ms out, 220ms in. */
+  .nav-menu-panel {
+    transform-origin: top right;
+    opacity: 0;
+    transform: scale(0.97);
+    transition:
+      opacity 160ms var(--ease-brand),
+      transform 160ms var(--ease-brand);
+  }
+
+  .nav-menu[data-state="open"] .nav-menu-panel {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 220ms var(--ease-brand),
+      transform 220ms var(--ease-brand);
+  }
+
+  /* Rows have NO entrance motion. The panel above is the only thing that
+     moves, and the rows ride inside it.
+
+     They used to slide translateY(-6px) -> 0 on a 35ms per-row stagger. With
+     four rows the last one started 105ms into the open and finished at 325ms:
+     105ms AFTER its own container had already settled, sliding DOWN while the
+     panel scaled OUT. Two compounding motions in opposite directions, contents
+     outlasting their container -- which is what read as broken on device. A
+     four-item nav popover is one object, and staggering the children of an
+     animating container is what makes it feel unglued.
+
+     The `opacity` transition that remains is NOT entrance motion: it is the
+     row's `:active` press feedback (`active:opacity-60` in Navigation.tsx), and
+     at 100ms it answers on pointer-down. That is why this rule survives the
+     stagger's removal, and why `tests/e2e/homepage.spec.ts` asserts opacity is
+     the ONLY transitioned property here -- a `transform` reappearing on a row
+     is the bug coming back. */
+  .nav-menu-item {
+    transition: opacity 100ms ease-out;
+  }
+
+  /* Reduced motion: opacity only, 150ms, no transform anywhere. The closed
+     state still comes from the base rules, so the panel is still inert. */
+  @media (prefers-reduced-motion: reduce) {
+    .nav-menu {
+      transition: visibility 0s linear 150ms;
+    }
+
+    .nav-menu[data-state="open"] {
+      transition: visibility 0s linear 0s;
+    }
+
+    .nav-menu-panel,
+    .nav-menu[data-state="open"] .nav-menu-panel {
+      transform: none;
+      transition: opacity 150ms ease;
+    }
+
+    /* No `.nav-menu-item` override is needed or wanted here. The rows carry no
+       transform and no delay in the base rules, so there is nothing left for
+       reduced motion to neutralise -- and their remaining `opacity 100ms`
+       transition is press feedback, which reduced motion keeps (it is a
+       non-vestibular opacity change that tells the user the tap registered).
+       An override repeating the base declarations would read as if it were
+       suppressing something. */
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Link-affordance glyphs (grammar v2)
+   *
+   * Sizing/colour/alignment for the five self-drawn SVG glyphs in
+   * `src/components/LinkAffordance.tsx`. That file carries the geometry and
+   * clipping rationale; this carries what the browser needs.
+   *
+   * SIZE IS PER GLYPH, not one shared value. Apple sizes these by role, and
+   * the three steps are MEASURED off apple.com's own rendering -- each glyph's
+   * INK height as a ratio of the capital-letter height in the same screenshot,
+   * converted through Roboto's cap height (0.711em): chevrons 0.533em of ink
+   * (75% of cap), the diagonal arrow 0.599em (83%), the circle-enclosed pair
+   * 1.009em (142%). The circle pair has to be the largest -- a ring at chevron
+   * height spends its whole size budget on the ring and its interior arrow
+   * stops being legible.
+   *
+   * Height is set on the BOX, not on the drawing, and the box is NOT the
+   * target. Each viewBox carries one stroke-width of anti-clip padding (see
+   * LinkAffordance.tsx), so ink is a fixed fraction of the box and the box
+   * heights below are DERIVED from the ink targets:
+   *   chevron  0.533 / (11.8/15.8) = 0.714em
+   *   arrow    0.599 / (13.3/17.3) = 0.78em
+   *   circle   1.009 / (17.8/21)   = 1.19em
+   * Ink is never bought back by shrinking the clearance -- more ink means a
+   * bigger box.
+   *
+   * ONE STROKE WEIGHT ACROSS THE FAMILY: all three sizes are drawn at
+   * ~0.090em of stroke (0.0904 / 0.0902 / 0.0907), the way a symbol family
+   * works. Scaling the strokes up with the boxes instead would have made the
+   * chevron -- the smallest mark -- the heaviest thing on the line, which
+   * reads as bolder rather than bigger.
+   *
+   * `fill: none` is not cosmetic: `.projects-mini svg` and the `.case-btn-*`
+   * svg rule both set `fill: currentColor` for the DESTINATION marks (octocat,
+   * Apple logo), which are filled paths. These glyphs are stroked outlines and
+   * would render as solid blobs under that fill, so both of those rules are
+   * scoped with `:not(.link-glyph)` and the fill is re-stated here.
+   *
+   * BASELINE: an inline SVG's baseline is its bottom margin edge, so at
+   * `vertical-align: baseline` the box sits flush ON the text baseline. Each
+   * glyph's ink is centred in its own box, so centring the BOX on the label's
+   * optical centre centres the ink. That optical centre is cap-height/2 =
+   * 0.3555em in Roboto (capHeight 1456/2048), hence
+   *   vertical-align = 0.3555em - height/2
+   * re-derived at the new sizes: -0.0015em at 0.714em (the chevron's box is
+   * now almost exactly cap height, so its shift falls to nothing), -0.035em
+   * at 0.78em, -0.2395em at 1.19em.
+   *
+   * The 1.19em circle is TALLER THAN ITS OWN TEXT, so it is worth writing
+   * down why it does not grow the line box. An inline-block contributes its
+   * whole margin box to the line box and gets no half-leading of its own: it
+   * spans -0.9505em to +0.2395em about the baseline. Every call site here
+   * runs `line-height: 1.5`, whose strut spans -1.0918em to +0.4082em
+   * (Roboto ascent 0.9277 / descent 0.2441, half-leading 0.1641), so the
+   * glyph sits inside the strut with room to spare. Break-even is a
+   * line-height of 1.218; below that the circle would push the line box, and
+   * the fix would then be the line box, never the glyph size.
+   *
+   * SIDE BEARING: there is no space character next to the glyph -- it is
+   * welded to a word (see `AffordanceLabel` / `LeadingAffordanceLabel`) -- so
+   * the margin is the only thing setting the gap. The gap the eye sees is the
+   * margin PLUS the viewBox's one-stroke-width inset, so the margin is the
+   * target gap minus that stroke-width:
+   *   chevrons          0.35em - 0.0904em = 0.26em
+   *   arrow-up-right    0.35em - 0.0902em = 0.26em
+   *   circle glyphs     0.38em - 0.0907em = 0.29em
+   * The circles get marginally more, matching Apple's own spacing of the
+   * heavier enclosed marks. Both gap targets are measured off apple.com
+   * alongside the ink heights.
+   * ---------------------------------------------------------------------- */
+
+  .link-glyph {
+    /* Tailwind's preflight sets `svg { display: block; vertical-align: middle }`
+       so that icons behave as flex items. These glyphs are inline TEXT
+       companions, and under the preflight default each one took a line of its
+       own -- the exact orphan the nowrap rule exists to prevent. Both
+       declarations are restored here; `inline-block` keeps the SVG's baseline
+       at its bottom margin edge, which is what the `vertical-align` below is
+       measured against. */
+    display: inline-block;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* chevron-left / chevron-right -- viewBox 10.9 x 15.8, stroke 2. Ink
+     0.533em. Width is height x 10.9/15.8 = 0.4925em, rounded UP to 0.494em so
+     sub-pixel rounding can never make the width the binding dimension and
+     letterbox the drawing. */
+  .link-glyph-chevron {
+    height: 0.714em;
+    width: 0.494em;
+    margin-left: 0.26em;
+    vertical-align: -0.0015em;
+  }
+
+  /* arrow-up-right -- square viewBox 17.3 x 17.3, stroke 2. Ink 0.599em,
+     which measured CORRECT against apple.com; size deliberately unchanged. */
+  .link-glyph-arrow {
+    height: 0.78em;
+    width: 0.78em;
+    margin-left: 0.26em;
+    vertical-align: -0.035em;
+  }
+
+  /* chevron-down-in-circle / arrow-down-in-circle -- square viewBox 21 x 21,
+     stroke 1.6. Ink (the ring's outer diameter) 1.009em. */
+  .link-glyph-circle {
+    height: 1.19em;
+    width: 1.19em;
+    margin-left: 0.29em;
+    vertical-align: -0.2395em;
+  }
+
+  /* A LEADING glyph sits before its label, so its side bearing is on the
+     other side. Same target gap, mirrored. */
+  .link-glyph-leading {
+    margin-left: 0;
+    margin-right: 0.26em;
+  }
+
+  /* Pills. Radius 980px, never outlined; feedback lands on pointer-down. */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 980px;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    transition:
+      transform 100ms ease-out,
+      background-color 200ms ease-out;
+  }
+
+  .pill:active {
+    transform: scale(0.97);
+  }
+
+  .pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .pill-primary {
+    background: var(--pill-primary-bg);
+    color: var(--pill-primary-fg);
+  }
+
+  .pill-secondary {
+    background: var(--pill-secondary-bg);
+    color: var(--pill-secondary-fg);
+    box-shadow: var(--pill-secondary-shadow);
+  }
+
+  /* On a tinted hero sky the gray secondary pill melts into the ground, so it
+     goes white with a hairline (v11 Apple audit; both approved mockup pairs
+     draw exactly this). This lives beside `.pill-secondary` rather than in a
+     page stylesheet because it is no longer page-scoped: Home shipped it in
+     home.css when `.home-sky` was its only consumer, About (B3) added a
+     character-for-character copy, and Contact (B4) would have made a third.
+     Same reason `.home-tile` and `[data-reveal]` live in this file.
+
+     Adding a page's sky here is the whole edit -- do not re-declare these two
+     properties in a page stylesheet. Specificity is (0,2,0) either way, so
+     nothing about the cascade changed when this moved: it still beats the
+     `.pill-secondary` rule above regardless of import order. Verified by
+     measuring Home's hero pill before and after the move (Task B3 fix round 1:
+     background, box-shadow, colour, geometry and transition all identical in
+     both themes). */
+  .home-sky .pill-secondary,
+  .about-sky .pill-secondary {
+    background: var(--pill-sky-bg);
+    box-shadow: var(--pill-sky-shadow);
+  }
+
+  .pill-on-flagship {
+    background: var(--flagship-pill-bg);
+    color: var(--flagship-pill-fg);
+  }
+
+  /* Small blue eyebrow + large statement heading. No numbers, no rules.
+     Sitewide pattern (docs/superpowers/mockups/home/APPROVED.md, "Section
+     header pattern (sitewide)"); the Projects contract
+     (docs/superpowers/mockups/projects/APPROVED.md) reuses the same eyebrow
+     + heading anatomy for its own page header, so this lives here rather
+     than in home.css. */
+  .section-eyebrow {
+    display: block;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+  }
+
+  .section-heading {
+    margin-top: 10px;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--fg-strong);
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Aurora
+   *
+   * The soft drifting glow behind a page's tinted sky. The `home-` prefix is
+   * historical (it was born on the Home hero) but this is SHARED, exactly like
+   * `.home-tile` below: Contact (Task B4) draws the same aurora on its own
+   * ground, one step quieter, and copying the rule into contact.css would have
+   * made it the third verbatim duplicate of a piece of Home furniture -- the
+   * mistake `.pill-secondary`'s sky treatment already had to be undone for.
+   *
+   * The QUIETER is expressed as a variable override on the scoping element
+   * (`.contact-sky { --aurora-opacity: var(--contact-aurora-opacity) }`), not
+   * as a second `opacity` declaration, so this rule stays the only place that
+   * reads the token and the two themes keep resolving from globals.css.
+   *
+   * The element is decorative and `pointer-events: none`; every call site
+   * renders it `aria-hidden`.
+   * ---------------------------------------------------------------------- */
+
+  .home-aurora {
+    position: absolute;
+    inset: -40% -20%;
+    pointer-events: none;
+    opacity: var(--aurora-opacity);
+    background: var(--aurora-image);
+    filter: blur(70px);
+    animation: home-drift 14s ease-in-out infinite alternate;
+  }
+
+  @keyframes home-drift {
+    from {
+      transform: translate3d(-3%, -2%, 0);
+    }
+    to {
+      transform: translate3d(3%, 3%, 0) scale(1.06);
+    }
+  }
+
+  /* Parked, not slowed. Travels with the rule above for the same reason
+     `.home-tile`'s override does: a future page that reuses the aurora must
+     not have to remember to re-suppress it. */
+  @media (prefers-reduced-motion: reduce) {
+    .home-aurora {
+      animation: none;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Tiles
+   *
+   * The `home-` prefix is historical (born on the Home work grid) but this
+   * class is deliberately SHARED, not Home-only. Three committed design
+   * contracts depend on the exact name `.home-tile`:
+   *   - docs/superpowers/mockups/projects/APPROVED.md ("Build notes for B2":
+   *     "Card hover is SHARED CODE ... apply the existing built `.home-tile`
+   *     class/tokens to all project cards -- never re-implement the hover.")
+   *   - the M3 contract extends the same reuse to Task B3 (About).
+   *   - docs/superpowers/mockups/contact/APPROVED.md (M4, line 12): "Shared
+   *     `.home-tile` hover + focus-visible" for Contact's channel cards.
+   * Do not rename it and do not move it into home.css -- filing it as
+   * Home-only silently breaks B2/B3/B4's card hover with nothing failing.
+   * ---------------------------------------------------------------------- */
+
+  .home-tile {
+    background: var(--surface-raised);
+    border: 1px solid var(--edge);
+    box-shadow: var(--card-shadow);
+    transition:
+      transform 0.28s var(--ease-brand),
+      border-color 0.28s var(--ease-brand),
+      box-shadow 0.28s var(--ease-brand);
+  }
+
+  .home-tile:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* Press feedback (link-affordance grammar, contact/APPROVED.md M4 line 20:
+     "Every interactive card and pill has the standard :active press
+     response") only where the tile itself IS the link: Home's work-grid
+     tiles and the case study's "next" card both render `.home-tile` on an
+     `<a>`. The Projects card wears the same class on a deliberately
+     non-interactive `<article>` (its own `.projects-mini` pills already
+     press, see projects.css) -- scoping this to the `a` element keeps the
+     press off the article without adding a second class anywhere. */
+  a.home-tile:active {
+    transform: scale(0.98);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .home-tile:hover {
+      transform: translateY(-6px);
+      border-color: var(--tile-hover-edge);
+      box-shadow: var(--tile-hover-shadow);
+    }
+  }
+
+  /* Reduced motion for `.home-tile` lives here, next to the rest of its
+     rules, rather than being grouped with the Home-only reduced-motion block
+     in home.css -- `.home-tile` is shared, so its reduced-motion override
+     must travel with it (a future page that only reuses this tile must not
+     lose the reduced-motion no-hover-transform override). The original
+     source had one combined `@media (prefers-reduced-motion: reduce)` block
+     covering both Home-only set-piece selectors and `.home-tile`; splitting
+     that grouping in two (one block here, one in home.css) changes nothing
+     about which selectors match or what they resolve to -- every individual
+     rule keeps its original selector and declarations untouched. */
+  @media (prefers-reduced-motion: reduce) {
+    .home-tile {
+      transition: none;
+    }
+
+    a.home-tile:active {
+      transform: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .home-tile:hover {
+        transform: none;
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Scroll reveal
+   *
+   * READ THIS BEFORE CHANGING IT.
+   *
+   * Shared by the case-study template (`/projects/[slug]`, Task B2.4) and the
+   * About page (Task B3). It was written in case-study.css and moved here when
+   * About became its second consumer -- the same reason `.home-tile` lives in
+   * this file rather than in home.css.
+   *
+   * 1. THE RESTING STATE IS VISIBLE. There is deliberately no rule that hides
+   *    `[data-reveal]`. Only `[data-reveal="pending"]` hides, and the only
+   *    thing that can write that value is `ScrollReveal.tsx` after it has
+   *    confirmed JavaScript, an IntersectionObserver and no reduced-motion
+   *    preference, and only for elements below the fold. Adding `opacity: 0`
+   *    to a bare `[data-reveal]` rule would turn this back into the content
+   *    gate that `tests/e2e/projects-no-js.spec.ts` was written to catch.
+   *
+   * 2. THE MOTION RIDES ON `translate`, NEVER ON `transform`, AND THAT IS
+   *    LOAD-BEARING. About reveals its cards, and every card on that page is a
+   *    `.home-tile`, whose hover IS `transform: translateY(-6px)`. `transform`
+   *    is a single property: a reveal written as one would clobber the hover
+   *    (or be clobbered by it) for any card that is hovered while it reveals,
+   *    and there is no way to express "both" without composing the matrices by
+   *    hand. `translate` is an independent, independently-animatable property
+   *    that the browser composes WITH `transform`, so the two never fight.
+   *    Any change here that reaches for `transform` reintroduces that
+   *    collision.
+   * ---------------------------------------------------------------------- */
+
+  [data-reveal="pending"] {
+    opacity: 0;
+    translate: 0 20px;
+  }
+
+  [data-reveal="in"] {
+    opacity: 1;
+    translate: 0 0;
+    /* A transition, not a keyframe: it retargets from wherever the value
+       currently is if anything interrupts it. Strong ease-out, so the motion
+       is fastest at the moment the eye arrives. */
+    transition:
+      opacity 0.6s var(--ease-brand),
+      translate 0.6s var(--ease-brand);
+    /* Longhand AFTER the shorthand, which resets delay to 0. This is what lets
+       a grid express a staggered cascade: the call site sets `--reveal-delay`
+       inline per card and nothing here needs to know how many cards there are.
+       Unset, it is 0s and the element reveals immediately. */
+    transition-delay: var(--reveal-delay, 0s);
+  }
+
+  /* A `.home-tile` that is ALSO a reveal target carries two independent
+     motions: the reveal (opacity + translate) and the hover (transform +
+     border-color + box-shadow). `transition` is a single shorthand, and both
+     rules sit at specificity (0,1,0) -- so the reveal rule above, being later
+     in source order, replaced the tile's list wholesale and a revealed card's
+     hover snapped instead of easing over 280ms. Every card on the About page
+     is exactly this combination.
+
+     There is no way to append to `transition`, so the two lists are restated
+     together here, at (0,2,0) so it does not depend on source order. Nothing
+     is re-implemented: the durations and easings are the same values the two
+     rules they come from already use, and only the reveal's two entries take
+     the stagger delay (a delay on the hover entries would make a card lag
+     behind the pointer). Change either rule and change this one with it. */
+  .home-tile[data-reveal="in"] {
+    transition:
+      opacity 0.6s var(--ease-brand) var(--reveal-delay, 0s),
+      translate 0.6s var(--ease-brand) var(--reveal-delay, 0s),
+      transform 0.28s var(--ease-brand),
+      border-color 0.28s var(--ease-brand),
+      box-shadow 0.28s var(--ease-brand);
+  }
+
+  /* Belt and braces for a preference flipped after load: `ScrollReveal`
+     checks the same query before it arms anything, but it does not re-run.
+     `translate` AND `transform` are both neutralised -- the reveal moved from
+     one to the other, and leaving the old one out would silently strand any
+     element that still carries it. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal],
+    [data-reveal="pending"],
+    [data-reveal="in"],
+    /* (0,2,0), so it has to be named explicitly -- a media query adds no
+       specificity and the bare `[data-reveal="in"]` selector above would lose
+       to the compound rule. */
+    .home-tile[data-reveal="in"] {
+      opacity: 1;
+      translate: none;
+      transform: none;
+      transition: none;
+    }
+  }
+}

@@ -4,22 +4,35 @@ test.describe('Site Navigation', () => {
   test('should navigate through all main pages', async ({ page }) => {
     // Start at homepage
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Hendaseh', level: 1 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Omar Younis', level: 1 })).toBeVisible()
 
     // Navigate to About using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'About' }).click()
     await expect(page).toHaveURL('/about')
-    await expect(page.getByRole('heading', { name: 'Omar Younis', level: 1 })).toBeVisible()
+    // The About h1 is the approved contract's statement heading, not the name
+    // (which is the site-wide h1 on Home only). "ABOUT" is the eyebrow above
+    // it, and eyebrows are not headings. Task B3.
+    await expect(
+      page.getByRole('heading', { name: 'I build software people rely on.', level: 1 })
+    ).toBeVisible()
 
     // Navigate to Projects using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'Projects', exact: true }).click()
     await expect(page).toHaveURL('/projects')
-    await expect(page.getByRole('heading', { name: /projects/i })).toBeVisible()
+    // The Projects h1 is the approved contract's statement heading, not the
+    // word "Projects" (that is the eyebrow above it, and eyebrows are not
+    // headings). Task B2.3.
+    await expect(
+      page.getByRole('heading', { name: "Everything I've built.", level: 1 })
+    ).toBeVisible()
 
     // Navigate to Contact using navigation bar
     await page.getByRole('navigation').getByRole('link', { name: 'Contact' }).click()
     await expect(page).toHaveURL('/contact')
-    await expect(page.getByRole('heading', { name: /contact/i })).toBeVisible()
+    // Same rule as About and Projects above: the Contact h1 is the approved
+    // contract's statement heading, and "CONTACT" is the eyebrow over it.
+    // Task B4.
+    await expect(page.getByRole('heading', { name: 'Say hello.', level: 1 })).toBeVisible()
 
     // Navigate back to Home using logo
     await page.getByRole('navigation').getByRole('link', { name: 'Hendaseh' }).click()
@@ -52,18 +65,28 @@ test.describe('Site Navigation', () => {
   test('should have contact page link', async ({ page }) => {
     await page.goto('/')
 
-    // Check "Let's Talk" button links to contact page
-    const contactLink = page.getByRole('link', { name: "Let's Talk" })
+    // The home page's own contact CTA is now a mailto:, so the nav is where a
+    // link to /contact has to hold.
+    const contactLink = page.getByRole('navigation').getByRole('link', { name: 'Contact' })
     await expect(contactLink).toBeVisible()
     await expect(contactLink).toHaveAttribute('href', '/contact')
   })
 
-  test('should have external GitHub link on Projects page', async ({ page }) => {
+  test('should have safe external GitHub links on Projects page', async ({ page }) => {
     await page.goto('/projects')
 
-    // Check GitHub link exists and has correct attributes
-    const githubLink = page.locator('a[href="https://github.com/osyounis"]').first()
-    await expect(githubLink).toBeVisible()
-    await expect(githubLink).toHaveAttribute('target', '_blank')
+    // The redesigned page has no "View GitHub Profile" button — the approved
+    // contract replaced it with a per-card octocat pill that goes to that
+    // project's own repository (Task B2.3). The property worth guarding is
+    // unchanged: every GitHub link here opens in a new tab and carries
+    // `rel="noopener"`.
+    const githubLinks = page.locator('[data-testid="project-card"] a[href^="https://github.com/osyounis/"]')
+    const total = await githubLinks.count()
+    expect(total).toBeGreaterThan(0)
+
+    for (let i = 0; i < total; i++) {
+      await expect(githubLinks.nth(i)).toHaveAttribute('target', '_blank')
+      await expect(githubLinks.nth(i)).toHaveAttribute('rel', /noopener/)
+    }
   })
 })

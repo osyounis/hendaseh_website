@@ -1,13 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { HiStar } from 'react-icons/hi';
 import type { NahtadiReview } from '@/lib/projects';
+import { PauseGlyph, PlayGlyph } from '@/components/home/TransportGlyphs';
 
 interface ReviewsCarouselProps {
   reviews: NahtadiReview[];
-  rating?: { value: string; count: number };
 }
 
 const AUTO_ADVANCE_MS = 6000;
@@ -37,8 +35,10 @@ function getReducedMotionServerSnapshot(): boolean {
 // rendered, while getReducedMotionSnapshot supplies the real preference on every
 // render after that. The version this replaced read matchMedia in a lazy
 // useState initializer, which returned true on the client's first render while
-// the server had rendered false — flipping aria-live below and producing a real
-// hydration mismatch. tests/e2e/reduced-motion-hydration.spec.ts guards it.
+// the server had rendered false — a real hydration mismatch.
+// tests/e2e/reduced-motion-hydration.spec.ts guards it, and is the reason the
+// pause control below is hidden under this preference in CSS rather than by
+// conditional rendering here.
 function useReducedMotion(): boolean {
   return useSyncExternalStore(
     subscribeToReducedMotion,
@@ -47,19 +47,90 @@ function useReducedMotion(): boolean {
   );
 }
 
-export default function ReviewsCarousel({ reviews, rating }: ReviewsCarouselProps) {
+/** Five filled stars. Decorative: the review's own text carries the meaning. */
+function Stars() {
+  return (
+    <div className="nh-rv-stars" aria-hidden="true">
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg key={i} viewBox="0 0 20 20">
+          <path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+/** Prev/next, the stroked chevron drawing at transport-control size. */
+function Chevron({ direction }: { direction: 'left' | 'right' }) {
+  return (
+    <svg
+      viewBox="0 0 10.9 15.8"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d={direction === 'left' ? 'M7.9 3 3 7.9 7.9 12.8' : 'M3 3 7.9 7.9 3 12.8'} />
+    </svg>
+  );
+}
+
+/**
+ * The App Store reviews carousel.
+ *
+ * THREE BEHAVIOURS HERE ARE CONTRACTUAL
+ * (docs/superpowers/mockups/nahtadi/APPROVED.md, "Component behaviours").
+ *
+ * 1. EVERY REVIEW IS RENDERED, STACKED IN ONE GRID CELL. The container
+ *    therefore sizes to the TALLEST review permanently and never changes
+ *    height as they rotate, so nothing below it jumps. The version this
+ *    replaced rendered `reviews[current]` alone under a `min-h-[300px]`, which
+ *    was a FLOOR rather than a ceiling: the reviews run 122 to 200 characters
+ *    and the taller ones pushed straight past it. There is no magic number in
+ *    the replacement — add a seventh review and the floor rises on its own.
+ *    Same technique the Home ticker's two tapes use.
+ *
+ *    Inactive slides are `visibility: hidden` in CSS, so they are genuinely
+ *    INERT: not focusable, not in the accessibility tree. They are still in
+ *    the DOM, which is the whole point — they are what sets the height.
+ *
+ * 2. THE PAUSE CONTROL IS A REAL `<button aria-pressed>`, not the Home
+ *    ticker's CSS checkbox. The ticker's checkbox works because `HomeTicker`
+ *    is a server component pausing a CSS animation; this carousel is already a
+ *    client component and its auto-advance is a `setInterval`, which NO
+ *    checkbox can stop. It exists because the carousel auto-advanced, never
+ *    stopped, and had no touch-reachable pause — the identical WCAG 2.2.2
+ *    (Pause, Stop, Hide, Level A) gap closed on the Home ticker, here on the
+ *    page the App Store links to.
+ *
+ *    Icon and accessible name flip together via `display: none` in CSS, which
+ *    removes a node from the accessible NAME COMPUTATION as well as from the
+ *    page — so the name can never say "Pause" while the icon shows a play
+ *    triangle. The button is hidden entirely under `prefers-reduced-motion`,
+ *    in CSS: auto-advance is already off there, so a pause button would be a
+ *    control for something that is not moving, and leaving it focusable would
+ *    put a purposeless stop in the tab order.
+ *
+ * 3. HOVER-PAUSE IS DELETED, focus-pause is KEPT. Hover went for the reason
+ *    the ticker's did: on touch a tap applies `:hover` and the content freezes
+ *    until the user taps elsewhere. Focus stays, tracked as state SEPARATE
+ *    from user intent (`focusHeld` vs `paused`) precisely so focus and blur
+ *    can never resume a carousel the user deliberately paused — the bug the
+ *    old single `paused` flag had, where a blur silently restarted it.
+ */
+export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [focusHeld, setFocusHeld] = useState(false);
   const reducedMotion = useReducedMotion();
 
   const total = reviews.length;
-  const goTo = useCallback((index: number) => setCurrent(index), []);
   const next = useCallback(() => setCurrent((i) => (i + 1) % total), [total]);
   const prev = useCallback(() => setCurrent((i) => (i - 1 + total) % total), [total]);
 
-  // Auto-advance is disabled entirely under reduced-motion (manual only),
-  // and pauses while the carousel is hovered or focused.
-  const autoPlaying = !reducedMotion && !paused && total > 1;
+  const autoPlaying = !reducedMotion && !paused && !focusHeld && total > 1;
 
   // Keep an up-to-date ref so the interval callback never goes stale.
   const nextRef = useRef(next);
@@ -75,89 +146,80 @@ export default function ReviewsCarousel({ reviews, rating }: ReviewsCarouselProp
 
   if (total === 0) return null;
 
-  const review = reviews[current];
-
   return (
     <div
       role="group"
       aria-roledescription="carousel"
       aria-label="App Store reviews"
-      className="max-w-3xl mx-auto"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      className="nh-rv"
+      onFocus={() => setFocusHeld(true)}
+      // React's onBlur is the delegated `focusout`, so it fires when focus
+      // moves BETWEEN two controls inside the carousel as well as when it
+      // leaves. `relatedTarget` is where focus is going: if that is still
+      // inside, focus never actually left and the auto-advance must stay held.
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setFocusHeld(false);
+        }
+      }}
     >
-      {rating && (
-        <p className="flex items-center justify-center gap-1.5 mb-6 text-sm font-semibold text-gray-500">
-          <HiStar className="text-yellow-400 text-base" aria-hidden="true" />
-          <span>
-            {rating.value}★ · {rating.count} Ratings on the App Store
-          </span>
-        </p>
-      )}
-
-      {/* Slide — one review card at a time. aria-live announces on manual
-          navigation but stays silent during auto-advance to avoid spamming
-          screen readers. */}
-      <div aria-live={autoPlaying ? 'off' : 'polite'} aria-atomic="true">
-        <div
-          aria-roledescription="slide"
-          aria-label={`${current + 1} of ${total}`}
-          className="bg-white border border-gray-200 rounded-2xl shadow-sm px-6 py-10 sm:px-12 sm:py-12 text-center min-h-[300px] flex flex-col justify-center"
-        >
-          <div className="flex justify-center mb-5 text-yellow-400 text-xl" aria-hidden="true">
-            <HiStar /><HiStar /><HiStar /><HiStar /><HiStar />
+      {/* aria-live announces on manual navigation but stays silent during
+          auto-advance, so a screen reader is not spammed every six seconds. */}
+      <div className="nh-rv-stack" aria-live={autoPlaying ? 'off' : 'polite'} aria-atomic="true">
+        {reviews.map((review, index) => (
+          <div
+            key={review.author}
+            className="nh-rv-slide"
+            data-current={index === current ? 'true' : 'false'}
+            aria-roledescription="slide"
+            aria-label={`${index + 1} of ${total}`}
+          >
+            <Stars />
+            <h3 className="nh-rv-title">{review.title}</h3>
+            <blockquote className="nh-rv-quote">&ldquo;{review.text}&rdquo;</blockquote>
+            <p className="nh-rv-who">
+              {review.author} &middot; {review.date}
+            </p>
           </div>
-          <h3 className="text-lg font-semibold text-[#0A1A2F] mb-4">
-            {review.title}
-          </h3>
-          <blockquote className="text-xl sm:text-2xl font-medium text-gray-900 leading-snug">
-            &ldquo;{review.text}&rdquo;
-          </blockquote>
-          <p className="mt-6 text-gray-500 text-sm">
-            — {review.author} · {review.date}
-          </p>
-        </div>
+        ))}
       </div>
 
-      {/* Controls */}
-      <div className="mt-8 flex items-center justify-center gap-6">
-        <button
-          type="button"
-          onClick={prev}
-          aria-label="Previous review"
-          className="text-white p-3 rounded-full shadow-md bg-[#0093FF] hover:bg-[#0080E0] transition-all duration-200 hover:scale-110 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0093FF]"
-        >
-          <FaChevronLeft className="w-4 h-4" />
+      <div className="nh-rv-controls">
+        <button type="button" className="nh-rv-btn" onClick={prev} aria-label="Previous review">
+          <Chevron direction="left" />
         </button>
 
-        <div className="flex items-center gap-2" role="tablist" aria-label="Choose review">
-          {reviews.map((r, index) => (
+        <div className="nh-rv-dots" role="tablist" aria-label="Choose review">
+          {reviews.map((review, index) => (
             <button
-              key={r.author}
+              key={review.author}
               type="button"
               role="tab"
-              onClick={() => goTo(index)}
-              aria-label={`Go to review ${index + 1}: ${r.title}`}
+              className="nh-rv-dot"
+              onClick={() => setCurrent(index)}
+              aria-label={`Review ${index + 1}: ${review.title}`}
               aria-selected={index === current}
-              aria-current={index === current ? 'true' : undefined}
-              className={`h-2.5 rounded-full transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0093FF] ${
-                index === current
-                  ? 'w-6 bg-[#0093FF]'
-                  : 'w-2.5 bg-gray-300 hover:bg-gray-400'
-              }`}
             />
           ))}
         </div>
 
+        <button type="button" className="nh-rv-btn" onClick={next} aria-label="Next review">
+          <Chevron direction="right" />
+        </button>
+
+        {/* No aria-label: the accessible name comes from whichever clipped
+            word is currently displayed, so name and icon are one state rather
+            than two that can drift apart. */}
         <button
           type="button"
-          onClick={next}
-          aria-label="Next review"
-          className="text-white p-3 rounded-full shadow-md bg-[#0093FF] hover:bg-[#0080E0] transition-all duration-200 hover:scale-110 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0093FF]"
+          className="nh-rv-btn nh-rv-pause"
+          aria-pressed={paused}
+          onClick={() => setPaused((p) => !p)}
         >
-          <FaChevronRight className="w-4 h-4" />
+          <PauseGlyph className="nh-ico-pause" />
+          <PlayGlyph className="nh-ico-play" />
+          <span className="nh-rv-word nh-ico-pause">Pause the reviews</span>
+          <span className="nh-rv-word nh-ico-play">Play the reviews</span>
         </button>
       </div>
     </div>
