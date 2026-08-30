@@ -96,6 +96,45 @@ policy's own wording.
 
 The row is **A23** in §1.
 
+## Amendment 7 — 2026-08-30, screenshots move to a dated set directory
+
+**Origin:** Omar's production review. Not a copy change — **no locked string moves and
+no slot changes meaning.** Recorded here only because §2 above names the screenshot
+file paths, and those paths are now the mechanism that keeps the images fresh.
+
+**BEFORE:** `public/images/nahtadi/screenshot-1..6.png`
+**AFTER:** `public/images/nahtadi/screenshots/2026-08-29/screenshot-1..6.png`
+
+**The problem this fixes is not visible in any string.** The screenshots are served
+with `cache-control: max-age=31536000` — one year. §2 replaced the captures **in
+place**, reusing the filenames, so every browser that had already loaded `/nahtadi`
+kept the v1.1.0-era images and had no way to learn otherwise until 2027. Observed
+exactly that way: ImageKit served the new bytes at every width from two networks and
+the deployed HTML was current (the new `Guided Setup` caption rendered), yet Safari,
+iPhone Safari and iPhone Chrome all still showed the old screenshots, while opening
+the same image directly in a new tab showed the new one.
+
+**The long cache header is correct and must not be shortened.** It is right for
+content that never changes at a URL. What was wrong was changing the content at a
+fixed URL. The dated directory makes the URL honest.
+
+**THE PROCEDURE, FOR THE NEXT RE-SHOOT — this will happen on every app release.**
+Bump `SCREENSHOT_SET` in `src/components/nahtadi/ScreenshotGallery.tsx` to the new
+capture date, drop the new files in `public/images/nahtadi/screenshots/<that date>/`,
+and leave the previous directory alone. `tests/e2e/nahtadi.spec.ts` asserts the shape
+— all six from one dated set, none from the flat legacy path — so a re-shoot dropped
+at the old location fails rather than shipping stale.
+
+A **date** rather than the app version, deliberately: captures are sometimes re-taken
+without a release (a better crop, a corrected setting), and a version scheme would
+silently reuse a URL in exactly that case. A **path** rather than `?v=`, deliberately:
+query handling varies by cache layer and these URLs already pass through ImageKit's
+transforms; a distinct path is unambiguous everywhere.
+
+**The flat-path files are intentionally still in the repo.** Nothing references them,
+but cached HTML might, and a stale image is a better failure than a broken one. They
+can be deleted once the old HTML has aged out.
+
 ## Amendment 6 — 2026-08-30, the privacy policy names a person, not "Hendaseh"
 
 **Origin:** Omar's production review of the deployed PR, not an audit finding. This
@@ -189,7 +228,7 @@ rule rather than as a one-off fix.**
 `CalculationMethod` carries two name fields (`CalculationMethods.swift:14-15`):
 `name`, the full legal name "for documentation/accessibility", and **`shortName`,
 "Abbreviated name for UI display"**. `shortName` is what the picker actually shows,
-and it is what `screenshot-3.png` on this very page displays.
+and it is what slot 3's screenshot on this very page displays.
 
 **The rule: any authority named in site copy must be findable in the app's picker.**
 The recognition moment this copy is built on only works if the word on the site is a
@@ -454,8 +493,10 @@ to do it themselves. Nothing is removed; the email fallback keeps its place last
 
 ### 2. The screenshots are replaced — the staleness workstream is CLOSED
 
-All six of `public/images/nahtadi/screenshot-1..6.png` are new captures from the
-live app at **v1.2.1**. The previous set dated from **9 April 2026**, six days before
+All six screenshots are new captures from the live app at **v1.2.1**. They now live
+at `public/images/nahtadi/screenshots/2026-08-29/screenshot-1..6.png` — a **dated set
+directory**, added 2026-08-30 by Amendment 7 below. Slot numbers are unchanged and
+every locked row still points at the same image; only the directory moved. The previous set dated from **9 April 2026**, six days before
 the v1.1.0 submission: two releases stale, and slot 4 baked `v1.1.0` into the image.
 
 **Slot mapping — caption order is deliberately preserved**, so every locked row keeps
