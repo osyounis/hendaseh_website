@@ -96,7 +96,7 @@ policy's own wording.
 
 The row is **A23** in §1.
 
-## Amendment 7 — 2026-08-30, screenshots move to a dated set directory
+## Amendment 7 — 2026-08-29, screenshots move to a dated set directory
 
 **Origin:** Omar's production review. Not a copy change — **no locked string moves and
 no slot changes meaning.** Recorded here only because §2 above names the screenshot
@@ -135,7 +135,7 @@ transforms; a distinct path is unambiguous everywhere.
 but cached HTML might, and a stale image is a better failure than a broken one. They
 can be deleted once the old HTML has aged out.
 
-## Amendment 6 — 2026-08-30, the privacy policy names a person, not "Hendaseh"
+## Amendment 6 — 2026-08-29, the privacy policy names a person, not "Hendaseh"
 
 **Origin:** Omar's production review of the deployed PR, not an audit finding. This
 file's scope has never covered the privacy policy's closing attribution line, which
@@ -495,7 +495,7 @@ to do it themselves. Nothing is removed; the email fallback keeps its place last
 
 All six screenshots are new captures from the live app at **v1.2.1**. They now live
 at `public/images/nahtadi/screenshots/2026-08-29/screenshot-1..6.png` — a **dated set
-directory**, added 2026-08-30 by Amendment 7 below. Slot numbers are unchanged and
+directory**, added 2026-08-29 by Amendment 7 below. Slot numbers are unchanged and
 every locked row still points at the same image; only the directory moved. The previous set dated from **9 April 2026**, six days before
 the v1.1.0 submission: two releases stale, and slot 4 baked `v1.1.0` into the image.
 

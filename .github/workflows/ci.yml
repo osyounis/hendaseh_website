@@ -29,9 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # TODO: Re-enable linting after ESLint config migration
-      # - name: Run linter
-      #   run: npm run lint
+      # Re-enabled 2026-08-29. The TODO this replaced ("after ESLint config
+      # migration") was satisfied when the config moved to eslint-config-next@16's
+      # native flat configs in eslint.config.mjs; the line stayed commented out
+      # for a while after that, so CI ran unit, e2e and build but never lint.
+      - name: Run linter
+        run: npm run lint
 
       - name: Run unit tests
         run: npm run test:run
