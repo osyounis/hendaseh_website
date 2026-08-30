@@ -466,25 +466,64 @@ test('the newsletter, the Instagram link and the scroll hint are gone', async ({
   await expect(page.getByRole('button', { name: 'Scroll right' })).toBeVisible()
 })
 
-test('the page makes no runtime third-party request', async ({ page }) => {
-  // The claim H2 restores is that the site has NO runtime third-party
-  // dependency. Cloudflare's analytics beacon is first-party infrastructure
-  // for this zone and is injected sitewide, so it is not what this asserts;
-  // anything else leaving the origin is.
-  //
-  // Matched on HOSTNAME, not against `page.url()`: the page's URL is
-  // `about:blank` when the document request itself fires, so an origin
-  // comparison would flag the page's own navigation.
-  const offOrigin: string[] = []
+/*
+ * WHAT THIS ACTUALLY GUARDS, restated 2026-08-29 after it failed against
+ * production. It was written as "the page makes no runtime third-party
+ * request", and BOTH halves of that were wrong.
+ *
+ *   1. IT ONLY EVER RAN AGAINST LOCALHOST. `isSelf` was hardcoded to
+ *      `localhost` / `127.0.0.1`, so under
+ *      `BASE_URL=https://hendaseh.com npm run test:e2e` every FIRST-party
+ *      request from hendaseh.com was counted as third-party. The production
+ *      run is the one that matters most, and this test could never pass it.
+ *
+ *   2. THE CLAIM IS FALSE IN PRODUCTION, and the test passed locally only
+ *      because it was measuring the wrong thing. `imagekitLoader.ts` returns
+ *      `src` unchanged when NODE_ENV is development, so the dev server serves
+ *      images from disk; every production build rewrites them to
+ *      `ik.imagekit.io`. The site therefore DOES make runtime third-party
+ *      requests -- ImageKit for every non-SVG image, and the Cloudflare
+ *      Web Analytics beacon -- which is exactly the wording corrected in
+ *      docs/ROADMAP.md's standing notes and DECISIONS.md.
+ *
+ * So the invariant is expressed as an ALLOWLIST of the two documented
+ * dependencies rather than as a false absolute. That keeps what the guard was
+ * for -- it is the check that would have caught `EmailSignup`'s client POST to
+ * buttondown.com, the thing H2 deleted -- while being true on both targets. A
+ * new third party appearing here still fails, which is the point.
+ *
+ * Matched on HOSTNAME, not against `page.url()`: the page's URL is
+ * `about:blank` when the document request itself fires, so an origin
+ * comparison would flag the page's own navigation.
+ */
+test('the page contacts only its own origin and the two documented third parties', async ({
+  page,
+  baseURL,
+}) => {
+  // Derived from the run's own baseURL, so this is meaningful against
+  // localhost AND against https://hendaseh.com.
+  const selfHost = new URL(baseURL ?? 'http://localhost:3000').hostname
+
+  const unexpected: string[] = []
   page.on('request', (request) => {
     const { hostname } = new URL(request.url())
-    const isSelf = hostname === 'localhost' || hostname === '127.0.0.1'
+    const isSelf = hostname === selfHost || hostname === '127.0.0.1'
+    // Cloudflare Web Analytics: first-party infrastructure for this zone,
+    // installed as a manual snippet in layout.tsx.
     const isCloudflare = /(^|\.)cloudflare(insights)?\.com$/.test(hostname)
-    if (!isSelf && !isCloudflare) offOrigin.push(request.url())
+    // ImageKit: the next/image loader for every non-SVG image. A genuine
+    // runtime dependency -- if it is down, images break sitewide.
+    const isImageKit = /(^|\.)imagekit\.io$/.test(hostname)
+    if (!isSelf && !isCloudflare && !isImageKit) unexpected.push(request.url())
   })
 
   await page.goto('/nahtadi')
   await page.waitForLoadState('networkidle')
 
-  expect(offOrigin, `unexpected third-party requests: ${offOrigin.join(', ')}`).toEqual([])
+  expect(
+    [...new Set(unexpected)],
+    'a NEW third party is being contacted at runtime. The two allowed above are ' +
+      'documented in DECISIONS.md; anything else is the class of dependency H2 ' +
+      'removed when it deleted EmailSignup\'s POST to buttondown.com'
+  ).toEqual([])
 })
