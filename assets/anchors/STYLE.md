@@ -85,3 +85,10 @@ gradient pair + white + one accent, no text, corners masked by the compositor. A
 
 Rejected because, at catalog scale, colour-in-the-background plus a flat white subject reads
 duller and more uniform than Omar's existing icons. Only `anchor-2` survives, as noted above.
+
+
+## Sub-project 5 additions (2026-08-30)
+
+- `radar-moboard.png` — drafting-compass-on-plotting-dial, recraftv3 + custom style, background keyed. Gradient: deep sea-steel `#0F2A43 -> #101F2E`, cyan/amber accents.
+- `a16-summarizer.png` — FULL-SQUARE opaque artwork (the compositor must NOT place it on a gradient tile; it IS the tile). 100% procedural render, no AI: per-pixel conic aurora on the die face (Omar's key observation: the aurora sits ON the face, not around it), silver A16, white received-style iMessage bubble with blue quote. Card gradient: light `#F5F5F7 -> #E8E8ED` (the catalog's one light card, by design). Regenerate exactly with `assets/artwork/a16-summarizer-render.mjs`.
+- **New technique 7 for the ladder: full-procedural rendering** — when the reference demands precision no model will hold (exact geometry, exact color fields), render it in code (per-pixel math + SVG overlay). Deterministic, infinitely tunable, free.
