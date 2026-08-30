@@ -227,9 +227,27 @@ export default function NahtadiPage() {
     url: 'https://hendaseh.com/nahtadi',
     image: 'https://hendaseh.com/images/nahtadi/icon.png',
     downloadUrl: project.links.appStore,
+    /*
+     * Person, not Organization, and the App Store's developer name verbatim.
+     *
+     * This said `Organization` / `Hendaseh`, which was wrong twice over: it
+     * asserted to Google that an organisation authored the app when a person
+     * did, and it disagreed with the App Store listing, which names
+     * `Omar Saed Younis`. Structured data that contradicts the store page it
+     * links to is the kind of mismatch that costs rich-result trust.
+     *
+     * `Omar Saed Younis` rather than the site's `Omar Younis` is deliberate and
+     * is the same call COPY-LOCKED D11 already made for the support page's
+     * Developer row: this is the legal name, in one of the few places the legal
+     * name belongs, and a user cross-referencing the two needs them to match.
+     *
+     * Hendaseh is the domain and the mark, not a company. Same defect F1 fixed
+     * when it removed "our support team" -- naming an entity that does not
+     * exist.
+     */
     author: {
-      '@type': 'Organization',
-      name: 'Hendaseh',
+      '@type': 'Person',
+      name: 'Omar Saed Younis',
       url: 'https://hendaseh.com',
     },
     /*

@@ -48,6 +48,10 @@ export default function ScreenshotGallery({ screenshots }: ScreenshotGalleryProp
   const railRef = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  /** The item the last chevron press asked for, or null when the rail is at
+   *  rest. See the note on `scrollBy` for why intent is tracked separately
+   *  from position. */
+  const pendingIndex = useRef<number | null>(null);
 
   const syncEdges = useCallback(() => {
     const rail = railRef.current;
@@ -56,42 +60,128 @@ export default function ScreenshotGallery({ screenshots }: ScreenshotGalleryProp
     setAtEnd(rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 8);
   }, []);
 
+  /* The user has taken the rail over -- a swipe, a wheel, or arrow keys now
+     that the rail is focusable. Whatever the chevrons last asked for is stale,
+     so the next press works from where the rail actually is. */
+  const releasePending = useCallback(() => {
+    pendingIndex.current = null;
+  }, []);
+
+  /** The item currently parked at the snapport's leading edge. */
+  const currentIndex = useCallback((rail: HTMLDivElement) => {
+    const railLeft = rail.getBoundingClientRect().left;
+    const padInline = parseFloat(getComputedStyle(rail).scrollPaddingLeft) || 0;
+    const snapportLeft = railLeft + padInline;
+
+    let index = 0;
+    let closest = Infinity;
+    [...rail.querySelectorAll<HTMLElement>('.nh-shot')].forEach((el, i) => {
+      const distance = Math.abs(el.getBoundingClientRect().left - snapportLeft);
+      if (distance < closest) {
+        closest = distance;
+        index = i;
+      }
+    });
+    return index;
+  }, []);
+
   useEffect(() => {
     const rail = railRef.current;
     if (!rail) return;
     syncEdges();
     rail.addEventListener('scroll', syncEdges, { passive: true });
-    // The step below is derived from the laid-out item and gap, both of which
-    // change at the 880px breakpoint, so the edge state has to be re-read when
-    // the rail is resized as well as when it is scrolled.
+    /* Clear the pending target once the scroll has actually arrived, so a
+       later press advances from the real position rather than from a target
+       that is already satisfied. `scrollend` is not universally available, so
+       arrival is detected from the position itself. */
+    const clearWhenArrived = () => {
+      if (pendingIndex.current !== null && currentIndex(rail) === pendingIndex.current) {
+        pendingIndex.current = null;
+      }
+    };
+    rail.addEventListener('scroll', clearWhenArrived, { passive: true });
+    for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown'] as const) {
+      rail.addEventListener(type, releasePending, { passive: true });
+    }
+    // Item width, gap and the inset all change at the 880px breakpoint, so the
+    // edge state has to be re-read when the rail is resized as well as when it
+    // is scrolled -- otherwise the chevrons keep the enabled/disabled state of
+    // the previous layout.
     const observer = new ResizeObserver(syncEdges);
     observer.observe(rail);
     return () => {
       rail.removeEventListener('scroll', syncEdges);
+      rail.removeEventListener('scroll', clearWhenArrived);
+      for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown'] as const) {
+        rail.removeEventListener(type, releasePending);
+      }
       observer.disconnect();
     };
-  }, [syncEdges]);
+  }, [syncEdges, currentIndex, releasePending]);
 
   /**
-   * One item plus one gap. MEASURED from the rendered rail rather than
-   * hard-coded: the item is 250px with a 28px gap at desktop and 210px with an
-   * 18px gap below 880, and a constant here would step by the wrong amount on
-   * one side of the breakpoint — landing between two snap positions, which the
-   * mandatory snap then corrects by yanking the rail somewhere the user did
-   * not ask for.
+   * Scroll to the NEXT ITEM, never by a pixel delta.
+   *
+   * Two separate defects live here, and the second one is why this is more
+   * than a one-line change.
+   *
+   * (1) A DELTA DOES NOT KNOW WHERE THE SNAP POINTS ARE. This was
+   *     `scrollBy({ left: direction * step() })`, where `step()` measured one
+   *     item plus one gap from `offsetWidth` -- an integer-rounded read of a
+   *     fractional width. Nothing tied that arithmetic to the rail's snap
+   *     positions or to its trailing inset. `scrollIntoView({ inline: 'start' })`
+   *     targets the ELEMENT, and aligns to the snapport -- honouring the same
+   *     `scroll-padding-inline` that `scroll-snap-align: start` uses -- so the
+   *     script and the snap agree by definition rather than by arithmetic, and
+   *     the browser clamps at the last item instead of overshooting.
+   *
+   * (2) RAPID PRESSES MUST NOT COMPOUND AGAINST A MOVING TARGET, and this is
+   *     the one that bites in practice, because pressing a chevron repeatedly
+   *     is how anyone gets to the end of a six-item rail.
+   *
+   *     `scrollBy` is relative to the CURRENT scroll position, and during a
+   *     smooth scroll that position is mid-flight. Presses issued before the
+   *     previous one settled therefore lost distance: measured at a 390px
+   *     viewport, pressing through the rail as fast as the events land left it
+   *     818px short of the end in BOTH Chromium and WebKit.
+   *
+   *     Reading the index back off the live scroll position instead does not
+   *     fix that -- it makes it worse. Mid-animation the "current" item is
+   *     still the one being left, so every press in a burst targets the same
+   *     neighbour and the burst collapses to a single step (measured: 1046px
+   *     short in WebKit, worse than the delta it replaced).
+   *
+   *     So the intent is tracked separately from the position. `pendingIndex`
+   *     is the item the LAST press asked for; a press advances from there, not
+   *     from wherever the animation currently is, so a burst of five presses
+   *     moves five items. It is cleared the moment the scroll arrives, or the
+   *     moment the user takes over by touch, wheel or keyboard -- which is what
+   *     keeps the chevrons in step with a rail that was swiped by hand.
+   *
+   * `block: 'nearest'` is load-bearing: without it, scrolling a horizontal rail
+   * would also scroll the PAGE vertically to bring the item into view.
    */
-  const step = () => {
+  const scrollBy = useCallback(
+    (direction: -1 | 1) => {
     const rail = railRef.current;
-    if (!rail) return 0;
-    const item = rail.querySelector<HTMLElement>('.nh-shot');
-    if (!item) return 0;
-    const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
-    return item.offsetWidth + gap;
-  };
+    if (!rail) return;
+    const items = [...rail.querySelectorAll<HTMLElement>('.nh-shot')];
+    if (!items.length) return;
 
-  const scrollBy = (direction: -1 | 1) => {
-    railRef.current?.scrollBy({ left: direction * step(), behavior: 'smooth' });
-  };
+    // Advance from the last REQUESTED item when one is still in flight, so a
+    // burst of presses covers a burst of items.
+    const base = pendingIndex.current ?? currentIndex(rail);
+    const target = Math.min(Math.max(base + direction, 0), items.length - 1);
+    pendingIndex.current = target;
+
+    items[target].scrollIntoView({
+      inline: 'start',
+      block: 'nearest',
+      behavior: 'smooth',
+    });
+    },
+    [currentIndex]
+  );
 
   return (
     <div className="nh-gallery">

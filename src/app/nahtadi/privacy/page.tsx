@@ -229,11 +229,36 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section className="nh-doc-section" data-reveal>
+              {/*
+                A NATURAL PERSON, NAMED, because in a privacy policy the named
+                entity is WHO IS RESPONSIBLE FOR THE DATA. This said "developed
+                by Hendaseh", which named a data controller that does not
+                exist: Hendaseh is a domain and a mark, not a legal entity. If
+                anyone ever asked, that was the weaker position, not the safer
+                one.
+
+                `Omar Saed Younis` rather than the site's `Omar Younis` is the
+                same call COPY-LOCKED D11 made for the support page's Developer
+                row, and the same one the JSON-LD `author` now makes: the legal
+                name goes in the few places legal responsibility is named, and
+                it has to agree with the App Store listing a reader may be
+                cross-referencing.
+
+                NO DATA PRACTICE CHANGES. This clarifies who is responsible; it
+                alters nothing Nahtadi collects, stores, transmits or shares
+                (which remains: nothing). So, exactly as with C4, the "Changes
+                to This Privacy Policy" terms are satisfied by the Last Updated
+                stamp alone -- no notice, no App Store submission. But the stamp
+                MUST be right: this is a body change, and C6 is explicit that a
+                policy whose text moved while its stamp did not is the worse
+                defect.
+              */}
               <p>
-                Nahtadi is developed by{' '}
+                Nahtadi is developed by Omar Saed Younis (
                 <Link className="nh-doc-link" href="/">
-                  Hendaseh
+                  hendaseh.com
                 </Link>
+                ).
               </p>
             </section>
           </article>
