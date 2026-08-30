@@ -237,3 +237,26 @@ Source of authority: the "Program-level decisions (locked)" section of [`docs/su
 - **"Its only runtime third-party dependency"** described the Resend contact form. That was true of *server-side* calls and false of the page: **ImageKit** (`ik.imagekit.io`) serves every non-SVG image through the `next/image` loader — a real dependency, since images break sitewide if it is down — and the analytics beacon loads from `static.cloudflareinsights.com` on every page.
 - What is genuinely absent is the app making outbound calls of its own: no `fetch`, `XMLHttpRequest` or `sendBeacon` anywhere in `src/`. The last was EmailSignup's POST to `buttondown.com`, deleted by Task N3.
 **Revisit when:** A third party is added to or removed from the runtime path. Keep the accounting in `ROADMAP.md`'s standing note in step with it — that note is the one a future reader is most likely to trust without checking, which is exactly why it being wrong mattered enough to fix twice.
+
+## 2026-08-29 — Delete the flat-path Nahtadi screenshots on or after 2026-09-05
+
+**Decision:** The six pre-cache-busting screenshots at `public/images/nahtadi/screenshot-1..6.png` stay in the repo for now and are **deleted on or after 2026-09-05** — about a week past the deploy. Nothing in the codebase references them (verified against a clean build: zero occurrences in rendered HTML), so this is a dated cleanup, not a dependency.
+**Why the delay, and why it is a WEEK rather than "someday":** the only thing that can still request those paths is HTML that was cached before the deploy. How long that lasts is a measurable property of the response headers, not a guess — and the first estimate of "months" was wrong, from assuming the images' cache policy applied to the page:
+
+```
+/nahtadi                 cache-control: s-maxage=31536000
+the screenshot images    cache-control: public, s-maxage=31536000, max-age=31536000, must-revalidate
+```
+
+The **page** carries `s-maxage` only. That directive is for shared caches — Cloudflare's edge — and the page sets **no `max-age`**, so a browser is given no explicit freshness lifetime and revalidates with the origin. Only the **images** carried `max-age=31536000`, which is exactly why the old screenshots stuck for a year at fixed URLs while the surrounding HTML updated fine. So stale HTML persists on the order of **days**, and a week is comfortable margin.
+**Revisit when:** on or after 2026-09-05 — `git rm public/images/nahtadi/screenshot-{1..6}.png`, which recovers ~1.8MB of duplicated binaries. Note the dated set under `public/images/nahtadi/screenshots/<date>/` is a DIFFERENT question: previous dated sets are the mechanism that keeps old HTML working and are removed on their own schedule, if ever.
+
+## 2026-08-29 — `/dev/tokens` is KEPT, and this is settled, not pending
+
+**Decision:** Supersedes the *status* recorded earlier the same day in "`/dev/tokens` is KEPT; gating it to development is deferred out of the merge PR". That entry left gating reading as queued work. **It is not queued. It is rejected on cost/benefit**, and remains available if anyone later wants it. `/dev/tokens` ships.
+**Why, with the checks actually run rather than assumed:**
+- **It is not indexed.** `src/app/dev/tokens/page.tsx` sets `robots: { index: false, follow: false }`; the built HTML carries `<meta name="robots" content="noindex, nofollow">`; and `src/app/sitemap.ts` contains zero references to it. Verified on production.
+- **It is not a disclosure concern.** Every value the page renders — colours, type scale, radii, computed font families — is already in the stylesheet served to every visitor. It exposes nothing a reader could not obtain from DevTools. The site has no secrets, no environment variables and no backend, so there is no adjacent surface for it to leak.
+- **It earns its keep.** It prints the **computed** `font-family` for both fonts, which is how the `next/font` variables-on-the-wrong-element defect was caught by eye. That failure mode is invisible unless you know to look.
+- **The cost is one prerendered static route.** Gating it would mean new conditional routing plus a test asserting the 404 in a production build — more code and more surface than the page itself.
+**Revisit when:** someone specifically wants it off production. This entry is then the starting point — the gate plus its test — not a re-litigation of whether to keep the page. **It is not an open question and should not be listed as one.**

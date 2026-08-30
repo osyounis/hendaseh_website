@@ -249,7 +249,7 @@
       "cardStat": "ML classification",
       "description": "Predictive model to determine the likelihood of California wildfires based on weather and historical data. Uses TensorFlow for model training and API for data retrieval.",
       "technologies": ["Python", "TensorFlow", "Scikit-Learn", "Seaborn"],
-      "keywords": ["climate", "prediction"],
+      "keywords": ["climate", "prediction", "classification", "neural network", "deep learning"],
       "tier": "card",
       "featured": false,
       "private": false,
