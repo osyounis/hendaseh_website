@@ -148,6 +148,141 @@ for (const width of RAIL_WIDTHS) {
 }
 
 /* ------------------------------------------------------------------------ *
+ * 2b. THE RAIL'S OTHER END — the mirror of the assertion above
+ *
+ * The check above proves the rail STARTS at the card's content edge. It says
+ * nothing about where it stops, and that is where the bug was: chevroning to
+ * the end on a phone left a visible gap after the last screenshot, which then
+ * vanished when the rail was touched.
+ *
+ * CAUSE, and why the test is shaped like this. The chevrons used
+ * `scrollBy({ left: step() })` — a pixel delta with no knowledge of the snap
+ * positions or of the trailing inset. Repeated presses accumulated into a
+ * resting position that was neither a snap point nor true maximum scroll;
+ * touching the rail handed scrolling back to the browser, which re-snapped and
+ * "fixed" it. The self-correction is the tell: the script and the scroller
+ * disagreed about where one item along was.
+ *
+ * The fix targets the item (`scrollIntoView({ inline: 'start' })`) instead of
+ * moving by a delta, so the script aligns to the same snapport the CSS snaps
+ * to and cannot overshoot. That is a claim about the RESTING GEOMETRY, so this
+ * asserts geometry rather than the implementation: press right until the
+ * control disables, then require the LAST screenshot's right edge to sit on
+ * the card's content edge.
+ *
+ * Swept across the same widths for the same reason: the inset is 42px on
+ * desktop and 22px below 880, so a single-width check would miss a breakpoint
+ * where only one of them was updated.
+ * ------------------------------------------------------------------------ */
+
+for (const width of RAIL_WIDTHS) {
+  test(`the screenshot rail ends flush at the card's content edge at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/nahtadi')
+
+    const card = page.locator('.nh-shots .nh-band')
+    const rail = page.locator('.nh-rail')
+    const lastShot = page.locator('.nh-rail .nh-shot').last()
+    const next = page.getByRole('button', { name: 'Scroll right' })
+    await lastShot.waitFor()
+
+    /*
+     * PRESS RAPIDLY. This is the whole test, and the first version of it did
+     * not do this -- it settled the scroll between presses, and PASSED against
+     * the very implementation whose bug it was written for. A guard that is
+     * green against the defect is worse than no guard.
+     *
+     * The defect only appears when presses arrive before the previous smooth
+     * scroll has finished, because `scrollBy` is relative to the CURRENT
+     * position and mid-flight that position is behind the target. Measured
+     * against the old implementation at this cadence: 134px short of the end
+     * in Chromium, 109px in WebKit. Settled between presses: 0px, green,
+     * useless.
+     *
+     * 60ms is a fast human tap (about 16 a second), not a synthetic burst. It
+     * is a rate of INPUT, not a sampled measurement -- the assertion below
+     * still polls for the settled state rather than reading at an offset, per
+     * the wall-clock rule in docs/DECISIONS.md.
+     *
+     * THE PRESSES ARE DRIVEN IN-PAGE, and that detail is load-bearing too.
+     * Driving them from Node with `await next.click()` inserts a protocol
+     * round-trip per press, which slowed the real cadence enough that the
+     * scroll settled anyway: against the old implementation that version went
+     * red at ONE width out of eight, and by timeout rather than by measurement.
+     * A loop inside `page.evaluate` spaces the clicks by exactly 60ms, so what
+     * the test reproduces is the same every run and at every width.
+     */
+    const count = await page.locator('.nh-rail .nh-shot').count()
+    await page.evaluate(async (presses) => {
+      const button = document.querySelector<HTMLButtonElement>('.nh-scroll-r')
+      if (!button) throw new Error('the right chevron is missing')
+      for (let i = 0; i < presses; i++) {
+        if (button.disabled) break
+        button.click()
+        await new Promise((resolve) => setTimeout(resolve, 60))
+      }
+    }, count + 2)
+
+    /*
+     * NOW wait for rest, by polling the position rather than sleeping on it.
+     * Two consecutive equal reads means the smooth scroll has stopped.
+     */
+    let previous = Number.NaN
+    await expect
+      .poll(async () => {
+        const now = await rail.evaluate((el) => el.scrollLeft)
+        const settled = now === previous
+        previous = now
+        return settled
+      }, { message: 'the rail never stopped scrolling' })
+      .toBe(true)
+
+    // The card's CONTENT edge on the right, read from the browser for the same
+    // reason the leading check reads the left one.
+    const contentRight = await card.evaluate((el) => {
+      const s = getComputedStyle(el)
+      return (
+        el.getBoundingClientRect().right -
+        parseFloat(s.borderRightWidth) -
+        parseFloat(s.paddingRight)
+      )
+    })
+
+    const shotRight = await lastShot.evaluate((el) => el.getBoundingClientRect().right)
+
+    /*
+     * The gap this exists to catch was tens of pixels wide. The tolerance is
+     * sub-pixel anyway: like the leading edge, this is an alignment, not an
+     * approximation.
+     */
+    expect(
+      Math.abs(shotRight - contentRight),
+      `last screenshot ends at x=${shotRight}, card content edge at x=${contentRight} ` +
+        `(gap of ${(contentRight - shotRight).toFixed(2)}px after the last image)`
+    ).toBeLessThan(1)
+
+    // And the rail really is at its end, not merely looking like it: a rail
+    // that stopped short would still satisfy the edge check if the last item
+    // happened to be positioned there by a short scroll.
+    const atMax = await rail.evaluate(
+      (el) => Math.abs(el.scrollLeft + el.clientWidth - el.scrollWidth) < 1
+    )
+    expect(atMax, 'the rail must rest at maximum scroll, with nothing left to reveal').toBe(true)
+
+    /*
+     * And the control agrees with the geometry. Asserted LAST on purpose: when
+     * the rail stops short, this fails too, but "the chevron is still enabled"
+     * is a much worse first thing to read than the measured gap above. Ordering
+     * the cheap, diagnostic assertion first is what makes a future failure
+     * self-explanatory.
+     */
+    await expect(next, 'the right chevron must disable at the end of the rail').toBeDisabled()
+  })
+}
+
+/* ------------------------------------------------------------------------ *
  * 3. THE PAUSE CONTROL
  *
  * The button's STATE is React's and is unit-tested in

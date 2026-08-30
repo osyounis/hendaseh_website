@@ -137,6 +137,50 @@ test.describe('projects search', () => {
     await expect(cardFor(page, 'nahtadi')).toBeVisible()
   })
 
+  test('matches on the search-only keywords field', async ({ page }) => {
+    /*
+     * The two searches Omar reported as broken in production review, and the
+     * reason the `keywords` field exists at all.
+     *
+     * `keywords` was in the schema and in the search haystack from the start,
+     * and was NULL on all 13 projects -- so it contributed nothing and no test
+     * noticed, because a field that is empty everywhere still "works".
+     *
+     * WHY THESE TWO MISSED. `islamic-prayer-time` says "Muslim prayer times"
+     * in its description and carries no form of "Islam" in its title, tagline,
+     * description or technologies -- only in its `id`, which is not searched.
+     * `image-watermark-remover` had no "vision" anywhere, while `asl-detector`
+     * lists "Computer Vision" in its technologies; a Pix2Pix GAN doing
+     * image-to-image translation is computer vision too, so that was an
+     * inconsistency in the DATA, not in the search.
+     *
+     * THE FIX BELONGS IN `keywords`, NOT IN `technologies`, and that boundary
+     * is the thing this test protects. `technologies` is RENDERED on the card
+     * and is governed by the skills-defensibility rule in CLAUDE.md: every
+     * entry is a claim Omar has to be able to defend in an interview. Padding
+     * it to improve search would quietly turn a search-engine problem into a
+     * résumé problem. `keywords` is search-only and never displayed.
+     */
+    await page.goto('/projects')
+
+    await page.getByLabel('Search projects').fill('islam')
+    await expect(page.getByRole('status')).toHaveText(statusText(matchCount('islam')))
+    await expect(cardFor(page, 'islamic-prayer-time')).toBeVisible()
+    await expect(cardFor(page, 'nahtadi')).toBeVisible()
+
+    await page.getByLabel('Search projects').fill('vision')
+    await expect(page.getByRole('status')).toHaveText(statusText(matchCount('vision')))
+    await expect(cardFor(page, 'image-watermark-remover')).toBeVisible()
+    await expect(cardFor(page, 'asl-detector')).toBeVisible()
+    /*
+     * And it did NOT become a catch-all. `wildfire-predictor` is a TensorFlow
+     * model over weather and historical data -- not computer vision -- so it
+     * must stay out of this result. Keywords that make everything match are
+     * the failure mode on the other side of this fix.
+     */
+    await expect(cardFor(page, 'wildfire-predictor')).toHaveCount(0)
+  })
+
   test('filtering runs with no animation on the grid', async ({ page }) => {
     // The contract is explicit (Emil frequency rule, APPROVED.md "Search"):
     // filtering is a per-keystroke interaction and must reflow instantly with
