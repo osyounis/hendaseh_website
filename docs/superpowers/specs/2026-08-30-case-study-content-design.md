@@ -48,7 +48,7 @@ Plus `/nahtadi` (flagship, its own page) = five deep pages total.
 - pilot tracker: screenshots of the actual Excel/VBA dashboard **filled with the synthetic dataset Claude designs** (below).
 
 **Claude produces, Omar gates:**
-- The tracker's **synthetic dataset**: plausible-but-provably-fake pilot names, qualification states, and dates; generic unit labels ("Air Station A/B" style); Omar approves the dataset BEFORE any screenshot is taken.
+- The tracker's **synthetic dataset AND filled workbook**: Omar supplies the dashboard .xlsx, its VBA source, and two sanitized real rows; Claude reads the VBA to learn the layout, computed columns, and conditional-format colors, then produces the workbook as if the macro had run, with ~10 plausible-but-provably-fake pilots and generic unit labels ("Air Station A/B" style). This simulates the run because the VBA cannot execute on Omar's Mac. Omar approves the dataset and the look BEFORE taking screenshots in real Excel.
 - The tracker's **flow diagram** (sources → consolidation → dashboard).
 - The a16 **ROUGE chart** (base vs fine-tuned, from the repo's own `results/rouge_comparison.md`), built with the dataviz skill for the template's media slot.
 - **Every visual on private-work pages carries a visible "synthetic data" caption** — the guardrail, made legible.
