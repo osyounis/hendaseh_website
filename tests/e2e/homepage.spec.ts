@@ -9,8 +9,32 @@ const TAGLINE = 'Software Engineer · iOS, ML & Autonomous Systems'
 const TARGET_TAPE_PX = 3840
 const ITEMS_PER_SEQUENCE = 8
 const COPIES_PER_TAPE = 2
-/* 2580.54px of travel over 60s in the original one-copy design. Invariant. */
-const APPROVED_PX_PER_SECOND = 43
+/* 2580.54px of travel over 60s in the original one-copy design. Invariant.
+ * The full-precision figure, matching TARGET_PX_PER_SECOND in HomeTicker.tsx --
+ * the old rounded `43` here was fine against a +/-0.5 window and is not against
+ * a relative one. */
+const APPROVED_PX_PER_SECOND = 43.009
+/*
+ * Mirrors SEQUENCE_PX in HomeTicker.tsx, for the failure message only -- the
+ * assertion is on speed, and these are the same statement (see the note at the
+ * assertion). Kept in step by hand, which is exactly the pattern the note below
+ * is about.
+ */
+const SEQUENCE_PX = 2065
+/*
+ * Relative window on the rendered sequence width. 3%, because this is text and
+ * text measures differently per platform; see the assertion for the measured
+ * 1.4% macOS-to-Linux delta and why tightening it re-breaks CI.
+ *
+ * THIS IS THE FOURTH HAND-MEASURED CONSTANT IN THIS PROGRAM, after the Nahtadi
+ * App Version row, the App Store ratings count, and the projects stat line. All
+ * four are a number copied out of a rendered artifact into source, where
+ * nothing recomputes it and nothing notices when the artifact moves. The other
+ * three drifted silently and were caught by hand, late. This one had a guard --
+ * and the guard worked: it failed the moment the assumption stopped holding.
+ * That is the argument for guarding the next one, not for trusting the pattern.
+ */
+const SEQUENCE_TOLERANCE = 0.03
 
 const MOBILE_VIEWPORT = { width: 390, height: 844 }
 const MOBILE_CONTEXT = { viewport: MOBILE_VIEWPORT, isMobile: true, hasTouch: true }
@@ -649,6 +673,18 @@ test.describe('Homepage', () => {
             .animationName,
           items: document.querySelectorAll('.home-tk').length,
           stripWidth: (document.querySelector('.home-ticker') as HTMLElement).clientWidth,
+          /* The two custom properties HomeTicker.tsx sets, read from the element
+             that declares them. These are what the CSS `calc` consumes, so
+             reading them here is what lets the duration be checked against its
+             OWN inputs rather than against a number copied into this file. */
+          varsFrom: (() => {
+            const track = document.querySelector('.home-tape-track') as HTMLElement
+            const cs = getComputedStyle(track)
+            return {
+              secondsPerCopy: parseFloat(cs.getPropertyValue('--tape-seconds-per-copy')),
+              copies: parseFloat(cs.getPropertyValue('--tape-copies')),
+            }
+          })(),
         }
       })
 
@@ -710,19 +746,78 @@ test.describe('Homepage', () => {
           `cover -- a wider display shows an empty strip at the right edge before each reset`
       ).toBeGreaterThanOrEqual(TARGET_TAPE_PX)
 
+      /* ------------------------------------------------------------------ *
+       * SPEED. Two invariants, deliberately asserted SEPARATELY, because they
+       * hold to different precisions and only one of them is portable.
+       *
+       * They were a single `toBeCloseTo(43, 0)` on the measured px/s until
+       * 2026-08-29, and that assertion FAILED ON CI while passing on every
+       * local machine. It was not a flake: it reproduced to 14 decimal places
+       * across both retries. Linux lays the same text out ~1.4% wider than
+       * macOS, the CI tape rendered ~2094px per copy against the 2065px
+       * constant, and the speed read 43.615px/s against a +/-0.5 window. The
+       * constant cannot be right on both platforms at once, so the test had to
+       * stop pretending it could be.
+       *
+       * Raising SEQUENCE_PX to 2094 was rejected: it just moves the failure to
+       * macOS. Skipping or deleting was rejected outright -- this guard is here
+       * because the invariant it protects has ALREADY been violated once (a
+       * hardcoded 60s duration silently became 68.8px/s when the sequence
+       * widened, a 60% speed-up nothing else caught).
+       * ------------------------------------------------------------------ */
+
       /*
-       * Speed is the number Omar approved, and it is the thing most easily lost
-       * when the tape is resized: travel is 2x the tape width, so a hardcoded
-       * duration would make a 3x wider tape scroll 3x faster. Measured here from
-       * the real width and the real duration rather than trusted from the CSS
-       * `calc`, which is the whole point of asserting it.
+       * (i) THE DERIVATION -- strict, and platform-independent.
+       *
+       * The duration must be exactly `--tape-seconds-per-copy x --tape-copies`.
+       * Both are read off `.home-tape-track`, so this checks the CSS `calc`
+       * against its OWN inputs; no text measurement enters, which is why it can
+       * be exact on every platform. THIS is the assertion that catches the
+       * regression that actually happened: hardcode `animation: home-tape 60s`
+       * and it fails here immediately, on any machine.
+       */
+      const { secondsPerCopy, copies } = measured.varsFrom
+      expect(secondsPerCopy, '--tape-seconds-per-copy must be set on .home-tape-track').toBeGreaterThan(0)
+      expect(copies, '--tape-copies must be set on .home-tape-track').toBeGreaterThan(0)
+      expect(
+        a.duration,
+        `the tape runs for ${a.duration}s but --tape-seconds-per-copy (${secondsPerCopy}s) x ` +
+          `--tape-copies (${copies}) is ${secondsPerCopy * copies}s -- the duration has been ` +
+          `hardcoded instead of derived, so the next change to either variable will not reach it`
+      ).toBeCloseTo(secondsPerCopy * copies, 3)
+
+      /*
+       * (ii) THE MEASURED WIDTH -- tolerant, and unavoidably platform-dependent.
+       *
+       * Whether SEQUENCE_PX still matches what the browser actually renders.
+       * Note the two readings are the SAME assertion: duration is derived from
+       * SEQUENCE_PX, the copy count cancels, so
+       *
+       *     pxPerSecond / target  ===  renderedSequenceWidth / SEQUENCE_PX
+       *
+       * and a 3% window on the speed IS a 3% window on the width.
+       *
+       * WHY 3%, AND WHY IT MUST NOT BE TIGHTENED BACK: this is text laid out by
+       * a font stack, and font metrics differ per platform. The measured
+       * macOS-to-Linux delta is 1.4%; 3% is about twice that, which absorbs the
+       * variance plus another engine or font-version shift without going numb.
+       * It is still nowhere near loose enough to miss a real regression -- the
+       * failure this guards against was a 60% speed-up, and even a doubled
+       * speed would read 86px/s against a window of 41.7-44.3. If you are
+       * tempted to tighten this to catch something, the thing you want is
+       * almost certainly (i), which is already exact.
        */
       const pxPerSecond = (a.width * 2) / a.duration
+      const renderedSequencePx = a.width / copies
+      const drift = Math.abs(pxPerSecond - APPROVED_PX_PER_SECOND) / APPROVED_PX_PER_SECOND
       expect(
-        pxPerSecond,
-        `the tape scrolls at ${pxPerSecond.toFixed(1)}px/s, not the approved ` +
-          `~${APPROVED_PX_PER_SECOND}px/s -- resizing the tape changed the speed`
-      ).toBeCloseTo(APPROVED_PX_PER_SECOND, 0)
+        drift,
+        `the tape scrolls at ${pxPerSecond.toFixed(3)}px/s, ${(drift * 100).toFixed(2)}% off the ` +
+          `approved ${APPROVED_PX_PER_SECOND}px/s. Equivalently, one sequence renders at ` +
+          `${renderedSequencePx.toFixed(2)}px against the SEQUENCE_PX = ${SEQUENCE_PX} constant in ` +
+          `HomeTicker.tsx. Past ${(SEQUENCE_TOLERANCE * 100).toFixed(0)}% that is no longer text-metric ` +
+          `variance between platforms -- re-measure the sequence and update SEQUENCE_PX`
+      ).toBeLessThanOrEqual(SEQUENCE_TOLERANCE)
     })
   })
 
