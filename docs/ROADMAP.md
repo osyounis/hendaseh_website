@@ -145,31 +145,40 @@ Verified against the built HTML: all three `/nahtadi*` titles render byte-identi
 `data-theme` to `prefers-color-scheme` sitewide in one commit; SEO parity confirmed (all three frozen
 `/nahtadi*` titles byte-identical, every redirect and the sitemap still guarded by e2e).
 
-**Measured at exit, on the local Worker preview (`npm run preview`), Lighthouse mobile — actual numbers,
-not a pass mark:**
+**Measured at exit, on the local Worker (`npm run preview`), Lighthouse mobile — actual numbers.**
+Every figure below is a **steady-state median of 3–4 runs**, not a single run; see the warning underneath,
+which cost a wrong conclusion the first time.
 
 | Route | Perf | A11y | Best Practices | SEO |
 | --- | --- | --- | --- | --- |
-| `/` | **82** | 100 | 96 | 100 |
-| `/about` | 90 | 100 | 96 | 100 |
+| `/` | 97 | 100 | 96 | 100 |
+| `/about` | 98 | 100 | 96 | 100 |
 | `/projects` | 96 | 100 | 96 | 100 |
-| `/projects/brent-cuda` | **89** | 100 | 96 | 100 |
+| `/projects/brent-cuda` | 92 | 100 | 96 | 100 |
 | `/contact` | 98 | 100 | 96 | 100 |
 | `/nahtadi` | 92 | 100 | 96 | 100 |
 
-**A11y ≥95 and SEO 100 are met everywhere. Performance ≥90 is NOT met on `/` (82) or
-`/projects/brent-cuda` (89)** — recorded as a miss rather than rounded up. Diagnosed, not guessed: the
-LCP element on `/` is the hero `<h1>`, a static text node with no animation on it, and measured
-unthrottled against the same build **LCP = FCP = 204 ms** with the h1 as the only candidate. There is no
-rendering defect. The 4.8 s figure is Lighthouse's simulated mobile throttling applied to a critical path
-that includes seven hero icons fetched from **ImageKit over the real internet** (400–900 ms each in the
-trace) — latency a localhost run cannot model the way the production edge does.
+**All four targets met on all six routes: Perf ≥90, A11y ≥95, SEO 100.**
 
-**Re-measure on the Cloudflare preview URL before treating this as the real number.** That is the
-representative environment (real edge, real caching, real CDN adjacency) and the PR provides one. Also
-outstanding on the same page if the score needs lifting for real: 94 KiB of unused JavaScript and 13 KiB
-of legacy JavaScript, both from the framework/Framer Motion bundles, neither touched here — bundle surgery
-on the eve of a production merge is a worse trade than an 82.
+**⚠️ DO NOT LIGHTHOUSE THIS SITE WITH A SINGLE COLD RUN. It is off by up to 15 points.** The first
+measurement taken here reported `/` at **82** and `/projects/brent-cuda` at **89**, and both were recorded
+as missing the target before repetition showed them to be cold-start artifacts. `/` measured 82, 97, 98,
+97 across four consecutive runs (LCP 4.8 s → 2.5 s → 2.4 s → 2.5 s); the case study measured 89, 92, 92,
+92. **The first run against a freshly started `workerd`, with ImageKit's transform cache cold, is the
+outlier — not the number.** Diagnosis, since the LCP element makes this unambiguous: it is the hero
+`<h1>`, a static text node carrying no animation, and measured unthrottled against the same build
+**LCP = FCP = 204 ms** with that h1 the only candidate. There was never a rendering defect to find.
+
+**Still not measured: production, or a Cloudflare preview URL.** The preview URL that would have answered
+this on real infrastructure **does not currently work** — see `docs/DECISIONS.md` (2026-08-29): the Worker
+is not exposed on workers.dev, so version preview URLs return Cloudflare `error code: 1042` despite
+`preview_urls: true`. Production should be no worse than the local Worker (edge-served HTML and a warm
+CDN, rather than localhost against a cold one), but that is an expectation, not a measurement. Confirm
+with `BASE_URL=https://hendaseh.com npm run test:e2e` and a Lighthouse run after the merge deploys.
+
+**Not done, and deliberately so:** `/` still reports ~94 KiB of unused JavaScript and ~13 KiB of legacy
+JavaScript, both from the framework and Framer Motion bundles. Untouched — bundle surgery on the eve of a
+production merge is a worse trade than a 97.
 
 ## 5 — Case-study content
 
@@ -186,7 +195,11 @@ on the eve of a production merge is a worse trade than an 82.
 
 ## Standing notes
 
-- **Backend:** none — and now literally none: the contact form and **Resend are decommissioned** (2026-08-24), so the site has no server-side mutation, no secret, and no runtime third-party dependency. If a backend is ever needed, **Supabase** is the designated choice (see `docs/DECISIONS.md`).
+- **Backend:** none. The contact form and **Resend are decommissioned** (2026-08-24), so the site has **no server-side mutation, no server-side third-party call, and no runtime secret** — it reads no environment variables and a fresh clone needs no `.env.local`. If a backend is ever needed, **Supabase** is the designated choice (see `docs/DECISIONS.md`).
+  - **But the live site DOES depend on two third parties at runtime, and this line used to deny it.** Corrected 2026-08-29; it previously read "no runtime third-party dependency", which was true only under the unstated reading "no third-party *backend*". A standing note is worth having only if a future reader can trust it without going and checking, so it now says what is actually true:
+    - **ImageKit** (`ik.imagekit.io`) delivers **every non-SVG image** via the `next/image` loader in `src/lib/imagekitLoader.ts`. This is a genuine runtime dependency: **if ImageKit is down or misconfigured, images break sitewide.** It is also why `npm run preview` shows *production's* images and never local ones — the loader only passes `src` through when `NODE_ENV === 'development'`.
+    - **Cloudflare Web Analytics** (`static.cloudflareinsights.com`, then an XHR to `cdn-cgi/rum`) loads on every page. **It is ENABLED** — this paragraph previously claimed it was not, which the beacon in the built HTML disproves. It is installed as a manual `<script>` in `src/app/layout.tsx` because auto-injection rewrites HTML passing through the proxy and never reaches Worker responses. Non-blocking, cookieless, and deliberately carries **no `integrity`/SRI hash** (the beacon self-updates; a pinned hash would silently kill analytics).
+  - What is genuinely gone is the site making outbound calls **of its own**: there is no `fetch`, `XMLHttpRequest` or `sendBeacon` anywhere in `src/`. The last one was EmailSignup's client-side POST to `buttondown.com`, deleted by Task N3.
 - **Hosting:** Cloudflare Workers via `@opennextjs/cloudflare`; CI by Workers Builds. `open-next.config.ts` pins `incrementalCache: staticAssetsIncrementalCache`, which **forbids revalidation** — sub-projects 4–5 must move to a KV-backed cache before adding ISR, a server action, an API route, or the composable cache.
 - **Connected tooling:** GitHub MCP, ImageKit API + DevTools MCP (authenticated 2026-08-23). Asset generation (sub-project 3): **Recraft REST API**, called manually from a local key in `.env.local` — no generation code ships in the app. Higgsfield was spiked and superseded before use (see `docs/DECISIONS.md`); it remains a documented fallback for video only.
 - **Résumé + section text:** Omar supplies during the Phase 1 content audit (`docs/content/`, local-only and gitignored); the résumé in `public/` is outdated until then. Everything in `docs/content/` is **raw material only** — possibly outdated or rough by Omar's own assessment; final copy is workshopped with him during phases 4–5, never published verbatim.
