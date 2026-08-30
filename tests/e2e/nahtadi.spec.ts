@@ -148,6 +148,68 @@ for (const width of RAIL_WIDTHS) {
 }
 
 /* ------------------------------------------------------------------------ *
+ * 2a. THE SCREENSHOTS ARE SERVED FROM A VERSIONED PATH
+ *
+ * The screenshots are served with `cache-control: max-age=31536000`. That is
+ * correct for content that never changes at a URL, and was a one-year bug the
+ * moment the captures were replaced in place: browsers that had already loaded
+ * the page kept the old images until 2027 with no way to learn otherwise.
+ * Observed in the wild — ImageKit served the new bytes at every width, the
+ * deployed HTML was current, and Safari and both iPhone browsers still showed
+ * the old screenshots.
+ *
+ * So the fix is the URL, and this is what keeps it fixed. `ScreenshotGallery`
+ * builds the path from a dated set directory; the failure mode this guards is
+ * someone re-shooting the screenshots, dropping them at the flat legacy path
+ * (or over the existing dated set), and shipping a page that looks right on
+ * their machine and stays stale on everyone else's.
+ *
+ * It deliberately does NOT assert a particular date — that changes on every
+ * re-shoot by design. It asserts the SHAPE: every screenshot comes from a
+ * dated set directory, they all come from the SAME one, and none is served
+ * from the flat path the bug lived at.
+ * ------------------------------------------------------------------------ */
+
+test('every screenshot is served from one dated set directory, never the flat legacy path', async ({
+  page,
+}) => {
+  await page.goto('/nahtadi')
+
+  const sources = await page
+    .locator('.nh-rail .nh-shot img')
+    .evaluateAll((imgs) => imgs.map((el) => (el as HTMLImageElement).getAttribute('src') ?? ''))
+
+  expect(sources.length, 'the rail must render all six screenshots').toBe(6)
+
+  /*
+   * The rendered `src` is the ImageKit URL, so the path is asserted as a
+   * substring rather than as a whole-string match — the transform segment in
+   * front of it is the loader's business, not this test's.
+   */
+  const SET = /\/images\/nahtadi\/screenshots\/(\d{4}-\d{2}-\d{2})\/screenshot-([1-6])\.png/
+
+  const sets = new Set<string>()
+  for (const src of sources) {
+    expect(
+      src,
+      `a screenshot is still served from the flat, unversioned path: ${src} — ` +
+        `re-captured images MUST go in a new dated directory, or every browser that ` +
+        `has seen this page keeps the old ones for a year (see ScreenshotGallery.tsx)`
+    ).not.toMatch(/\/images\/nahtadi\/screenshot-[1-6]\.png/)
+
+    const match = src.match(SET)
+    expect(match, `screenshot src is not in a dated set directory: ${src}`).not.toBeNull()
+    sets.add(match![1])
+  }
+
+  expect(
+    [...sets],
+    'all six screenshots must come from the SAME dated set — a mixed set means a ' +
+      'partial re-shoot, which is how half a rail goes stale'
+  ).toHaveLength(1)
+})
+
+/* ------------------------------------------------------------------------ *
  * 2b. THE RAIL'S OTHER END — the mirror of the assertion above
  *
  * The check above proves the rail STARTS at the card's content edge. It says

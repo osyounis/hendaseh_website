@@ -12,6 +12,56 @@ interface ScreenshotGalleryProps {
   screenshots: Screenshot[];
 }
 
+/* ------------------------------------------------------------------------ *
+ * SCREENSHOT CACHE-BUSTING — READ THIS BEFORE RE-SHOOTING THE SCREENSHOTS.
+ *
+ * THE RULE: when the images change, the URL must change. Bump the date below,
+ * put the new captures in `public/images/nahtadi/screenshots/<that date>/` as
+ * `screenshot-1.png` … `screenshot-6.png`, and leave the previous directory
+ * where it is. That is the whole procedure.
+ *
+ * WHY IT EXISTS. The screenshots used to live at fixed paths
+ * (`/images/nahtadi/screenshot-1.png`) and are served with
+ * `cache-control: max-age=31536000` — one year. When they were re-captured at
+ * v1.2.1 the filenames did not change, so every browser that had already
+ * loaded /nahtadi kept showing the OLD screenshots and had no way to learn
+ * otherwise until 2027. Confirmed in the wild: ImageKit served the new bytes at
+ * every width from two networks and the deployed HTML was current, yet Safari
+ * and both iPhone browsers still rendered the old images, while opening the
+ * same image directly in a new tab showed the new one.
+ *
+ * The long max-age is NOT the bug and should not be shortened. It is correct
+ * for content that never changes at a given URL. The bug was that the content
+ * DID change at a fixed URL. A dated directory makes the URL honest, so the
+ * cache header becomes true rather than merely tolerated.
+ *
+ * WHY A PATH, NOT `?v=`. Query-string handling varies by cache layer — some
+ * CDNs strip or ignore the query when deciding what to store, and the images
+ * pass through ImageKit's transform URLs on top of Next's loader. A distinct
+ * path is unambiguous everywhere, at every layer, with no per-vendor caveats.
+ *
+ * WHY A DATE, NOT THE APP VERSION. The trigger for re-shooting is "the
+ * captures changed", which is not always an App Store release — a better crop
+ * or a corrected setting is reason enough, and an app-version scheme would
+ * silently reuse a URL in exactly that case. Every re-shoot has a new date by
+ * construction, and the date also records WHEN the captures were taken, which
+ * is the fact reviewers actually ask about.
+ *
+ * WHY THE WHOLE SET MOVES TOGETHER. Six per-file hashes would be more precise
+ * and would need six pieces of bookkeeping per re-shoot. The screenshots are
+ * captured as a set, in one sitting, and the cost of re-fetching six images
+ * that a visitor was going to fetch anyway is not worth a scheme the next
+ * person has to be careful with.
+ *
+ * THE OLD FILES AT THE FLAT PATHS ARE DELIBERATELY STILL THERE. Nothing in this
+ * repo references them, but a cached HTML page or an external copy might, and a
+ * stale image is a better failure than a broken one. They can be deleted once
+ * the old HTML has aged out.
+ * ------------------------------------------------------------------------ */
+
+/** Capture date of the current screenshot set. See the note above. */
+const SCREENSHOT_SET = '2026-08-29';
+
 /** The rail's own chevrons: stroked, sized by `.nh-scroll svg`. */
 function Chevron({ direction }: { direction: 'left' | 'right' }) {
   return (
@@ -220,7 +270,7 @@ export default function ScreenshotGallery({ screenshots }: ScreenshotGalleryProp
           <figure className="nh-shot" key={shot.title}>
             <div className="nh-device">
               <Image
-                src={`/images/nahtadi/screenshot-${index + 1}.png`}
+                src={`/images/nahtadi/screenshots/${SCREENSHOT_SET}/screenshot-${index + 1}.png`}
                 alt={shot.title}
                 // The captures' own pixel dimensions (iPhone 17 Pro), so the
                 // loader is asked for a sensibly sized variant; `.nh-device img`
