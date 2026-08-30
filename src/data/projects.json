@@ -143,7 +143,7 @@
       "cardStat": "28★ · MIT",
       "description": "Python application that generates parametric equations for cycloidal drive rotors (mechanical speed reducers). Creates rotor profiles that can be directly imported into SolidWorks CAD software via \"Equation Driven Curve\" feature.",
       "technologies": ["Python", "Tkinter", "NumPy", "Matplotlib"],
-      "keywords": ["gear", "gearbox", "mechanical engineering"],
+      "keywords": ["gear", "gearbox", "mechanical engineering", "robotics"],
       "tier": "card",
       "featured": false,
       "private": false,

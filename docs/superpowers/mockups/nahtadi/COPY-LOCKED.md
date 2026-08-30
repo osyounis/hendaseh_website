@@ -96,6 +96,48 @@ policy's own wording.
 
 The row is **A23** in §1.
 
+## Amendment 6 — 2026-08-30, the privacy policy names a person, not "Hendaseh"
+
+**Origin:** Omar's production review of the deployed PR, not an audit finding. This
+file's scope has never covered the privacy policy's closing attribution line, which
+is why five rounds of copy work passed over it.
+
+**Row P1 — LOCKED VERBATIM, applied.**
+
+| # | Type | Location | BEFORE (exact) | AFTER (exact final text) |
+|---|---|---|---|---|
+| P1 | COPY | `privacy/page.tsx`, closing attribution | `Nahtadi is developed by [Hendaseh]` (link on `Hendaseh`, href `/`) | `Nahtadi is developed by Omar Saed Younis ([hendaseh.com])` — link moves to `hendaseh.com`, href unchanged, sentence gains a full stop |
+
+**This is the F1 defect in another place.** F1 removed "our support team" because there
+is no team; "made by Hendaseh" implied an organisation that does not exist. It also
+disagreed with the App Store, which names `Omar Saed Younis` as developer.
+
+**But it is NOT a voice fix, and was not treated as one.** In a privacy policy the
+named entity is **who is responsible for the data**. Naming `Hendaseh` named a data
+controller with no legal existence — the weaker position if anyone ever asked, not the
+safer one. Naming a natural person is *more* accurate, and it aligns three surfaces
+that disagreed: this line, the support page's Developer row, and the JSON-LD `author`
+(which said `Organization` / `Hendaseh` and is now `Person` / `Omar Saed Younis`).
+
+`Omar Saed Younis` rather than the site's `Omar Younis` is **D11's precedent applied
+unchanged**: the legal name belongs in the places legal responsibility is named, and
+must match the App Store listing a reader may be cross-referencing.
+
+**Two alternatives were considered and rejected by Omar:** `Omar Younis` (leaves the
+policy and the App Store disagreeing on the responsible party) and `developed and
+maintained by one person, Omar Saed Younis` (too informal for a policy).
+
+**NO DATA PRACTICE CHANGES, and therefore no notification.** Nothing Nahtadi collects,
+stores, transmits or shares is different — it remains nothing. Exactly as with C4, the
+"Changes to This Privacy Policy" terms are satisfied by the Last Updated stamp alone:
+no email, no in-app notice, no App Store submission.
+
+**⚠️ THIS IS A BODY CHANGE, SO C6 NOW BINDS HARDER.** `lastUpdated` currently reads
+`August 29, 2026`. C6 requires it to be the **publication** date, and publication is the
+dev → main merge. The policy text has now moved twice; a stamp that does not match is
+the exact defect C6 calls worse than the sentence it replaced. **Verify and correct it
+at merge.**
+
 ## Amendment 4 — 2026-08-29, the page describes v1.1.0
 
 **STATUS after Omar's rulings, 2026-08-29:**
