@@ -1,4 +1,10 @@
 import { test, expect, type Page } from '@playwright/test'
+import projectsData from '../../src/data/projects.json'
+
+// Derived, not hardcoded. This spec carried a literal 13 in three places and
+// every one of them broke the moment the catalog changed size, which says
+// nothing about the entrance animation it exists to test.
+const TOTAL = (projectsData as { projects: unknown[] }).projects.length
 
 /**
  * Projects entrance cascade (added 2026-08-28).
@@ -99,7 +105,7 @@ test.describe('Projects entrance', () => {
 
     expect(await countCardAnimations()).toBe(0)
     await page.getByLabel('Search projects').fill('cuda')
-    await expect(page.getByRole('status')).toHaveText(/of 13 projects$/)
+    await expect(page.getByRole('status')).toHaveText(new RegExp(`of ${TOTAL} projects$`))
     expect(await countCardAnimations()).toBe(0)
   })
 
@@ -120,7 +126,7 @@ test.describe('Projects entrance', () => {
     const search = page.getByLabel('Search projects')
     for (const term of ['c', 'cu', 'cud', 'cuda']) {
       await search.fill(term)
-      await expect(page.getByRole('status')).toHaveText(/of 13 projects$/)
+      await expect(page.getByRole('status')).toHaveText(new RegExp(`of ${TOTAL} projects$`))
 
       const state = await page.evaluate(() =>
         Array.from(document.querySelectorAll('.projects-enter')).map((el) => ({
@@ -143,7 +149,7 @@ test.describe('Projects entrance', () => {
 
     // Clearing the query brings every card back without restarting anything.
     await search.fill('')
-    await expect(page.getByRole('status')).toHaveText('13 of 13 projects')
+    await expect(page.getByRole('status')).toHaveText(`${TOTAL} of ${TOTAL} projects`)
     expect(
       await page.evaluate(() =>
         Array.from(document.querySelectorAll('.projects-enter')).filter((el) =>

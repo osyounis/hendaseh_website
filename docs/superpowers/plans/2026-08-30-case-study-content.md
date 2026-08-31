@@ -57,6 +57,19 @@
 
 ### Task B-A: Catalog, routes, Home swap
 
+> **AMENDED 2026-08-31, during execution.** B-A as written flipped three projects
+> to `showcase` and left the case-study content to B-B. That cannot build:
+> `src/app/projects/[slug]/page.tsx` throws when a showcase project has no
+> `caseStudies.ts` entry, and `generateStaticParams` returns every showcase
+> project, so the throw happens at prerender. **Any tier flip must therefore land
+> its case-study copy in the same commit.**
+>
+> Consequently **`coast-guard-pilot-tracker` was NOT flipped in B-A** and remains
+> `card`. W2 has not produced its copy, so there is nothing to land alongside the
+> flip. **Its flip moves to the task immediately after W2**, which must change the
+> tier and add the `caseStudies.ts` entry together. B-A shipped the two projects
+> whose locked copy already existed: `radar-moboard` and `a16-summarizer`.
+
 **Files:** `src/data/projects.json`, `next.config.ts`, `src/app/projects/[slug]/*` (params/data only), Home components (grid + orbit constants), `tests/e2e/redirects.spec.ts` + case-study specs, `public/images/projects/*`, `public/og/*`
 
 - [ ] `projects.json`: replace `collision-avoidance-radar` entry with `radar-moboard` (showcase; no `links.embed`; new copy/stats from W1's locked file; keywords keep "collision avoidance" so search still finds it); add `a16-summarizer` (showcase, W3 copy, links.github + huggingface as `links.live`?— no: schema has github/live; HF model link goes in case-study body copy, not card actions); flip `coast-guard-pilot-tracker` to showcase; watermark-remover stays card (unchanged entry, removed from Home feature constants only).

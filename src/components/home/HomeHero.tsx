@@ -23,9 +23,9 @@ const SATELLITES: Satellite[] = [
   { src: '/images/nahtadi/icon.png', angle: '210deg', radius: '118px', size: 92, z: 5, tile: true },
   { src: '/images/projects/brent-cuda/icon-squircle.png', angle: '330deg', radius: '142px', size: 78, z: 4 },
   { src: '/images/projects/islamic-prayer-time/icon-squircle.png', angle: '90deg', radius: '122px', size: 72, z: 4 },
-  { src: '/images/projects/collision-avoidance-radar/icon-squircle.png', angle: '30deg', radius: '168px', size: 60, z: 3 },
+  { src: '/images/projects/radar-moboard/icon-squircle.png', angle: '30deg', radius: '168px', size: 60, z: 3 },
   { src: '/images/projects/cycloidal-drive-creator/icon-squircle.png', angle: '150deg', radius: '158px', size: 56, z: 3 },
-  { src: '/images/projects/image-watermark-remover/icon-squircle.png', angle: '270deg', radius: '186px', size: 62, z: 2 },
+  { src: '/images/projects/a16-summarizer/icon-squircle.png', angle: '270deg', radius: '186px', size: 62, z: 2 },
   { src: '/images/projects/asl-detector/icon-squircle.png', angle: '12deg', radius: '104px', size: 50, z: 2 },
 ];
 

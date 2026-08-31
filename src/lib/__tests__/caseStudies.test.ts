@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getAllProjects, getCaseStudyProjects, getNextCaseStudy, getProjectById } from '../projects'
+import { getAllProjects, getCaseStudyProjects, getNextCaseStudy } from '../projects'
 import { getCaseStudy } from '../caseStudies'
 
 describe('getCaseStudyProjects', () => {
@@ -87,10 +87,11 @@ describe('case-study content', () => {
   })
 
   it('uses a hero gradient dark enough for its white display type', () => {
-    // The hero is a colour card: white text in both themes. A light stop --
-    // `collision-avoidance-radar`'s catalog gradient starts at #8DA2B8, which
-    // carries white at about 2.6:1 -- is why these are separate values from
-    // `brand.gradient` rather than read from the catalog.
+    // The hero is a colour card: white text in both themes. Catalog gradients
+    // fail at both ends -- the retired collision-avoidance-radar started at
+    // #8DA2B8, carrying white at about 2.6:1, and a16-summarizer's #0A0A0C is
+    // too dark to separate from its own squircle -- which is why these are
+    // separate values from `brand.gradient` rather than read from the catalog.
     const relativeLuminance = (hex: string) => {
       const channel = (v: number) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)
       const [r, g, b] = [1, 3, 5].map((i) => channel(parseInt(hex.slice(i, i + 2), 16) / 255))
@@ -105,15 +106,16 @@ describe('case-study content', () => {
     })
   })
 
-  it('keeps the radar demo labelled as synthetic data', () => {
-    // A public demo of a Coast Guard training tool has to say on the page
-    // that nothing on screen is operational. Never drop this sentence.
-    const radar = getCaseStudy('collision-avoidance-radar')!
-    const impactText = radar.impact.paragraphs
-      .flat()
-      .map((run) => (typeof run === 'string' ? run : run.em))
-      .join('')
-    expect(impactText).toContain('Everything on screen is synthetic training data.')
+  it('marks every Coast Guard scenario on screen as synthetic', () => {
+    // A Coast Guard training tool has to say on the page that nothing shown is
+    // operational. It used to be a sentence in the radar demo's IMPACT copy;
+    // the demo is retired, so the claim now rides on the figure caption that
+    // B-B wires. This guard follows it there: the moment radar-moboard gets a
+    // figure, its caption must carry the marker. Never drop this.
+    const radar = getCaseStudy('radar-moboard')!
+    if (radar.figure) {
+      expect(radar.figure.caption).toContain('All scenarios synthetic.')
+    }
   })
 
   it('has no em dashes anywhere in the copy (sitewide copy rule)', () => {
@@ -133,16 +135,31 @@ describe('case-study content', () => {
 })
 
 describe('case-study projects still carry what the template renders', () => {
-  it('has a github link and technologies for every case study', () => {
+  it('gives every case study a repo link OR marks it private, never neither', () => {
+    // This used to assert a github link on every case study, which held only
+    // while every case study had a public repo. `radar-moboard` does not: the
+    // repository is private and stays private, and the superseded prototype is
+    // public but is the version its own case study describes as wrong, so
+    // linking it would point a reader at the defect.
+    //
+    // The invariant the Projects contract actually states is weaker and true:
+    // never a dead link, and never a silent absence. A case study either links
+    // its repo or carries the private badge that explains why it cannot.
     getCaseStudyProjects().forEach((p) => {
-      expect(p.links.github, p.id).toBeDefined()
+      expect(Boolean(p.links.github) || p.private, `${p.id}: no repo link and not marked private`).toBe(true)
       expect(p.technologies.length, p.id).toBeGreaterThan(0)
     })
   })
 
-  it('only collision-avoidance-radar has an embed, so only it gets a demo button', () => {
-    const withEmbed = getCaseStudyProjects().filter((p) => p.links.embed)
-    expect(withEmbed.map((p) => p.id)).toEqual(['collision-avoidance-radar'])
-    expect(getProjectById('brent-cuda')!.links.embed).toBeUndefined()
+  it('carries no live-demo affordance anywhere in the catalog', () => {
+    // Sub-project 5 retired the Streamlit demo: `links.embed` is gone from the
+    // schema, the hero button is gone from the template, and no card may
+    // advertise a demo. The schema is strict, so a resurrected `embed` key
+    // fails validation at module load rather than here; this guards the copy.
+    getAllProjects().forEach((p) => {
+      expect(p.cardStat ?? '', p.id).not.toMatch(/live demo/i)
+      expect(p.stats, p.id).not.toMatch(/live demo/i)
+      expect(Object.keys(p.links), p.id).not.toContain('embed')
+    })
   })
 })

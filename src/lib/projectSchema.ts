@@ -27,7 +27,6 @@ export const ProjectSchema = z
       .object({
         github: z.url().optional(),
         live: z.url().optional(),
-        embed: z.url().optional(),
         appStore: z.url().optional(),
       })
       .default({}),

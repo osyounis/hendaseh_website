@@ -149,7 +149,9 @@ export function ChevronLeft() {
   );
 }
 
-/** In-page jump to an anchor on the same page: "Launch live demo". */
+/** In-page jump to an anchor on the same page. Unused since sub-project 5
+ *  retired the live-demo button; kept as part of the affordance vocabulary
+ *  documented in the glyph table above. */
 export function ChevronDownCircle() {
   return (
     <svg

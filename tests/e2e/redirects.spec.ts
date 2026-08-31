@@ -16,6 +16,19 @@ test('/projects/nahtadi permanently redirects to /nahtadi', async ({ page }) => 
   expect(redirectResponse?.status()).toBe(308)
 })
 
+// Sub-project 5 merged the Streamlit prototype into its TypeScript rewrite, so
+// the old slug is indexable but has no entry. `permanent: true` emits 308, the
+// SEO equivalent of 301, which is what an indexed URL needs.
+test('/projects/collision-avoidance-radar permanently redirects to /projects/radar-moboard', async ({
+  page,
+}) => {
+  const response = await page.goto('/projects/collision-avoidance-radar')
+  await expect(page).toHaveURL(/\/projects\/radar-moboard$/)
+  const redirectedFrom = response?.request().redirectedFrom()
+  const redirectResponse = await redirectedFrom?.response()
+  expect(redirectResponse?.status()).toBe(308)
+})
+
 // The tier contract: `card` projects have no detail page. `reddit-nlp` is a card
 // project, so /projects/[slug] must not resolve it — dynamicParams = false makes
 // every slug outside generateStaticParams a 404.

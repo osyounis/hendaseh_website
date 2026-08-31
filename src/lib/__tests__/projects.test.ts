@@ -43,9 +43,9 @@ describe('getFeaturedProjects', () => {
 
 describe('getProjectById', () => {
   it('should return a project when valid id is provided', () => {
-    const project = getProjectById('collision-avoidance-radar')
+    const project = getProjectById('radar-moboard')
     expect(project).toBeDefined()
-    expect(project?.id).toBe('collision-avoidance-radar')
+    expect(project?.id).toBe('radar-moboard')
   })
 
   it('should return undefined when invalid id is provided', () => {
@@ -54,7 +54,7 @@ describe('getProjectById', () => {
   })
 
   it('should return project with correct structure', () => {
-    const project = getProjectById('collision-avoidance-radar')
+    const project = getProjectById('radar-moboard')
     expect(project).toHaveProperty('id')
     expect(project).toHaveProperty('title')
     expect(project).toHaveProperty('description')
