@@ -22,7 +22,7 @@ swap and the redirect; this file only specifies the values.**
 
 ---
 
-## §0 — Three rulings, made before writing a word of copy
+## §0 — Six rulings, made before writing a word of copy
 
 The plan handed this task three ledgered stats. **Two did not survive contact with
 the repositories.** Same failure mode W3 found: figures that were written down once
@@ -92,6 +92,40 @@ is red by design." That text dates from the 2026-08-06 scaffold; the suite is no
 `maneuver.solve()` and `grade`. **The copy below describes the code and the passing
 suite, not the README.** Omar may want to refresh that Status section; it is not a
 site task.
+
+### 0.6 The two implementations agree on the shared scenario, and ONLY on it
+
+Verified here rather than taken on trust: the nine values were read off
+`prototype-ui.png`, then radar-moboard's own `solve()` was run on the same inputs
+from `packages/geometry/dist`. They agree on every one.
+
+| reported value | prototype | radar-moboard `solve()` | published |
+|---|---|---|---|
+| CPA range | 1.4 NM | 1.4305 nm | 1.4 nm |
+| CPA bearing | 322.15° | 322.1455° | 322° |
+| time of CPA | 14:27 | 14:06 plus 21.11 min | 14:27 |
+| SRM | 25.3 kts | 25.2509 kt | 25.3 kt |
+| DRM | 232.15° | 232.1455° | 232° |
+| STM | 20.7 kts | 20.6809 kt | 20.7 kt |
+| DTM | 254.59° | 254.5899° | 255° |
+| new course | 046.50° | 46.4965° | 046° |
+| new speed | 3.6 kts | 3.5817 kt | 3.6 kt |
+
+They do not merely round to the same display values; the underlying floats match to
+four decimal places, which is two independent implementations doing the same
+arithmetic. `moboard-ui.png` corroborates five of the nine on screen (DRM 232, CPA
+1.4 nm, 21 min, DTM 255, STM 20.7); the other four are cropped out of that capture,
+which is why the solver was run rather than the panel squinted at.
+
+**This is agreement on ONE scenario and must never be published as general
+agreement.** Own ship steers 000 here, which is the single heading the prototype's
+frame-of-reference defect cannot affect: with own course at 000 the head-up frame
+and true north coincide, so the bug B7 ¶2 describes has nothing to bite on. Change
+own course and the two would be expected to diverge.
+
+**Ruling: publish it as corroboration, never as the verification claim.** The
+16-problem corpus against two independent answer keys (§0.1) remains primary. This
+is a second, weaker witness that happens to be visible in a picture.
 
 ---
 
@@ -169,7 +203,10 @@ as a hero behind white display type.
 **¶2** (emphasis run: `two independent answer keys`)
 > Correctness here is graded, not asserted. The suite runs the solver against **two independent answer keys**: six worked examples from Pub. 217, the United States government maneuvering board manual, and ten problems from a separate training key. Sixteen problems, twelve of which require a maneuver. A branch protection rule blocks any merge to main until the whole suite passes.
 
-**¶3** (emphasis run: `the fixture is what gets questioned first`)
+**¶3** (emphasis run: `agree on all nine`)
+> The retired prototype is a second witness, on one scenario. Run on its own default problem, the two implementations **agree on all nine** reported values, down to the decimals behind the rounding. That is corroboration rather than proof, and worth saying why: own ship steers 000 there, which is the one heading the older frame of reference could not get wrong.
+
+**¶4** (emphasis run: `the fixture is what gets questioned first`)
 > Two cases are skipped deliberately, each with its reason written down, and neither is quietly smoothed over. The standing rule when a hand-derived construction disagreed with a key was that **the fixture is what gets questioned first**, then the instrument doing the measuring, then the geometry. One suspected transcription error turned out to be neither: the tolerance had been set without allowing for answers already rounded to the nearest knot.
 
 ### B9 — THE IMPACT
@@ -187,41 +224,80 @@ as a hero behind white display type.
 
 ---
 
-## §3 — Visuals: specified and captioned, NOT YET STAGED
+## §3 — Visuals: staged, captioned, and fitted
 
-**Nothing is staged.** `docs/superpowers/content/radar-moboard/` does not exist and
-no captures have been supplied. The captions and slots below are locked; the files
-are outstanding from Omar. **No B-task may proceed on this section until they land.**
+**Staged and committed** under `docs/superpowers/content/radar-moboard/`. Every
+capture is synthetic by construction: all of them run the **shared scenario**, which
+is `collision-avoidance-radar`'s own default set, per audit D.6, so the retired app
+and the rewrite read as one encounter.
 
-Every capture must be **synthetic by construction**: a published training problem or
-an invented scenario, never a real track. Per audit D.6 the scenario should use the
-same default parameters as the retired public app so the two read as one scenario.
+| parameter | value |
+|---|---|
+| own ship | course 000, 10 kt |
+| first observation | bearing 045, 11.5 nm, 14:00 |
+| second observation | bearing 043, 9.0 nm, 14:06 |
+| required CPA | 2.5 nm |
+| maneuver ring Mx | 5.0 nm |
 
-| slot | file | caption (LOCKED) |
+The capture rig that produced them lives at `capture/radar.mjs` in the working copy
+and is **gitignored**, along with its raw `capture/out/`. It drives radar-moboard's
+dev server through Playwright at a fixed viewport and encodes the scenario above, so
+the stills and the video are reproducible rather than hand-framed. It is deliberately
+kept out of `tests/e2e/`, whose `webServer` config would otherwise sweep it into
+`npm run test:e2e`.
+
+### The media slot
+
+**One composite, per Omar's ruling**, since the template has one media slot and no
+origin-chapter slot.
+
+| # | file | role |
 |---|---|---|
-| V1 media slot | `radar-moboard/board.png` | `The maneuvering board, worked. All scenarios synthetic.` |
-| V2 media slot | `radar-moboard/sea-view.png` | `The same problem in the tilted sea view. All scenarios synthetic.` |
-| V3 origin | `radar-moboard/prototype.png` | `The Python prototype it replaces. All scenarios synthetic.` |
+| F1 | `figure-before-after.png` | **the media slot.** 1280x720, authored at exactly 16:9 |
 
-### Two structural problems B-B cannot solve on its own
+Caption, LOCKED:
 
-**1. The template has exactly ONE media slot, and there is no origin-chapter slot.**
-`CaseStudyFigure` is a single optional object and the template renders one 16:9
-figure between THE APPROACH and THE IMPACT. The plan asks for a GIF in the media
-slot *and* a prototype screenshot in the origin chapter; the second placement does
-not exist, and the case-study template is explicitly out of scope for redesign.
-**Recommendation: one composite 16:9 figure** carrying the board and the sea view
-side by side, with the prototype screenshot either inset small or dropped. This is a
-content decision, not a template change. Omar's call.
+> `The same encounter, worked by both implementations. They agree on all nine reported values. All scenarios synthetic.`
 
-**2. An animated GIF is not safe in that slot.** The figure renders through
-`next/image`, and in production `src/lib/imagekitLoader.ts` rewrites every non-SVG
-source to `tr:w-…,q-75,f-auto`. Animation surviving that transform is not something
-this repo has ever tested, and `unoptimized` would be a template change. **Recommend
-a still composite for the media slot** and, if the animation matters, treating it as
-a separate decision rather than assuming the GIF will play.
+It pairs `prototype-plot.png` beside `moboard-board.png`: same scenario, same
+construction, same answer, labelled BEFORE and AFTER, so the upgrade is legible
+without the copy having to assert it.
 
----
+**`moboard-vectors.png` is NOT inset.** At 580px per panel there is no room for a
+third element without crowding the two plots that carry the comparison, and the
+vector triangle is already visible in both panels. Restraint over completeness.
+
+### Staged, not placed
+
+These are committed and available to a later task; none is wired by W1.
+
+| file | what it is |
+|---|---|
+| `moboard-board.png` | board at t=0, wide. The AFTER panel of F1 |
+| `prototype-plot.png` | the retired app's plot. The BEFORE panel of F1 |
+| `moboard-vectors.png` | zoomed on the vector triangle, labels legible |
+| `moboard-board-cpa.png` | board at CPA, 21 min |
+| `moboard-seaview-cpa.png` | sea view at the same instant |
+| `moboard-ui.png` | the whole UI. Results panel is cropped at the right edge |
+| `prototype-ui.png` | the retired app's whole UI, with its nine readouts |
+
+Any of these that later reaches the page carries the same `All scenarios synthetic.`
+marker as F1.
+
+### Apple-calibration and both-theme check: DONE on the fitted figure
+
+- **Authored at exactly 1280x720.** `.case-figure-media` sets `aspect-ratio: 16 / 9`
+  with `object-fit: cover`, so any other ratio would be silently cropped. Verified
+  1.7778.
+- **Both themes rendered and inspected** with the real tokens, inside the real
+  `.case-figure` frame (1px `--edge`, 18px radius) and above the real caption bar on
+  `--surface-sunken`. It reads as a document panel in both. Caption contrast is the
+  template's own tested pairing: **5.44:1** light, **9.42:1** dark.
+- **One defect found and fixed by this pass.** The composite's BEFORE/AFTER kicker
+  was first set in Apple's `#86868b`, which is **3.62:1 on white and fails AA**. It
+  is the exact value `.claude/CLAUDE.md` records as failing on the footer, with
+  `#6e6e73` as the approved replacement. Rebuilt at `#6e6e73`, **5.07:1**. Panel
+  titles are `#1d1d1f` at 16.83:1.
 
 ## §4 — Rulings carried
 
@@ -244,9 +320,15 @@ a separate decision rather than assuming the GIF will play.
 
 ## §5 — Open, and explicitly NOT decided here
 
-- **All three visuals.** Outstanding from Omar. See §3.
-- **The composite-versus-single figure decision**, and whether the animation is
-  pursued at all given the loader constraint.
+- **THE TWO VIDEOS ARE CAPTURED AND READY, AND DELIBERATELY NOT WIRED.**
+  `moboard-board.mp4` and `moboard-seaview.mp4` are committed: 600 square, 16.8s
+  each, H.264, the same run of the same encounter from two viewpoints, executing
+  the alter-course-to-046 maneuver. The template takes an **image only**, and
+  putting motion on the page is not a one-line change. It needs a `<video>`
+  element, a poster frame, a pause control to satisfy WCAG 2.2.2 for anything that
+  plays longer than five seconds, and `prefers-reduced-motion` handling that serves
+  the still instead. That is a template change, which this sub-project puts out of
+  scope. **Deferred, with the assets already paid for.**
 - **The `USCG · PRIVATE` badge on this entry** (A8), which follows from marking it
   private and today appears only on the two Coast Guard entries.
 - **A2's title.** `Radar Plotting Trainer` is proposed over the retired entry's
@@ -255,10 +337,12 @@ a separate decision rather than assuming the GIF will play.
   phrase is 35 characters and long for a card.
 - **The résumé's 12-problem line** (§0.1), which understates the corpus by four.
 - **The repository README's stale Status section** (§0.5).
-- **Apple-calibration on the fitted page** is only partly done. B1's contrast and
-  every string length in §1 and §2 are measured against the template's real CSS.
-  The both-theme check on the assembled page cannot run until the visuals land and
-  B-B wires the entry, and it remains a gate before Omar's page review.
+- **Apple-calibration is done for the figure and the copy, not for the assembled
+  page.** B1's contrast, every string length in §1 and §2, and the fitted composite
+  in both themes are all measured against the template's real CSS and tokens (§3).
+  What cannot run until B-B wires the entry is the whole-page pass: heading rhythm
+  down the real column, the hero against the real nav, and axe over the built route.
+  That remains a gate before Omar's page review.
 
 ---
 
