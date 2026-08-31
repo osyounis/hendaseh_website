@@ -44,7 +44,7 @@ async function main() {
     });
     await writeFile(
       path.join(OUT, `${id}.png`),
-      await sharp(Buffer.from(svg)).png({ compressionLevel: 9, effort: 10 }).toBuffer()
+      await sharp(Buffer.from(svg)).png({ compressionLevel: 9, effort: 10, palette: false, adaptiveFiltering: true }).toBuffer()
     );
     console.log(`og: ${id}.png`);
   }
