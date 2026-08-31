@@ -1,11 +1,40 @@
-// Procedural render for assets/artwork/a16-summarizer.png (approved 2026-08-30, "v11").
-// Run: node assets/artwork/a16-summarizer-render.mjs  -> writes a16-summarizer.png beside itself.
-// Per-pixel conic aurora ON the die face (angle->color, edge-distance->brightness),
-// SVG overlay for slab/sheen/text/bubble. Deterministic: same output every run.
+// ============================================================================
+// SUPERSEDED. THIS SCRIPT DOES NOT PRODUCE THE SHIPPED ARTWORK.
+// ============================================================================
+// It generated the W4 artwork (1024x1024, "v11", approved 2026-08-30 and
+// REPLACED the same day). The shipped `assets/artwork/a16-summarizer.png` is
+// now Omar's chosen image: an A16 die with a chat bubble, glowing on black,
+// extracted to straight alpha at 1254x1254. This script cannot reproduce it.
+//
+// Kept, not deleted, because it is the worked example of STYLE.md's technique 7
+// (full-procedural rendering) and the only one in the catalog. It is retained as
+// a method reference only.
+//
+// It can no longer clobber the shipped artwork: OUT is a superseded-only
+// filename and a guard below hard-fails if that ever changes.
+//
+// What it drew: per-pixel conic aurora ON the die face (angle->color,
+// edge-distance->brightness), SVG overlay for slab/sheen/text/bubble.
+// Deterministic: same output every run.
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-const OUT = path.join(path.dirname(fileURLToPath(import.meta.url)), 'a16-summarizer.png');
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const SHIPPED = path.join(HERE, 'a16-summarizer.png');
+const OUT = path.join(HERE, 'a16-summarizer-SUPERSEDED-w4.png');
+
+// Guard: `assets/artwork/` is committed and precious, one human-approved PNG per
+// project. This script's output is not that PNG and must never take its path.
+if (path.resolve(OUT) === path.resolve(SHIPPED)) {
+  throw new Error(
+    'REFUSING TO RUN: this superseded script would overwrite the shipped artwork ' +
+      'assets/artwork/a16-summarizer.png. Restore OUT to the -SUPERSEDED- filename.'
+  );
+}
+console.warn(
+  '[superseded] This is the W4 generator. Its output is NOT the shipped artwork.\n' +
+    `[superseded] Writing ${path.basename(OUT)} (git-ignored scratch), leaving a16-summarizer.png untouched.`
+);
 const W = 1024, DIE = { x: 212, y: 200, w: 600, h: 600, r: 30 };
 const stops = [
   [90,[63,210,255]],[35,[87,180,255]],[345,[160,107,255]],[300,[236,72,153]],
