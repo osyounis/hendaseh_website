@@ -184,3 +184,9 @@ docs/content/
 
 # Superseded W4 generator output (assets/artwork/a16-summarizer-render.SUPERSEDED.mjs)
 assets/artwork/a16-summarizer-SUPERSEDED-w4.png
+
+# W1 capture rig: drives radar-moboard through Playwright to produce the case-study
+# visuals. Scratch, and deliberately NOT under tests/e2e, whose webServer config
+# would sweep it into `npm run test:e2e`. Scenario parameters are recorded in
+# docs/superpowers/content/radar-moboard-COPY.md §3.
+capture/
