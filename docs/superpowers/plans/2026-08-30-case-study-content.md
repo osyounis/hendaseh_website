@@ -44,7 +44,7 @@
 **Omar brings:** SwiftUI app screenshots from the iPhone 14 Pro.
 **Produced, Omar-gated:** `docs/superpowers/content/a16-summarizer-COPY.md`; the ROUGE chart (dataviz skill; data straight from the repo's `results/rouge_comparison.md`; both themes; committed).
 
-- [ ] Copy: the thesis (below Apple's hardware line) · stats (+0.9 ROUGE-L; 847 MB at 4-bit; A16/6 GB) · PROBLEM (Apple's line, why) · APPROACH (QLoRA on the 3080, licensing-driven choices, 4-bit MLX, MLX Swift) · IMPACT (measured tradeoffs, tokens/sec + memory from the repo's own profiling) · NO Core ML claims · Coursera course origin framed as "putting the Gen AI with LLMs coursework into practice" (true, humble, credible).
+- [ ] Copy: the thesis (below Apple's hardware line) · stats (0.29 → 0.46 ROUGE-L; 880 MB at 4-bit; A16/6 GB) · PROBLEM (Apple's line, why) · APPROACH (QLoRA on the 3080, licensing-driven choices, 4-bit MLX, MLX Swift) · IMPACT (measured tradeoffs, tokens/sec + memory from the repo's own profiling) · NO Core ML claims · Coursera course origin framed as "putting the Gen AI with LLMs coursework into practice" (true, humble, credible).
 
 ### Task W4: Artwork for the two new entries ⏸
 

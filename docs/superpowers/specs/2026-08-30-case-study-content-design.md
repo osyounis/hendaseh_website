@@ -55,7 +55,7 @@ Plus `/nahtadi` (flagship, its own page) = five deep pages total.
 
 ### Copy rules for the three new case studies
 
-All sitewide copy law applies (no em dashes, no AI cadence, canonical facts only, résumé wins conflicts, skills-defensibility). Specific guardrails: pilot tracker leads with the Commandant-awarded medal framing and the VOLUNTEER truth; a16 copy never implies Core ML happened (repo lists it as an unattempted stretch); radar-moboard copy stays pre-negotiation silent. Stat rows use only ledgered numbers (6 weeks → 2 days; +0.9 ROUGE-L; 847 MB at 4-bit; 12-problem verification corpus; two weeks to port).
+All sitewide copy law applies (no em dashes, no AI cadence, canonical facts only, résumé wins conflicts, skills-defensibility). Specific guardrails: pilot tracker leads with the Commandant-awarded medal framing and the VOLUNTEER truth; a16 copy never implies Core ML happened (repo lists it as an unattempted stretch); radar-moboard copy stays pre-negotiation silent. Stat rows use only ledgered numbers (6 weeks → 2 days; 0.29 → 0.46 ROUGE-L; 880 MB at 4-bit; 12-problem verification corpus; two weeks to port).
 
 ### New entries through the existing machinery
 
