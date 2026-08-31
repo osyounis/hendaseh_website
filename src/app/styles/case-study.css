@@ -285,11 +285,10 @@
   }
 
   /* ---------------------------------------------------------------------- *
-   * Media slot and live-demo embed
+   * Media slot
    * ---------------------------------------------------------------------- */
 
-  .case-figure,
-  .case-embed {
+  .case-figure {
     margin-block: 56px;
     border: 1px solid var(--edge);
     border-radius: 18px;
@@ -315,29 +314,6 @@
     color: var(--fg-muted-on-tint);
     font-size: 13px;
     line-height: 1.5;
-  }
-
-  .case-embed {
-    /* The demo is an anchor target. A little breathing room above it so the
-       frame does not land flush against the top of the viewport. */
-    scroll-margin-top: 24px;
-  }
-
-  .case-embed-frame {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border: 0;
-    background: var(--surface-sunken);
-  }
-
-  /* Below 880 a 16:9 frame is too short to use: the Streamlit controls and
-     the plot stack vertically. Give it a real height instead. */
-  @media (max-width: 880px) {
-    .case-embed-frame {
-      aspect-ratio: auto;
-      height: 640px;
-    }
   }
 
   /* ---------------------------------------------------------------------- *

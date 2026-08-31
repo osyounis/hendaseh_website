@@ -14,9 +14,9 @@ import { getProjectById, getProjectHref, type Project } from '@/lib/projects';
  * no equivalent elsewhere in the data. Only `id` lives here; it fixes the
  * ordering and tier grouping, which is layout, not copy, and contract-locked.
  */
-const FEATURES = ['brent-cuda', 'collision-avoidance-radar'] as const;
+const FEATURES = ['brent-cuda', 'radar-moboard'] as const;
 
-const COMPACT = ['islamic-prayer-time', 'cycloidal-drive-creator', 'image-watermark-remover'] as const;
+const COMPACT = ['islamic-prayer-time', 'cycloidal-drive-creator', 'a16-summarizer'] as const;
 
 function requireProject(id: string): Project {
   const project = getProjectById(id);
@@ -42,14 +42,19 @@ export default function HomeWork() {
     return { id, title: project.title, stat: project.cardStat!, body: project.tagline!, href };
   });
 
-  // getProjectHref returns null for card tier by design — these link out.
+  // TIER DRIVES THE ACTION, not the row's size. `getProjectHref` returns a
+  // case-study path for showcase tier and null for card tier, so a compact row
+  // links inward when there is a page to link to and out to GitHub when there
+  // is not. a16-summarizer is the first compact row that is showcase tier; the
+  // grammar was always tier-based, this is just the first row to exercise it.
   const compact = COMPACT.map((id) => {
     const project = requireProject(id);
-    const href = project.links.github;
+    const caseStudy = getProjectHref(project);
+    const href = caseStudy ?? project.links.github;
     if (!href) {
-      throw new Error(`HomeWork: "${id}" has no GitHub link to fall back to.`);
+      throw new Error(`HomeWork: "${id}" has neither a case study nor a GitHub link.`);
     }
-    return { id, title: project.title, stat: project.cardStat!, href };
+    return { id, title: project.title, stat: project.cardStat!, href, external: !caseStudy };
   });
 
   return (
@@ -84,30 +89,37 @@ export default function HomeWork() {
           </Link>
         ))}
 
-        {compact.map(({ id, title, stat, href }) => (
-          <a
-            key={id}
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="home-tile col-span-2 flex items-center gap-4 rounded-2xl p-[18px] max-[880px]:col-span-6"
-          >
-            <Image
-              src={`/images/projects/${id}/card.png`}
-              alt=""
-              width={72}
-              height={72}
-              className="h-auto w-[72px] rounded-2xl"
-            />
-            <div>
-              <h3 className="text-primary text-[15px] font-bold">
-                <AffordanceLabel label={title} glyph={<ArrowUpRight />} />
-              </h3>
-              <p className="text-accent mt-[5px] text-[12px] font-bold">{stat}</p>
-            </div>
-            <NewTabHint />
-          </a>
-        ))}
+        {compact.map(({ id, title, stat, href, external }) => {
+          const Tile = external ? 'a' : Link;
+          const linkProps = external
+            ? { href, target: '_blank' as const, rel: 'noopener noreferrer' }
+            : { href };
+          return (
+            <Tile
+              key={id}
+              {...linkProps}
+              className="home-tile col-span-2 flex items-center gap-4 rounded-2xl p-[18px] max-[880px]:col-span-6"
+            >
+              <Image
+                src={`/images/projects/${id}/card.png`}
+                alt=""
+                width={72}
+                height={72}
+                className="h-auto w-[72px] rounded-2xl"
+              />
+              <div>
+                <h3 className="text-primary text-[15px] font-bold">
+                  <AffordanceLabel
+                    label={title}
+                    glyph={external ? <ArrowUpRight /> : <ChevronRight />}
+                  />
+                </h3>
+                <p className="text-accent mt-[5px] text-[12px] font-bold">{stat}</p>
+              </div>
+              {external && <NewTabHint />}
+            </Tile>
+          );
+        })}
       </div>
 
       <div className="mt-[30px] text-center">

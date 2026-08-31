@@ -3,9 +3,8 @@ import projectsData from '../../src/data/projects.json'
 
 /**
  * Coverage for Task B2.5: the rebuilt /projects page's live search and
- * category filter, plus the /projects/collision-avoidance-radar embed slot.
- * Neither had any Playwright coverage before this file (32 existing tests
- * enumerated, none touched search, chips, or the embed) -- the 404 for
+ * category filter. Neither had any Playwright coverage before this file (32
+ * existing tests enumerated, none touched search or chips) -- the 404 for
  * card-tier slugs is already covered by tests/e2e/redirects.spec.ts.
  *
  * WHAT THIS FILE DERIVES INDEPENDENTLY, AND WHY
@@ -33,15 +32,13 @@ import projectsData from '../../src/data/projects.json'
  * project's `keywords` array is first populated, add a query here that
  * matches only through that field.
  *
- * EMBED COVERAGE -- WHAT IS AND ISN'T ASSERTED
+ * THE EMBED COVERAGE IS GONE, DELIBERATELY
  * ----------------------------------------------
- * /projects/collision-avoidance-radar embeds a Streamlit app
- * (project.links.embed). Streamlit returns 403 to requests from this
- * sandbox, so nothing below waits on or inspects the iframe's OWN content --
- * that would be un-runnable here and wouldn't test anything this repo
- * controls anyway. What IS asserted is everything the site itself owns: the
- * iframe element exists with the exact `src` and a non-empty, project-named
- * `title`, and the hero's "Launch live demo" anchor points at it.
+ * Sub-project 5 retired the Streamlit demo along with `links.embed`. The test
+ * that asserted the iframe is deleted rather than skipped, and it was costing
+ * more than it proved: `page.goto` waits for `load`, `load` waited for a
+ * third-party iframe, and that route took 22.2s against a 30s cap, so
+ * whichever test happened to hit it failed on any given run.
  */
 
 interface CatalogProject {
@@ -53,7 +50,7 @@ interface CatalogProject {
   keywords?: string[]
   category: string
   tier: string
-  links: { appStore?: string; github?: string; embed?: string }
+  links: { appStore?: string; github?: string }
 }
 
 const projects = (projectsData as { projects: CatalogProject[] }).projects
@@ -309,20 +306,32 @@ test.describe('tier-action grammar', () => {
     await expect(nahtadi.getByRole('link', { name: /github/i })).toHaveCount(0)
     await expect(nahtadi.locator('.projects-badge-private')).toHaveCount(0)
 
-    // Showcase (collision-avoidance-radar): blue "Case study" pill plus
-    // GitHub -- and per the contract, NO separate live-demo pill on the card
-    // (the demo lives inside the case study), so exactly two links total.
-    const radar = cardFor(page, 'collision-avoidance-radar')
-    const radarData = projects.find((p) => p.id === 'collision-avoidance-radar')!
+    // Showcase with a public repo (brent-cuda): blue "Case study" pill plus
+    // GitHub -- and per the contract, NO separate live-demo pill on the card,
+    // so exactly two links total.
+    const brent = cardFor(page, 'brent-cuda')
+    const brentData = projects.find((p) => p.id === 'brent-cuda')!
+    await expect(brent.getByRole('link', { name: /case study/i })).toHaveAttribute(
+      'href',
+      '/projects/brent-cuda'
+    )
+    await expect(brent.getByRole('link', { name: /github/i })).toHaveAttribute(
+      'href',
+      brentData.links.github!
+    )
+    await expect(brent.getByRole('link')).toHaveCount(2)
+
+    // Showcase AND private (radar-moboard): the combination sub-project 5
+    // introduced. The repository stays private, so there is no GitHub pill and
+    // no dead link -- the private badge plus a single "Case study" action.
+    const radar = cardFor(page, 'radar-moboard')
     await expect(radar.getByRole('link', { name: /case study/i })).toHaveAttribute(
       'href',
-      '/projects/collision-avoidance-radar'
+      '/projects/radar-moboard'
     )
-    await expect(radar.getByRole('link', { name: /github/i })).toHaveAttribute(
-      'href',
-      radarData.links.github!
-    )
-    await expect(radar.getByRole('link')).toHaveCount(2)
+    await expect(radar.getByRole('link', { name: /github/i })).toHaveCount(0)
+    await expect(radar.locator('.projects-badge-private')).toHaveCount(1)
+    await expect(radar.getByRole('link')).toHaveCount(1)
 
     // Card tier with a public repo (new-game-plus): GitHub pill only.
     // getProjectHref returns null for card tier, so there is no case-study
@@ -360,19 +369,3 @@ test.describe('tier-action grammar', () => {
   })
 })
 
-test.describe('collision-avoidance-radar embed', () => {
-  test('renders the demo iframe, and the launch-demo anchor targets it', async ({ page }) => {
-    const project = projects.find((p) => p.id === 'collision-avoidance-radar')!
-    await page.goto('/projects/collision-avoidance-radar')
-
-    const iframe = page.locator('#live-demo iframe')
-    await expect(iframe).toHaveAttribute('src', project.links.embed!)
-    await expect(iframe).toHaveAttribute('title', `${project.title}: live demo`)
-
-    const launch = page.getByRole('link', { name: /launch live demo/i })
-    await expect(launch).toHaveAttribute('href', '#live-demo')
-
-    await launch.click()
-    await expect(page).toHaveURL(/#live-demo$/)
-  })
-})

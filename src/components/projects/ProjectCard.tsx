@@ -27,8 +27,9 @@ import { getProjectHref, type Project } from '@/lib/projects';
  *    `card` tier. That is the signal, not a special case: when phase 5 flips
  *    a Coast Guard project to `showcase`, its `Case study` pill appears on
  *    its own, and until then there is no dead link to click.
- *  - `links.embed` is not an action here. The contract removed the separate
- *    Live-demo pill from cards; the demo lives inside the case study.
+ *  - There is no live-demo action anywhere. The contract removed the separate
+ *    Live-demo pill from cards, and phase 5 retired the demo itself along with
+ *    `links.embed`; the superseding project is `radar-moboard`.
  */
 
 /* Octocat, 16x16 viewBox. Both icons are inline rather than pulled from

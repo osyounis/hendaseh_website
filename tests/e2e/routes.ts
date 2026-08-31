@@ -27,7 +27,8 @@ export const KEY_ROUTES = [
 
 export const ALL_ROUTES = [
   ...KEY_ROUTES,
-  '/projects/collision-avoidance-radar',
+  '/projects/radar-moboard',
+  '/projects/a16-summarizer',
   '/nahtadi/privacy',
   '/nahtadi/support',
 ] as const

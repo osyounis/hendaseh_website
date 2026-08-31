@@ -141,16 +141,24 @@ test.describe('Homepage', () => {
       'href',
       '/projects/brent-cuda'
     )
-    await expect(page.getByRole('link', { name: /Maritime Collision Avoidance/ })).toHaveAttribute(
+    await expect(page.getByRole('link', { name: /Radar Plotting Trainer/ })).toHaveAttribute(
       'href',
-      '/projects/collision-avoidance-radar'
+      '/projects/radar-moboard'
+    )
+
+    // TIER DRIVES THE ACTION, NOT THE ROW SIZE. a16-summarizer sits in the
+    // compact row but is showcase tier, so it links inward to its case study
+    // like the wide tiles do. It is the first compact row to do so, and the
+    // reason this assertion is not grouped with the card-tier loop below.
+    await expect(page.getByRole('link', { name: /On-Device LLM Summarizer/ })).toHaveAttribute(
+      'href',
+      '/projects/a16-summarizer'
     )
 
     // card tier -> getProjectHref returns null, so these fall back to GitHub
     const cardTier: [RegExp, string][] = [
       [/Prayer-Time Algorithm Library/, 'https://github.com/osyounis/islamic_prayer_time_app'],
       [/Cycloidal Drive Creator/, 'https://github.com/osyounis/cycloidal_drive_creator'],
-      [/Image Watermark Remover/, 'https://github.com/osyounis/image_watermark_remover'],
     ]
     for (const [name, href] of cardTier) {
       const link = page.getByRole('link', { name })

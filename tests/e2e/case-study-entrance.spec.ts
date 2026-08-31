@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import projectsData from '../../src/data/projects.json'
 
 /**
  * Case-study hero entrance cascade (added 2026-08-28).
@@ -23,7 +24,9 @@ import { test, expect, type Page } from '@playwright/test'
  * entrance is built.
  */
 
-const SLUGS = ['brent-cuda', 'collision-avoidance-radar'] as const
+const projects = (projectsData as { projects: { id: string; private?: boolean }[] }).projects
+
+const SLUGS = ['brent-cuda', 'radar-moboard', 'a16-summarizer'] as const
 
 const BEATS: [string, string][] = [
   ['.case-crumb', '0s'],
@@ -101,9 +104,22 @@ for (const slug of SLUGS) {
 
       const pills = page.locator('.case-actions .pill')
       const count = await pills.count()
-      // Guard the guard: every case study has at least the GitHub button, so
-      // an empty set would make the loop below pass vacuously.
-      expect(count).toBeGreaterThan(0)
+
+      // Guard the guard: an empty set would make the loop below pass vacuously.
+      // This used to assert every case study has at least the GitHub button,
+      // which held until `radar-moboard` arrived with a private repository and
+      // so no repo pill and no action at all. An actionless hero is legitimate
+      // for exactly that reason and nothing else, so prove the reason rather
+      // than lowering the bar: a page may have zero pills only if its project
+      // is marked private. Every other slug still runs the full loop, and
+      // The non-vacuity test below keeps the suite honest across all slugs.
+      if (count === 0) {
+        expect(
+          projects.find((p) => p.id === slug)?.private,
+          `${slug} has no hero action and is not marked private`
+        ).toBe(true)
+        return
+      }
 
       for (let i = 0; i < count; i++) {
         const pill = pills.nth(i)
@@ -144,8 +160,8 @@ for (const slug of SLUGS) {
             .toBe('matrix(0.97, 0, 0, 0.97, 0, 0)')
         } finally {
           // Release the mouse SOMEWHERE ELSE, so the press never completes as
-          // a click. "Launch live demo" is an in-page anchor: releasing on it
-          // jumps the page to the embed, and the next pill in this loop then
+          // a click. An in-page anchor would jump the page on release, and
+          // the next pill in this loop then
           // gets a mousedown at coordinates it has already scrolled away from
           // -- which reads as "the press response is broken" when nothing is
           // wrong. Released in `finally` so a failure cannot leave the button
@@ -232,3 +248,16 @@ for (const slug of SLUGS) {
     })
   })
 }
+
+// Non-vacuity, at the suite level rather than per slug. The per-slug guard above
+// lets a private project's hero have no pills; this makes sure that escape hatch
+// cannot quietly swallow every slug at once, which would leave the press
+// assertions running against nothing.
+test('at least one case-study hero actually has pills to press', async ({ page }) => {
+  let total = 0
+  for (const slug of SLUGS) {
+    await page.goto(`/projects/${slug}`)
+    total += await page.locator('.case-actions .pill').count()
+  }
+  expect(total, 'no case study renders a hero action at all').toBeGreaterThan(0)
+})

@@ -58,8 +58,8 @@ import { useEffect } from 'react';
  * The huge TOP margin is a fix for a real bug this file shipped for one round.
  * An IntersectionObserver only calls back when a target crosses a threshold. A
  * jump that carries an element from below the fold to above the viewport in a
- * single frame -- which is exactly what this page's own `Launch live demo`
- * button does, and what any deep link or Home/End keypress does -- crosses no
+ * single frame -- which is what any deep link or Home/End keypress does, and
+ * what this page's own in-page jump button used to do -- crosses no
  * threshold at all: the element reads as "not intersecting" before and after.
  * The callback never ran, and the section the reader had skipped past stayed
  * invisible for the rest of the visit, which is the same class of failure as

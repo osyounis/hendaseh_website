@@ -37,6 +37,14 @@ const nextConfig: NextConfig = {
       // sitemap listed /projects/nahtadi; with dynamicParams = false that slug
       // now 404s, so redirect it rather than dropping an indexed URL.
       { source: '/projects/nahtadi', destination: '/nahtadi', permanent: true },
+      // Sub-project 5 merged the Streamlit prototype and its TypeScript rewrite
+      // into one entry, `radar-moboard`. The old slug was in the sitemap and is
+      // indexable, and with dynamicParams = false it would otherwise 404.
+      {
+        source: '/projects/collision-avoidance-radar',
+        destination: '/projects/radar-moboard',
+        permanent: true,
+      },
       // The runtime /api/og route is gone (sharp + node:fs cannot run on
       // Cloudflare Workers); cards are pre-rendered into /public/og. Redirect
       // any URL already in the wild to its static PNG.

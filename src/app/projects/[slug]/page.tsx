@@ -13,7 +13,6 @@ import NewTabHint from '@/components/NewTabHint';
 import {
   AffordanceLabel,
   ArrowUpRight,
-  ChevronDownCircle,
   ChevronLeft,
   LeadingAffordanceLabel,
 } from '@/components/LinkAffordance';
@@ -31,12 +30,15 @@ interface PageProps {
  * `src/lib/caseStudies.ts`.
  *
  * The only conditionals are on DATA PRESENCE, not on identity:
- *   - `links.embed`   -> the live-demo button and the embed slot
  *   - `links.github`  -> the GitHub button
- *   - `caseStudy.figure` -> the media slot (reserved for phase-5 charts)
- * Today `collision-avoidance-radar` is the only project with an embed and
- * neither has figure artwork, so the two pages differ without the template
- * knowing either slug.
+ *   - `caseStudy.figure` -> the media slot (B-B wires the figures)
+ *
+ * The live-demo button and the in-page embed slot are GONE, with the Streamlit
+ * demo they served. That demo had a known correctness bug and is superseded by
+ * `radar-moboard`; `/projects/collision-avoidance-radar` now 308s to it. The
+ * removal is not only tidiness: `page.goto` waits for `load`, `load` waited for
+ * a third-party iframe, and that route took 22.2s against a 30s cap, so
+ * whichever e2e test happened to hit it failed on any given run.
  */
 
 /* Octocat, 16x16 viewBox. Inlined rather than imported from `react-icons` so
@@ -49,9 +51,6 @@ const GITHUB_MARK =
  *  case-study.css). Hero only -- the body below is `[data-reveal]`, a separate
  *  system, and the two are never mixed on one element. */
 const ENTER = (delay: string) => ({ '--enter-delay': delay }) as CSSProperties;
-
-/** The id of the in-page demo, and the target the hero button anchors to. */
-const EMBED_ID = 'live-demo';
 
 /** The subtree `ScrollReveal` looks inside for `[data-reveal]` elements. */
 const BODY_ID = 'case-study-body';
@@ -85,7 +84,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 
   // `tagline`, NOT `description`. The full `description` is body copy and runs
-  // long -- 261 characters on collision-avoidance-radar -- so Google (~150-160)
+  // long -- several run past 260 characters -- so Google (~150-160)
   // and social previews (~125) cut the tail off on every surface. Sub-project 3
   // wrote a `tagline` for all 13 projects at exactly this length (longest in
   // the catalog: 120). Body copy still reads `description`; only meta uses
@@ -178,7 +177,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   }
 
   const next = getNextCaseStudy(slug);
-  const embed = project.links.embed;
 
   return (
     <article>
@@ -220,21 +218,15 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 end state would beat it -- see the block comment on
                 `.case-enter` in case-study.css. */}
             <div className="case-actions case-enter" style={ENTER('0.3s')}>
-              {/* Primary only when there is something to launch. Without an
-                  embed the repository is the page's main action, so GitHub
-                  takes the solid button instead of the ghost one. */}
-              {embed && (
-                <a href={`#${EMBED_ID}`} className="pill case-btn-primary">
-                  <AffordanceLabel label="Launch live demo" glyph={<ChevronDownCircle />} />
-                </a>
-              )}
-
+              {/* The repository is the page's only action, so it takes the
+                  solid button. The ghost variant existed for the case where a
+                  live demo held the primary slot; nothing does now. */}
               {project.links.github && (
                 <a
                   href={project.links.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`pill ${embed ? 'case-btn-ghost' : 'case-btn-white'}`}
+                  className="pill case-btn-white"
                 >
                   <svg viewBox="0 0 16 16" aria-hidden="true">
                     <path d={GITHUB_MARK} />
@@ -276,27 +268,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             />
             <figcaption className="case-caption">{caseStudy.figure.caption}</figcaption>
           </figure>
-        )}
-
-        {/* Embed slot: the demo loads in place. Deliberately NOT a reveal
-            target — the hero button jumps straight here, and arriving at a
-            block that is mid-fade is worse than arriving at a static one.
-            A plain client `<iframe>`, which is what the Workers runtime and
-            the static-assets incremental cache allow. */}
-        {embed && (
-          <div id={EMBED_ID} className="case-embed">
-            <iframe
-              src={embed}
-              title={`${project.title}: live demo`}
-              className="case-embed-frame"
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            />
-            <p className="case-caption">
-              The demo runs on Streamlit&apos;s free tier, so the first load can take about 30
-              seconds to wake.
-            </p>
-          </div>
         )}
 
         <CaseStudySection section={caseStudy.impact}>

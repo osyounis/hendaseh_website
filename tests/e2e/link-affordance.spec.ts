@@ -22,7 +22,7 @@ const PAGES = [
   '/',
   '/projects',
   '/projects/brent-cuda',
-  '/projects/collision-avoidance-radar',
+  '/projects/radar-moboard',
   '/nahtadi',
   '/nahtadi/support',
   '/contact',
@@ -148,7 +148,7 @@ test('every affordance glyph is a hidden inline SVG welded to the last word', as
 test('no glyph draws closer to its viewBox edge than one stroke-width', async ({ page }) => {
   const seen = new Set<string>()
 
-  for (const path of ['/', '/projects/collision-avoidance-radar', '/nahtadi/support']) {
+  for (const path of ['/', '/projects/radar-moboard', '/nahtadi/support']) {
     await page.goto(path)
 
     const measured = await page.evaluate(() => {

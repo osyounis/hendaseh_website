@@ -30,9 +30,13 @@ const PROJECT_GRADIENTS: Record<string, ProjectGradient> = {
     className: 'bg-gradient-to-br from-[#4B5563] to-[#1F2937]',
     stops: { from: '#4B5563', to: '#1F2937' },
   },
-  'collision-avoidance-radar': {
-    className: 'bg-gradient-to-br from-[#8DA2B8] to-[#2F4058]',
-    stops: { from: '#8DA2B8', to: '#2F4058' },
+  'radar-moboard': {
+    className: 'bg-gradient-to-br from-[#0F2A43] to-[#101F2E]',
+    stops: { from: '#0F2A43', to: '#101F2E' },
+  },
+  'a16-summarizer': {
+    className: 'bg-gradient-to-br from-[#0A0A0C] to-[#2A2A2E]',
+    stops: { from: '#0A0A0C', to: '#2A2A2E' },
   },
   'wildfire-predictor': {
     className: 'bg-gradient-to-br from-[#991B1B] to-[#292524]',
