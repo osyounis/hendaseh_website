@@ -153,7 +153,14 @@ export default function ProjectCard({ project }: { project: Project }) {
             </a>
           )}
 
-          {project.private && <span className="projects-badge-private">USCG · PRIVATE</span>}
+          {/* `org` is optional and deliberately not derived from `private`.
+              A project can be closed-source without belonging to anyone but
+              Omar; see the field's comment in projectSchema.ts. */}
+          {project.private && (
+            <span className="projects-badge-private">
+              {project.org ? `${project.org} · PRIVATE` : 'PRIVATE'}
+            </span>
+          )}
 
           {stat && (
             <span

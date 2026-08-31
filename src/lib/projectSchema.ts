@@ -15,6 +15,21 @@ export const ProjectSchema = z
     tier: TierSchema,
     featured: z.boolean(),
     private: z.boolean().default(false),
+    /**
+     * The organisation a private project belongs to, rendered as
+     * `${org} · PRIVATE` on its card. Optional: without it the badge reads a
+     * plain `PRIVATE`.
+     *
+     * SEPARATE FROM `private` ON PURPOSE, and this is the durable lesson. The
+     * badge used to hardcode `USCG · PRIVATE` for anything with `private:
+     * true`, which was correct only by coincidence: every private project
+     * happened to be Coast Guard work. The moment one was not, it silently
+     * inherited an organisation it has no relationship with, on a public page.
+     * A privacy flag says a repository is closed. It says nothing whatever
+     * about who owns the work, and welding the two together mislabels the next
+     * private project rather than failing loudly.
+     */
+    org: z.string().min(1).optional(),
     technologies: z.array(z.string().min(1)).min(1),
     keywords: z.array(z.string().min(1)).optional(),
     category: z.string().min(1),
