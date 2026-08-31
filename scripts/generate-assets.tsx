@@ -67,7 +67,7 @@ async function compose(p: Project) {
   );
   await writeFile(
     path.join(OUT(p.id), 'github-banner.png'),
-    await sharp(Buffer.from(svg)).png({ compressionLevel: 9, effort: 10 }).toBuffer()
+    await sharp(Buffer.from(svg)).png({ compressionLevel: 9, effort: 10, palette: false, adaptiveFiltering: true }).toBuffer()
   );
   console.log(`assets: ${p.id} ✓`);
 }

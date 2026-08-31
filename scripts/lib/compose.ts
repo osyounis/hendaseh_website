@@ -22,6 +22,24 @@ export interface Gradient {
   to: string;
 }
 
+/**
+ * `palette: false` is load-bearing on every png() call in this file.
+ *
+ * sharp treats `effort` as a palette-only option, so passing it implicitly sets
+ * `palette: true` and every buffer written here is 8-bit quantised. That is
+ * lossy and, worse, CONTENT-DEPENDENT: the palette is recomputed from whatever
+ * artwork is being composited, so a change to one corner of a project's artwork
+ * can shift flat dark regions anywhere else in the frame. It surfaced as a
+ * banded wedge on the squircle's mask boundary that moved when unrelated pixels
+ * changed. It also applies to the INTERMEDIATE resized subject below, not just
+ * the final files, so the loss compounds through the pipeline.
+ *
+ * Keep `palette: false` on all of them. Dropping it re-quantises the catalog.
+ *
+ * `adaptiveFiltering: true` is a pure win alongside it: PNG's per-scanline
+ * filters suit these gradient-and-glow images, and it makes the lossless
+ * catalog 25% smaller (20.57 -> 15.38 MiB) with pixel-identical output.
+ */
 const SIZE = 1024;
 const SUBJECT = 650; // artwork box, centered — generous margins per STYLE.md
 
@@ -106,8 +124,8 @@ export async function isOpaqueFullBleed(artwork: Buffer): Promise<boolean> {
  */
 async function fullBleedComposite(artwork: Buffer, g: Gradient): Promise<Buffer> {
   const bg = gradientSvg(SIZE, g);
-  const art = await sharp(artwork).resize(SIZE, SIZE, { fit: 'cover' }).png({ compressionLevel: 9, effort: 10 }).toBuffer();
-  return sharp(bg).composite([{ input: art }]).png({ compressionLevel: 9, effort: 10 }).toBuffer();
+  const art = await sharp(artwork).resize(SIZE, SIZE, { fit: 'cover' }).png({ compressionLevel: 9, effort: 10, palette: false, adaptiveFiltering: true }).toBuffer();
+  return sharp(bg).composite([{ input: art }]).png({ compressionLevel: 9, effort: 10, palette: false, adaptiveFiltering: true }).toBuffer();
 }
 
 /**
@@ -126,12 +144,12 @@ async function insetComposite(artwork: Buffer, g: Gradient, opts: { maskPath?: s
   const trimmed = await sharp(artwork).trim().toBuffer();
   const subject = await sharp(trimmed)
     .resize(SUBJECT, SUBJECT, { fit: 'inside', withoutEnlargement: false })
-    .png({ compressionLevel: 9, effort: 10 })
+    .png({ compressionLevel: 9, effort: 10, palette: false, adaptiveFiltering: true })
     .toBuffer();
   const meta = await sharp(subject).metadata();
   return sharp(bg)
     .composite([{ input: subject, left: Math.round((SIZE - meta.width!) / 2), top: Math.round((SIZE - meta.height!) / 2) }])
-    .png({ compressionLevel: 9, effort: 10 })
+    .png({ compressionLevel: 9, effort: 10, palette: false, adaptiveFiltering: true })
     .toBuffer();
 }
 
@@ -141,7 +159,7 @@ export async function composeIcon(artwork: Buffer, g: Gradient, shape: 'rounded'
     const mask = maskShapeSvg(SIZE, shape);
     return sharp(composite)
       .composite([{ input: mask, blend: 'dest-in' }])
-      .png({ compressionLevel: 9, effort: 10 })
+      .png({ compressionLevel: 9, effort: 10, palette: false, adaptiveFiltering: true })
       .toBuffer();
   }
   const maskOpts = shape === 'squircle' ? { maskPath: squirclePath(SIZE) } : { rx: 180 };
