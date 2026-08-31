@@ -50,6 +50,8 @@ interface CatalogProject {
   keywords?: string[]
   category: string
   tier: string
+  private?: boolean
+  org?: string
   links: { appStore?: string; github?: string }
 }
 
@@ -330,8 +332,15 @@ test.describe('tier-action grammar', () => {
       '/projects/radar-moboard'
     )
     await expect(radar.getByRole('link', { name: /github/i })).toHaveCount(0)
-    await expect(radar.locator('.projects-badge-private')).toHaveCount(1)
     await expect(radar.getByRole('link')).toHaveCount(1)
+
+    // The badge says PRIVATE and nothing else. radar-moboard is Omar's own
+    // project, closed pending a meeting; it has no Coast Guard association and
+    // must not appear to claim one. The badge used to hardcode the org, which
+    // was right only while every private project happened to be USCG work.
+    const radarBadge = radar.locator('.projects-badge-private')
+    await expect(radarBadge).toHaveText('PRIVATE')
+    await expect(radarBadge).not.toContainText('USCG')
 
     // Card tier with a public repo (new-game-plus): GitHub pill only.
     // getProjectHref returns null for card tier, so there is no case-study
@@ -346,10 +355,14 @@ test.describe('tier-action grammar', () => {
     )
 
     // Private, card tier, no repository at all (both Coast Guard projects):
-    // the gold USCG badge and ZERO anchors -- no dead link, ever.
+    // the gold badge and ZERO anchors -- no dead link, ever. The organisation
+    // is read from the catalog rather than written as a literal, so the badge
+    // is asserted to follow `org` instead of following `private`.
     for (const id of ['coast-guard-pilot-tracker', 'coast-guard-inventory']) {
       const card = cardFor(page, id)
-      await expect(card.locator('.projects-badge-private')).toHaveText('USCG · PRIVATE')
+      const org = projects.find((p) => p.id === id)!.org
+      expect(org, `${id} should declare an org`).toBe('USCG')
+      await expect(card.locator('.projects-badge-private')).toHaveText(`${org} · PRIVATE`)
       await expect(card.getByRole('link')).toHaveCount(0)
     }
   })
