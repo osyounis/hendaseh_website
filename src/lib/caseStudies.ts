@@ -112,6 +112,22 @@ export interface CaseStudyImageBlock extends CaseStudyMediaCommon {
    * something to separate from in each theme.
    */
   readonly frame?: 'device';
+  /**
+   * `beside` sets the media in a column with the caption alongside it instead of
+   * beneath, on apple.com/apple-fitness-plus's `.tile-rounded` proportions
+   * (1100x512 at 1440, 60px inset, media in roughly the left 40%).
+   *
+   * It is here rather than being wired for a16 alone because the reason is
+   * general: a tall portrait capture stacked above its caption makes a tile
+   * about 780px high, and these pages now carry three and four blocks each.
+   * Anything else portrait will want the same treatment, and a one-off is the
+   * thing that drifts.
+   *
+   * The media is never cropped to achieve it, unlike Apple's, which bleeds its
+   * media off the tile: the whole device stays visible and simply renders
+   * smaller. At narrow widths the two columns stack, media above text.
+   */
+  readonly layout?: 'beside';
 }
 
 /** One clip inside a clip block. */
@@ -446,10 +462,11 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         width: 1179,
         height: 2556,
         frame: 'device',
+        layout: 'beside',
         alt: 'The summarizer on an iPhone 14 Pro: a generated summary of a doctor visit, above live statistics reading 44.4 tokens per second, 2047 ms to first token and 831 MB of memory.',
         title: 'On the iPhone 14 Pro',
         caption:
-          'The shipped 4-bit model, summarizing on the phone. Every number on the screen is the app reporting on itself.',
+          'The shipped 4-bit model, summarizing on the phone. 44.4 tokens per second after 2.0 seconds to first token, and nothing leaves the device. Every number on the screen is the app reporting on itself.',
       },
       {
         kind: 'image',

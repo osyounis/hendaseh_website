@@ -117,6 +117,49 @@ for (const project of CASE_STUDIES) {
       expect(chrome.radius).not.toBe('0px')
     })
 
+    test('sets a beside block alongside its text, and stacks it when narrow', async ({
+      page,
+    }) => {
+      const beside = (study.media ?? []).filter((b) => b.kind === 'image' && b.layout === 'beside')
+      await page.goto(`/projects/${project.id}`)
+      const tiles = page.locator('.case-figure-beside')
+      await expect(tiles).toHaveCount(beside.length)
+      if (beside.length === 0) return
+
+      const tile = tiles.first()
+      const geometry = async () => {
+        const media = (await tile.locator('.case-device-frame, .case-figure-media, picture')
+          .first()
+          .boundingBox())!
+        const text = (await tile.locator('.case-caption').boundingBox())!
+        const box = (await tile.boundingBox())!
+        return { media, text, height: box.height }
+      }
+
+      await tile.scrollIntoViewIfNeeded()
+      const wide = await geometry()
+      // Beside: the caption starts to the RIGHT of where the media ends.
+      expect(wide.text.x).toBeGreaterThanOrEqual(wide.media.x + wide.media.width)
+
+      await page.setViewportSize({ width: 390, height: 900 })
+      await tile.scrollIntoViewIfNeeded()
+      const narrow = await geometry()
+      // Stacked: media above text, which is the order they are read in.
+      expect(narrow.text.y).toBeGreaterThanOrEqual(narrow.media.y + narrow.media.height)
+
+      // The whole device stays visible either way -- it is scaled, never cropped.
+      const cropped = await tile
+        .locator('.nh-device img')
+        .evaluate((el) => getComputedStyle(el).objectFit)
+      expect(cropped).toBe('cover')
+      const ratio = await tile.locator('.nh-device img').evaluate((el) => {
+        const b = el.getBoundingClientRect()
+        return b.height / b.width
+      })
+      // 9/19.55 is the bezel's declared aspect; a crop would change it.
+      expect(ratio).toBeCloseTo(19.55 / 9, 1)
+    })
+
     test('serves one file per theme for a figure that has both', async ({ page }) => {
       const themed = (study.media ?? []).filter((b) => b.kind === 'image' && b.srcDark)
       await page.goto(`/projects/${project.id}`)
