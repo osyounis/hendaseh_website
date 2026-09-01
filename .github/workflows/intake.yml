@@ -1,0 +1,80 @@
+# Project intake: draft a catalog entry from a repo, open a PR, stop.
+#
+# NEVER PUSHES, and never merges. The draft lands with TODO-OMAR in every slot
+# that needs judgement — tagline, gradient, category, card stat — because those
+# are Omar's calls, not a script's. `npm run intake -- <repo> --check` fails on
+# any surviving placeholder, and CI runs it, so a half-filled entry cannot reach
+# main even if someone approves the PR.
+#
+# Artwork stays manual. This workflow does not generate, and must not: colour is
+# chosen per project against the artwork, never defaulted.
+name: Project intake
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'Repository name under osyounis (e.g. brent_cuda)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # tsx is needed here, unlike the sync: the draft is shape-checked against
+      # the real TypeScript schema rather than a copy that could drift from it.
+      - run: npm ci
+
+      - name: Draft the catalog entry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run intake -- '${{ inputs.repo }}' --write
+
+      - name: Open a pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/intake-${{ inputs.repo }}
+          base: dev
+          commit-message: 'chore: draft catalog entry for ${{ inputs.repo }}'
+          title: 'chore: catalog draft for ${{ inputs.repo }} (needs Omar)'
+          labels: automation
+          delete-branch: true
+          body: |
+            Drafted from `osyounis/${{ inputs.repo }}`'s own metadata. **Not
+            mergeable as-is.**
+
+            Every `TODO-OMAR` needs a human. The machine wrote the boilerplate;
+            these are the judgement calls it deliberately did not make:
+
+            - **tagline** — positioning, under 120 characters
+            - **brand.gradient** — colour is chosen per project against the
+              artwork, **never defaulted**. A reused palette is what made the
+              first full-catalog art pass read monotonous.
+            - **category**, **cardStat**, **imageAlt**, **keywords**
+
+            `tier` is `card`, the floor. Promotion to `showcase` needs a real
+            story **and** real visuals, and it must land its `caseStudies.ts`
+            entry in the same commit or the build throws at prerender.
+
+            **Artwork is not generated here and must not be.** Follow
+            "Adding a project's assets" in `.claude/CLAUDE.md`, and the
+            technique ladder in
+            [`assets/anchors/STYLE.md`](../blob/dev/assets/anchors/STYLE.md):
+            cheapest technique first, Omar approves the artwork, then
+            `npm run assets -- <id>` and `npm run generate:og`.
+
+            CI runs `npm run intake -- --check`, which fails while any
+            `TODO-OMAR` remains.

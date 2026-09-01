@@ -1,8 +1,13 @@
 import projectsData from '@/data/projects.json';
 import nahtadiReviewsData from '@/data/nahtadiReviews.json';
-import { ProjectsFileSchema, type Project } from './projectSchema';
+import {
+  NahtadiReviewsFileSchema,
+  ProjectsFileSchema,
+  type NahtadiReview,
+  type Project,
+} from './projectSchema';
 
-export type { Project, Tier } from './projectSchema';
+export type { NahtadiReview, Project, Tier } from './projectSchema';
 
 const projects: Project[] = ProjectsFileSchema.parse(projectsData).projects;
 
@@ -58,13 +63,10 @@ export function getProjectHref(p: Project): string | null {
   return p.detailPath ?? `/projects/${p.id}`;
 }
 
-export interface NahtadiReview {
-  title: string;
-  author: string;
-  date: string;
-  text: string;
-}
+/** Parsed once at module load, like the catalog. A malformed reviews file is a
+ *  build failure, not a runtime surprise. */
+const nahtadiReviews = NahtadiReviewsFileSchema.parse(nahtadiReviewsData).reviews;
 
 export function getNahtadiReviews(): NahtadiReview[] {
-  return nahtadiReviewsData.reviews;
+  return nahtadiReviews;
 }

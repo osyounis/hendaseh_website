@@ -36,6 +36,11 @@ jobs:
       - name: Run linter
         run: npm run lint
 
+      # An intake draft carries TODO-OMAR in every slot needing judgement.
+      # This is the gate that stops one merging half-filled.
+      - name: Reject unfilled intake placeholders
+        run: npm run intake -- --check
+
       - name: Run unit tests
         run: npm run test:run
 
