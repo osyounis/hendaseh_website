@@ -500,6 +500,35 @@
           "to": "#2A2A2E"
         }
       }
+    },
+    {
+      "id": "github-actions-learning",
+      "title": "Github Actions Learning",
+      "tagline": "TODO-OMAR: one line, under 120 characters, what it does and why it is interesting.",
+      "cardStat": "TODO-OMAR",
+      "description": "This repo is to learn how to use GitHub Actions ",
+      "technologies": [
+        "Python"
+      ],
+      "keywords": [
+        "TODO-OMAR"
+      ],
+      "tier": "card",
+      "featured": false,
+      "private": false,
+      "stats": "GPL-3.0",
+      "category": "TODO-OMAR",
+      "image": "/images/projects/github-actions-learning/card.png",
+      "imageAlt": "TODO-OMAR: describe the artwork once it exists.",
+      "links": {
+        "github": "https://github.com/osyounis/github_actions_learning"
+      },
+      "brand": {
+        "gradient": {
+          "from": "TODO-OMAR",
+          "to": "TODO-OMAR"
+        }
+      }
     }
   ]
 }
