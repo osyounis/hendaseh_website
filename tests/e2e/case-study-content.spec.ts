@@ -139,28 +139,33 @@ test('the sitemap lists all four case studies and no card-tier slug', async ({ r
 })
 
 /**
- * The video block, added by B-E. Only radar-moboard has one, so this is derived
- * from the data rather than hardcoded: if a second case study gains a clip, it
- * is covered without editing this file.
+ * The clips. Derived from the data rather than hardcoded, and iterated per CLIP
+ * rather than per project: radar-moboard ships two, and a test that only ever
+ * looked at the first would have covered the board and missed the sea view.
  */
-const WITH_VIDEO = CASE_STUDIES.filter((p) =>
-  (getCaseStudy(p.id)!.media ?? []).some((b) => b.kind === 'video')
+const CLIPS = CASE_STUDIES.flatMap((p) =>
+  (getCaseStudy(p.id)!.media ?? [])
+    .filter((b) => b.kind === 'video')
+    .map((b) => ({ slug: p.id, clip: b }))
 )
 
-test('exactly one case study ships a clip, and it is radar-moboard', async () => {
-  expect(WITH_VIDEO.map((p) => p.id)).toEqual(['radar-moboard'])
+test('only radar-moboard ships clips, and it ships both of them', async () => {
+  expect(CLIPS.map((c) => `${c.slug}:${c.clip.src}`)).toEqual([
+    'radar-moboard:/video/radar-moboard-board.mp4',
+    'radar-moboard:/video/radar-moboard-seaview.mp4',
+  ])
 })
 
-for (const project of WITH_VIDEO) {
-  const video = (getCaseStudy(project.id)!.media ?? []).find((b) => b.kind === 'video')!
+for (const { slug: projectId, clip: video } of CLIPS) {
+  const project = { id: projectId }
 
-  test.describe(`/projects/${project.id} video`, () => {
-    test('renders after the figure, not instead of it, and contains rather than crops', async ({
+  test.describe(`/projects/${project.id} ${video.src.split('-').pop()}`, () => {
+    test('renders alongside the stills, contains rather than crops, and does not loop', async ({
       page,
     }) => {
       await page.goto(`/projects/${project.id}`)
 
-      // The comparison is the argument; the clip is what it cannot show.
+      // The comparison is the argument; the clips are what it cannot show.
       await expect(page.locator('.case-figure-media').first()).toBeVisible()
       const el = page.locator(`.case-video[src="${video.src}"]`)
       await expect(el).toHaveCount(1)
@@ -174,20 +179,58 @@ for (const project of WITH_VIDEO) {
       expect(
         await el.evaluate((v: HTMLVideoElement) => ({
           muted: v.muted,
+          // NOT looping, and this assertion is the point of the change. The
+          // clip opens before the second observation and ends past CPA, so its
+          // first and last frames are different pictures and a loop can only
+          // cut between them.
           loop: v.loop,
           playsInline: v.hasAttribute('playsinline'),
           // No autoplay ATTRIBUTE: playback starts from an effect so reduced
           // motion can be honoured without a hydration mismatch.
           autoplayAttribute: v.hasAttribute('autoplay'),
         }))
-      ).toEqual({ muted: true, loop: true, playsInline: true, autoplayAttribute: false })
+      ).toEqual({ muted: true, loop: false, playsInline: true, autoplayAttribute: false })
+    })
+
+    test('plays once, then offers replay rather than pretending it can be played', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${project.id}`)
+      const el = page.locator(`.case-video[src="${video.src}"]`)
+      const button = el.locator('xpath=following-sibling::button')
+
+      await el.scrollIntoViewIfNeeded()
+      // Started by the reader arriving at it, not by mounting: two clips
+      // starting at mount would both finish before the reader scrolled down.
+      await expect(button).toHaveText('Pause the animation', { timeout: 10_000 })
+
+      // Jump to the end rather than waiting out eight seconds of real time.
+      await el.evaluate((v: HTMLVideoElement) => {
+        v.currentTime = v.duration - 0.05
+      })
+      await expect(button).toHaveText('Replay the animation', { timeout: 10_000 })
+
+      // It holds the final frame. A poster reappearing here, or a rewind to the
+      // first frame, would both be wrong.
+      expect(
+        await el.evaluate((v: HTMLVideoElement) => ({ ended: v.ended, near: v.currentTime > 1 }))
+      ).toEqual({ ended: true, near: true })
+
+      // Replay restarts from the beginning. `paused` is not asserted: the
+      // press begins playback, and by the time this reads back it may already
+      // have advanced -- currentTime returning to the start is the signal.
+      await button.click()
+      await expect(button).not.toHaveText('Replay the animation')
+      expect(await el.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeLessThan(2)
     })
 
     test('has a pause control that is keyboard reachable and names its own action', async ({
       page,
     }) => {
       await page.goto(`/projects/${project.id}`)
-      const button = page.locator('.case-video-toggle').first()
+      const button = page
+        .locator(`.case-video[src="${video.src}"]`)
+        .locator('xpath=following-sibling::button')
       await button.scrollIntoViewIfNeeded()
 
       // WCAG 2.2.2: the clip loops past five seconds, so a pause mechanism is
@@ -196,12 +239,13 @@ for (const project of WITH_VIDEO) {
       expect(box.width).toBeGreaterThanOrEqual(44)
       expect(box.height).toBeGreaterThanOrEqual(44)
 
+      // Asked of THIS clip's button, not of any `.case-video-toggle`. With two
+      // clips on the page the class test stopped on the board's control while
+      // asserting against the sea view's, and passed for the wrong reason.
       let reached = false
       for (let i = 0; i < 60 && !reached; i++) {
         await page.keyboard.press('Tab')
-        reached = await page.evaluate(() =>
-          document.activeElement?.classList.contains('case-video-toggle') ?? false
-        )
+        reached = await button.evaluate((el) => el === document.activeElement)
       }
       expect(reached, 'the pause control is not reachable by keyboard').toBe(true)
 
@@ -214,7 +258,9 @@ for (const project of WITH_VIDEO) {
       ).toBe(true)
 
       // The name states what pressing it will DO, and changes with state.
-      await expect(button).toHaveText(/Pause the animation|Play the animation/)
+      await expect(button).toHaveText(
+        /Pause the animation|Play the animation|Replay the animation/
+      )
       const before = await button.textContent()
       await button.press('Enter')
       await expect(button).not.toHaveText(before!)
@@ -245,7 +291,9 @@ for (const project of WITH_VIDEO) {
       expect(state.paused, 'the clip autoplayed under reduced motion').toBe(true)
       // Not merely paused after the fact: it never advanced.
       expect(state.t).toBeLessThan(0.5)
-      await expect(page.locator('.case-video-toggle').first()).toHaveText('Play the animation')
+      await expect(clip.locator('xpath=following-sibling::button')).toHaveText(
+        'Play the animation'
+      )
 
       // The whole reason playback starts from an effect rather than an attribute.
       expect(errors, 'hydration or runtime errors under reduced motion').toEqual([])

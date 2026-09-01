@@ -1,5 +1,5 @@
 /**
- * Pause and play — the site's two TRANSPORT glyphs.
+ * Pause, play and replay — the site's TRANSPORT glyphs.
  *
  * They live here, beside `HomeTicker.tsx`, and emphatically NOT in
  * `LinkAffordance.tsx`. That file holds the five LINK-affordance glyphs, whose
@@ -55,6 +55,46 @@ export function PlayGlyph({ className }: { className?: string }) {
         fill="currentColor"
         stroke="currentColor"
         strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * The counterclockwise arrow — a clip that has PLAYED OUT, not one that is
+ * merely paused. It exists because the case-study clips stopped looping: their
+ * first and last frames are entirely different pictures, so a loop could only
+ * cut hard between them. A play-once clip needs a third state, and "Play" on a
+ * clip already showing its final frame says the wrong thing.
+ *
+ * STROKED, where its two neighbours are filled, and that is not an
+ * inconsistency. The filled rule above is about how Apple draws PAUSE and PLAY;
+ * Apple draws its own replay marks (`arrow.counterclockwise`, `gobackward`) as
+ * strokes, because a ring with a gap has no filled form. Stroke weight 1.5 on
+ * the 14x14 box lands at the same optical mass as the pause bars.
+ *
+ * The geometry is computed rather than eyeballed: centre (7,7), radius 4.35, an
+ * arc from 110 degrees clockwise the long way round to 155, leaving a 45-degree
+ * gap, with the head placed on the arc's start and pointed along the
+ * counterclockwise tangent there. Rendered and checked at 15px, the size it
+ * actually ships at.
+ */
+export function ReplayGlyph({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 14 14" aria-hidden="true">
+      <path
+        d="M5.51 2.91A4.35 4.35 0 1 1 3.06 5.16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M4.43 3.31 7.04 3.74 6.15 1.3Z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="0.9"
         strokeLinejoin="round"
       />
     </svg>
