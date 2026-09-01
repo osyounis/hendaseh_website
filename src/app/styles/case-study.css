@@ -557,6 +557,94 @@
     }
   }
 
+  /* ---------------------------------------------------------------------- *
+   * `layout: 'beside'` -- media in a column, caption alongside
+   *
+   * apple.com/apple-fitness-plus's `.tile-rounded` proportions: 1100x512 at
+   * 1440 with a 60px inset and the media in roughly the left 40%. Ours keeps
+   * the tile's own padding, which resolves to 42px on a 1054px column -- close
+   * enough that a second inset would be an invention -- and takes the 40/60
+   * split.
+   *
+   * IT EXISTS TO CUT HEIGHT. A portrait capture stacked above its caption made
+   * a tile about 780px tall, and these pages now carry three and four blocks
+   * each. Beside, the same phone lands the tile near 550.
+   *
+   * Unlike Apple's, the media is NOT cropped to fit. Apple bleeds its media off
+   * the tile edge; here the whole device stays visible and simply renders
+   * smaller, because a phone with its corners cut off stops being the object
+   * the bezel exists to make it.
+   * ---------------------------------------------------------------------- */
+
+  .case-figure-beside {
+    display: grid;
+    /* The media column is sized to the MEDIA, not to a fraction of the tile. A
+       4fr/6fr split gives Apple's proportions but leaves a 200px phone floating
+       in a 380px column with 90px of dead air on both sides; the column capped
+       at the device's own width puts the gap where it belongs, between the two
+       things. `minmax(0, ...)` rather than a bare 210px so it still shrinks on a
+       narrow tile before the stacking breakpoint takes over. */
+    grid-template-columns: minmax(0, 210px) minmax(0, 1fr);
+    /* A percentage gap resolves against the tile, so it scales with it. */
+    gap: clamp(20px, 4%, 48px);
+    align-items: center;
+  }
+
+  /* Fills the column the grid gave it, rather than being capped a second time
+     and re-centred inside it. */
+  .case-figure-beside .case-device-frame {
+    max-width: 100%;
+    margin-inline: 0;
+  }
+
+  /* The caption is a column here, not a strip under the media, so it loses the
+     top padding that separated it from an image directly above. */
+  .case-figure-beside .case-caption {
+    padding-top: 0;
+  }
+
+  @media (max-width: 640px) {
+    /* Below this the media column cannot hold a phone at a useful size AND
+       leave a readable measure beside it, so the two stack: media above text,
+       which is the order they are read in anyway. */
+    .case-figure-beside {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .case-figure-beside .case-caption {
+      padding-top: 18px;
+    }
+
+    /* Stacked, the phone owns the full column and can afford to be larger
+       again -- the height it costs is no longer competing with a text column
+       beside it. */
+    .case-figure-beside .case-device-frame {
+      max-width: 260px;
+      margin-inline: auto;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- *
+   * Framed capture (`frame: 'device'`)
+   *
+   * The bezel itself is `.nh-device` in shared.css -- the same physical object
+   * /nahtadi's gallery frames. This only sizes and centres it.
+   * ---------------------------------------------------------------------- */
+
+  .case-device-frame {
+    /* The capture is 1179px wide, so this is a downscale and never an upscale.
+       200px of width is 434px of height; beside its caption that lands the tile
+       near 550px, against 780 when the phone sat at 320px above the text.
+       Height is what this block was costing the page. */
+    max-width: 200px;
+    margin-inline: auto;
+    /* `.case-figure` clips to its radius, and the bezel's shadow reaches 44px
+       down from a 22px offset. Without this the shadow is cut off square
+       against the tile's edge, which reads as a rendering fault. */
+    margin-block: 6px 24px;
+  }
+
   .case-video-frame {
     position: relative;
     /* The clip is square and 600px native, so this is its own size and never an

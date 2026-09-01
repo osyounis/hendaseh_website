@@ -349,7 +349,13 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   />
                 </div>
               ) : (
-                <figure key={index} className="case-figure" data-reveal="">
+                <figure
+                  key={index}
+                  className={
+                    block.layout === 'beside' ? 'case-figure case-figure-beside' : 'case-figure'
+                  }
+                  data-reveal=""
+                >
                   <FigureImage block={block} />
                   <CaseStudyCaption title={block.title} caption={block.caption} />
                 </figure>
