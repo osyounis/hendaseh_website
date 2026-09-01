@@ -367,6 +367,81 @@
   }
 
   /* ---------------------------------------------------------------------- *
+   * Video block
+   *
+   * Reuses `.case-figure` so the clip and the figure read as one family, and
+   * deliberately does NOT reuse `.case-figure-media`: that is object-fit: cover
+   * on a 16:9 box, and these sources are 1:1. Cover would crop the board's top
+   * and bottom rings away, which is most of what the clip is for.
+   * ---------------------------------------------------------------------- */
+
+  .case-video-frame {
+    position: relative;
+    /* The clip is square and 600px native. Capping it keeps the block from
+       becoming a 678px-tall wall on a 760px column, and avoids upscaling. */
+    max-width: 420px;
+    margin-inline: auto;
+  }
+
+  .case-video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    border-radius: 12px;
+    background: var(--surface-raised);
+  }
+
+  /* Sits ON the clip, bottom-right, the way a player control does. */
+  .case-video-toggle {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 44x44 is the touch floor; anything smaller is a miss on a phone. */
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 999px;
+    /* Literal, not tokens: this sits on the clip's own white sheet in both
+       themes, exactly as .nh-device's chassis does. */
+    background: rgb(20 22 26 / 0.72);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 160ms var(--ease-brand);
+  }
+
+  .case-video-toggle:hover {
+    background: rgb(20 22 26 / 0.88);
+  }
+
+  .case-video-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .case-video-icon {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+  }
+
+  /* Clipped, not hidden: `display: none` would drop it from the accessible name
+     computation and leave the button unnamed. */
+  .case-video-word {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---------------------------------------------------------------------- *
    * Tech chips (in IMPACT)
    * ---------------------------------------------------------------------- */
 

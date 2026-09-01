@@ -53,6 +53,20 @@ export interface CaseStudyFigure {
   readonly caption: string;
 }
 
+/**
+ * A looping clip, rendered after the figure rather than instead of it. Optional
+ * and rare: only radar-moboard has one, because only radar-moboard has motion
+ * that carries information a still cannot.
+ */
+export interface CaseStudyVideoData {
+  readonly src: string;
+  /** First frame of the CLIP, not a related still. The two differ. */
+  readonly poster: string;
+  /** What the clip shows, for anyone who cannot watch it. */
+  readonly description: string;
+  readonly caption: string;
+}
+
 export interface CaseStudy {
   /**
    * Hero gradient stops. Two ends; the template adds the shared dark third
@@ -78,6 +92,7 @@ export interface CaseStudy {
   readonly approach: CaseStudySection;
   readonly impact: CaseStudySection;
   readonly figure?: CaseStudyFigure;
+  readonly video?: CaseStudyVideoData;
 }
 
 const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
@@ -208,6 +223,14 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
       alt: 'The same maneuvering board problem worked twice, side by side: the retired Python prototype on the left, the TypeScript rewrite on the right.',
       caption:
         'The same encounter, worked by both implementations. They agree on all nine reported values. All scenarios synthetic.',
+    },
+    video: {
+      src: '/video/radar-moboard-board.mp4',
+      poster: '/video/radar-moboard-board-poster.png',
+      description:
+        'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
+      caption:
+        'The same encounter, played forward. The maneuver fires at the Mx ring. All scenarios synthetic.',
     },
   },
 
