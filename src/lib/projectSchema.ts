@@ -57,4 +57,38 @@ export const ProjectSchema = z
   .strict();
 
 export const ProjectsFileSchema = z.object({ projects: z.array(ProjectSchema).min(1) }).strict();
+
+/**
+ * Nahtadi's App Store reviews.
+ *
+ * `id` IS THE LOAD-BEARING FIELD, added in sub-project 5 (B-C) so the weekly
+ * fact sync can protect these entries. Apple's customer-reviews RSS returns a
+ * stable per-review id and only a rolling window of recent reviews, so a sync
+ * that matched on author or title would eventually "lose" every stored review
+ * and helpfully delete all six. `scripts/appstore-sync.mjs` looks each stored
+ * review up BY ID across every configured storefront and exits 1 if one cannot
+ * be found. It never deletes.
+ *
+ * `storefront` records where the review was published. App Store data is
+ * per-country: these six are 4 US and 2 JO, and neither feed alone contains
+ * them all.
+ *
+ * Strict, like the catalog schema: a stray field is an error, not a shrug.
+ */
+export const NahtadiReviewSchema = z
+  .object({
+    id: z.string().regex(/^\d+$/, 'expected Apple\u2019s numeric review id'),
+    storefront: z.string().length(2),
+    title: z.string().min(1),
+    author: z.string().min(1),
+    date: z.string().min(1),
+    text: z.string().min(1),
+  })
+  .strict();
+
+export const NahtadiReviewsFileSchema = z
+  .object({ reviews: z.array(NahtadiReviewSchema).min(1) })
+  .strict();
+
+export type NahtadiReview = z.infer<typeof NahtadiReviewSchema>;
 export type Project = z.infer<typeof ProjectSchema>;

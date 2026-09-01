@@ -1,0 +1,75 @@
+# Weekly App Store fact sync.
+#
+# NEVER PUSHES. It runs the script, and if the script wrote anything, hands the
+# working tree to create-pull-request. A human merges. On any API failure the
+# script exits non-zero and this job fails with nothing written, which is the
+# intended outcome: a stale number beats a guessed one.
+#
+# SCHEDULED WORKFLOWS ONLY FIRE FROM THE DEFAULT BRANCH, so the weekly trigger
+# is inert until this file reaches main. `workflow_dispatch` is the proof path
+# until then, and stays the way to force a run afterwards.
+name: App Store fact sync
+
+on:
+  schedule:
+    - cron: '17 6 * * 1' # Mondays, 06:17 UTC. Off the hour on purpose: GitHub
+                         # queues cron jobs and the top of the hour is congested.
+  workflow_dispatch:
+    inputs:
+      force_diff:
+        description: 'Force a synthetic diff to prove the PR path end to end'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: appstore-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # No npm ci: the sync script has no dependencies. It uses fetch and
+      # node:fs, both built in. Installing the full toolchain to read two JSON
+      # endpoints would be the slowest part of the job by an order of magnitude.
+      - name: Sync App Store facts
+        id: sync
+        run: node scripts/appstore-sync.mjs ${{ inputs.force_diff && '--force-diff' || '' }}
+
+      - name: Open a pull request if anything drifted
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/appstore-sync
+          base: dev
+          commit-message: 'chore: sync App Store facts from Apple'
+          title: 'chore: App Store facts have drifted'
+          labels: automation
+          delete-branch: true
+          body: |
+            Apple's public lookup API disagrees with `src/data/projects.json`.
+
+            ${{ steps.sync.outputs.drift || '_(see the job log)_' }}
+
+            **Check before merging.** `appStoreRating.count` tracks the **US
+            storefront** deliberately. App Store Connect reports a worldwide
+            total the lookup API cannot return, and the narrower number that is
+            always right beats the truer one that is usually stale. See
+            `src/lib/__tests__/reviews.test.ts`. Do not widen this to a
+            worldwide figure.
+
+            No review was added or removed. The sync refuses to delete: if a
+            stored review cannot be found by id in any configured storefront it
+            fails the run instead, because Apple's feed is a rolling window and
+            absence is not withdrawal.

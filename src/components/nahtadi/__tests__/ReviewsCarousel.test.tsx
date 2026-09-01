@@ -3,10 +3,14 @@ import { render, screen, fireEvent, act, within } from '@testing-library/react'
 import ReviewsCarousel from '../ReviewsCarousel'
 import type { NahtadiReview } from '@/lib/projects'
 
+// `id` and `storefront` are required since B-C: the weekly App Store sync
+// locates every stored review by id, so the type carries them. The carousel
+// itself does not read either field, but the fixture must still be a valid
+// review -- a mock that cannot typecheck is a mock that has drifted.
 const reviews: NahtadiReview[] = [
-  { title: 'First review', author: 'Alpha', date: 'Jan 1, 2026', text: 'First body text.' },
-  { title: 'Second review', author: 'Beta', date: 'Jan 2, 2026', text: 'Second body text.' },
-  { title: 'Third review', author: 'Gamma', date: 'Jan 3, 2026', text: 'Third body text.' },
+  { id: '1', storefront: 'us', title: 'First review', author: 'Alpha', date: 'Jan 1, 2026', text: 'First body text.' },
+  { id: '2', storefront: 'us', title: 'Second review', author: 'Beta', date: 'Jan 2, 2026', text: 'Second body text.' },
+  { id: '3', storefront: 'jo', title: 'Third review', author: 'Gamma', date: 'Jan 3, 2026', text: 'Third body text.' },
 ]
 
 // jsdom has no matchMedia; install a controllable stub.
