@@ -76,7 +76,10 @@ for (const project of CASE_STUDIES) {
       for (const [index, block] of blocks.entries()) {
         const tile = tiles.nth(index)
         if (block.kind === 'image') {
-          await expect(tile.locator('img.case-figure-media')).toHaveAttribute('alt', block.alt)
+          // `img`, not `img.case-figure-media`: a framed block wears the shared
+          // `.nh-device` bezel instead of the tile's own media class.
+          await expect(tile.locator('img')).toHaveCount(1)
+          await expect(tile.locator('img')).toHaveAttribute('alt', block.alt)
         } else {
           // The DEFAULT clip, and only it. See the clip-block tests below for
           // why there is never a second <video> in the DOM.
@@ -86,6 +89,45 @@ for (const project of CASE_STUDIES) {
             block.clips[0].src
           )
         }
+      }
+    })
+
+    test('frames a raw capture in real chrome, never in baked pixels', async ({ page }) => {
+      const framed = (study.media ?? []).filter((b) => b.kind === 'image' && b.frame === 'device')
+      await page.goto(`/projects/${project.id}`)
+      const devices = page.locator('.case-media-stack .nh-device')
+      await expect(devices).toHaveCount(framed.length)
+      if (framed.length === 0) return
+
+      // The bezel is CSS on the theme-aware tile, not a composite. Its gradient
+      // is what a baked-in frame cannot be: an object with an edge in both
+      // themes. A flat background here means someone re-composited it.
+      const chrome = await devices.first().evaluate((el) => {
+        const cs = getComputedStyle(el)
+        return { image: cs.backgroundImage, radius: cs.borderRadius, shadow: cs.boxShadow }
+      })
+      expect(chrome.image).toContain('gradient')
+      expect(chrome.shadow).not.toBe('none')
+      expect(chrome.radius).not.toBe('0px')
+    })
+
+    test('serves one file per theme for a figure that has both', async ({ page }) => {
+      const themed = (study.media ?? []).filter((b) => b.kind === 'image' && b.srcDark)
+      await page.goto(`/projects/${project.id}`)
+      const pictures = page.locator('.case-media-stack picture')
+      await expect(pictures).toHaveCount(themed.length)
+
+      for (const [index, block] of themed.entries()) {
+        if (block.kind !== 'image' || !block.srcDark) continue
+        const sources = pictures.nth(index).locator('source')
+        await expect(sources).toHaveCount(2)
+        // The dark source is first and carries the media query; the site's dark
+        // variant IS prefers-color-scheme, since the attribute override is gone.
+        await expect(sources.nth(0)).toHaveAttribute('media', '(prefers-color-scheme: dark)')
+        expect(await sources.nth(0).getAttribute('srcset')).toContain(
+          encodeURIComponent(block.srcDark).replace(/%2F/g, '/')
+        )
+        await expect(sources.nth(1)).not.toHaveAttribute('media', /./)
       }
     })
 

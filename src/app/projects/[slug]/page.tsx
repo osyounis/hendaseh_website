@@ -1,10 +1,11 @@
 import { Fragment, type CSSProperties } from 'react';
-import Image from 'next/image';
+import Image, { getImageProps } from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getProjectById, getCaseStudyProjects, getNextCaseStudy } from '@/lib/projects';
 import {
   getCaseStudy,
+  type CaseStudyImageBlock,
   type CaseStudySection as CaseStudySectionData,
   type Prose,
 } from '@/lib/caseStudies';
@@ -133,6 +134,73 @@ function Paragraph({ prose }: { prose: Prose }) {
         )
       )}
     </p>
+  );
+}
+
+/** The width the tile actually gives an image: 970px at a 1440 viewport, and
+ *  the full viewport once the page-wrap stops being the constraint. Measured,
+ *  not guessed -- see the note on `.case-caption` in case-study.css. */
+const MEDIA_SIZES = '(min-width: 1094px) 970px, 100vw';
+
+/**
+ * One media image. Three shapes, all chosen by DATA rather than by slug:
+ *
+ *  - plain: a single file at the tile's aspect ratio.
+ *  - THEMED (`srcDark`): a `<picture>` serving one of a light/dark pair. Two
+ *    `next/image`s toggled with CSS would be simpler and wrong -- a browser
+ *    fetches a `display: none` image, so every visitor would download both
+ *    palettes of a chart they can only ever see one of. `getImageProps` is
+ *    Next's own documented answer: it runs the configured loader (so the
+ *    ImageKit pipeline still applies) and hands back the srcSet to hang on a
+ *    `<source>`. The media query is `prefers-color-scheme`, which is what the
+ *    site's `dark` variant is; there is no attribute override to honour.
+ *  - FRAMED (`frame: 'device'`): the phone bezel from shared.css, the same one
+ *    /nahtadi's gallery uses, rather than a bezel baked into the PNG.
+ */
+function FigureImage({ block }: { block: CaseStudyImageBlock }) {
+  const width = block.width ?? 1280;
+  const height = block.height ?? 720;
+
+  if (block.frame === 'device') {
+    return (
+      <div className="case-device-frame">
+        <div className="nh-device">
+          <Image src={block.src} alt={block.alt} width={width} height={height} sizes="320px" />
+        </div>
+      </div>
+    );
+  }
+
+  const shared = {
+    alt: block.alt,
+    width,
+    height,
+    sizes: MEDIA_SIZES,
+    className: 'case-figure-media',
+    // The tile assumes 16:9; a block that is a different shape says so, and the
+    // tile takes that shape instead of cropping to the middle of it.
+    style: { '--case-media-aspect': `${width} / ${height}` } as CSSProperties,
+  };
+
+  if (!block.srcDark) return <Image src={block.src} {...shared} alt={block.alt} />;
+
+  const {
+    props: { srcSet: dark },
+  } = getImageProps({ ...shared, src: block.srcDark });
+  const {
+    props: { srcSet: light, ...rest },
+  } = getImageProps({ ...shared, src: block.src });
+
+  return (
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcSet={dark} sizes={MEDIA_SIZES} />
+      <source srcSet={light} sizes={MEDIA_SIZES} />
+      {/* This IS the next/image element: getImageProps is how Next documents
+          composing one into a <picture>, and the component form cannot take
+          <source> siblings. `alt` is already inside `rest`; it is repeated
+          because neither the linter nor a reader can see through a spread. */}
+      <img {...rest} alt={block.alt} />
+    </picture>
   );
 }
 
@@ -282,23 +350,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 </div>
               ) : (
                 <figure key={index} className="case-figure" data-reveal="">
-                  <Image
-                    src={block.src}
-                    alt={block.alt}
-                    width={block.width ?? 1280}
-                    height={block.height ?? 720}
-                    className="case-figure-media"
-                    // The tile assumes 16:9; a block that is a different shape
-                    // says so, and the tile takes that shape instead of
-                    // cropping to the middle of it.
-                    style={
-                      block.width && block.height
-                        ? ({
-                            '--case-media-aspect': `${block.width} / ${block.height}`,
-                          } as CSSProperties)
-                        : undefined
-                    }
-                  />
+                  <FigureImage block={block} />
                   <CaseStudyCaption title={block.title} caption={block.caption} />
                 </figure>
               )

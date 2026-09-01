@@ -89,6 +89,29 @@ export interface CaseStudyImageBlock extends CaseStudyMediaCommon {
    */
   readonly width?: number;
   readonly height?: number;
+  /**
+   * A second file for the dark theme, when the figure is one the site drew and
+   * so exists in both palettes. The template serves exactly one of the pair
+   * through a `<picture>`, so a viewer downloads the file their theme actually
+   * uses -- see the note in the template.
+   *
+   * Only for figures that HAVE a dark version. A screenshot or a captured plot
+   * has one palette and stays on one file; giving it a second would mean
+   * inventing a rendering that was never measured.
+   */
+  readonly srcDark?: string;
+  /**
+   * Chrome to draw around the image, when the raw capture needs an edge of its
+   * own. `device` is the phone bezel (`.nh-device` in shared.css, the same one
+   * /nahtadi's gallery uses).
+   *
+   * This replaces baking the frame into the PNG. a16's did exactly that -- a
+   * dark bezel and a black screen composited onto a dark navy ground, three
+   * layers of dark, and being one flat image it rendered identically in both
+   * themes. Real CSS chrome on the theme-aware tile ground gives the bezel
+   * something to separate from in each theme.
+   */
+  readonly frame?: 'device';
 }
 
 /** One clip inside a clip block. */
@@ -415,10 +438,24 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
     media: [
       {
         kind: 'image',
-        src: '/images/case-studies/a16-summarizer.png',
-        alt: 'The summarizer running on an iPhone 14 Pro beside a grouped bar chart of ROUGE-1, ROUGE-2 and ROUGE-L for the base model, the fp16 fine-tune and the shipped 4-bit model.',
+        src: '/images/case-studies/a16-phone.png',
+        width: 1179,
+        height: 2556,
+        frame: 'device',
+        alt: 'The summarizer on an iPhone 14 Pro: a generated summary of a doctor visit, above live statistics reading 44.4 tokens per second, 2047 ms to first token and 831 MB of memory.',
+        title: 'On the iPhone 14 Pro',
         caption:
-          'The model on the phone, and what it scores. Base, fp16 fine-tune, and the 4-bit model that ships.',
+          'The shipped 4-bit model, summarizing on the phone. Every number on the screen is the app reporting on itself.',
+      },
+      {
+        kind: 'image',
+        src: '/images/case-studies/a16-rouge-light.png',
+        srcDark: '/images/case-studies/a16-rouge-dark.png',
+        width: 1746,
+        height: 1296,
+        alt: 'Grouped bars of ROUGE-1, ROUGE-2 and ROUGE-L for three models. Base Qwen2.5-1.5B scores .3706, .1498 and .2889; the fp16 fine-tune .5581, .3101 and .4808 with 95 percent confidence intervals; the shipped 4-bit model .5433, .2905 and .4622.',
+        caption:
+          "Base, fine-tune, and the model that actually ships. Quantizing to 4-bit gives back under two points of the fine-tune's gain.",
       },
     ],
   },

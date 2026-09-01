@@ -489,6 +489,25 @@
     }
   }
 
+  /* ---------------------------------------------------------------------- *
+   * Framed capture (`frame: 'device'`)
+   *
+   * The bezel itself is `.nh-device` in shared.css -- the same physical object
+   * /nahtadi's gallery frames. This only sizes and centres it.
+   * ---------------------------------------------------------------------- */
+
+  .case-device-frame {
+    /* The capture is 1179px wide, so this is a downscale and never an upscale.
+       A phone is tall: 320px of width is 695px of height, which is already the
+       largest block in the stack, and going wider buys nothing a reader needs. */
+    max-width: 320px;
+    margin-inline: auto;
+    /* `.case-figure` clips to its radius, and the bezel's shadow reaches 44px
+       down from a 22px offset. Without this the shadow is cut off square
+       against the tile's bottom edge, which reads as a rendering fault. */
+    margin-block: 6px 24px;
+  }
+
   .case-video-frame {
     position: relative;
     /* The clip is square and 600px native, so this is its own size and never an

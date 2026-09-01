@@ -399,27 +399,11 @@
      iPhone is the same physical object on both grounds, exactly as the
      flagship band is the same object in both themes. These are not surfaces
      participating in the theme, so there is no token for them to take. */
-  .nh-device {
-    position: relative;
-    border-radius: 42px;
-    padding: 9px;
-    background: linear-gradient(160deg, #2a2f36, #0b0e12);
-    box-shadow:
-      0 22px 44px rgb(0 0 0 / 0.28),
-      0 0 0 1px rgb(255 255 255 / 0.1) inset;
-  }
-
-  .nh-device img {
-    border-radius: 34px;
-    width: 100%;
-    /* The captures are 1206x2622 (iPhone 17 Pro). 9/19.55 against the images'
-       own 9/19.567 is a 0.1% difference, which `object-fit: cover` absorbs to
-       a fraction of a pixel. */
-    aspect-ratio: 9 / 19.55;
-    object-fit: cover;
-    object-position: top;
-    background: #f2f2f7;
-  }
+  /* `.nh-device` and `.nh-device img` MOVED TO shared.css when the
+     a16-summarizer case study became their second consumer, the same way
+     `[data-reveal]` and `.home-tile` moved when they got theirs. The comment
+     above still explains WHY the flagship needs a bezel; the rules themselves
+     now live where two pages can reach them without one owning the other. */
 
   .nh-shot-cap {
     margin-top: 18px;
@@ -1533,14 +1517,8 @@
       width: 210px;
     }
 
-    .nh-device {
-      border-radius: 36px;
-      padding: 7px;
-    }
-
-    .nh-device img {
-      border-radius: 30px;
-    }
+    /* `.nh-device`'s narrow-viewport step moved to shared.css with the rest of
+       the component, so both consumers get it. */
 
     .nh-scroll-l {
       left: 4px;
