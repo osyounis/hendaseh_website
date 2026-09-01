@@ -9,6 +9,7 @@ import {
   type Prose,
 } from '@/lib/caseStudies';
 import ScrollReveal from '@/components/projects/ScrollReveal';
+import CaseStudyVideo from '@/components/projects/CaseStudyVideo';
 import NewTabHint from '@/components/NewTabHint';
 import {
   AffordanceLabel,
@@ -268,6 +269,16 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             />
             <figcaption className="case-caption">{caseStudy.figure.caption}</figcaption>
           </figure>
+        )}
+
+        {/* A separate block AFTER the figure, never instead of it: the
+            before/after comparison is the argument, and the clip is what the
+            comparison cannot show. Reuses the figure's tile so they read as one
+            family. */}
+        {caseStudy.video && (
+          <div data-reveal="">
+            <CaseStudyVideo {...caseStudy.video} />
+          </div>
         )}
 
         <CaseStudySection section={caseStudy.impact}>
