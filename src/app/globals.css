@@ -127,6 +127,15 @@
 
   /* ---- Motion ---- */
   --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  /* A strong ease-IN-OUT, for the one thing --ease-brand is wrong for: an
+     element MOVING between two resting positions on screen. --ease-brand is an
+     ease-out, which is right for entering and exiting -- it starts at speed, so
+     the moment the reader is watching is the fast one. A travelling indicator
+     has no entrance; it accelerates away from one anchor and decelerates into
+     the next, and an ease-out makes it look like it was already moving when the
+     reader pressed. Added for the clip chooser's indicator; use it for
+     on-screen movement, --ease-brand for everything that appears or leaves. */
+  --ease-move: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* Semantic tokens: light values on :root, dark values under the
@@ -245,9 +254,21 @@
      a control boundary. Selection is never carried by fill alone -- the label
      colour steps with it and `aria-selected` states it. */
   --clip-switch-bg: #dcdce1;
-  --clip-switch-fg: var(--fg-muted-on-tint);
-  --clip-switch-active-bg: var(--accent);
-  --clip-switch-active-fg: #ffffff;
+  /* ONE LABEL COLOUR, SELECTED OR NOT. Measured off apple.com/mac's "Explore
+     the lineup." tabs: 17px, weight 400, and the same colour either way --
+     selection is carried by a moving indicator, never by recolouring the text.
+     B-G's accent-filled segment did recolour it, which is what this replaces.
+     #1d1d1f reads 12.32:1 on the track and 16.83:1 on the indicator, so one
+     value clears AA on both grounds and the label never has to change. */
+  --clip-switch-fg: var(--fg-strong);
+  --clip-switch-thumb: #ffffff;
+  /* The indicator's fill alone is 1.37:1 against its track, which does not
+     identify a control under WCAG 1.4.11. A 1px ring carries that instead:
+     #6e6e73 is 3.71:1 on the track. The alternative -- a fill dark enough to
+     reach 3:1 by itself -- forces the label to change colour again, which is
+     the whole thing being removed. */
+  --clip-switch-thumb-edge: var(--color-ink-600);
+  --clip-switch-hover: rgb(0 0 0 / 0.05);
   /* About-page prose. Two steps, because the mockup pair gives them two
      different dark values even though they share one light value:
      the hero lede sits at --fg-muted's weight in dark, the arc's chapter
@@ -474,9 +495,12 @@
        9.42:1; selected is --color-deep-page on brand-400 at 8.54:1, and the
        segment reads against its track at 8.65:1. */
     --clip-switch-bg: var(--color-deep-sky);
-    --clip-switch-fg: var(--fg-muted);
-    --clip-switch-active-bg: var(--accent);
-    --clip-switch-active-fg: var(--color-deep-page);
+    /* 19.37:1 on the track, 13.41:1 on the indicator. */
+    --clip-switch-fg: var(--fg-strong);
+    --clip-switch-thumb: #17304d;
+    /* navy-450 is 5.19:1 against the track. */
+    --clip-switch-thumb-edge: var(--color-navy-450);
+    --clip-switch-hover: rgb(255 255 255 / 0.06);
     /* Every About token below MUST be restated here even where it happens to
        alias another semantic token: custom properties inherit, so anything left
        out would carry its light value into the dark theme. */

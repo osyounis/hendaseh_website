@@ -347,9 +347,13 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
       },
       {
         kind: 'clips',
-        title: 'The encounter, played forward',
+        // Rendered ABOVE the chooser, where it names the choice rather than
+        // describing the picture. Two unlabelled buttons over a video read as an
+        // unexplained pair; this is the sentence that makes them a choice, and
+        // it is the tablist's visible accessible name.
+        title: 'See the same run from either viewpoint.',
         caption:
-          'One run, from either viewpoint. The maneuver fires at the Mx ring, and the clock never stops between the two. All scenarios synthetic.',
+          'The maneuver fires at the Mx ring, and the clock never stops between the two. All scenarios synthetic.',
         clips: [
           {
             id: 'board',

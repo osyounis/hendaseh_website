@@ -71,7 +71,13 @@ for (const project of CASE_STUDIES) {
       // the wrong order would pass every per-tile check.
       expect(
         await page.locator('.case-media-stack .case-caption').allInnerTexts()
-      ).toEqual(blocks.map((b) => [b.title, b.caption].filter(Boolean).join('\n')))
+      ).toEqual(
+        blocks.map((b) =>
+          // A clip block's title is rendered above its chooser, where it names
+          // the choice, so only its caption reaches the caption element.
+          b.kind === 'clips' ? b.caption : [b.title, b.caption].filter(Boolean).join('\n')
+        )
+      )
 
       for (const [index, block] of blocks.entries()) {
         const tile = tiles.nth(index)
@@ -137,7 +143,8 @@ for (const project of CASE_STUDIES) {
       await page.goto(`/projects/${project.id}`)
       for (const [index, block] of (study.media ?? []).entries()) {
         const caption = page.locator('.case-media-stack .case-caption').nth(index)
-        await expect(caption.locator('.case-media-title')).toHaveCount(block.title ? 1 : 0)
+        const inCaption = block.kind !== 'clips' && block.title ? 1 : 0
+        await expect(caption.locator('.case-media-title')).toHaveCount(inCaption)
       }
     })
   })
@@ -235,6 +242,83 @@ for (const { slug: projectId, block } of CLIP_BLOCKS) {
       const panel = page.getByRole('tabpanel')
       await expect(panel).toHaveCount(1)
       expect(await panel.getAttribute('aria-labelledby')).toBe(await tabs.nth(0).getAttribute('id'))
+    })
+
+    test('names the choice above the control, and the control by that sentence', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${project.id}`)
+      const heading = page.locator('.case-clip-title')
+      await expect(heading).toHaveCount(1)
+      await expect(heading).toHaveText(block.title!)
+
+      // A VISIBLE accessible name, not an invisible aria-label: the tablist is
+      // named by the sentence the reader can actually see.
+      const list = page.getByRole('tablist')
+      expect(await list.getAttribute('aria-labelledby')).toBe(await heading.getAttribute('id'))
+      await expect(list).not.toHaveAttribute('aria-label', /./)
+      await expect(list).toHaveAccessibleName(block.title!)
+    })
+
+    test('carries selection on a moving indicator, not by recolouring the label', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${project.id}`)
+      const tabs = page.getByRole('tab')
+      await tabs.first().scrollIntoViewIfNeeded()
+
+      // apple.com/mac's pattern: same colour selected or not.
+      const colours = await tabs.evaluateAll((els) =>
+        els.map((el) => getComputedStyle(el).color)
+      )
+      expect(new Set(colours).size, 'the tab labels are not one colour').toBe(1)
+
+      const indicator = page.locator('.case-clip-indicator')
+      await expect(indicator).toHaveCount(1)
+      const at = () =>
+        indicator.evaluate((el) => new DOMMatrixReadOnly(getComputedStyle(el).transform).m41)
+
+      const home = await at()
+      await tabs.nth(1).click()
+      await expect.poll(at, { timeout: 3000 }).toBeGreaterThan(home + 1)
+    })
+
+    test('the indicator retargets mid-flight instead of snapping or queueing', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${project.id}`)
+      const tabs = page.getByRole('tab')
+      const indicator = page.locator('.case-clip-indicator')
+      await tabs.first().scrollIntoViewIfNeeded()
+      const at = () =>
+        indicator.evaluate((el) => new DOMMatrixReadOnly(getComputedStyle(el).transform).m41)
+
+      const home = await at()
+      await tabs.nth(1).click()
+      // Catch it in flight: 280ms of travel, so this lands roughly mid-way.
+      await page.waitForTimeout(110)
+      const midway = await at()
+      expect(midway, 'the indicator never left its first tab').toBeGreaterThan(home + 1)
+
+      const target = await indicator.evaluate((el) => el.getBoundingClientRect().width)
+      expect(midway, 'the indicator had already arrived; catch it earlier').toBeLessThan(
+        home + target - 1
+      )
+
+      // Turn it around while it is still travelling.
+      await tabs.nth(0).click()
+      const afterReverse = await at()
+      // It must come back from where it WAS, not jump to the far end and slide
+      // back, and not restart from the start of the outbound move.
+      expect(
+        Math.abs(afterReverse - midway),
+        'the indicator jumped on reversal rather than retargeting'
+      ).toBeLessThan(target * 0.4)
+
+      await expect.poll(at, { timeout: 3000 }).toBeLessThan(home + 1)
+      await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
+      // The clip that was never settled on must still not have been mounted.
+      await expect(page.locator('.case-video')).toHaveAttribute('src', first.src)
     })
 
     test('never requests the clip the reader did not choose', async ({ page }) => {
@@ -416,9 +500,21 @@ for (const { slug: projectId, block } of CLIP_BLOCKS) {
       expect(state.t).toBeLessThan(0.5)
       await expect(transport(page)).toHaveText(new RegExp(`Play ${first.label}`, 'i'))
 
-      // Switching under reduced motion must also stay still, on its own poster.
+      // Switching under reduced motion is INSTANT: no indicator slide and no
+      // fade. The clip is already swapped on the next frame, where the animated
+      // path would still be at zero opacity waiting out its 150ms fade-out.
       await page.getByRole('tab', { name: second.label }).click()
-      await expect(el).toHaveAttribute('poster', second.poster)
+      await expect(el).toHaveAttribute('poster', second.poster, { timeout: 200 })
+      expect(
+        await page.locator('.case-clip-stage').evaluate((s) => ({
+          swapping: s.getAttribute('data-swapping'),
+          opacity: getComputedStyle(s).opacity,
+          indicator: getComputedStyle(
+            s.parentElement!.querySelector('.case-clip-indicator')!
+          ).transitionDuration,
+        }))
+      ).toEqual({ swapping: null, opacity: '1', indicator: '0s' })
+
       await page.waitForTimeout(800)
       expect(await el.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true)
 

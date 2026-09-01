@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import { PauseGlyph, PlayGlyph, ReplayGlyph } from '@/components/home/TransportGlyphs';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import CaseStudyCaption from '@/components/projects/CaseStudyCaption';
@@ -36,6 +36,23 @@ interface CaseStudyClipsProps {
  * Arrow keys move focus along the control; Enter or Space (a button's own
  * behaviour) commits.
  *
+ * THE INDICATOR IS INTERRUPTIBLE, AND THAT IS THE POINT OF THE MOTION. Its
+ * travel is a CSS transition on `transform`, driven by an inline value derived
+ * from the selected index. A transition retargets from the value currently on
+ * screen, so selecting the other tab while the indicator is still moving turns
+ * it around from wherever it is; it cannot snap back, queue behind the first
+ * move, or restart. Keyframes restart from zero, which is exactly the failure
+ * this avoids. Equal-width tabs are what let the travel be pure `transform`:
+ * the indicator is one tab wide and steps by 100% of itself, so nothing
+ * animates width and no scaleX distorts the pill's corners.
+ *
+ * THE STAGE FADES THROUGH RATHER THAN CROSS-FADING. A true cross-fade needs the
+ * outgoing and incoming clips on screen together, and only one <video> is ever
+ * in the DOM -- that is load-bearing, not incidental. So: fade out, swap, fade
+ * in, 150ms each way for Apple's measured 300ms across the change. The swap is
+ * driven off a pending ref rather than state, so a reader who picks the other
+ * tab mid-fade retargets the same sequence instead of starting a second one.
+ *
  * Everything B-E and B-F established is preserved:
  *   - plays once and holds its final frame; it does not loop, because the clip
  *     opens before the second observation and ends past CPA, so its first and
@@ -56,19 +73,42 @@ interface CaseStudyClipsProps {
 export default function CaseStudyClips({ clips, title, caption }: CaseStudyClipsProps) {
   const reduced = useReducedMotion();
   const uid = useId();
-  const [activeId, setActiveId] = useState(clips[0]!.id);
-  const active = clips.find((c) => c.id === activeId) ?? clips[0]!;
+  /**
+   * TWO IDS, AND THE SPLIT IS DELIBERATE.
+   *
+   * `selectedId` is what the reader has chosen and updates on the press. It
+   * drives `aria-selected`, the roving tabindex and the indicator, so the
+   * control answers instantly and the indicator sets off the moment it is
+   * clicked rather than waiting out the fade.
+   *
+   * `mountedId` is which clip is actually in the DOM, and it lags by the
+   * fade-out so the swap happens while the stage is at zero opacity. Driving
+   * both from one id would either delay the indicator by 150ms or swap the
+   * video in plain sight.
+   */
+  const [selectedId, setSelectedId] = useState(clips[0]!.id);
+  const [mountedId, setMountedId] = useState(clips[0]!.id);
+  const active = clips.find((c) => c.id === mountedId) ?? clips[0]!;
 
   const ref = useRef<HTMLVideoElement>(null);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   /** The clip id that has already auto-started, so scrolling back past a clip
    *  the reader stopped does not restart it, while a NEW choice does start. */
   const autoStartedFor = useRef<string | null>(null);
+  /** The same value as `selectedId`, readable from inside the swap timeout,
+   *  where the state variable would be a stale closure. */
+  const pending = useRef(clips[0]!.id);
+  const swapTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [swapping, setSwapping] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
 
   const panelId = `${uid}-clip-panel`;
+  const titleId = `${uid}-clip-title`;
   const tabId = (id: string) => `${uid}-clip-tab-${id}`;
+  const selectedIndex = clips.findIndex((c) => c.id === selectedId);
+
+  useEffect(() => () => clearTimeout(swapTimer.current), []);
 
   // Autoplay can still be refused — Low Power Mode, a data saver, a browser
   // policy. Catching it leaves the control saying "Play", which is true.
@@ -84,8 +124,8 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
     if (typeof IntersectionObserver === 'undefined') {
       // No observer (an old browser, or a harness stubbing it out): fall back to
       // the old behaviour rather than to a clip that never plays.
-      if (autoStartedFor.current !== activeId) {
-        autoStartedFor.current = activeId;
+      if (autoStartedFor.current !== mountedId) {
+        autoStartedFor.current = mountedId;
         void start(video);
       }
       return;
@@ -96,24 +136,49 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
         // the bottom edge and finish before the reader has read the caption.
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
-        if (autoStartedFor.current === activeId) return;
-        autoStartedFor.current = activeId;
+        if (autoStartedFor.current === mountedId) return;
+        autoStartedFor.current = mountedId;
         void start(video);
       },
       { threshold: 0.5 }
     );
     observer.observe(video);
     return () => observer.disconnect();
-  }, [reduced, activeId]);
+  }, [reduced, mountedId]);
 
-  const select = (id: string) => {
-    if (id === activeId) return;
+  const mount = (id: string) => {
     // Reset the transport here rather than in an effect: the element is about to
     // be replaced, so it will never fire the `pause` that would otherwise clear
     // this, and a stale "Replay" on a fresh poster would be a lie.
-    setActiveId(id);
+    setMountedId(id);
     setPlaying(false);
     setEnded(false);
+  };
+
+  const select = (id: string) => {
+    if (id === pending.current) return;
+    pending.current = id;
+    // Immediately, always: the indicator sets off and the control reports the
+    // new selection on the press, not after the fade.
+    setSelectedId(id);
+
+    if (reduced) {
+      // No slide, no fade, no wait -- the clip simply changes.
+      clearTimeout(swapTimer.current);
+      setSwapping(false);
+      mount(id);
+      return;
+    }
+
+    setSwapping(true);
+    clearTimeout(swapTimer.current);
+    swapTimer.current = setTimeout(() => {
+      // `pending.current`, not the captured `id`: if the reader chose again
+      // while this was fading out, the newest choice is the one that lands, and
+      // the sequence in flight is retargeted rather than doubled.
+      mount(pending.current);
+      setSwapping(false);
+    }, 150);
   };
 
   const onTabKeyDown = (event: React.KeyboardEvent, index: number) => {
@@ -163,35 +228,58 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
       {/* Only when there is something to choose. A single-clip block renders the
           same area with no control. */}
       {clips.length > 1 && (
-        <div className="case-clip-switch" role="tablist" aria-label="Choose a viewpoint">
-          {clips.map((clip, index) => (
-            <button
-              key={clip.id}
-              ref={(el) => {
-                tabs.current[index] = el;
-              }}
-              type="button"
-              role="tab"
-              id={tabId(clip.id)}
-              aria-selected={clip.id === activeId}
-              aria-controls={panelId}
-              // Roving tabindex: the control is one tab stop, not one per option.
-              tabIndex={clip.id === activeId ? 0 : -1}
-              className="case-clip-tab"
-              onClick={() => select(clip.id)}
-              onKeyDown={(event) => onTabKeyDown(event, index)}
-            >
-              {clip.label}
-            </button>
-          ))}
-        </div>
+        <>
+          {title && (
+            <p className="case-clip-title" id={titleId}>
+              {title}
+            </p>
+          )}
+          <div
+            className="case-clip-switch"
+            role="tablist"
+            // Named by the visible sentence above it rather than by an invisible
+            // aria-label, so the name a screen reader hears is the one on screen.
+            aria-labelledby={title ? titleId : undefined}
+            aria-label={title ? undefined : 'Choose a viewpoint'}
+            style={{ '--tab-count': clips.length } as CSSProperties}
+          >
+            {/* Decorative: `aria-selected` on the tabs is what states the
+                selection. This only shows it. */}
+            <span
+              className="case-clip-indicator"
+              aria-hidden="true"
+              style={{ transform: `translateX(${selectedIndex * 100}%)` }}
+            />
+            {clips.map((clip, index) => (
+              <button
+                key={clip.id}
+                ref={(el) => {
+                  tabs.current[index] = el;
+                }}
+                type="button"
+                role="tab"
+                id={tabId(clip.id)}
+                aria-selected={clip.id === selectedId}
+                aria-controls={panelId}
+                // Roving tabindex: the control is one tab stop, not one per option.
+                tabIndex={clip.id === selectedId ? 0 : -1}
+                className="case-clip-tab"
+                onClick={() => select(clip.id)}
+                onKeyDown={(event) => onTabKeyDown(event, index)}
+              >
+                {clip.label}
+              </button>
+            ))}
+          </div>
+        </>
       )}
 
       <div
         className="case-clip-stage"
+        data-swapping={swapping ? 'true' : undefined}
         role={clips.length > 1 ? 'tabpanel' : undefined}
         id={clips.length > 1 ? panelId : undefined}
-        aria-labelledby={clips.length > 1 ? tabId(active.id) : undefined}
+        aria-labelledby={clips.length > 1 ? tabId(selectedId) : undefined}
       >
         <div className="case-video-frame">
           <video
@@ -232,7 +320,10 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
         </div>
       </div>
 
-      <CaseStudyCaption title={title} caption={caption} />
+      {/* The title has moved ABOVE the chooser, where it names the choice. A
+          single-clip block has no chooser, so it keeps the title on the caption
+          exactly as every still block does. */}
+      <CaseStudyCaption title={clips.length > 1 ? undefined : title} caption={caption} />
     </figure>
   );
 }
