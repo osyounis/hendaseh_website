@@ -420,6 +420,63 @@ for (const { slug: projectId, block } of CLIP_BLOCKS) {
       await expect(page.locator('.case-video')).toHaveAttribute('src', first.src)
     })
 
+    test('swaps the clip while it is invisible, and never empties the frame', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${project.id}`)
+      await page.locator('.case-clip-stage').scrollIntoViewIfNeeded()
+      await page.waitForTimeout(500)
+
+      // Sample the whole swap frame by frame, in the page, so the readings are
+      // the browser's own and not Playwright round-trips.
+      const frames = await page.evaluate(async () => {
+        const stage = document.querySelector('.case-clip-stage')!
+        const tab = [...document.querySelectorAll('[role=tab]')][1] as HTMLElement
+        const out: { t: number; opacity: number; src: string; panelH: number }[] = []
+        const t0 = performance.now()
+        tab.click()
+        await new Promise<void>((done) => {
+          const tick = () => {
+            const media = stage.querySelector('.case-clip-media') as HTMLElement
+            const video = stage.querySelector('.case-video') as HTMLVideoElement
+            const panel = stage.querySelector('.case-video-frame') as HTMLElement
+            out.push({
+              t: performance.now() - t0,
+              opacity: Number(getComputedStyle(media).opacity),
+              src: video?.getAttribute('src') ?? '',
+              panelH: Math.round(panel.getBoundingClientRect().height),
+            })
+            if (performance.now() - t0 < 900) requestAnimationFrame(tick)
+            else done()
+          }
+          requestAnimationFrame(tick)
+        })
+        return out
+      })
+
+      // THE CLIP CHANGES WHILE IT CANNOT BE SEEN. Swapping at partial opacity is
+      // a visible cut between two entirely different pictures, and is what a
+      // fade on the keyed <video> itself produced: it faded out, then the new
+      // element mounted at full opacity because a newly inserted element has no
+      // previous value to transition from.
+      const swap = frames.findIndex((f) => f.src.includes('seaview'))
+      expect(swap, 'the clip never swapped').toBeGreaterThan(0)
+      expect(frames[swap].opacity, 'the clip was swapped in plain sight').toBeLessThan(0.05)
+
+      // It fades back IN afterwards rather than popping.
+      const after = frames.slice(swap).map((f) => f.opacity)
+      expect(Math.max(...after)).toBeGreaterThan(0.95)
+      // More than one intermediate frame is the whole claim: a pop produces
+      // ZERO. The bar is deliberately not a frame count, which would make this
+      // assert the machine's frame rate rather than the animation.
+      expect(after.filter((o) => o > 0.1 && o < 0.9).length, 'the clip popped in').toBeGreaterThan(1)
+
+      // THE FRAME IS NEVER EMPTY and never resizes: the panel keeps its ground
+      // and its height for the whole swap.
+      const heights = new Set(frames.map((f) => f.panelH))
+      expect([...heights], 'the panel changed size during the swap').toHaveLength(1)
+    })
+
     test('never requests the clip the reader did not choose', async ({ page }) => {
       const requested: string[] = []
       page.on('request', (r) => {
@@ -607,12 +664,15 @@ for (const { slug: projectId, block } of CLIP_BLOCKS) {
       expect(
         await page.locator('.case-clip-stage').evaluate((s) => ({
           swapping: s.getAttribute('data-swapping'),
-          opacity: getComputedStyle(s).opacity,
+          // The media layer, not the stage: the fade moved onto an unkeyed
+          // wrapper inside the panel, so the panel behind it never disappears.
+          clip: getComputedStyle(s.querySelector('.case-clip-media')!).opacity,
+          clipEase: getComputedStyle(s.querySelector('.case-clip-media')!).transitionDuration,
           indicator: getComputedStyle(
             s.parentElement!.querySelector('.case-clip-indicator')!
           ).transitionDuration,
         }))
-      ).toEqual({ swapping: null, opacity: '1', indicator: '0s' })
+      ).toEqual({ swapping: null, clip: '1', clipEase: '0s', indicator: '0s' })
 
       await page.waitForTimeout(800)
       expect(await el.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true)
