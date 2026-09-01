@@ -266,8 +266,19 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         poster: '/video/radar-moboard-board-poster.png',
         description:
           'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
+        title: 'The board, played forward',
         caption:
           'The same encounter, played forward. The maneuver fires at the Mx ring. All scenarios synthetic.',
+      },
+      {
+        kind: 'video',
+        src: '/video/radar-moboard-seaview.mp4',
+        poster: '/video/radar-moboard-seaview-poster.png',
+        description:
+          'The same run in the tilted sea view: own ship holds the centre with the required-CPA ring around it, and the contact crosses from ahead to astern as the maneuver takes effect.',
+        title: 'The same run, from the sea',
+        caption:
+          'The tilted view of the same run. The clock never stops between the two. All scenarios synthetic.',
       },
     ],
   },
