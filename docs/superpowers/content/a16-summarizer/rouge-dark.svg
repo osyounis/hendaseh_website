@@ -1,0 +1,60 @@
+<svg width="873" height="648" viewBox="0 0 873 648" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rouge-dark-t rouge-dark-d">
+<title id="rouge-dark-t">ROUGE scores across three models</title>
+<desc id="rouge-dark-d">Grouped bars comparing ROUGE-1, ROUGE-2 and ROUGE-L for the base Qwen2.5-1.5B model, the fp16 QLoRA fine-tune, and the 4-bit MLX model that ships on the phone. The fine-tune gains roughly 16 to 19 points over base on every metric; quantizing to 4-bit gives back about 1.5 to 2 points.</desc>
+<rect width="873" height="648" fill="#06131F"/>
+<text x="64" y="44" fill="#ffffff" font-size="22" font-weight="500" font-family="Roboto,system-ui,sans-serif">ROUGE on DialogSum, 500 dialogues</text>
+<text x="64" y="70" fill="#c7d6e6" font-size="13" font-family="Roboto,system-ui,sans-serif">Three models, not two. The bar that ships is the 4-bit one.</text>
+<rect x="64" y="88" width="10" height="10" rx="2" fill="#D97706"/>
+<text x="80" y="97" fill="#c7d6e6" font-size="12" font-family="Roboto,system-ui,sans-serif">Base Qwen2.5-1.5B</text>
+<rect x="196.2" y="88" width="10" height="10" rx="2" fill="#0093FF"/>
+<text x="212.2" y="97" fill="#c7d6e6" font-size="12" font-family="Roboto,system-ui,sans-serif">Fine-tune (fp16)</text>
+<rect x="321.79999999999995" y="88" width="10" height="10" rx="2" fill="#16A34A"/>
+<text x="337.79999999999995" y="97" fill="#c7d6e6" font-size="12" font-family="Roboto,system-ui,sans-serif">Shipped (4-bit MLX)</text>
+<line x1="64" y1="556" x2="849" y2="556" stroke="#16293c" stroke-width="1"/>
+<text x="52" y="560" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif" text-anchor="end">0.0</text>
+<line x1="64" y1="490.51612903225805" x2="849" y2="490.51612903225805" stroke="#16293c" stroke-width="1"/>
+<text x="52" y="494.51612903225805" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif" text-anchor="end">0.1</text>
+<line x1="64" y1="425.0322580645161" x2="849" y2="425.0322580645161" stroke="#16293c" stroke-width="1"/>
+<text x="52" y="429.0322580645161" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif" text-anchor="end">0.2</text>
+<line x1="64" y1="359.54838709677415" x2="849" y2="359.54838709677415" stroke="#16293c" stroke-width="1"/>
+<text x="52" y="363.54838709677415" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif" text-anchor="end">0.3</text>
+<line x1="64" y1="294.0645161290322" x2="849" y2="294.0645161290322" stroke="#16293c" stroke-width="1"/>
+<text x="52" y="298.0645161290322" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif" text-anchor="end">0.4</text>
+<line x1="64" y1="228.5806451612903" x2="849" y2="228.5806451612903" stroke="#16293c" stroke-width="1"/>
+<text x="52" y="232.5806451612903" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif" text-anchor="end">0.5</text>
+<line x1="64" y1="163.0967741935484" x2="849" y2="163.0967741935484" stroke="#16293c" stroke-width="1"/>
+<text x="52" y="167.0967741935484" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif" text-anchor="end">0.6</text>
+<line x1="64" y1="556" x2="849" y2="556" stroke="#2b425b" stroke-width="1"/>
+<path d="M 105.83333333333334 556 L 105.83333333333334 317.3167741935484 Q 105.83333333333334 313.3167741935484 109.83333333333334 313.3167741935484 L 159.83333333333334 313.3167741935484 Q 163.83333333333334 313.3167741935484 163.83333333333334 317.3167741935484 L 163.83333333333334 556 Z" fill="#D97706"/>
+<text x="134.83333333333334" y="304.3167741935484" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.3706</text>
+<path d="M 165.83333333333334 556 L 165.83333333333334 194.53451612903223 Q 165.83333333333334 190.53451612903223 169.83333333333334 190.53451612903223 L 219.83333333333334 190.53451612903223 Q 223.83333333333334 190.53451612903223 223.83333333333334 194.53451612903223 L 223.83333333333334 556 Z" fill="#0093FF"/>
+<text x="194.83333333333334" y="171.23580645161292" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.5581</text>
+<path d="M 225.83333333333334 556 L 225.83333333333334 204.22612903225803 Q 225.83333333333334 200.22612903225803 229.83333333333334 200.22612903225803 L 279.83333333333337 200.22612903225803 Q 283.83333333333337 200.22612903225803 283.83333333333337 204.22612903225803 L 283.83333333333337 556 Z" fill="#16A34A"/>
+<text x="254.83333333333334" y="191.22612903225803" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.5433</text>
+<line x1="194.83333333333334" y1="181.23580645161292" x2="194.83333333333334" y2="199.37483870967748" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<line x1="187.83333333333334" y1="181.23580645161292" x2="201.83333333333334" y2="181.23580645161292" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<line x1="187.83333333333334" y1="199.37483870967748" x2="201.83333333333334" y2="199.37483870967748" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<text x="194.83333333333334" y="580" fill="#ffffff" font-size="14" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">ROUGE-1</text>
+<path d="M 367.5 556 L 367.5 461.90516129032255 Q 367.5 457.90516129032255 371.5 457.90516129032255 L 421.5 457.90516129032255 Q 425.5 457.90516129032255 425.5 461.90516129032255 L 425.5 556 Z" fill="#D97706"/>
+<text x="396.5" y="448.90516129032255" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.1498</text>
+<path d="M 427.5 556 L 427.5 356.93451612903226 Q 427.5 352.93451612903226 431.5 352.93451612903226 L 481.5 352.93451612903226 Q 485.5 352.93451612903226 485.5 356.93451612903226 L 485.5 556 Z" fill="#0093FF"/>
+<text x="456.5" y="332.2606451612903" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.3101</text>
+<path d="M 487.5 556 L 487.5 369.76935483870966 Q 487.5 365.76935483870966 491.5 365.76935483870966 L 541.5 365.76935483870966 Q 545.5 365.76935483870966 545.5 369.76935483870966 L 545.5 556 Z" fill="#16A34A"/>
+<text x="516.5" y="356.76935483870966" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.2905</text>
+<line x1="456.5" y1="342.2606451612903" x2="456.5" y2="363.2154838709678" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<line x1="449.5" y1="342.2606451612903" x2="463.5" y2="342.2606451612903" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<line x1="449.5" y1="363.2154838709678" x2="463.5" y2="363.2154838709678" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<text x="456.5" y="580" fill="#ffffff" font-size="14" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">ROUGE-2</text>
+<path d="M 629.1666666666667 556 L 629.1666666666667 370.81709677419354 Q 629.1666666666667 366.81709677419354 633.1666666666667 366.81709677419354 L 683.1666666666667 366.81709677419354 Q 687.1666666666667 366.81709677419354 687.1666666666667 370.81709677419354 L 687.1666666666667 556 Z" fill="#D97706"/>
+<text x="658.1666666666667" y="357.81709677419354" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.2889</text>
+<path d="M 689.1666666666667 556 L 689.1666666666667 245.15354838709675 Q 689.1666666666667 241.15354838709675 693.1666666666667 241.15354838709675 L 743.1666666666667 241.15354838709675 Q 747.1666666666667 241.15354838709675 747.1666666666667 245.15354838709675 L 747.1666666666667 556 Z" fill="#0093FF"/>
+<text x="718.1666666666667" y="221.461935483871" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.4808</text>
+<path d="M 749.1666666666667 556 L 749.1666666666667 257.33354838709676 Q 749.1666666666667 253.33354838709676 753.1666666666667 253.33354838709676 L 803.1666666666667 253.33354838709676 Q 807.1666666666667 253.33354838709676 807.1666666666667 257.33354838709676 L 807.1666666666667 556 Z" fill="#16A34A"/>
+<text x="778.1666666666667" y="244.33354838709676" fill="#c7d6e6" font-size="12" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">.4622</text>
+<line x1="718.1666666666667" y1="231.461935483871" x2="718.1666666666667" y2="250.77967741935487" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<line x1="711.1666666666667" y1="231.461935483871" x2="725.1666666666667" y2="231.461935483871" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<line x1="711.1666666666667" y1="250.77967741935487" x2="725.1666666666667" y2="250.77967741935487" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.55"/>
+<text x="718.1666666666667" y="580" fill="#ffffff" font-size="14" font-weight="500" font-family="Roboto,system-ui,sans-serif" text-anchor="middle">ROUGE-L</text>
+<text x="64" y="608" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif">Error bars: 95% CI on the fine-tune's gain over base, paired bootstrap, 10,000 resamples. All three p &lt; 0.0001.</text>
+<text x="64" y="626" fill="#9db8d1" font-size="11" font-family="Roboto,system-ui,sans-serif">Quantizing the fine-tune to 4-bit gives back 1.5 to 2 points. That is the model on the phone.</text>
+</svg>
