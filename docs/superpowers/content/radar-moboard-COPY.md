@@ -315,6 +315,26 @@ marker as F1.
 5. **The prototype's defect is published deliberately**, per the spec's instruction
    that the case study tell the progression including the 000-heading assumption
    honestly. B7 ¶2 is that sentence.
+6. **The vector-triangle tile stays at full tile width. Do not shrink it to set
+   text alongside** (ruled by Omar at the B-F review, 2026-08-31; the question was
+   asked and answered no).
+
+   That tile exists for one reason: to make `r`, `rc`, `rs` and `NC` legible. In
+   the comparison figure the same cluster is about 90px across and its labels are
+   unreadable, which is why W1 recorded that a third inset panel was not worth
+   building and why B-E built that column and rejected it. The detail block was
+   the fix, and it works by size alone: the construction goes from ~90px to
+   ~280px at a 970px tile.
+
+   Halving the image for a text column returns exactly what was bought. There is
+   no arrangement in which a two-column layout keeps 280px of construction inside
+   a 970px tile, so the trade is legibility for prose, and prose is not what the
+   block is for.
+
+   **The 19px caption is where the explanation belongs.** It sits directly under
+   the figure at the same size and weight as a tile title, and it already carries
+   the reading. If more explanation is ever wanted, it goes in the caption or in
+   `caseStudies.ts` prose above the block, never in a column beside the figure.
 
 ---
 
