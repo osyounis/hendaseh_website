@@ -78,7 +78,13 @@ for (const project of CASE_STUDIES) {
         if (block.kind === 'image') {
           await expect(tile.locator('img.case-figure-media')).toHaveAttribute('alt', block.alt)
         } else {
-          await expect(tile.locator('video.case-video')).toHaveAttribute('src', block.src)
+          // The DEFAULT clip, and only it. See the clip-block tests below for
+          // why there is never a second <video> in the DOM.
+          await expect(tile.locator('video.case-video')).toHaveCount(1)
+          await expect(tile.locator('video.case-video')).toHaveAttribute(
+            'src',
+            block.clips[0].src
+          )
         }
       }
     })
@@ -139,50 +145,152 @@ test('the sitemap lists all four case studies and no card-tier slug', async ({ r
 })
 
 /**
- * The clips. Derived from the data rather than hardcoded, and iterated per CLIP
- * rather than per project: radar-moboard ships two, and a test that only ever
- * looked at the first would have covered the board and missed the sea view.
+ * The clip blocks. Derived from the data rather than hardcoded, and iterated per
+ * BLOCK: radar-moboard's two clips are one block with a chooser, so a test that
+ * looked for two video tiles would now be asserting the old design.
  */
-const CLIPS = CASE_STUDIES.flatMap((p) =>
+const CLIP_BLOCKS = CASE_STUDIES.flatMap((p) =>
   (getCaseStudy(p.id)!.media ?? [])
-    .filter((b) => b.kind === 'video')
-    .map((b) => ({ slug: p.id, clip: b }))
+    .filter((b) => b.kind === 'clips')
+    .map((b) => ({ slug: p.id, block: b }))
 )
 
-test('only radar-moboard ships clips, and it ships both of them', async () => {
-  expect(CLIPS.map((c) => `${c.slug}:${c.clip.src}`)).toEqual([
-    'radar-moboard:/video/radar-moboard-board.mp4',
-    'radar-moboard:/video/radar-moboard-seaview.mp4',
-  ])
+test('only radar-moboard ships clips, and both of them live in one block', async () => {
+  expect(
+    CLIP_BLOCKS.map((c) => `${c.slug}:${c.block.clips.map((clip) => clip.id).join('+')}`)
+  ).toEqual(['radar-moboard:board+seaview'])
 })
 
-for (const { slug: projectId, clip: video } of CLIPS) {
+for (const { slug: projectId, block } of CLIP_BLOCKS) {
   const project = { id: projectId }
+  const [first, second] = block.clips
 
-  test.describe(`/projects/${project.id} ${video.src.split('-').pop()}`, () => {
-    test('renders alongside the stills, contains rather than crops, and does not loop', async ({
+  test.describe(`/projects/${project.id} clips`, () => {
+    const stage = (page: import('@playwright/test').Page) => page.locator('.case-clip-stage')
+    const clip = (page: import('@playwright/test').Page) => page.locator('.case-video')
+    const transport = (page: import('@playwright/test').Page) =>
+      page.locator('.case-video-toggle')
+
+    test('offers one video area with the clips as choices, never two players', async ({
       page,
     }) => {
       await page.goto(`/projects/${project.id}`)
 
-      // The comparison is the argument; the clips are what it cannot show.
-      await expect(page.locator('.case-figure-media').first()).toBeVisible()
-      const el = page.locator(`.case-video[src="${video.src}"]`)
-      await expect(el).toHaveCount(1)
-      await expect(el).toHaveAttribute('poster', video.poster)
+      // THE WHOLE POINT OF THE CHANGE: one player, not one tile per clip.
+      await expect(clip(page)).toHaveCount(1)
+      await expect(clip(page)).toHaveAttribute('src', first.src)
+      await expect(clip(page)).toHaveAttribute('poster', first.poster)
 
-      // `.case-figure-media` is object-fit: cover on 16:9 and this source is
-      // 1:1 -- cover would crop the board's top and bottom rings away.
-      expect(await el.evaluate((v) => getComputedStyle(v).objectFit)).toBe('contain')
+      const tabs = page.getByRole('tab')
+      await expect(tabs).toHaveCount(block.clips.length)
+      // Labelled for what they SHOW. A filename or a bare "Video" here is the
+      // regression this catches.
+      expect(await tabs.allInnerTexts()).toEqual(block.clips.map((c) => c.label))
+      await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
+      await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'false')
 
-      // muted and playsinline are both load-bearing on iOS Safari.
+      // The panel is named by whichever tab is selected.
+      const panel = page.getByRole('tabpanel')
+      await expect(panel).toHaveCount(1)
+      expect(await panel.getAttribute('aria-labelledby')).toBe(await tabs.nth(0).getAttribute('id'))
+    })
+
+    test('never requests the clip the reader did not choose', async ({ page }) => {
+      const requested: string[] = []
+      page.on('request', (r) => {
+        if (/\.mp4(\?|$)/.test(r.url())) requested.push(new URL(r.url()).pathname)
+      })
+
+      await page.goto(`/projects/${project.id}`)
+      await stage(page).scrollIntoViewIfNeeded()
+      await page.waitForTimeout(1200)
+
+      // Stronger than preload="none" on a hidden element: the unchosen clip is
+      // not in the DOM at all, so nothing about it is fetched, not even metadata.
+      expect(requested, 'the unselected clip was fetched').not.toContain(second.src)
+    })
+
+    test('switching swaps the clip, resets to its own poster, and leaves nothing running', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${project.id}`)
+      await stage(page).scrollIntoViewIfNeeded()
+      await expect(transport(page)).toHaveText(new RegExp(`Pause ${first.label}`, 'i'), {
+        timeout: 10_000,
+      })
+      // Let the first clip get somewhere, so "reset" is a real claim.
+      await expect
+        .poll(async () => clip(page).evaluate((v: HTMLVideoElement) => v.currentTime), {
+          timeout: 10_000,
+        })
+        .toBeGreaterThan(0.3)
+
+      await page.getByRole('tab', { name: second.label }).click()
+
+      await expect(clip(page)).toHaveAttribute('src', second.src)
+      await expect(clip(page)).toHaveAttribute('poster', second.poster)
+      // Still exactly one player: the previous element is gone, so it cannot
+      // still be running somewhere off screen.
+      await expect(clip(page)).toHaveCount(1)
+      await expect(page.getByRole('tab', { name: second.label })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+      await expect(page.getByRole('tab', { name: first.label })).toHaveAttribute(
+        'aria-selected',
+        'false'
+      )
+      // It starts from its own beginning, not from the previous clip's playhead.
+      expect(
+        await clip(page).evaluate((v: HTMLVideoElement) => v.currentTime)
+      ).toBeLessThan(0.3)
+    })
+
+    test('the chooser is one tab stop, arrow-navigable, and commits on Enter', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${project.id}`)
+      const tabs = page.getByRole('tab')
+      await tabs.nth(0).scrollIntoViewIfNeeded()
+
+      // Roving tabindex: the control is ONE tab stop, not one per option.
+      expect(await tabs.nth(0).getAttribute('tabindex')).toBe('0')
+      expect(await tabs.nth(1).getAttribute('tabindex')).toBe('-1')
+
+      await tabs.nth(0).focus()
+      await page.keyboard.press('ArrowRight')
+      expect(
+        await tabs.nth(1).evaluate((el) => el === document.activeElement),
+        'ArrowRight did not move focus along the control'
+      ).toBe(true)
+
+      // MANUAL activation: moving focus must not start a video download on its
+      // own. Selection only changes when the reader commits.
+      await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
+
+      await page.keyboard.press('Enter')
+      await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true')
+      await expect(clip(page)).toHaveAttribute('src', second.src)
+
+      // A focus ring a keyboard user can actually see.
+      expect(
+        await tabs.nth(1).evaluate((el) => {
+          const cs = getComputedStyle(el)
+          return el.matches(':focus-visible') && cs.outlineStyle !== 'none'
+        })
+      ).toBe(true)
+    })
+
+    test('does not loop, and the transport names the clip it acts on', async ({ page }) => {
+      await page.goto(`/projects/${project.id}`)
+      const el = clip(page)
+
       expect(
         await el.evaluate((v: HTMLVideoElement) => ({
           muted: v.muted,
-          // NOT looping, and this assertion is the point of the change. The
-          // clip opens before the second observation and ends past CPA, so its
-          // first and last frames are different pictures and a loop can only
-          // cut between them.
+          // NOT looping. The clip opens before the second observation and ends
+          // past CPA, so its first and last frames are different pictures and a
+          // loop can only cut between them.
           loop: v.loop,
           playsInline: v.hasAttribute('playsinline'),
           // No autoplay ATTRIBUTE: playback starts from an effect so reduced
@@ -190,25 +298,38 @@ for (const { slug: projectId, clip: video } of CLIPS) {
           autoplayAttribute: v.hasAttribute('autoplay'),
         }))
       ).toEqual({ muted: true, loop: false, playsInline: true, autoplayAttribute: false })
+
+      // `.case-figure-media` is object-fit: cover on a declared ratio and this
+      // source is 1:1 -- cover would crop the board's top and bottom rings away.
+      expect(await el.evaluate((v) => getComputedStyle(v).objectFit)).toBe('contain')
+
+      // WCAG 2.2.2: the clip runs past five seconds, so a pause mechanism is
+      // required. 2.5.5-sized target while we are here.
+      const button = transport(page)
+      await button.scrollIntoViewIfNeeded()
+      const box = (await button.boundingBox())!
+      expect(box.width).toBeGreaterThanOrEqual(44)
+      expect(box.height).toBeGreaterThanOrEqual(44)
+      await expect(button).toHaveText(new RegExp(first.label, 'i'))
     })
 
     test('plays once, then offers replay rather than pretending it can be played', async ({
       page,
     }) => {
       await page.goto(`/projects/${project.id}`)
-      const el = page.locator(`.case-video[src="${video.src}"]`)
-      const button = el.locator('xpath=following-sibling::button')
+      const el = clip(page)
+      const button = transport(page)
 
       await el.scrollIntoViewIfNeeded()
-      // Started by the reader arriving at it, not by mounting: two clips
-      // starting at mount would both finish before the reader scrolled down.
-      await expect(button).toHaveText('Pause the animation', { timeout: 10_000 })
+      // Started by the reader arriving at it, not by mounting: a clip started at
+      // mount would finish before the reader scrolled down to it.
+      await expect(button).toHaveText(new RegExp(`Pause ${first.label}`, 'i'), { timeout: 10_000 })
 
       // Jump to the end rather than waiting out eight seconds of real time.
       await el.evaluate((v: HTMLVideoElement) => {
         v.currentTime = v.duration - 0.05
       })
-      await expect(button).toHaveText('Replay the animation', { timeout: 10_000 })
+      await expect(button).toHaveText(new RegExp(`Replay ${first.label}`, 'i'), { timeout: 10_000 })
 
       // It holds the final frame. A poster reappearing here, or a rewind to the
       // first frame, would both be wrong.
@@ -216,57 +337,17 @@ for (const { slug: projectId, clip: video } of CLIPS) {
         await el.evaluate((v: HTMLVideoElement) => ({ ended: v.ended, near: v.currentTime > 1 }))
       ).toEqual({ ended: true, near: true })
 
-      // Replay restarts from the beginning. `paused` is not asserted: the
-      // press begins playback, and by the time this reads back it may already
-      // have advanced -- currentTime returning to the start is the signal.
+      // Replay restarts from the beginning. `paused` is not asserted: the press
+      // begins playback and by the time this reads back it may already have
+      // advanced -- currentTime returning to the start is the signal.
       await button.click()
-      await expect(button).not.toHaveText('Replay the animation')
+      await expect(button).not.toHaveText(new RegExp(`Replay ${first.label}`, 'i'))
       expect(await el.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeLessThan(2)
     })
 
-    test('has a pause control that is keyboard reachable and names its own action', async ({
-      page,
+    test('under prefers-reduced-motion it shows the poster and never plays', async ({
+      browser,
     }) => {
-      await page.goto(`/projects/${project.id}`)
-      const button = page
-        .locator(`.case-video[src="${video.src}"]`)
-        .locator('xpath=following-sibling::button')
-      await button.scrollIntoViewIfNeeded()
-
-      // WCAG 2.2.2: the clip loops past five seconds, so a pause mechanism is
-      // required. 2.5.5-sized target while we are here.
-      const box = (await button.boundingBox())!
-      expect(box.width).toBeGreaterThanOrEqual(44)
-      expect(box.height).toBeGreaterThanOrEqual(44)
-
-      // Asked of THIS clip's button, not of any `.case-video-toggle`. With two
-      // clips on the page the class test stopped on the board's control while
-      // asserting against the sea view's, and passed for the wrong reason.
-      let reached = false
-      for (let i = 0; i < 60 && !reached; i++) {
-        await page.keyboard.press('Tab')
-        reached = await button.evaluate((el) => el === document.activeElement)
-      }
-      expect(reached, 'the pause control is not reachable by keyboard').toBe(true)
-
-      // A focus ring a keyboard user can actually see.
-      expect(
-        await button.evaluate((el) => {
-          const cs = getComputedStyle(el)
-          return el.matches(':focus-visible') && cs.outlineStyle !== 'none'
-        })
-      ).toBe(true)
-
-      // The name states what pressing it will DO, and changes with state.
-      await expect(button).toHaveText(
-        /Pause the animation|Play the animation|Replay the animation/
-      )
-      const before = await button.textContent()
-      await button.press('Enter')
-      await expect(button).not.toHaveText(before!)
-    })
-
-    test('under prefers-reduced-motion it shows the poster and never plays', async ({ browser }) => {
       const context = await browser.newContext({ reducedMotion: 'reduce' })
       const page = await context.newPage()
       // The same predicate reduced-motion-hydration.spec.ts uses. A blocklist of
@@ -280,20 +361,24 @@ for (const { slug: projectId, clip: video } of CLIPS) {
       })
 
       await page.goto(`/projects/${project.id}`)
-      const clip = page.locator(`.case-video[src="${video.src}"]`)
-      await clip.scrollIntoViewIfNeeded()
+      const el = clip(page)
+      await el.scrollIntoViewIfNeeded()
       await page.waitForTimeout(1500)
 
-      const state = await clip.evaluate((v: HTMLVideoElement) => ({
+      const state = await el.evaluate((v: HTMLVideoElement) => ({
         paused: v.paused,
         t: v.currentTime,
       }))
       expect(state.paused, 'the clip autoplayed under reduced motion').toBe(true)
       // Not merely paused after the fact: it never advanced.
       expect(state.t).toBeLessThan(0.5)
-      await expect(clip.locator('xpath=following-sibling::button')).toHaveText(
-        'Play the animation'
-      )
+      await expect(transport(page)).toHaveText(new RegExp(`Play ${first.label}`, 'i'))
+
+      // Switching under reduced motion must also stay still, on its own poster.
+      await page.getByRole('tab', { name: second.label }).click()
+      await expect(el).toHaveAttribute('poster', second.poster)
+      await page.waitForTimeout(800)
+      expect(await el.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true)
 
       // The whole reason playback starts from an effect rather than an attribute.
       expect(errors, 'hydration or runtime errors under reduced motion').toEqual([])

@@ -91,20 +91,43 @@ export interface CaseStudyImageBlock extends CaseStudyMediaCommon {
   readonly height?: number;
 }
 
-/**
- * A clip. Rare by design: a block earns this only when the motion carries
- * information a still cannot.
- */
-export interface CaseStudyVideoBlock extends CaseStudyMediaCommon {
-  readonly kind: 'video';
+/** One clip inside a clip block. */
+export interface CaseStudyClip {
+  /** Stable within its block; used to build the tab and panel ids. */
+  readonly id: string;
+  /**
+   * What the reader picks. Names WHAT IT SHOWS, never a file or a format:
+   * "Maneuvering board" and "Sea view", not "board.mp4" and "seaview.mp4".
+   */
+  readonly label: string;
   readonly src: string;
-  /** First frame of the CLIP, not a related still. The two differ. */
+  /** First frame of THIS clip, not a related still. The two differ. */
   readonly poster: string;
   /** What the clip shows, for anyone who cannot watch it. */
   readonly description: string;
 }
 
-export type CaseStudyMedia = CaseStudyImageBlock | CaseStudyVideoBlock;
+/**
+ * ONE VIDEO AREA, WITH THE CLIPS AS CHOICES.
+ *
+ * Rare by design: a block earns motion only when it carries information a still
+ * cannot. radar-moboard has two viewpoints of one run, and B-F gave each its own
+ * tile -- two grey containers in a row, which read as repetition rather than as
+ * a choice. Side by side was considered and rejected: at about 460px each the
+ * board's ring labels and its vector triangle stop being readable, and
+ * autoplaying one of the pair privileges it for no reason.
+ *
+ * So one area, one clip playing, and a segmented control to choose. A block
+ * with a single clip renders the same area with no control, because there is
+ * nothing to choose.
+ */
+export interface CaseStudyClipsBlock extends CaseStudyMediaCommon {
+  readonly kind: 'clips';
+  /** In the order they are offered. The first is the default. */
+  readonly clips: readonly [CaseStudyClip, ...CaseStudyClip[]];
+}
+
+export type CaseStudyMedia = CaseStudyImageBlock | CaseStudyClipsBlock;
 
 export interface CaseStudy {
   /**
@@ -300,24 +323,28 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
           "The construction the whole answer rests on: own ship's vector, the contact's, and the relative motion between them, with the adjusted line the maneuver produces. All scenarios synthetic.",
       },
       {
-        kind: 'video',
-        src: '/video/radar-moboard-board.mp4',
-        poster: '/video/radar-moboard-board-poster.png',
-        description:
-          'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
-        title: 'The board, played forward',
+        kind: 'clips',
+        title: 'The encounter, played forward',
         caption:
-          'The same encounter, played forward. The maneuver fires at the Mx ring. All scenarios synthetic.',
-      },
-      {
-        kind: 'video',
-        src: '/video/radar-moboard-seaview.mp4',
-        poster: '/video/radar-moboard-seaview-poster.png',
-        description:
-          'The same run in the tilted sea view: own ship holds the centre with the required-CPA ring around it, and the contact crosses from ahead to astern as the maneuver takes effect.',
-        title: 'The same run, from the sea',
-        caption:
-          'The tilted view of the same run. The clock never stops between the two. All scenarios synthetic.',
+          'One run, from either viewpoint. The maneuver fires at the Mx ring, and the clock never stops between the two. All scenarios synthetic.',
+        clips: [
+          {
+            id: 'board',
+            label: 'Maneuvering board',
+            src: '/video/radar-moboard-board.mp4',
+            poster: '/video/radar-moboard-board-poster.png',
+            description:
+              'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
+          },
+          {
+            id: 'seaview',
+            label: 'Sea view',
+            src: '/video/radar-moboard-seaview.mp4',
+            poster: '/video/radar-moboard-seaview-poster.png',
+            description:
+              'The same run in the tilted sea view: own ship holds the centre with the required-CPA ring around it, and the contact crosses from ahead to astern as the maneuver takes effect.',
+          },
+        ],
       },
     ],
   },

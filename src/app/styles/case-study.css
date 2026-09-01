@@ -421,19 +421,82 @@
   }
 
   /* ---------------------------------------------------------------------- *
-   * Video block
+   * Clip block: one video area, with the clips as choices
    *
-   * Reuses `.case-figure` so the clip and the figure read as one family, and
+   * Reuses `.case-figure` so the clips and the stills read as one family, and
    * deliberately does NOT reuse `.case-figure-media`: that is object-fit: cover
    * on a 16:9 box, and these sources are 1:1. Cover would crop the board's top
    * and bottom rings away, which is most of what the clip is for.
    * ---------------------------------------------------------------------- */
 
+  /* The segmented control. A track that recesses into the tile with one filled
+     segment, sat ABOVE the stage: the reader chooses, then watches. Its colours
+     are `--clip-switch-*`, which are declared per theme in globals.css because
+     the figure ground is sunken in light and raised in dark, so the control has
+     to recess in one and lift in the other. */
+  .case-clip-switch {
+    display: inline-flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--clip-switch-bg);
+  }
+
+  .case-clip-tab {
+    /* 44px is the touch floor. The horizontal padding is generous because these
+       are words, not icons, and a segmented control is a hit-target trap when
+       its segments are only as wide as their text. */
+    min-height: 44px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--clip-switch-fg);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+      background 160ms var(--ease-brand),
+      color 160ms var(--ease-brand);
+  }
+
+  .case-clip-tab:hover {
+    color: var(--fg-strong);
+  }
+
+  .case-clip-tab[aria-selected='true'] {
+    background: var(--clip-switch-active-bg);
+    color: var(--clip-switch-active-fg);
+  }
+
+  /* Hover must not repaint the selected segment's label: it is already inverted
+     against the accent, and --fg-strong on accent is not a pairing that was
+     measured. */
+  .case-clip-tab[aria-selected='true']:hover {
+    color: var(--clip-switch-active-fg);
+  }
+
+  .case-clip-tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-clip-tab {
+      transition: none;
+    }
+  }
+
   .case-video-frame {
     position: relative;
-    /* The clip is square and 600px native. Capping it keeps the block from
-       becoming a 678px-tall wall on a 760px column, and avoids upscaling. */
-    max-width: 420px;
+    /* The clip is square and 600px native, so this is its own size and never an
+       upscale. B-F capped it at 420 when it sat alone under a 16:9 still; in one
+       shared area that was needlessly small, and 460px per clip is the width the
+       side-by-side option was rejected for. 600 clears it without inventing
+       resolution the capture does not have. */
+    max-width: 600px;
     margin-inline: auto;
   }
 

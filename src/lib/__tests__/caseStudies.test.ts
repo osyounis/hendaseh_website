@@ -194,12 +194,30 @@ describe('case-study media', () => {
   it('points every block at a file that exists', () => {
     expect(blocks.length).toBeGreaterThan(0)
     blocks.forEach(({ id, index, block }) => {
-      const src = block.kind === 'image' ? block.src : block.src
-      const file = path.join('public', src)
-      expect(existsSync(file), `${id} media[${index}] -> ${src}`).toBe(true)
-      if (block.kind === 'video') {
-        expect(existsSync(path.join('public', block.poster)), `${id} poster`).toBe(true)
-      }
+      const files =
+        block.kind === 'image'
+          ? [block.src]
+          : block.clips.flatMap((clip) => [clip.src, clip.poster])
+      expect(files.length, `${id} media[${index}] has no files`).toBeGreaterThan(0)
+      files.forEach((src) =>
+        expect(existsSync(path.join('public', src)), `${id} media[${index}] -> ${src}`).toBe(true)
+      )
+    })
+  })
+
+  it('gives every clip a label that names what it shows, and a unique id', () => {
+    blocks.forEach(({ id, index, block }) => {
+      if (block.kind !== 'clips') return
+      const ids = block.clips.map((clip) => clip.id)
+      expect(new Set(ids).size, `${id} media[${index}] has duplicate clip ids`).toBe(ids.length)
+      block.clips.forEach((clip) => {
+        expect(clip.label.trim().length).toBeGreaterThan(0)
+        // The control names what it SHOWS, never a file or a format. A label
+        // that leaked a filename is the failure this exists to catch.
+        expect(clip.label, `${id} clip ${clip.id}`).not.toMatch(/\.(mp4|webm|mov|png)$/i)
+        expect(clip.label.toLowerCase()).not.toContain('video')
+        expect(clip.description.trim().length).toBeGreaterThan(10)
+      })
     })
   })
 

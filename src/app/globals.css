@@ -234,6 +234,20 @@
      #5c5c61 on #e8e8ed = 5.44:1. Dark is unchanged (--fg-muted on
      --surface-sunken there is 9.42:1, already fine) and stays var(--fg-muted). */
   --fg-muted-on-tint: #5c5c61;
+
+  /* The case-study clip switcher, which sits ON the figure tile rather than on
+     the page. One token pair cannot serve both themes here, for the same reason
+     --ticker-control-bg is split: --figure-ground is --surface-sunken in light
+     and --surface-raised in dark, so the control has to recess in one and lift
+     in the other. Measured, light: inactive label #5c5c61 on the track 4.87:1;
+     the selected segment is accent-filled, white on #0071e3 at 4.70:1, and the
+     segment reads against its track at 3.44:1, clearing WCAG 1.4.11's 3:1 for
+     a control boundary. Selection is never carried by fill alone -- the label
+     colour steps with it and `aria-selected` states it. */
+  --clip-switch-bg: #dcdce1;
+  --clip-switch-fg: var(--fg-muted-on-tint);
+  --clip-switch-active-bg: var(--accent);
+  --clip-switch-active-fg: #ffffff;
   /* About-page prose. Two steps, because the mockup pair gives them two
      different dark values even though they share one light value:
      the hero lede sits at --fg-muted's weight in dark, the arc's chapter
@@ -453,6 +467,16 @@
        unset in this block would carry the light theme's #5c5c61
        forward, which measures only 2.91:1 on the dark sunken ground. */
     --fg-muted-on-tint: var(--fg-muted);
+
+    /* DECLARED, not inherited. An alias written only at :root computes against
+       the LIGHT value and carries it into dark -- the trap documented at
+       --badge-volunteer-fg. Measured, dark: inactive navy-300 on #050e1a at
+       9.42:1; selected is --color-deep-page on brand-400 at 8.54:1, and the
+       segment reads against its track at 8.65:1. */
+    --clip-switch-bg: var(--color-deep-sky);
+    --clip-switch-fg: var(--fg-muted);
+    --clip-switch-active-bg: var(--accent);
+    --clip-switch-active-fg: var(--color-deep-page);
     /* Every About token below MUST be restated here even where it happens to
        alias another semantic token: custom properties inherit, so anything left
        out would carry its light value into the dark theme. */
