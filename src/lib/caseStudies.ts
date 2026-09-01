@@ -40,32 +40,54 @@ export interface CaseStudyStat {
   readonly label: string;
 }
 
-export interface CaseStudyFigure {
+/**
+ * A SEQUENCE OF MEDIA BLOCKS, NOT ONE SLOT.
+ *
+ * The template used to reserve exactly one figure and, later, exactly one clip
+ * bolted after it. That shape cannot hold what the case studies actually have:
+ * radar-moboard alone wants a comparison figure, two clips, a vector detail and
+ * a UI capture, and each of those needs its own caption because each is making a
+ * different point. One slot forces the choice of which evidence to drop.
+ *
+ * So `media` is an ordered list, rendered as a stack of tiles down the page.
+ * Order is editorial and carries meaning -- it is the order the reader meets the
+ * evidence in -- so it is the author's, never sorted or grouped by kind here.
+ *
+ * A case study with one block renders exactly as it did before this changed.
+ */
+interface CaseStudyMediaCommon {
   /**
-   * Optional by design. The contract RESERVES a 16:9 media slot for phase-5
-   * charts and GIFs; neither project has its artwork yet, so both ship without
-   * one. The slot renders only when there is a real image to put in it -- a
-   * hatched "media goes here" placeholder is a mockup device, not something a
-   * portfolio should serve to a recruiter.
+   * Optional short label above the caption, in --fg-strong against the caption's
+   * grey. Apple's tile pattern: same size, same weight, colour does the work.
+   *
+   * Omitted when a block is self-evident from the section it follows. A title on
+   * every block would be noise, and a title that only restates the caption's
+   * first clause is worse than none.
    */
-  readonly src: string;
-  readonly alt: string;
+  readonly title?: string;
   readonly caption: string;
 }
 
+export interface CaseStudyImageBlock extends CaseStudyMediaCommon {
+  readonly kind: 'image';
+  readonly src: string;
+  readonly alt: string;
+}
+
 /**
- * A looping clip, rendered after the figure rather than instead of it. Optional
- * and rare: only radar-moboard has one, because only radar-moboard has motion
- * that carries information a still cannot.
+ * A clip. Rare by design: a block earns this only when the motion carries
+ * information a still cannot.
  */
-export interface CaseStudyVideoData {
+export interface CaseStudyVideoBlock extends CaseStudyMediaCommon {
+  readonly kind: 'video';
   readonly src: string;
   /** First frame of the CLIP, not a related still. The two differ. */
   readonly poster: string;
   /** What the clip shows, for anyone who cannot watch it. */
   readonly description: string;
-  readonly caption: string;
 }
+
+export type CaseStudyMedia = CaseStudyImageBlock | CaseStudyVideoBlock;
 
 export interface CaseStudy {
   /**
@@ -91,8 +113,12 @@ export interface CaseStudy {
   readonly problem: CaseStudySection;
   readonly approach: CaseStudySection;
   readonly impact: CaseStudySection;
-  readonly figure?: CaseStudyFigure;
-  readonly video?: CaseStudyVideoData;
+  /**
+   * Optional, and the template renders nothing at all when it is absent or
+   * empty. A hatched "media goes here" placeholder is a mockup device, not
+   * something a portfolio should serve to a reader.
+   */
+  readonly media?: readonly CaseStudyMedia[];
 }
 
 const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
@@ -218,20 +244,24 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         ],
       ],
     },
-    figure: {
-      src: '/images/case-studies/radar-moboard.png',
-      alt: 'The same maneuvering board problem worked twice, side by side: the retired Python prototype on the left, the TypeScript rewrite on the right.',
-      caption:
-        'The same encounter, worked by both implementations. They agree on all nine reported values. All scenarios synthetic.',
-    },
-    video: {
-      src: '/video/radar-moboard-board.mp4',
-      poster: '/video/radar-moboard-board-poster.png',
-      description:
-        'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
-      caption:
-        'The same encounter, played forward. The maneuver fires at the Mx ring. All scenarios synthetic.',
-    },
+    media: [
+      {
+        kind: 'image',
+        src: '/images/case-studies/radar-moboard.png',
+        alt: 'The same maneuvering board problem worked twice, side by side: the retired Python prototype on the left, the TypeScript rewrite on the right.',
+        caption:
+          'The same encounter, worked by both implementations. They agree on all nine reported values. All scenarios synthetic.',
+      },
+      {
+        kind: 'video',
+        src: '/video/radar-moboard-board.mp4',
+        poster: '/video/radar-moboard-board-poster.png',
+        description:
+          'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
+        caption:
+          'The same encounter, played forward. The maneuver fires at the Mx ring. All scenarios synthetic.',
+      },
+    ],
   },
 
   'a16-summarizer': {
@@ -297,12 +327,15 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         ],
       ],
     },
-    figure: {
-      src: '/images/case-studies/a16-summarizer.png',
-      alt: 'The summarizer running on an iPhone 14 Pro beside a grouped bar chart of ROUGE-1, ROUGE-2 and ROUGE-L for the base model, the fp16 fine-tune and the shipped 4-bit model.',
-      caption:
-        'The model on the phone, and what it scores. Base, fp16 fine-tune, and the 4-bit model that ships.',
-    },
+    media: [
+      {
+        kind: 'image',
+        src: '/images/case-studies/a16-summarizer.png',
+        alt: 'The summarizer running on an iPhone 14 Pro beside a grouped bar chart of ROUGE-1, ROUGE-2 and ROUGE-L for the base model, the fp16 fine-tune and the shipped 4-bit model.',
+        caption:
+          'The model on the phone, and what it scores. Base, fp16 fine-tune, and the 4-bit model that ships.',
+      },
+    ],
   },
 
   'coast-guard-pilot-tracker': {
@@ -366,12 +399,15 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         ],
       ],
     },
-    figure: {
-      src: '/images/case-studies/coast-guard-pilot-tracker.png',
-      alt: 'The generated training report: the full 28-column sheet above, and a detail below showing the colour-graded qualification dates.',
-      caption:
-        'The report the macro writes, on a synthetic roster. All pilots, dates and values are invented.',
-    },
+    media: [
+      {
+        kind: 'image',
+        src: '/images/case-studies/coast-guard-pilot-tracker.png',
+        alt: 'The generated training report: the full 28-column sheet above, and a detail below showing the colour-graded qualification dates.',
+        caption:
+          'The report the macro writes, on a synthetic roster. All pilots, dates and values are invented.',
+      },
+    ],
   },
 };
 

@@ -314,8 +314,27 @@
   }
 
   /* ---------------------------------------------------------------------- *
-   * Media slot
+   * Media sequence
    * ---------------------------------------------------------------------- */
+
+  /* THE STACK OWNS THE SPACING, NOT THE TILE.
+     A tile used to carry `margin-block: 56px` itself, which was right when there
+     was only ever one of them. With a sequence it is wrong twice over: adjacent
+     margins collapse to 56px, so two tiles making one argument would sit as far
+     apart as a tile sits from the prose, and the clip's `data-reveal` wrapper
+     breaks the collapse entirely, so the gap would depend on whether the
+     neighbour happened to be a still or a clip.
+
+     So the gap between tiles is the stack's, and the distance to the prose is
+     the stack's too. 20px between, against 56px outside: close enough that a
+     run of tiles reads as one stack, far enough that each is still its own
+     card. With a single child the gap never applies and the block resolves to
+     exactly the 56px margins the old single figure had. */
+  .case-media-stack {
+    display: grid;
+    gap: 20px;
+    margin-block: 56px;
+  }
 
   /* ONE TILE, NOT AN IMAGE WITH A STRIP UNDER IT.
      Modelled on apple.com's `.tile.tile-rounded`: a filled ground, a radius, and
@@ -326,7 +345,6 @@
      The 18px radius on a 760px column is 2.4%, against Apple's 28px on 1100px at
      2.5%. Already proportionally right, so it is not touched. */
   .case-figure {
-    margin-block: 56px;
     background: var(--figure-ground);
     border: 1px solid var(--edge);
     border-radius: 18px;
@@ -348,6 +366,17 @@
        corners read as too round for their offset, and squaring them makes the
        media look pasted on rather than seated in the tile. */
     border-radius: 12px;
+  }
+
+  /* The title half of the tile's text. Same 19px/600/23px as the caption it sits
+     on -- it inherits all three -- so the ONLY thing distinguishing them is the
+     colour. `font-weight: inherit` is load-bearing: `<b>` defaults to 700, and
+     700 against 600 would put weight back into a distinction that is supposed to
+     be carried by colour alone. */
+  .case-media-title {
+    display: block;
+    color: var(--fg-strong);
+    font-weight: inherit;
   }
 
   /* TILE TEXT IS 19px/600 AND THE DISTINCTION IS COLOUR, NOT SIZE OR WEIGHT.

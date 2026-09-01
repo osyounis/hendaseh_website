@@ -109,13 +109,18 @@ describe('case-study content', () => {
   it('marks every Coast Guard scenario on screen as synthetic', () => {
     // A Coast Guard training tool has to say on the page that nothing shown is
     // operational. It used to be a sentence in the radar demo's IMPACT copy;
-    // the demo is retired, so the claim now rides on the figure caption that
-    // B-B wires. This guard follows it there: the moment radar-moboard gets a
-    // figure, its caption must carry the marker. Never drop this.
-    const radar = getCaseStudy('radar-moboard')!
-    if (radar.figure) {
-      expect(radar.figure.caption).toContain('All scenarios synthetic.')
-    }
+    // the demo is retired, so the claim now rides on the media captions. This
+    // guard follows it there, and is UNCONDITIONAL now that the sequence
+    // replaced the optional single slot: the old `if (radar.figure)` shape
+    // passed silently on a case study that had lost its figure entirely.
+    // Never drop this.
+    const media = getCaseStudy('radar-moboard')!.media ?? []
+    expect(media.length).toBeGreaterThan(0)
+    // Every block, not the first: a clip or a detail added later without the
+    // sentence is exactly what this exists to catch.
+    media.forEach((block, i) => {
+      expect(block.caption, `radar-moboard media[${i}]`).toContain('All scenarios synthetic.')
+    })
   })
 
   it('has no em dashes anywhere in the copy (sitewide copy rule)', () => {
@@ -128,6 +133,9 @@ describe('case-study content', () => {
           section.heading,
           ...section.paragraphs.flat().map((run) => (typeof run === 'string' ? run : run.em)),
         ]),
+        // Media titles and captions are copy too, and they are the copy most
+        // likely to be written in a hurry beside a new asset.
+        ...(cs.media ?? []).flatMap((block) => [block.title ?? '', block.caption]),
       ].join(' ')
       expect(copy, p.id).not.toContain('—')
     })

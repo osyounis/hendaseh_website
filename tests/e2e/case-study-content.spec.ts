@@ -49,25 +49,48 @@ for (const project of CASE_STUDIES) {
       }
     })
 
-    test('renders its media figure and caption, or neither', async ({ page }) => {
+    test('renders every media block in the authored order, and nothing else', async ({ page }) => {
       await page.goto(`/projects/${project.id}`)
-      // SCOPED, because the video block deliberately reuses `.case-figure` so
-      // the two read as one family -- radar-moboard legitimately has two. This
-      // is the one holding the still.
-      const figure = page.locator('.case-figure', { has: page.locator('.case-figure-media') })
+      const blocks = study.media ?? []
 
-      if (!study.figure) {
-        // The slot renders NOTHING without artwork. A hatched placeholder was a
-        // mockup device; the contract forbids serving one to a reader.
-        await expect(figure).toHaveCount(0)
+      if (blocks.length === 0) {
+        // The sequence renders NOTHING without artwork. A hatched placeholder
+        // was a mockup device; the contract forbids serving one to a reader.
+        await expect(page.locator('.case-media-stack')).toHaveCount(0)
+        await expect(page.locator('.case-figure')).toHaveCount(0)
         return
       }
 
-      await expect(figure).toHaveCount(1)
-      await expect(figure.locator('img')).toHaveAttribute('alt', study.figure.alt)
-      // Asserted by TEXT, not by presence: a caption that rendered empty, or
-      // rendered the wrong project's, would pass a presence check.
-      await expect(figure.locator('.case-caption')).toHaveText(study.figure.caption)
+      // One tile per block and no extras -- both kinds render a `.case-figure`,
+      // deliberately, so the stills and the clips read as one family.
+      const tiles = page.locator('.case-media-stack .case-figure')
+      await expect(tiles).toHaveCount(blocks.length)
+
+      // ORDER IS THE ASSERTION. The sequence is editorial: it is the order the
+      // reader meets the evidence in. A stack that rendered the right tiles in
+      // the wrong order would pass every per-tile check.
+      expect(
+        await page.locator('.case-media-stack .case-caption').allInnerTexts()
+      ).toEqual(blocks.map((b) => [b.title, b.caption].filter(Boolean).join('\n')))
+
+      for (const [index, block] of blocks.entries()) {
+        const tile = tiles.nth(index)
+        if (block.kind === 'image') {
+          await expect(tile.locator('img.case-figure-media')).toHaveAttribute('alt', block.alt)
+        } else {
+          await expect(tile.locator('video.case-video')).toHaveAttribute('src', block.src)
+        }
+      }
+    })
+
+    test('a block with no title emits a bare caption, exactly as the single slot did', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${project.id}`)
+      for (const [index, block] of (study.media ?? []).entries()) {
+        const caption = page.locator('.case-media-stack .case-caption').nth(index)
+        await expect(caption.locator('.case-media-title')).toHaveCount(block.title ? 1 : 0)
+      }
     })
   })
 }
@@ -87,14 +110,22 @@ test('every private-work figure states on the page that its data is synthetic', 
   ] as const
 
   for (const [slug, sentence] of cases) {
-    const study = getCaseStudy(slug)!
-    expect(study.figure, `${slug} has no figure to caption`).toBeDefined()
-    expect(study.figure!.caption, `${slug} caption lost its synthetic marker`).toContain(sentence)
+    const blocks = getCaseStudy(slug)!.media ?? []
+    expect(blocks.length, `${slug} has no media to caption`).toBeGreaterThan(0)
+
+    // EVERY block, not just the first. The guardrail is that nothing on either
+    // of these pages is real, so a clip or a detail added later without the
+    // sentence is exactly the case this must catch.
+    for (const block of blocks) {
+      expect(block.caption, `${slug} caption lost its synthetic marker`).toContain(sentence)
+    }
 
     await page.goto(`/projects/${slug}`)
-    await expect(
-      page.locator('.case-figure', { has: page.locator('.case-figure-media') }).locator('.case-caption')
-    ).toContainText(sentence)
+    const captions = page.locator('.case-media-stack .case-caption')
+    await expect(captions).toHaveCount(blocks.length)
+    for (let i = 0; i < blocks.length; i++) {
+      await expect(captions.nth(i)).toContainText(sentence)
+    }
   }
 })
 
@@ -112,14 +143,16 @@ test('the sitemap lists all four case studies and no card-tier slug', async ({ r
  * from the data rather than hardcoded: if a second case study gains a clip, it
  * is covered without editing this file.
  */
-const WITH_VIDEO = CASE_STUDIES.filter((p) => getCaseStudy(p.id)!.video)
+const WITH_VIDEO = CASE_STUDIES.filter((p) =>
+  (getCaseStudy(p.id)!.media ?? []).some((b) => b.kind === 'video')
+)
 
 test('exactly one case study ships a clip, and it is radar-moboard', async () => {
   expect(WITH_VIDEO.map((p) => p.id)).toEqual(['radar-moboard'])
 })
 
 for (const project of WITH_VIDEO) {
-  const video = getCaseStudy(project.id)!.video!
+  const video = (getCaseStudy(project.id)!.media ?? []).find((b) => b.kind === 'video')!
 
   test.describe(`/projects/${project.id} video`, () => {
     test('renders after the figure, not instead of it, and contains rather than crops', async ({
@@ -128,10 +161,9 @@ for (const project of WITH_VIDEO) {
       await page.goto(`/projects/${project.id}`)
 
       // The comparison is the argument; the clip is what it cannot show.
-      await expect(page.locator('.case-figure-media')).toHaveCount(1)
-      const el = page.locator('.case-video')
+      await expect(page.locator('.case-figure-media').first()).toBeVisible()
+      const el = page.locator(`.case-video[src="${video.src}"]`)
       await expect(el).toHaveCount(1)
-      await expect(el).toHaveAttribute('src', video.src)
       await expect(el).toHaveAttribute('poster', video.poster)
 
       // `.case-figure-media` is object-fit: cover on 16:9 and this source is
@@ -155,7 +187,7 @@ for (const project of WITH_VIDEO) {
       page,
     }) => {
       await page.goto(`/projects/${project.id}`)
-      const button = page.locator('.case-video-toggle')
+      const button = page.locator('.case-video-toggle').first()
       await button.scrollIntoViewIfNeeded()
 
       // WCAG 2.2.2: the clip loops past five seconds, so a pause mechanism is
@@ -202,16 +234,18 @@ for (const project of WITH_VIDEO) {
       })
 
       await page.goto(`/projects/${project.id}`)
-      await page.locator('.case-video').scrollIntoViewIfNeeded()
+      const clip = page.locator(`.case-video[src="${video.src}"]`)
+      await clip.scrollIntoViewIfNeeded()
       await page.waitForTimeout(1500)
 
-      const state = await page
-        .locator('.case-video')
-        .evaluate((v: HTMLVideoElement) => ({ paused: v.paused, t: v.currentTime }))
+      const state = await clip.evaluate((v: HTMLVideoElement) => ({
+        paused: v.paused,
+        t: v.currentTime,
+      }))
       expect(state.paused, 'the clip autoplayed under reduced motion').toBe(true)
       // Not merely paused after the fact: it never advanced.
       expect(state.t).toBeLessThan(0.5)
-      await expect(page.locator('.case-video-toggle')).toHaveText('Play the animation')
+      await expect(page.locator('.case-video-toggle').first()).toHaveText('Play the animation')
 
       // The whole reason playback starts from an effect rather than an attribute.
       expect(errors, 'hydration or runtime errors under reduced motion').toEqual([])

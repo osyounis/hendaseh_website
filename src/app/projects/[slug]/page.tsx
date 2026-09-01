@@ -10,6 +10,7 @@ import {
 } from '@/lib/caseStudies';
 import ScrollReveal from '@/components/projects/ScrollReveal';
 import CaseStudyVideo from '@/components/projects/CaseStudyVideo';
+import CaseStudyCaption from '@/components/projects/CaseStudyCaption';
 import NewTabHint from '@/components/NewTabHint';
 import {
   AffordanceLabel,
@@ -31,8 +32,8 @@ interface PageProps {
  * `src/lib/caseStudies.ts`.
  *
  * The only conditionals are on DATA PRESENCE, not on identity:
- *   - `links.github`  -> the GitHub button
- *   - `caseStudy.figure` -> the media slot (B-B wires the figures)
+ *   - `links.github` -> the GitHub button
+ *   - `caseStudy.media` -> the media sequence, one tile per block
  *
  * The live-demo button and the in-page embed slot are GONE, with the Streamlit
  * demo they served. That demo had a known correctness bug and is superseded by
@@ -256,28 +257,44 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         <CaseStudySection section={caseStudy.problem} />
         <CaseStudySection section={caseStudy.approach} />
 
-        {/* Media slot: 16:9 figure plus caption, reserved for phase-5 charts.
-            It renders only when there is real artwork to show. */}
-        {caseStudy.figure && (
-          <figure className="case-figure" data-reveal="">
-            <Image
-              src={caseStudy.figure.src}
-              alt={caseStudy.figure.alt}
-              width={1280}
-              height={720}
-              className="case-figure-media"
-            />
-            <figcaption className="case-caption">{caseStudy.figure.caption}</figcaption>
-          </figure>
-        )}
+        {/* THE MEDIA SEQUENCE: a stack of tiles, in the author's order.
+            One slot could not hold what these case studies have -- radar-moboard
+            alone has a comparison, motion, a vector detail and a UI capture, and
+            each needs its own caption because each makes a different point.
 
-        {/* A separate block AFTER the figure, never instead of it: the
-            before/after comparison is the argument, and the clip is what the
-            comparison cannot show. Reuses the figure's tile so they read as one
-            family. */}
-        {caseStudy.video && (
-          <div data-reveal="">
-            <CaseStudyVideo {...caseStudy.video} />
+            The stack owns the spacing (see `.case-media-stack`), so the tiles sit
+            close to each other and far from the prose. With a single block that
+            resolves to exactly the margins the old single figure had, which is
+            why the three case studies that have one block are pixel-unchanged. */}
+        {caseStudy.media && caseStudy.media.length > 0 && (
+          <div className="case-media-stack">
+            {caseStudy.media.map((block, index) =>
+              block.kind === 'video' ? (
+                // The clip keeps its own wrapper because `CaseStudyVideo` owns
+                // the `<figure>` -- `data-reveal` has to go on something this
+                // file renders.
+                <div key={index} data-reveal="">
+                  <CaseStudyVideo
+                    src={block.src}
+                    poster={block.poster}
+                    description={block.description}
+                    title={block.title}
+                    caption={block.caption}
+                  />
+                </div>
+              ) : (
+                <figure key={index} className="case-figure" data-reveal="">
+                  <Image
+                    src={block.src}
+                    alt={block.alt}
+                    width={1280}
+                    height={720}
+                    className="case-figure-media"
+                  />
+                  <CaseStudyCaption title={block.title} caption={block.caption} />
+                </figure>
+              )
+            )}
           </div>
         )}
 
