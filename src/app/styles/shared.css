@@ -536,4 +536,64 @@
       transition: none;
     }
   }
+
+  /* ---------------------------------------------------------------------- *
+   * Phone bezel
+   *
+   * MOVED HERE FROM nahtadi.css when a16-summarizer's case study became the
+   * second consumer -- the same reason `[data-reveal]` and `.home-tile` live
+   * here rather than on the page that happened to need them first. /nahtadi's
+   * gallery and `/projects/a16-summarizer`'s phone block now frame their
+   * captures identically, which is correct: it is the same physical object.
+   *
+   * A raw capture needs a bezel because it is a near-white or near-black
+   * rectangle with no edge of its own; on a dark ground it glows off the page,
+   * and on a light one it dissolves into it. The bezel is what gives it an edge
+   * to end at, which is exactly why the a16 phone could not stay composited
+   * into a PNG: baked onto navy it was three layers of dark, and being one flat
+   * image it rendered identically in both themes.
+   *
+   * THE ONE PLACE IN THE SYSTEM WITH LITERAL COLOURS, deliberately: an iPhone
+   * is the same object on both grounds, exactly as the flagship band is the
+   * same object in both themes. These are not surfaces participating in the
+   * theme, so there is no token for them to take.
+   * ---------------------------------------------------------------------- */
+
+  .nh-device {
+    position: relative;
+    border-radius: 42px;
+    padding: 9px;
+    background: linear-gradient(160deg, #2a2f36, #0b0e12);
+    box-shadow:
+      0 22px 44px rgb(0 0 0 / 0.28),
+      0 0 0 1px rgb(255 255 255 / 0.1) inset;
+  }
+
+  .nh-device img {
+    border-radius: 34px;
+    width: 100%;
+    /* /nahtadi's captures are 1206x2622 (iPhone 17 Pro) and a16's is 1179x2556
+       (iPhone 14 Pro), which are 9/19.567 and 9/19.512. 9/19.55 sits between
+       them, and `object-fit: cover` absorbs either difference to a fraction of
+       a pixel. */
+    aspect-ratio: 9 / 19.55;
+    object-fit: cover;
+    object-position: top;
+    background: #f2f2f7;
+  }
+
+  /* The bezel steps down with the viewport. It came across from nahtadi.css's
+     880px block with the rest of the component: a chassis scaled for a 300px
+     device reads clumsy around a 200px one, and that is true of both
+     consumers, not just the gallery it was written for. */
+  @media (max-width: 880px) {
+    .nh-device {
+      border-radius: 36px;
+      padding: 7px;
+    }
+
+    .nh-device img {
+      border-radius: 30px;
+    }
+  }
 }
