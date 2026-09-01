@@ -44,7 +44,14 @@ jobs:
         run: npm run intake -- '${{ inputs.repo }}' --write
 
       - name: Open a pull request
-        uses: peter-evans/create-pull-request@v7
+        # PINNED TO A COMMIT, NOT A TAG. This is the only third-party action in
+        # the repo, and this job holds `contents: write` and
+        # `pull-requests: write`. A tag is mutable: whoever controls the repo can
+        # repoint `v7` at different code, and it would run here with those
+        # permissions and no review. A commit SHA cannot be moved.
+        # 22a9089034f40e5a961c8808d113e2c98fb63676 is v7.0.11.
+        # To update: check the release notes, then re-pin deliberately.
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
           branch: automation/intake-${{ inputs.repo }}
           base: dev
