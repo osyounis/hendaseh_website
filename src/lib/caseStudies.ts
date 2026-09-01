@@ -72,6 +72,23 @@ export interface CaseStudyImageBlock extends CaseStudyMediaCommon {
   readonly kind: 'image';
   readonly src: string;
   readonly alt: string;
+  /**
+   * The file's OWN pixel dimensions, when it is not the 16:9 the tile assumes.
+   *
+   * `.case-figure-media` is `object-fit: cover` on a declared aspect ratio, so
+   * a figure authored at any other shape is silently cropped -- which is fine
+   * as a safety net and wrong as a policy. brent-cuda's wall-time decomposition
+   * is a single horizontal bar at 3861x968, very nearly 4:1; forced into 16:9 it
+   * would lose its title and its axis, and letterboxed into 16:9 it would be a
+   * strip marooned in white. Declaring the real shape lets the tile take it.
+   *
+   * Omitted means 16:9, which is what the composed figures are authored at.
+   * `src/lib/__tests__/caseStudies.test.ts` reads the PNG header and fails if a
+   * declared size disagrees with the file, so this cannot drift into a silent
+   * crop.
+   */
+  readonly width?: number;
+  readonly height?: number;
 }
 
 /**
@@ -174,6 +191,28 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         ],
       ],
     },
+    media: [
+      {
+        kind: 'image',
+        src: '/images/case-studies/brent-cuda-speedup.png',
+        width: 2945,
+        height: 1767,
+        alt: 'Two speedup curves against batch size, from 2^10 to 2^22 problems: kernel-only rising to 35.3 times the CPU baseline, and wall-time rising to 8.9 times, with the gap between them widening across the sweep.',
+        title: 'Two speedups, not one',
+        caption:
+          'Kernel-only against wall-time, swept across batch size. The gap between the curves is what it costs to get the data on and off the card. RTX 3080, median of ten trials.',
+      },
+      {
+        kind: 'image',
+        src: '/images/case-studies/brent-cuda-wall-time.png',
+        width: 3861,
+        height: 968,
+        alt: 'A single horizontal bar of GPU wall time at four million problems, totalling 76.0 milliseconds, split into cudaMalloc 5.08, host-to-device copy 28.34, kernel 20.05, device-to-host copy 18.38 and cudaFree 4.20 milliseconds.',
+        title: 'Where the wall time goes',
+        caption:
+          'One batch of four million problems, broken into phases. The kernel is 20.05 ms of 76.0; everything else is allocation and copies. Phase durations from nsys.',
+      },
+    ],
   },
 
   'radar-moboard': {

@@ -1,6 +1,20 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync, existsSync } from 'node:fs'
+import path from 'node:path'
 import { getAllProjects, getCaseStudyProjects, getNextCaseStudy } from '../projects'
 import { getCaseStudy } from '../caseStudies'
+
+/**
+ * A PNG's own IHDR, read straight out of the header: an 8-byte signature, then
+ * a 4-byte length and the "IHDR" tag, then width and height as big-endian
+ * uint32s at offsets 16 and 20. Cheaper and more honest than importing sharp
+ * into a unit test, and it reads the FILE rather than anything's opinion of it.
+ */
+function pngSize(file: string): { width: number; height: number } {
+  const buf = readFileSync(file)
+  expect(buf.subarray(12, 16).toString('ascii'), `${file} is not a PNG`).toBe('IHDR')
+  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) }
+}
 
 describe('getCaseStudyProjects', () => {
   it('returns showcase-tier projects that have no detailPath of their own', () => {
@@ -168,6 +182,56 @@ describe('case-study projects still carry what the template renders', () => {
       expect(p.cardStat ?? '', p.id).not.toMatch(/live demo/i)
       expect(p.stats, p.id).not.toMatch(/live demo/i)
       expect(Object.keys(p.links), p.id).not.toContain('embed')
+    })
+  })
+})
+
+describe('case-study media', () => {
+  const blocks = getCaseStudyProjects().flatMap((p) =>
+    (getCaseStudy(p.id)!.media ?? []).map((block, index) => ({ id: p.id, index, block }))
+  )
+
+  it('points every block at a file that exists', () => {
+    expect(blocks.length).toBeGreaterThan(0)
+    blocks.forEach(({ id, index, block }) => {
+      const src = block.kind === 'image' ? block.src : block.src
+      const file = path.join('public', src)
+      expect(existsSync(file), `${id} media[${index}] -> ${src}`).toBe(true)
+      if (block.kind === 'video') {
+        expect(existsSync(path.join('public', block.poster)), `${id} poster`).toBe(true)
+      }
+    })
+  })
+
+  it('never lets a declared shape disagree with the file it describes', () => {
+    // `.case-figure-media` is object-fit: cover on the declared aspect ratio, so
+    // a declaration that drifts from the file crops the figure and nothing says
+    // so. This is the check that makes the declaration safe to trust.
+    blocks
+      .filter((b) => b.block.kind === 'image')
+      .forEach(({ id, index, block }) => {
+        if (block.kind !== 'image') return
+        const real = pngSize(path.join('public', block.src))
+        // Undeclared means the tile's 16:9 default, so the file must BE 16:9.
+        const declared = { width: block.width ?? 1280, height: block.height ?? 720 }
+        expect(
+          real.width / real.height,
+          `${id} media[${index}] ${block.src} is ${real.width}x${real.height}, ` +
+            `declared ${declared.width}x${declared.height}`
+        ).toBeCloseTo(declared.width / declared.height, 3)
+      })
+  })
+
+  it('gives every media block a caption, and no title that merely repeats it', () => {
+    blocks.forEach(({ id, index, block }) => {
+      expect(block.caption.trim().length, `${id} media[${index}]`).toBeGreaterThan(0)
+      if (block.title) {
+        expect(block.title.trim().length).toBeGreaterThan(0)
+        expect(
+          block.caption.toLowerCase().startsWith(block.title.toLowerCase()),
+          `${id} media[${index}] title just restates the caption's opening`
+        ).toBe(false)
+      }
     })
   })
 })

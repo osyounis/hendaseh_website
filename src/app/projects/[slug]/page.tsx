@@ -287,9 +287,19 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   <Image
                     src={block.src}
                     alt={block.alt}
-                    width={1280}
-                    height={720}
+                    width={block.width ?? 1280}
+                    height={block.height ?? 720}
                     className="case-figure-media"
+                    // The tile assumes 16:9; a block that is a different shape
+                    // says so, and the tile takes that shape instead of
+                    // cropping to the middle of it.
+                    style={
+                      block.width && block.height
+                        ? ({
+                            '--case-media-aspect': `${block.width} / ${block.height}`,
+                          } as CSSProperties)
+                        : undefined
+                    }
                   />
                   <CaseStudyCaption title={block.title} caption={block.caption} />
                 </figure>
