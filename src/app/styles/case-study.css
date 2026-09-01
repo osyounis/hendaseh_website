@@ -464,6 +464,13 @@
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
     justify-self: start;
+    /* `1fr` has an automatic min-content floor, so a label too long for the
+       track silently stops the columns being equal -- which broke the
+       indicator, since it is sized to half the track and would then sit under a
+       wider tab and clip its own label. `min-width: 0` on the tabs below makes
+       equal columns unconditional; the labels are kept short so nothing has to
+       be truncated to achieve it, and an e2e test asserts the two tabs measure
+       the same at 390px. */
     margin-bottom: 16px;
     padding: 4px;
     border-radius: 999px;
@@ -497,6 +504,9 @@
     position: relative;
     /* Above the indicator, which is painted behind the labels. */
     z-index: 1;
+    /* Lets the 1fr columns actually be equal rather than bottoming out at each
+       label's min-content width. See the note on `.case-clip-switch`. */
+    min-width: 0;
     /* 44px is the touch floor. */
     min-height: 44px;
     padding: 0 20px;
@@ -549,9 +559,6 @@
       transition: none;
     }
 
-    /* Belt and braces: the component also stops sequencing the swap under
-       `reduce`, so the stage never reaches this state. If it ever did, an
-       instant switch is still what should happen. */
     .case-clip-stage[data-swapping='true'] {
       opacity: 1;
     }

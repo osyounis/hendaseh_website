@@ -303,6 +303,40 @@ for (const { slug: projectId, block } of CLIP_BLOCKS) {
       await expect(list).toHaveAccessibleName(block.title!)
     })
 
+    test('keeps its columns equal and its labels inside the pill, down to 390px', async ({
+      page,
+    }) => {
+      for (const width of [1440, 768, 390]) {
+        await page.setViewportSize({ width, height: 900 })
+        await page.goto(`/projects/${project.id}`)
+        await page.locator('.case-clip-switch').scrollIntoViewIfNeeded()
+
+        // EQUAL COLUMNS ARE THE INDICATOR'S WHOLE PREMISE. It is sized to half
+        // the track and travels by 100% of itself, so the moment the columns
+        // stop matching it sits under the wrong width and clips a label. `1fr`
+        // has a min-content floor, which is exactly how that happened at 390.
+        const boxes = await page
+          .getByRole('tab')
+          .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width))
+        expect(Math.abs(boxes[0] - boxes[1]), `tabs disagree at ${width}px`).toBeLessThan(1)
+
+        const indicator = (await page.locator('.case-clip-indicator').boundingBox())!
+        expect(Math.abs(indicator.width - boxes[0]), `indicator misfits at ${width}px`).toBeLessThan(1)
+
+        // Every label fits INSIDE the pill with real padding, not just barely.
+        const fits = await page.getByRole('tab').evaluateAll((els) =>
+          els.map((el) => {
+            const range = document.createRange()
+            range.selectNodeContents(el)
+            return el.getBoundingClientRect().width - range.getBoundingClientRect().width
+          })
+        )
+        for (const [i, slack] of fits.entries()) {
+          expect(slack, `label ${i} has ${slack}px of slack at ${width}px`).toBeGreaterThan(24)
+        }
+      }
+    })
+
     test('carries selection on a moving indicator, not by recolouring the label', async ({
       page,
     }) => {
@@ -350,13 +384,35 @@ for (const { slug: projectId, block } of CLIP_BLOCKS) {
 
       // Turn it around while it is still travelling.
       await tabs.nth(0).click()
-      const afterReverse = await at()
-      // It must come back from where it WAS, not jump to the far end and slide
-      // back, and not restart from the start of the outbound move.
+
+      // WHAT A FAILURE WOULD LOOK LIKE, stated as positions rather than as a
+      // delta from the last reading. Comparing against `midway` measured how
+      // long Playwright took to dispatch the click as much as it measured the
+      // indicator, and got tighter as the control got narrower.
+      //
+      //   snapped home      -> it is already at 0 the instant the press lands
+      //   snapped to target -> it is already at the far anchor
+      //   queued            -> it finishes the outbound leg, reaching the far
+      //                        anchor, before it comes back
+      //   restarted         -> same tell: it visits the far anchor
+      //
+      // Retargeting from the presentation value visits neither anchor. It turns
+      // round from wherever it is and comes home.
+      const justAfter = await at()
+      expect(justAfter, 'the indicator snapped home on reversal').toBeGreaterThan(home + 1)
+      expect(justAfter, 'the indicator snapped to the far tab on reversal').toBeLessThan(
+        home + target - 2
+      )
+
+      const samples: number[] = []
+      for (let i = 0; i < 8; i++) {
+        samples.push(await at())
+        await page.waitForTimeout(20)
+      }
       expect(
-        Math.abs(afterReverse - midway),
-        'the indicator jumped on reversal rather than retargeting'
-      ).toBeLessThan(target * 0.4)
+        Math.max(...samples),
+        'the indicator reached the far tab after being reversed, so it queued or restarted'
+      ).toBeLessThan(home + target - 2)
 
       await expect.poll(at, { timeout: 3000 }).toBeLessThan(home + 1)
       await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
