@@ -270,9 +270,38 @@
     letter-spacing: -0.01em;
   }
 
+  /* EMPHASIS NEEDS A COLOUR STEP TO STEP AWAY FROM, AND IN LIGHT THERE WAS NONE.
+     `--fg-body` and `--fg-strong` are both `--color-ink-900` in the light theme,
+     the identical value, so `.case-p strong` was weight-only there. Dark has a
+     real step (#ffffff against navy-200), so the site had Apple's grey-body /
+     black-emphasis relationship in one theme out of two.
+
+     SCOPED TO CASE-STUDY PROSE ON PURPOSE. Those two tokens are shared by every
+     paragraph on every page, so softening them centrally would restyle the whole
+     site. A sitewide typography change this late, without its own review, is how
+     something nobody is watching breaks. `--case-prose` is declared on the body
+     container, so it cannot escape this template. The systemic finding is
+     recorded for B-D so Omar can decide on the sitewide version deliberately.
+
+     Light body is #3c3c41: 10.61:1 on the page ground and 8.98:1 on the figure
+     tile, comfortably above AA for long-form reading, with a clear step up to
+     the #1d1d1f emphasis. Dark already had the relationship, so it keeps
+     `--fg-body` unchanged rather than being given a second, redundant step. */
+  .case-body {
+    --case-prose: #3c3c41;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    /* Declared, not inherited: an alias at the light declaration would compute
+       the light value and carry it into dark. */
+    .case-body {
+      --case-prose: var(--fg-body);
+    }
+  }
+
   .case-p {
     margin-bottom: 14px;
-    color: var(--fg-body);
+    color: var(--case-prose);
     font-size: 16px;
     /* Body leading is loose where the heading's is tight: 1.75 is the
        contract's measure for a 760px column. */

@@ -206,3 +206,24 @@ production merge is a worse trade than a 97.
   2. **That repo's `docs/ROADMAP.md` still describes v1.1.0 as the live version.** v1.2.1 shipped 2026-08-06. This is the same class of drift that made THIS program re-capture the screenshots: the site described v1.1.0 for months because nothing recomputed the claim. Nothing here depends on it — this repo's version facts come from `projects.json` and the App Store lookup API — but the app repo's own docs are stale.
 - **Connected tooling:** GitHub MCP, ImageKit API + DevTools MCP (authenticated 2026-08-23). Asset generation (sub-project 3): **Recraft REST API**, called manually from a local key in `.env.local` — no generation code ships in the app. Higgsfield was spiked and superseded before use (see `docs/DECISIONS.md`); it remains a documented fallback for video only.
 - **Résumé + section text:** Omar supplies during the Phase 1 content audit (`docs/content/`, local-only and gitignored); the résumé in `public/` is outdated until then. Everything in `docs/content/` is **raw material only** — possibly outdated or rough by Omar's own assessment; final copy is workshopped with him during phases 4–5, never published verbatim.
+
+## Open for B-D — a sitewide typography decision, deliberately not taken in B-E
+
+**`--fg-body` and `--fg-strong` are the identical value in the light theme.** Both
+resolve to `--color-ink-900` (`#1d1d1f`), so `<strong>` emphasis anywhere on the
+site is **weight-only in light**. The dark theme has a real colour step
+(`#ffffff` against `navy-200`), so Apple's grey-body / black-emphasis
+relationship exists in one theme out of two.
+
+B-E fixed this **only inside the case-study template**, via a `--case-prose`
+token declared on `.case-body` so it cannot leak. That was a scoping decision,
+not a judgement that the rest of the site is fine: softening `--fg-body`
+centrally would restyle every paragraph on every page, and a sitewide typography
+change late in the program without its own review is how something nobody is
+watching breaks.
+
+**The decision for Omar:** whether to give the light theme a real body/strong
+step sitewide. It affects `/about`, `/projects`, `/contact` and `/nahtadi`, all
+of which currently rely on weight alone for emphasis in light mode. Measured
+candidate, the one B-E used: body `#3c3c41` is 10.61:1 on the page ground with a
+clear step up to `#1d1d1f`.
