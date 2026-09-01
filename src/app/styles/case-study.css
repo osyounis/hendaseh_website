@@ -359,7 +359,13 @@
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 16 / 9;
+    /* 16:9 unless the block declares its own. The default is what the composed
+       figures are authored at; the variable is for a figure whose real shape is
+       something else, like brent-cuda's wall-time bar at very nearly 4:1, which
+       cover would crop down to its middle third. `object-fit: cover` stays as
+       the safety net for a file that disagrees with its declaration, and a unit
+       test reads the PNG header so that never happens quietly. */
+    aspect-ratio: var(--case-media-aspect, 16 / 9);
     object-fit: cover;
     /* SMALLER THAN THE PARENT'S 18px, deliberately. An inset element in a
        rounded box needs its own, tighter radius: matching the parent's makes the
@@ -389,7 +395,11 @@
 
      23px on 19px (1.21) is Apple's own setting and is kept literally. It is
      tight for prose, and that is the point -- this is a tile label, not a
-     paragraph, and the loose 1.75 measure belongs to `.case-p`. */
+     paragraph, and the loose 1.75 measure belongs to `.case-p`.
+
+     MEASURED, not assumed: the tile is NOT inside `.case-section`, so it is not
+     bounded by that 760px measure. `.case-figure-media` renders 970px wide at a
+     1440 viewport, 874 at 1024, 310 at 390. */
   .case-caption {
     /* No background of its own. It sits on the tile's ground, which is what
        makes this one card rather than an image with a caption bolted beneath.
