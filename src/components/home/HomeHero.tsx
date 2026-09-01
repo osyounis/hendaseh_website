@@ -19,13 +19,31 @@ type Satellite = {
   tile?: boolean;
 };
 
+/**
+ * ORBIT MEMBERSHIP IS A LEGIBILITY DECISION, NOT A TIER ONE.
+ *
+ * These render at 50-92px over the dark hero, which is a harsher test than the
+ * work grid below: an icon that reads well at 172px can dissolve at 60.
+ *
+ * Measured by resizing each `icon-squircle.png` to 60px, flattening onto the hero
+ * ground and taking mean Rec. 709 luminance and HSL saturation:
+ * `a16-summarizer` is the darkest AND least saturated icon in the entire catalog
+ * (37 luminance, 16% saturation), because its approved near-black gradient has
+ * nothing left to show at that size. It was swapped for
+ * `coast-guard-pilot-tracker` (105, 90%), the brightest and most saturated of the
+ * showcase-tier icons, lifting the orbit's mean luminance from 67 to 76.
+ *
+ * a16 keeps its place in the work grid, where it renders large and the die reads
+ * properly. Adding an icon here, or changing a project's gradient, is a reason to
+ * re-measure rather than to assume.
+ */
 const SATELLITES: Satellite[] = [
   { src: '/images/nahtadi/icon.png', angle: '210deg', radius: '118px', size: 92, z: 5, tile: true },
   { src: '/images/projects/brent-cuda/icon-squircle.png', angle: '330deg', radius: '142px', size: 78, z: 4 },
   { src: '/images/projects/islamic-prayer-time/icon-squircle.png', angle: '90deg', radius: '122px', size: 72, z: 4 },
   { src: '/images/projects/radar-moboard/icon-squircle.png', angle: '30deg', radius: '168px', size: 60, z: 3 },
   { src: '/images/projects/cycloidal-drive-creator/icon-squircle.png', angle: '150deg', radius: '158px', size: 56, z: 3 },
-  { src: '/images/projects/a16-summarizer/icon-squircle.png', angle: '270deg', radius: '186px', size: 62, z: 2 },
+  { src: '/images/projects/coast-guard-pilot-tracker/icon-squircle.png', angle: '270deg', radius: '186px', size: 62, z: 2 },
   { src: '/images/projects/asl-detector/icon-squircle.png', angle: '12deg', radius: '104px', size: 50, z: 2 },
 ];
 

@@ -203,6 +203,12 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         ],
       ],
     },
+    figure: {
+      src: '/images/case-studies/radar-moboard.png',
+      alt: 'The same maneuvering board problem worked twice, side by side: the retired Python prototype on the left, the TypeScript rewrite on the right.',
+      caption:
+        'The same encounter, worked by both implementations. They agree on all nine reported values. All scenarios synthetic.',
+    },
   },
 
   'a16-summarizer': {
@@ -267,6 +273,81 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
           'It began as a way to put the Generative AI with Large Language Models coursework into practice on hardware I already owned. Core ML and the Neural Engine were scoped as a stretch and left unattempted, so this is an MLX and Metal result.',
         ],
       ],
+    },
+    figure: {
+      src: '/images/case-studies/a16-summarizer.png',
+      alt: 'The summarizer running on an iPhone 14 Pro beside a grouped bar chart of ROUGE-1, ROUGE-2 and ROUGE-L for the base model, the fp16 fine-tune and the shipped 4-bit model.',
+      caption:
+        'The model on the phone, and what it scores. Base, fp16 fine-tune, and the 4-bit model that ships.',
+    },
+  },
+
+  'coast-guard-pilot-tracker': {
+    hero: { from: '#17395C', to: '#0A1D30' },
+    thesis:
+      'Compiling aircrew flight currency took over a week by hand. One graded sheet does it in three minutes.',
+    stats: [
+      { value: '3 minutes', label: 'to compile a report that took over a week' },
+      { value: '6 weeks to 2 days', label: 'to build the flight schedule, wall to wall' },
+      { value: 'Fleetwide', label: 'every U.S. Coast Guard air station' },
+    ],
+    problem: {
+      eyebrow: 'THE PROBLEM',
+      heading: 'Currency lived in three places and agreed in none.',
+      paragraphs: [
+        [
+          'Aircrew flight qualifications expire. Each one runs on its own clock, some every 30 days, some every 90, most annually, and a lapsed qualification grounds the aircrew until it is renewed. Knowing who is close to the edge meant pulling three separate exports, the flight logbook, the simulator logbook and the designations list, and cross-referencing them by hand.',
+        ],
+        [
+          'Done properly for a whole air station, compiling that picture took ',
+          { em: 'over a week' },
+          ', and the flight schedule built on top of it took six weeks wall to wall. Long enough that the answer had aged by the time it arrived, which is the failure mode that matters: a currency report nobody can produce often enough is a currency report nobody trusts.',
+        ],
+      ],
+    },
+    approach: {
+      eyebrow: 'THE APPROACH',
+      heading: 'Three exports in, one graded sheet out.',
+      paragraphs: [
+        [
+          'I am its ',
+          { em: 'sole author and sole maintainer' },
+          '. I wrote it in Python and later VBA so it would run inside the Excel the unit already had. Two officers at USCG Sector San Diego shaped it as domain stakeholders: they explained the manual process it replaced, defined what each qualification and interval actually meant, and reviewed every iteration of the output. The requirements came from the people who had been doing it by hand.',
+        ],
+        [
+          'A run takes three CSV exports, loads each into a temporary sheet, matches pilots across all three, computes every interval against the report date, writes one row per pilot grouped by designation class, and deletes the temporary sheets behind it. Nine qualification dates and eight recency counters per pilot, on one sheet, in one pass.',
+        ],
+        [
+          'The finished sheet contains ',
+          { em: 'no formulas and no conditional formatting' },
+          '. The macro writes values and paints fills directly, which is a deliberate choice rather than an omission: the output is a fixed artifact of the moment it was run, and it cannot silently recalculate into a different answer on a different machine on a different day. The thresholds live in the code, where they can be read and reasoned about, and they are not uniform: a pilot\u2019s designation class decides how many days count as overdue.',
+        ],
+      ],
+    },
+    impact: {
+      eyebrow: 'THE IMPACT',
+      heading: 'Two days, at every air station.',
+      paragraphs: [
+        [
+          'The report now takes three minutes to generate instead of over a week, and the flight schedule it feeds went from six weeks to two days end to end. It was adopted at ',
+          { em: 'every U.S. Coast Guard air station' },
+          ' and is still in daily use. The work was recognised with the Coast Guard Auxiliary Achievement Medal, awarded by the Commandant of the U.S. Coast Guard in March 2023; the citation credits a training records program that spread fleetwide.',
+        ],
+        [
+          'All of it is ',
+          { em: 'unpaid volunteer work' },
+          '. I have been a Coast Guard Auxiliary volunteer since 2015 and have written software for Sector San Diego since 2022, a role that did not exist until I created it, and I have been its only maintainer since.',
+        ],
+        [
+          'A second tool for the same Sector, a parts inventory system and database, cut helicopter parts search time by roughly 85 percent. It stays a card on this site rather than a case study, for the honest reason that there is nothing about it that can be shown.',
+        ],
+      ],
+    },
+    figure: {
+      src: '/images/case-studies/coast-guard-pilot-tracker.png',
+      alt: 'The generated training report: the full 28-column sheet above, and a detail below showing the colour-graded qualification dates.',
+      caption:
+        'The report the macro writes, on a synthetic roster. All pilots, dates and values are invented.',
     },
   },
 };

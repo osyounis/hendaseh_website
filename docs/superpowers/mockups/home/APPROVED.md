@@ -65,6 +65,24 @@ Every mockup so far has drawn its light band as a full-height wash `#eef4fb → 
 ## Build notes for B1
 - Both themes per the mockup pair; system `prefers-color-scheme` (flip mechanism stays Task B6).
 - Framer Motion for pop-in/orbit or pure CSS — either, but reduced-motion = fully static (cluster frozen in the mockup's default pose, tape stopped).
+
+## Amendment — orbit membership is a legibility decision (B-B, 2026-08-31)
+
+The hero swarm's seven icons render at 50-92px over the dark hero, a harsher test
+than the work grid: an icon that reads at 172px can dissolve at 60. **Membership is
+chosen by measurement, not by tier.**
+
+Sub-project 5 put `a16-summarizer` in the swarm alongside the work grid. Measured at
+60px, flattened onto the hero ground, it is the darkest AND least saturated icon in
+the catalog (37 luminance, 16% saturation): its approved near-black gradient has
+nothing to show at that size. It was replaced by `coast-guard-pilot-tracker`
+(105, 90%), the brightest and most saturated showcase-tier icon, which lifts the
+orbit's mean luminance from 67 to 76.
+
+**a16 stays in the work grid**, where it renders large and the die reads properly.
+The two surfaces are chosen independently: a project can earn a grid tile and still
+be wrong for the swarm. Changing a project's gradient is a reason to re-measure the
+orbit, and the method is recorded in `HomeHero.tsx` above `SATELLITES`.
 - **Performance warning:** do NOT implement fine repeating-gradient rings/patterns in CSS (choked rasterizers in testing); SVG for any ring/guide geometry.
 - Icons come from `public/images/projects/<id>/icon-squircle.png` + `public/images/nahtadi/icon.png` (green tile treatment for Nahtadi).
 - Ticker duplicates its content once for the seamless -50% translateX loop.

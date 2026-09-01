@@ -213,9 +213,13 @@
   }
 
   /* ---------------------------------------------------------------------- *
-   * Private badge (USCG)
+   * Private badge
    *
-   * A badge, not a link: these two projects have no public repository, so the
+   * NOT USCG-specific. The organisation comes from the optional `org` field,
+   * decoupled from `private` so a closed-source project that belongs to nobody
+   * but Omar cannot inherit an affiliation it does not have.
+   *
+   * A badge, not a link: a private project has no public repository, so the
    * card must never grow a GitHub pill pointing nowhere. The gold is darkened
    * in the light theme (see globals.css) because the mockup's dark-theme gold
    * measures 1.9:1 on white.

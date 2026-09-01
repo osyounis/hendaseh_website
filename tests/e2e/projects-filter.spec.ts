@@ -354,17 +354,31 @@ test.describe('tier-action grammar', () => {
       newGamePlusData.links.github!
     )
 
-    // Private, card tier, no repository at all (both Coast Guard projects):
-    // the gold badge and ZERO anchors -- no dead link, ever. The organisation
-    // is read from the catalog rather than written as a literal, so the badge
-    // is asserted to follow `org` instead of following `private`.
-    for (const id of ['coast-guard-pilot-tracker', 'coast-guard-inventory']) {
-      const card = cardFor(page, id)
-      const org = projects.find((p) => p.id === id)!.org
-      expect(org, `${id} should declare an org`).toBe('USCG')
-      await expect(card.locator('.projects-badge-private')).toHaveText(`${org} · PRIVATE`)
-      await expect(card.getByRole('link')).toHaveCount(0)
-    }
+    // Private, card tier, no repository at all (coast-guard-inventory): the gold
+    // badge and ZERO anchors -- no dead link, ever. The organisation is read from
+    // the catalog rather than written as a literal, so the badge is asserted to
+    // follow `org` instead of following `private`.
+    const inventory = cardFor(page, 'coast-guard-inventory')
+    const inventoryOrg = projects.find((p) => p.id === 'coast-guard-inventory')!.org
+    expect(inventoryOrg, 'coast-guard-inventory should declare an org').toBe('USCG')
+    await expect(inventory.locator('.projects-badge-private')).toHaveText(
+      `${inventoryOrg} · PRIVATE`
+    )
+    await expect(inventory.getByRole('link')).toHaveCount(0)
+
+    // Private AND showcase (coast-guard-pilot-tracker): B-B flipped it, so the
+    // contract's "private, plus a Case study pill where a sanitized story
+    // exists" case is now exercised by a project that actually has one. Still no
+    // GitHub pill, because there is still no public repository.
+    const tracker = cardFor(page, 'coast-guard-pilot-tracker')
+    const trackerOrg = projects.find((p) => p.id === 'coast-guard-pilot-tracker')!.org
+    await expect(tracker.locator('.projects-badge-private')).toHaveText(`${trackerOrg} · PRIVATE`)
+    await expect(tracker.getByRole('link', { name: /case study/i })).toHaveAttribute(
+      'href',
+      '/projects/coast-guard-pilot-tracker'
+    )
+    await expect(tracker.getByRole('link', { name: /github/i })).toHaveCount(0)
+    await expect(tracker.getByRole('link')).toHaveCount(1)
   })
 
   test('no anchor in the grid has an empty, "#", or missing href', async ({ page }) => {
