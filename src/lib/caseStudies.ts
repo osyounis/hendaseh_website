@@ -253,6 +253,14 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
           'The same encounter, worked by both implementations. They agree on all nine reported values. All scenarios synthetic.',
       },
       {
+        kind: 'image',
+        src: '/images/case-studies/radar-moboard-vectors.png',
+        alt: "A close-up of the maneuvering board's vector triangle, with the points r, e and m labelled, the relative motion line running between them, and the dashed adjusted line the maneuver produces.",
+        title: 'The vector triangle, close up',
+        caption:
+          "The construction the whole answer rests on: own ship's vector, the contact's, and the relative motion between them, with the adjusted line the maneuver produces. All scenarios synthetic.",
+      },
+      {
         kind: 'video',
         src: '/video/radar-moboard-board.mp4',
         poster: '/video/radar-moboard-board-poster.png',
