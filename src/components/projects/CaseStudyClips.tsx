@@ -51,8 +51,7 @@ interface CaseStudyClipsProps {
  * in the DOM -- that is load-bearing, not incidental. So: fade out, swap, fade
  * in, 150ms each way for Apple's measured 300ms across the change. The swap is
  * driven off a pending ref rather than state, so a reader who picks the other
- * tab mid-fade retargets the same sequence instead of starting a second one.
- *
+ * tab mid-fade retargets the same sequence instead of starting a second one. *
  * Everything B-E and B-F established is preserved:
  *   - plays once and holds its final frame; it does not loop, because the clip
  *     opens before the second observation and ends past CPA, so its first and

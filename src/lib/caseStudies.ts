@@ -136,7 +136,14 @@ export interface CaseStudyClip {
   readonly id: string;
   /**
    * What the reader picks. Names WHAT IT SHOWS, never a file or a format:
-   * "Maneuvering board" and "Sea view", not "board.mp4" and "seaview.mp4".
+   * "Board view" and "Sea view", not "board.mp4" and "seaview.mp4".
+   *
+   * KEEP THEM SHORT AND PARALLEL. The chooser's columns are equal width so the
+   * indicator can travel by pure transform, which means the longest label sets
+   * the width of both. "Maneuvering board" was 17 characters against "Sea
+   * view"'s 8: at 390px it did not fit, the grid stopped honouring equal
+   * columns, and the indicator -- still sized to half the track -- cut through
+   * the word "board".
    */
   readonly label: string;
   readonly src: string;
@@ -373,7 +380,7 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         clips: [
           {
             id: 'board',
-            label: 'Maneuvering board',
+            label: 'Board view',
             src: '/video/radar-moboard-board.mp4',
             poster: '/video/radar-moboard-board-poster.png',
             description:

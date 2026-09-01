@@ -267,6 +267,26 @@ without the copy having to assert it.
 third element without crowding the two plots that carry the comparison, and the
 vector triangle is already visible in both panels. Restraint over completeness.
 
+### The clip block, LOCKED
+
+One video area with the two clips as choices, not one tile each (B-G), on
+apple.com/mac's tab pattern (B-H).
+
+| slot | string |
+|---|---|
+| title, above the chooser | `See the same run from either viewpoint.` |
+| tab 1 | `Board view` |
+| tab 2 | `Sea view` |
+| caption | `The maneuver fires at the Mx ring, and the clock never stops between the two. All scenarios synthetic.` |
+
+**The tab labels must stay short and parallel.** The chooser's columns are equal
+width so its indicator can travel by pure `transform`, which means the longest
+label sets the width of both. `Maneuvering board` was 17 characters against `Sea
+view`'s 8; at 390px it did not fit, the grid stopped honouring equal columns, and
+the indicator — still sized to half the track — cut through the word "board".
+`Board view` is 10, leaves 40px of slack inside its pill at every width down to
+390, and is parallel construction where the old pair was not.
+
 ### Staged, not placed
 
 These are committed and available to a later task; none is wired by W1.
@@ -340,15 +360,15 @@ marker as F1.
 
 ## §5 — Open, and explicitly NOT decided here
 
-- **THE TWO VIDEOS ARE CAPTURED AND READY, AND DELIBERATELY NOT WIRED.**
-  `moboard-board.mp4` and `moboard-seaview.mp4` are committed: 600 square, 16.8s
-  each, H.264, the same run of the same encounter from two viewpoints, executing
-  the alter-course-to-046 maneuver. The template takes an **image only**, and
-  putting motion on the page is not a one-line change. It needs a `<video>`
-  element, a poster frame, a pause control to satisfy WCAG 2.2.2 for anything that
-  plays longer than five seconds, and `prefers-reduced-motion` handling that serves
-  the still instead. That is a template change, which this sub-project puts out of
-  scope. **Deferred, with the assets already paid for.**
+- ~~**THE TWO VIDEOS ARE CAPTURED AND READY, AND DELIBERATELY NOT WIRED.**~~
+  **RESOLVED, and no longer open.** The template change this deferred was made:
+  B-E built the video block, B-F re-rendered both clips at 0.5x and shipped them,
+  and B-G replaced the two tiles with one video area and a chooser. Everything
+  this bullet listed as missing exists — a `<video>`, a poster taken from each
+  clip's own first frame, a WCAG 2.2.2 pause control, and reduced-motion handling
+  that holds the poster with playback as the opt-in. The clips are now 0.5x, so
+  7.76s and 8.00s rather than the 16.8s recorded here. Locked copy for the block
+  is in §3.
 - **The `USCG · PRIVATE` badge on this entry** (A8), which follows from marking it
   private and today appears only on the two Coast Guard entries.
 - **A2's title.** `Radar Plotting Trainer` is proposed over the retired entry's
