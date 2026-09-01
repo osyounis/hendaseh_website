@@ -146,11 +146,92 @@ Done in this session, not left for a B-task:
   white at **7.90:1** (AA normal text is 4.50), and separates from the near-black
   squircle at **2.50:1** so the 132px icon reads as a distinct tile on the hero.
 
-**The catalog entry itself is NOT landed.** `npm run assets` resolves gradients through
-`projects.json`, so the §1 entry was added temporarily to generate the assets and then
-reverted: a `showcase` entry with no `caseStudies.ts` key is a deliberate hard build
-failure (`src/app/projects/[slug]/page.tsx`), and the tree must stay green. **B-A lands
-§1, B-B lands §2, and they must land together.**
+**The catalog entry and the case study both landed in B-A** (`8d17e6b`), together in
+one commit, because a `showcase` entry with no `caseStudies.ts` key is a deliberate
+hard build failure (`src/app/projects/[slug]/page.tsx`). §1 and §2 are live.
+
+---
+
+## §3b — The media figure (W3b, 2026-08-31)
+
+W3 promised this figure and never built it. It exists now.
+
+| file | what it is |
+|---|---|
+| `phone-hero.png` | the real iPhone 14 Pro capture, 1179x2556. Model name, a live summary, and the stats grid: 44.4 tok/s, 2047 ms TTFT, 831 MB |
+| `rouge-light.png` / `rouge-light.svg` | the ROUGE chart, light theme, 873x648 |
+| `rouge-dark.png` / `rouge-dark.svg` | the same chart, dark theme |
+| `figure-rouge.png` | **the media slot.** 1280x720, authored at exactly 16:9 |
+
+Caption, LOCKED:
+
+> `The model on the phone, and what it scores. Base, fp16 fine-tune, and the 4-bit model that ships.`
+
+### The chart plots THREE models, and says so
+
+This was the trap. The figures in `results/rouge_comparison.md` are the **fp16
+merged fine-tune**: ROUGE-L 0.4808. Stat row B3 says **0.29 to 0.46**, which is the
+**shipped 4-bit model** from `results/rouge_mlx_4bit.md`. Both are correct, and the
+gap between them is the quantization cost §0.4 already documents. But a chart
+reading 0.4808 sitting beside a stat row reading 0.46 looks like a contradiction to
+anyone who checks.
+
+**Ruling: plot all three rather than label one.** Base, fp16 fine-tune, and shipped
+4-bit, named in the legend and in the subtitle. That makes the quantization step
+visible instead of implied, and it makes B3's `0.29 → 0.46` legible as the base and
+shipped endpoints of the ROUGE-L group. Labelling a two-series chart "fp16" would
+have been correct and would still have left the reader doing arithmetic.
+
+Error bars are the **95% CI on the fine-tune's gain over base**, drawn as
+`base + CI` on the fp16 bar, since the published interval is on the delta and not on
+the absolute score. Paired bootstrap, 10,000 resamples, all three p < 0.0001.
+
+### The palette is validator output, not taste
+
+Run, not reasoned about, per the dataviz skill. Three earlier candidates FAILED and
+were re-stepped rather than argued with:
+
+| candidate | why it failed |
+|---|---|
+| grey / blue / indigo | grey below the chroma floor; blue-indigo ΔE 13.1 normal-vision, under the 15 hard floor |
+| amber / blue / purple | blue-purple ΔE 5.7 deutan |
+| amber / blue / violet | blue-violet ΔE 1.0 deutan, effectively identical to a deuteranope |
+
+Shipped: **light `#B45309, #0071E3, #15803D`** and **dark `#D97706, #0093FF,
+#16A34A`**, both ALL CHECKS PASS. The middle series in each is a site token
+(`--color-apple-blue`, `--color-brand-500`). Every purple and indigo option failed
+deutan separation against blue, which is exactly what the validator exists to catch
+and exactly what eyeballing would have shipped.
+
+### Why the composite ground is dark
+
+The phone capture is a **dark-mode screenshot**. A white panel wrapped around a
+black phone screen reads as a mistake, so the ground follows the artifact and the
+chart is the dark variant. The phone carries a `#2b425b` hairline so a black screen
+on a near-black ground still reads as a device rather than a hole.
+
+**One honest limitation, recorded rather than papered over.** On the dark page the
+figure's ground (`#06131F`) and the page (`#04101e`) differ by 1.02:1, so the panel
+boundary rests entirely on `.case-figure`'s own 1px `--edge` hairline, which is
+1.85:1. Raising the ground to the site's `--color-deep-card` was tried and moved it
+only to 1.11, so it was not worth mismatching the phone bezel for. This is the
+template's edge token behaving the same way it does for every dark figure, not
+something this figure introduced. On the light page the separation is 18.13.
+
+### Apple-calibration and both-theme check: DONE
+
+| element | ratio | floor |
+|---|---:|---|
+| chart title 22px `#ffffff` | 18.74 | 3.00 |
+| subtitle, legend, value labels `#c7d6e6` | 12.66 | 4.50 |
+| axis and footer 11px `#9db8d1` | 9.11 | 4.50 |
+| base amber mark | 5.88 | 3.00 |
+| fine-tune blue mark | 5.90 | 3.00 |
+| shipped green mark | 5.69 | 3.00 |
+
+Rendered inside the real `.case-figure` frame above the real caption bar on both
+page grounds, and looked at, not only measured: the fine-tune value labels first
+collided with their own CI caps and were moved above the upper whisker.
 
 ---
 
@@ -179,10 +260,11 @@ failure (`src/app/projects/[slug]/page.tsx`), and the tree must stay green. **B-
 
 ## §5 — Open, and explicitly NOT decided here
 
-- **The media figure asset** is not built. Next session: composite at 16:9, phone
-  screenshot beside the ROUGE chart, caption naming **831 MB active RAM** and
-  **880 MB on disk** as the different quantities they are. Falls back to
-  screenshot-only if cramped.
+- ~~The media figure asset is not built.~~ **DONE in W3b**, see §3b. It did not read
+  cramped, so the §4.3 fallback to screenshot-only was not needed. The 831 vs 880
+  distinction is carried by the chart's own subtitle and footer rather than the
+  caption: the chart states which model each bar is, and the phone panel shows
+  831 MB labelled `Memory` by the app itself.
 - **Repo drift.** `a16-summarizer`'s own README, `app/README.md` and
   `quantization_delta.md` state 847 MB in six places. The site will say 880 MB. A
   reader comparing them sees a mismatch, exactly as with the résumé. Omar's call
