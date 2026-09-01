@@ -429,53 +429,98 @@
    * and bottom rings away, which is most of what the clip is for.
    * ---------------------------------------------------------------------- */
 
-  /* The segmented control. A track that recesses into the tile with one filled
-     segment, sat ABOVE the stage: the reader chooses, then watches. Its colours
-     are `--clip-switch-*`, which are declared per theme in globals.css because
-     the figure ground is sunken in light and raised in dark, so the control has
-     to recess in one and lift in the other. */
+  /* ---------------------------------------------------------------------- *
+   * The chooser, on apple.com/mac's "Explore the lineup." pattern
+   *
+   * A visible title, then a real tablist whose labels DO NOT CHANGE COLOUR.
+   * Selection is carried entirely by an indicator that travels from the old tab
+   * to the new one, which is what Apple does and what B-G's accent-filled
+   * segment did not: recolouring the label made the control announce state
+   * twice and made one of the two states the loud one.
+   *
+   * The title is not decoration. Two unlabelled buttons above a video read as
+   * an unexplained pair; a sentence above them says they are a choice, and it
+   * gives the tablist a VISIBLE accessible name instead of an invisible
+   * aria-label.
+   * ---------------------------------------------------------------------- */
+
+  .case-clip-title {
+    margin-bottom: 12px;
+    color: var(--fg-strong);
+    /* The tile's own title voice, so the heading above the control and the
+       caption below it are one system. */
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 23px;
+  }
+
   .case-clip-switch {
-    display: inline-flex;
-    gap: 4px;
+    position: relative;
+    display: grid;
+    /* EQUAL COLUMNS, and that is what makes the indicator honest. With equal
+       tabs the indicator is one tab wide and moves by exactly 100% of itself,
+       so its travel is a pure `transform` -- no width animation, no scaleX
+       distorting a pill's corners, and no measuring the DOM. */
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    justify-self: start;
     margin-bottom: 16px;
     padding: 4px;
     border-radius: 999px;
     background: var(--clip-switch-bg);
   }
 
+  .case-clip-indicator {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc((100% - 8px) / var(--tab-count));
+    border-radius: 999px;
+    background: var(--clip-switch-thumb);
+    /* An inset ring rather than a border: a border would change the box and
+       shift the 100% the transform steps by. */
+    box-shadow: 0 0 0 1px var(--clip-switch-thumb-edge) inset;
+    /* INTERRUPTIBLE BY CONSTRUCTION. This is a transition, not a keyframe
+       animation, and the transform is set inline from the selected index. A
+       transition retargets from the value currently on screen, so selecting the
+       other tab while the indicator is still travelling makes it turn around
+       from wherever it is -- it cannot snap, queue, or restart. Keyframes would
+       restart from zero, which is exactly the defect being avoided.
+       `--ease-move` and not `--ease-brand`: this is movement between two
+       resting positions, not an entrance. */
+    transition: transform 280ms var(--ease-move);
+    will-change: transform;
+  }
+
   .case-clip-tab {
-    /* 44px is the touch floor. The horizontal padding is generous because these
-       are words, not icons, and a segmented control is a hit-target trap when
-       its segments are only as wide as their text. */
+    position: relative;
+    /* Above the indicator, which is painted behind the labels. */
+    z-index: 1;
+    /* 44px is the touch floor. */
     min-height: 44px;
     padding: 0 20px;
     border: 0;
     border-radius: 999px;
     background: transparent;
     color: var(--clip-switch-fg);
-    font-size: 15px;
-    font-weight: 600;
+    /* Apple's measured 17/400. Lighter than the 19/600 title above it on
+       purpose: a control is not a heading. */
+    font-size: 17px;
+    font-weight: 400;
     line-height: 1.2;
+    white-space: nowrap;
     cursor: pointer;
-    transition:
-      background 160ms var(--ease-brand),
-      color 160ms var(--ease-brand);
+    transition: background 160ms var(--ease-brand);
   }
 
-  .case-clip-tab:hover {
-    color: var(--fg-strong);
-  }
-
-  .case-clip-tab[aria-selected='true'] {
-    background: var(--clip-switch-active-bg);
-    color: var(--clip-switch-active-fg);
-  }
-
-  /* Hover must not repaint the selected segment's label: it is already inverted
-     against the accent, and --fg-strong on accent is not a pairing that was
-     measured. */
-  .case-clip-tab[aria-selected='true']:hover {
-    color: var(--clip-switch-active-fg);
+  /* Pointer feedback, not selection state -- and only on the tab that is not
+     already selected, so hovering never competes with the indicator. Gated to
+     fine pointers because touch fires a false hover on tap. */
+  @media (hover: hover) and (pointer: fine) {
+    .case-clip-tab[aria-selected='false']:hover {
+      background: var(--clip-switch-hover);
+    }
   }
 
   .case-clip-tab:focus-visible {
@@ -483,29 +528,33 @@
     outline-offset: 3px;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .case-clip-tab {
-      transition: none;
-    }
+  /* THE STAGE FADES THROUGH, IT DOES NOT CROSS-FADE, and that is forced rather
+     than chosen: only one <video> is ever in the DOM, so there is no outgoing
+     element to fade against. Out at 150ms, swap, in at 150ms -- Apple's
+     measured 300ms across the change, spent as two halves. Opacity is a
+     transition here too, so a reader who switches again mid-fade retargets from
+     the current opacity instead of jumping to full. */
+  .case-clip-stage {
+    transition: opacity 150ms var(--ease-brand);
   }
 
-  /* ---------------------------------------------------------------------- *
-   * Framed capture (`frame: 'device'`)
-   *
-   * The bezel itself is `.nh-device` in shared.css -- the same physical object
-   * /nahtadi's gallery frames. This only sizes and centres it.
-   * ---------------------------------------------------------------------- */
+  .case-clip-stage[data-swapping='true'] {
+    opacity: 0;
+  }
 
-  .case-device-frame {
-    /* The capture is 1179px wide, so this is a downscale and never an upscale.
-       A phone is tall: 320px of width is 695px of height, which is already the
-       largest block in the stack, and going wider buys nothing a reader needs. */
-    max-width: 320px;
-    margin-inline: auto;
-    /* `.case-figure` clips to its radius, and the bezel's shadow reaches 44px
-       down from a 22px offset. Without this the shadow is cut off square
-       against the tile's bottom edge, which reads as a rendering fault. */
-    margin-block: 6px 24px;
+  @media (prefers-reduced-motion: reduce) {
+    .case-clip-tab,
+    .case-clip-indicator,
+    .case-clip-stage {
+      transition: none;
+    }
+
+    /* Belt and braces: the component also stops sequencing the swap under
+       `reduce`, so the stage never reaches this state. If it ever did, an
+       instant switch is still what should happen. */
+    .case-clip-stage[data-swapping='true'] {
+      opacity: 1;
+    }
   }
 
   .case-video-frame {
