@@ -189,7 +189,7 @@ estimated: nine date-based currency columns (E to M) and eight recency counters
 **heading:** `Three exports in, one graded sheet out.`
 
 **¶1** (emphasis run: `sole author and sole maintainer`)
-> The tool is the **sole author and sole maintainer**'s work, written in Python and later VBA so it would run inside the Excel the unit already had. Two officers at USCG Sector San Diego shaped it as domain stakeholders: they explained the manual process it replaced, defined what each qualification and interval actually meant, and reviewed every iteration of the output. The requirements came from the people who had been doing it by hand.
+> I am its **sole author and sole maintainer**. I wrote it in Python and later VBA so it would run inside the Excel the unit already had. Two officers at USCG Sector San Diego shaped it as domain stakeholders: they explained the manual process it replaced, defined what each qualification and interval actually meant, and reviewed every iteration of the output. The requirements came from the people who had been doing it by hand.
 
 **¶2** (no emphasis runs)
 > A run takes three CSV exports, loads each into a temporary sheet, matches pilots across all three, computes every interval against the report date, writes one row per pilot grouped by designation class, and deletes the temporary sheets behind it. Nine qualification dates and eight recency counters per pilot, on one sheet, in one pass.
@@ -205,7 +205,7 @@ estimated: nine date-based currency columns (E to M) and eight recency counters
 > The report now takes three minutes to generate instead of over a week, and the flight schedule it feeds went from six weeks to two days end to end. It was adopted at **every U.S. Coast Guard air station** and is still in daily use. The work was recognised with the Coast Guard Auxiliary Achievement Medal, awarded by the Commandant of the U.S. Coast Guard in March 2023; the citation credits a training records program that spread fleetwide.
 
 **¶2** (emphasis run: `unpaid volunteer work`)
-> All of it is **unpaid volunteer work**. Omar has been a Coast Guard Auxiliary volunteer since 2015 and has written software for Sector San Diego since 2022, a role that did not exist until he created it, and he has been its only maintainer since.
+> All of it is **unpaid volunteer work**. I have been a Coast Guard Auxiliary volunteer since 2015 and have written software for Sector San Diego since 2022, a role that did not exist until I created it, and I have been its only maintainer since.
 
 **¶3** (no emphasis runs)
 > A second tool for the same Sector, a parts inventory system and database, cut helicopter parts search time by roughly 85 percent. It stays a card on this site rather than a case study, for the honest reason that there is nothing about it that can be shown.
@@ -358,16 +358,22 @@ captures are evidence of a real tool; its palette is reproduced, not corrected.
    never opened.
 5. **Stats rows use ledgered numbers only.** B3 and B4 are résumé-verbatim; B5 is
    counted from the Report sheet's own columns.
+6. **FIRST PERSON, sitewide.** `/about` is written in the first person and the case
+   studies follow it. Omar is never referred to in the third person in visitor-facing
+   copy. Applied to B8 ¶1 and B9 ¶2 in B-B after review. This is a rule about
+   self-reference only: impersonal prose about a system ("the macro writes values
+   and paints fills directly") is correct and must not be rewritten into "I" for
+   its own sake.
 
 ---
 
 ## §5 — Open, and explicitly NOT decided here
 
-- **Which figure takes the one media slot.** The template holds a single
-  `CaseStudyFigure`. `figure-report.png` and the flow diagram are both built and
-  both calibrated; only one can render. **Recommendation: `figure-report.png`**,
-  because the report is the artifact the case study is about and the flow is
-  already described in B8 ¶2 prose. B-B's call.
+- ~~Which figure takes the one media slot.~~ **DECIDED in B-B: `figure-report.png`.**
+  The report is the artifact the case study is about, and the flow is already
+  carried by B8 ¶2's prose. `flow-light.png` / `flow-dark.png` stay committed here
+  as an unused asset rather than being deleted: they are calibrated, both-theme,
+  and the obvious source if the template ever grows a second media slot.
 - ~~Omar approves the dataset and the look~~ **DONE.** Approved, exported from a
   vector PDF, and committed.
 - **The tier flip is a separate commit, and B-A's amendment says why.** Flipping

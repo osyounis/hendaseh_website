@@ -26,7 +26,7 @@ import projectsData from '../../src/data/projects.json'
 
 const projects = (projectsData as { projects: { id: string; private?: boolean }[] }).projects
 
-const SLUGS = ['brent-cuda', 'radar-moboard', 'a16-summarizer'] as const
+const SLUGS = ['brent-cuda', 'radar-moboard', 'a16-summarizer', 'coast-guard-pilot-tracker'] as const
 
 const BEATS: [string, string][] = [
   ['.case-crumb', '0s'],

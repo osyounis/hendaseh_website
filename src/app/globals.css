@@ -322,7 +322,9 @@
      than at full strength. */
   --contact-mark: var(--color-ink-800);
 
-  /* Private-project badge (USCG). The Projects mockup leaves its dark-theme
+  /* Private-project badge. NOT USCG-specific: the organisation is a separate
+     optional `org` field, and the badge reads a plain PRIVATE without it (see
+     projectSchema.ts). The Projects mockup leaves its dark-theme
      gold (#e8b84b) unchanged in light, where it measures 1.9:1 on white; the
      contrast floor wins, so light gets a darkened gold. Measured on the
      badge's own tinted ground: 4.70:1 light, 7.44:1 dark. */

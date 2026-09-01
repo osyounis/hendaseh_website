@@ -293,27 +293,28 @@
     {
       "id": "coast-guard-pilot-tracker",
       "title": "CG Pilot Training Tracker",
-      "tagline": "A training-data summarizer adopted across every Coast Guard air station. A week of reporting done in three minutes.",
-      "cardStat": "USCG Achievement Medal",
-      "description": "Productivity tool for accessing and summarizing training data for Coast Guard pilots. Adopted across ALL Coast Guard Air Stations nationwide. Reduced summarizing time from one week to 3 minutes. Received Coast Guard Auxiliary Achievement Medal.",
+      "tagline": "A training-data report adopted at every Coast Guard air station. Over a week of compiling became three minutes.",
+      "cardStat": "Auxiliary Achievement Medal",
+      "description": "A reporting tool for Coast Guard aviation training currency, built in Python and VBA. It consolidates three exports into one graded sheet: nine qualification currencies and eight recency counters per pilot, each colour-graded against its own interval. Compiling the report went from over a week to three minutes, and building the flight schedule on top of it went from six weeks to two days. Adopted at every U.S. Coast Guard air station and still in daily use. Unpaid volunteer work.",
       "technologies": [
         "Python",
+        "VBA",
         "Excel",
         "pandas",
-        "numpy",
-        "VBA"
+        "numpy"
       ],
       "keywords": [
         "aviation",
         "automation",
         "reporting",
-        "spreadsheet"
+        "spreadsheet",
+        "currency"
       ],
-      "tier": "card",
+      "tier": "showcase",
       "featured": false,
       "private": true,
       "org": "USCG",
-      "stats": "Fleet-wide deployment • USCG Achievement Medal",
+      "stats": "Report in 3 minutes • fleetwide • Auxiliary Achievement Medal",
       "category": "data-tools",
       "image": "/images/projects/coast-guard-pilot-tracker/card.png",
       "imageAlt": "Illustration of a Coast Guard helicopter flying over ocean waves at sunset, representing the Pilot Training Tracker",

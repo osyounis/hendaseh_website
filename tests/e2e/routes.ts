@@ -12,7 +12,7 @@
  *
  * ALL_ROUTES adds the surfaces that share a template with one of the six but
  * are worth sweeping anyway: the two frozen `/nahtadi` sub-pages the App Store
- * links to, and the second case study. The theme flip is sitewide, so it is
+ * links to, and the other three case studies. The theme flip is sitewide, so it is
  * checked against all of them rather than a representative subset.
  */
 
@@ -29,6 +29,7 @@ export const ALL_ROUTES = [
   ...KEY_ROUTES,
   '/projects/radar-moboard',
   '/projects/a16-summarizer',
+  '/projects/coast-guard-pilot-tracker',
   '/nahtadi/privacy',
   '/nahtadi/support',
 ] as const

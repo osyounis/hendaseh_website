@@ -130,7 +130,12 @@ test.describe('projects page without JavaScript', () => {
  *     because "gated" could also be spelled as a permanent offset -- and
  *     which of the two properties carries it has already changed once.
  */
-const CASE_STUDY_SLUGS = ['brent-cuda', 'radar-moboard', 'a16-summarizer'] as const
+const CASE_STUDY_SLUGS = [
+  'brent-cuda',
+  'radar-moboard',
+  'a16-summarizer',
+  'coast-guard-pilot-tracker',
+] as const
 
 /** Reads the resting state of every `[data-reveal]` block on the page. */
 async function measureRevealBlocks(page: import('@playwright/test').Page) {
