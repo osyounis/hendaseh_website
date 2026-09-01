@@ -539,28 +539,55 @@
   }
 
   /* THE STAGE FADES THROUGH, IT DOES NOT CROSS-FADE, and that is forced rather
-     than chosen: only one <video> is ever in the DOM, so there is no outgoing
-     element to fade against. Out at 150ms, swap, in at 150ms -- Apple's
-     measured 300ms across the change, spent as two halves. Opacity is a
-     transition here too, so a reader who switches again mid-fade retargets from
-     the current opacity instead of jumping to full. */
-  .case-clip-stage {
-    transition: opacity 150ms var(--ease-brand);
+     than chosen: only one <video> is ever in the DOM -- which is what guarantees
+     the unchosen clip is never requested -- so there is no outgoing element to
+     fade against.
+     
+     A FADE-THROUGH NEEDS MORE TIME THAN A CROSS-FADE, and shaping. Apple's
+     measured 300ms is a cross-fade, where both images are present the whole way
+     and the reader never sees a gap; split into two 150ms halves it snapped,
+     because the reader registers the moment in between. 200ms out and 200ms in,
+     and the two halves take opposite curves so the content accelerates away and
+     decelerates in rather than running linear at both ends. The direction's
+     curve lives on the state being ENTERED, which is how one property gets two
+     easings.
+     
+     THE FRAME IS NEVER EMPTY. What fades is the clip and its control, not the
+     panel: `.case-video-frame` keeps its ground and its radius throughout, so
+     the square stays exactly where it was and only its contents change. Fading
+     the whole stage left a clip-shaped hole in the tile, which is most of what
+     read as abrupt. Layout cannot shift either -- both clips are 600 square, and
+     opacity takes no space anyway. */
+  .case-clip-media {
+    position: relative;
+    transition: opacity 200ms var(--ease-brand);
   }
 
-  .case-clip-stage[data-swapping='true'] {
+  .case-clip-stage[data-swapping='true'] .case-clip-media {
     opacity: 0;
+    /* The outgoing half takes the inverse curve, so the clip accelerates away
+       and the incoming one decelerates in. Declaring it on the state being
+       ENTERED is how one property gets two easings. */
+    transition: opacity 200ms var(--ease-brand-in);
+    /* An invisible control should not be pressable. Focus is left alone: 200ms
+       is not long enough to strand a keyboard user, and blurring them mid-swap
+       would be worse than a press landing on a clip about to be replaced. */
+    pointer-events: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .case-clip-tab,
     .case-clip-indicator,
-    .case-clip-stage {
+    .case-clip-media {
       transition: none;
     }
 
-    .case-clip-stage[data-swapping='true'] {
+    /* Belt and braces: the component also stops sequencing the swap under
+       `reduce`, so this state is never reached. If it ever were, an instant
+       switch is still what should happen. */
+    .case-clip-stage[data-swapping='true'] .case-clip-media {
       opacity: 1;
+      pointer-events: auto;
     }
   }
 
@@ -654,6 +681,12 @@
 
   .case-video-frame {
     position: relative;
+    /* The panel that stays. Its ground and radius are what the reader keeps
+       looking at while the clip inside it fades out and back in, so the swap
+       never opens a hole in the tile. `.case-video` carries the same ground, so
+       at rest the two are indistinguishable. */
+    background: var(--surface-raised);
+    border-radius: 12px;
     /* The clip is square and 600px native, so this is its own size and never an
        upscale. B-F capped it at 420 when it sat alone under a 16:9 still; in one
        shared area that was needlessly small, and 460px per clip is the width the

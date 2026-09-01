@@ -6,6 +6,10 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import CaseStudyCaption from '@/components/projects/CaseStudyCaption';
 import type { CaseStudyClip } from '@/lib/caseStudies';
 
+/** Must match the outgoing half of the fade in case-study.css. The swap lands
+ *  at the bottom of it, while the clip is invisible. */
+const FADE_OUT_MS = 200;
+
 interface CaseStudyClipsProps {
   clips: readonly CaseStudyClip[];
   title?: string;
@@ -49,9 +53,16 @@ interface CaseStudyClipsProps {
  * THE STAGE FADES THROUGH RATHER THAN CROSS-FADING. A true cross-fade needs the
  * outgoing and incoming clips on screen together, and only one <video> is ever
  * in the DOM -- that is load-bearing, not incidental. So: fade out, swap, fade
- * in, 150ms each way for Apple's measured 300ms across the change. The swap is
- * driven off a pending ref rather than state, so a reader who picks the other
- * tab mid-fade retargets the same sequence instead of starting a second one. *
+ * in. The swap is driven off a pending ref rather than state, so a reader who
+ * picks the other tab mid-fade retargets the same sequence instead of starting
+ * a second one.
+ *
+ * 200ms each way, not 150. Apple's measured 300ms is a CROSS-fade, where both
+ * images are present the whole way; a fade-through has to be given more time
+ * because the reader registers the moment in between. What fades is the clip
+ * and its control -- the panel behind them keeps its ground throughout, so the
+ * swap never opens a hole in the tile.
+ *
  * Everything B-E and B-F established is preserved:
  *   - plays once and holds its final frame; it does not loop, because the clip
  *     opens before the second observation and ends past CPA, so its first and
@@ -177,7 +188,7 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
       // the sequence in flight is retargeted rather than doubled.
       mount(pending.current);
       setSwapping(false);
-    }, 150);
+    }, FADE_OUT_MS);
   };
 
   const onTabKeyDown = (event: React.KeyboardEvent, index: number) => {
@@ -281,41 +292,53 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
         aria-labelledby={clips.length > 1 ? tabId(selectedId) : undefined}
       >
         <div className="case-video-frame">
-          <video
-            // Keyed, so a switch replaces the element instead of re-pointing it.
-            // See the block comment above: this is what guarantees the unchosen
-            // clip is never fetched and the previous one cannot keep running.
-            key={active.id}
-            ref={ref}
-            className="case-video"
-            src={active.src}
-            poster={active.poster}
-            muted
-            playsInline
-            preload="metadata"
-            // The element is not a control: the button below is. Keeping native
-            // controls off means one pause affordance, not two that disagree.
-            onPlay={() => {
-              setPlaying(true);
-              setEnded(false);
-            }}
-            onPause={() => setPlaying(false)}
-            // Not every browser fires `pause` when playback runs out, so both
-            // pieces of state are set here rather than leaned on from `onPause`.
-            onEnded={() => {
-              setPlaying(false);
-              setEnded(true);
-            }}
-          >
-            {active.description}
-          </video>
-          <button type="button" className="case-video-toggle" onClick={toggle}>
-            {/* Exactly one glyph and one word are rendered, so the accessible
-                name always matches the icon and always states what the button
-                will DO -- and names WHICH clip, since there are now two. */}
-            <control.Glyph className="case-video-icon" />
-            <span className="case-video-word">{control.word}</span>
-          </button>
+          {/* NOT KEYED, and that is the whole reason it exists. The <video>
+              below is keyed by the selected clip, so after a swap it is a NEW
+              element -- and a newly inserted element has no previous value to
+              transition from, so an opacity transition on the video itself
+              fades out and then pops straight back to full. The fade lives here
+              instead, on a wrapper that survives the swap, while the panel
+              around it keeps its ground so the frame is never empty. */}
+          <div className="case-clip-media">
+            <video
+              // Keyed, so a switch replaces the element instead of re-pointing
+              // it. See the block comment above: this is what guarantees the
+              // unchosen clip is never fetched and the previous one cannot keep
+              // running.
+              key={active.id}
+              ref={ref}
+              className="case-video"
+              src={active.src}
+              poster={active.poster}
+              muted
+              playsInline
+              preload="metadata"
+              // The element is not a control: the button below is. Keeping
+              // native controls off means one pause affordance, not two that
+              // disagree.
+              onPlay={() => {
+                setPlaying(true);
+                setEnded(false);
+              }}
+              onPause={() => setPlaying(false)}
+              // Not every browser fires `pause` when playback runs out, so both
+              // pieces of state are set here rather than leaned on from
+              // `onPause`.
+              onEnded={() => {
+                setPlaying(false);
+                setEnded(true);
+              }}
+            >
+              {active.description}
+            </video>
+            <button type="button" className="case-video-toggle" onClick={toggle}>
+              {/* Exactly one glyph and one word are rendered, so the accessible
+                  name always matches the icon and always states what the button
+                  will DO -- and names WHICH clip, since there are now two. */}
+              <control.Glyph className="case-video-icon" />
+              <span className="case-video-word">{control.word}</span>
+            </button>
+          </div>
         </div>
       </div>
 
