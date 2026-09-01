@@ -9,7 +9,7 @@ import {
   type Prose,
 } from '@/lib/caseStudies';
 import ScrollReveal from '@/components/projects/ScrollReveal';
-import CaseStudyVideo from '@/components/projects/CaseStudyVideo';
+import CaseStudyClips from '@/components/projects/CaseStudyClips';
 import CaseStudyCaption from '@/components/projects/CaseStudyCaption';
 import NewTabHint from '@/components/NewTabHint';
 import {
@@ -269,15 +269,13 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         {caseStudy.media && caseStudy.media.length > 0 && (
           <div className="case-media-stack">
             {caseStudy.media.map((block, index) =>
-              block.kind === 'video' ? (
-                // The clip keeps its own wrapper because `CaseStudyVideo` owns
-                // the `<figure>` -- `data-reveal` has to go on something this
-                // file renders.
+              block.kind === 'clips' ? (
+                // The clip block keeps its own wrapper because `CaseStudyClips`
+                // owns the `<figure>` -- `data-reveal` has to go on something
+                // this file renders.
                 <div key={index} data-reveal="">
-                  <CaseStudyVideo
-                    src={block.src}
-                    poster={block.poster}
-                    description={block.description}
+                  <CaseStudyClips
+                    clips={block.clips}
                     title={block.title}
                     caption={block.caption}
                   />
