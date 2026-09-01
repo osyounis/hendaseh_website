@@ -3,12 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { PauseGlyph, PlayGlyph } from '@/components/home/TransportGlyphs';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import CaseStudyCaption from '@/components/projects/CaseStudyCaption';
 
 interface CaseStudyVideoProps {
   src: string;
   poster: string;
   /** What the clip shows, for anyone who cannot watch it. */
   description: string;
+  /** Optional tile label above the caption. See `CaseStudyCaption`. */
+  title?: string;
   caption: string;
 }
 
@@ -30,7 +33,13 @@ interface CaseStudyVideoProps {
  * `muted` and `playsInline` are both load-bearing on iOS Safari: without either,
  * it refuses to play inline and takes the video fullscreen instead.
  */
-export default function CaseStudyVideo({ src, poster, description, caption }: CaseStudyVideoProps) {
+export default function CaseStudyVideo({
+  src,
+  poster,
+  description,
+  title,
+  caption,
+}: CaseStudyVideoProps) {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -82,7 +91,7 @@ export default function CaseStudyVideo({ src, poster, description, caption }: Ca
           </span>
         </button>
       </div>
-      <figcaption className="case-caption">{caption}</figcaption>
+      <CaseStudyCaption title={title} caption={caption} />
     </figure>
   );
 }
