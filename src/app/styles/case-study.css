@@ -288,10 +288,23 @@
    * Media slot
    * ---------------------------------------------------------------------- */
 
+  /* ONE TILE, NOT AN IMAGE WITH A STRIP UNDER IT.
+     Modelled on apple.com's `.tile.tile-rounded`: a filled ground, a radius, and
+     the media INSET so it never bleeds to the edges. The ground is what makes it
+     a panel -- with only a hairline, B-B measured a16's figure at 1.02:1 against
+     the dark page and the whole boundary rested on that 1.85:1 border.
+
+     The 18px radius on a 760px column is 2.4%, against Apple's 28px on 1100px at
+     2.5%. Already proportionally right, so it is not touched. */
   .case-figure {
     margin-block: 56px;
+    background: var(--figure-ground);
     border: 1px solid var(--edge);
     border-radius: 18px;
+    /* Apple insets content 60px in an 1100px tile: 5.5%. Percentage padding
+       resolves against the container's width, so this scales by itself; the
+       clamp stops it collapsing on a phone or ballooning on a wide column. */
+    padding: clamp(14px, 5.5%, 42px);
     overflow: hidden;
   }
 
@@ -301,16 +314,24 @@
     height: auto;
     aspect-ratio: 16 / 9;
     object-fit: cover;
+    /* SMALLER THAN THE PARENT'S 18px, deliberately. An inset element in a
+       rounded box needs its own, tighter radius: matching the parent's makes the
+       corners read as too round for their offset, and squaring them makes the
+       media look pasted on rather than seated in the tile. */
+    border-radius: 12px;
   }
 
   .case-caption {
-    padding: 14px 18px;
-    background: var(--surface-sunken);
-    /* --fg-muted-on-tint, not --fg-muted: this background is
-       --surface-sunken, a pairing --fg-muted never had before this
-       component. ink-600 on ink-100 is 4.15:1 in light, under the 4.5 AA
-       floor -- see the token's definition in globals.css for the measured
-       fix and why dark needs no change. */
+    /* No background of its own. It sits on the tile's ground, which is what
+       makes this one card rather than an image with a caption bolted beneath.
+       Zero side padding so it aligns flush with the media's edge. */
+    padding: 14px 0 0;
+    /* --fg-muted-on-tint, not --fg-muted, and re-measured after the ground
+       moved rather than carried forward on faith. In LIGHT the tile ground is
+       still --surface-sunken, so the original 4.15:1 problem is unchanged and
+       this token is still the one that passes: 5.44:1 against --fg-muted's
+       4.15:1. In DARK the two tokens are the same value, so it passes at 8.35:1
+       either way. One token is correct on both grounds. */
     color: var(--fg-muted-on-tint);
     font-size: 13px;
     line-height: 1.5;

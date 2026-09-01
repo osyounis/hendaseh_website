@@ -151,6 +151,14 @@
   --surface: var(--color-ink-50);
   --surface-raised: #ffffff;
   --surface-sunken: var(--color-ink-100);
+  /* The case-study figure tile. NOT an alias of either surface, because the
+     "recessed panel" Apple's tile pattern wants is a DIFFERENT token per theme:
+     measured against the page ground, --surface-sunken gives 1.18 in light but
+     1.01 in dark (invisible), and --surface-raised gives 1.03 in light but 1.11
+     in dark. Apple's own tile sits at 1.09 against its page, so both of these
+     are the right order of magnitude -- just not the same token. Declared per
+     theme so the tile reads as a panel on both grounds. */
+  --figure-ground: var(--surface-sunken);
   --home-sky: linear-gradient(180deg, var(--color-haze-100) 0%, var(--color-ink-50) 100%);
   /* The Projects page header band (the Projects contract draws a gradient
      here where Home's dark sky is flat, so the two grounds are genuinely
@@ -410,6 +418,12 @@
     --surface: var(--color-deep-page);
     --surface-raised: var(--color-deep-card);
     --surface-sunken: var(--color-deep-sky);
+    /* Declared, not inherited. Custom properties resolve at computed-value
+       time, so leaving this to the :root alias would compute the LIGHT value
+       and carry it into dark -- the trap globals.css documents at
+       --badge-volunteer-fg. In dark the raised card ground is what reads as a
+       panel; sunken is 1.01 against the page here, which is nothing. */
+    --figure-ground: var(--surface-raised);
     --home-sky: var(--color-deep-sky);
     --projects-sky: linear-gradient(
       180deg,
