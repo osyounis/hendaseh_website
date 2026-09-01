@@ -350,20 +350,35 @@
     border-radius: 12px;
   }
 
+  /* TILE TEXT IS 19px/600 AND THE DISTINCTION IS COLOUR, NOT SIZE OR WEIGHT.
+     Measured off apple.com/apple-fitness-plus at 1440: inside `.tile-rounded`
+     the heading and the line under it are BOTH 19px, weight 600, line-height
+     23px. The only thing separating them is colour, #1D1D1F against #86868B.
+     Ours was 13px, which is why the tiles read small and flat next to 16px
+     body prose that is physically larger than the caption describing the
+     figure. Same size, same weight, colour does all the work.
+
+     23px on 19px (1.21) is Apple's own setting and is kept literally. It is
+     tight for prose, and that is the point -- this is a tile label, not a
+     paragraph, and the loose 1.75 measure belongs to `.case-p`. */
   .case-caption {
     /* No background of its own. It sits on the tile's ground, which is what
        makes this one card rather than an image with a caption bolted beneath.
        Zero side padding so it aligns flush with the media's edge. */
-    padding: 14px 0 0;
-    /* --fg-muted-on-tint, not --fg-muted, and re-measured after the ground
-       moved rather than carried forward on faith. In LIGHT the tile ground is
-       still --surface-sunken, so the original 4.15:1 problem is unchanged and
-       this token is still the one that passes: 5.44:1 against --fg-muted's
-       4.15:1. In DARK the two tokens are the same value, so it passes at 8.35:1
-       either way. One token is correct on both grounds. */
+    padding: 18px 0 0;
+    /* APPLE'S GREY IS NOT AVAILABLE TO US, AND NEITHER IS THE FOOTER'S.
+       #86868B measures 3.51:1 on Apple's white; on this tile's tinted ground
+       (--surface-sunken, #e8e8ed) it is 2.97:1. The #6e6e73 the light footer
+       settled on is 4.91:1 on the page ground but only 4.15:1 here -- the same
+       measurement that produced --fg-muted-on-tint in the first place. So the
+       grey stays #5c5c61: 5.44:1 light, and 8.35:1 dark where the token
+       resolves to --fg-muted on --surface-raised. The colour STEP away from
+       --fg-strong is what carries the hierarchy, and it is wide in both
+       themes: 13.78:1 vs 5.44:1 light, 17.17:1 vs 8.35:1 dark. */
     color: var(--fg-muted-on-tint);
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 23px;
   }
 
   /* ---------------------------------------------------------------------- *
