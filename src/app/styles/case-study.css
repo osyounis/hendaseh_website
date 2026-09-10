@@ -796,18 +796,20 @@
     padding-block: 16px 64px;
   }
 
-  .case-nav-back {
-    color: var(--fg-muted);
-    font-size: 13px;
-    font-weight: 600;
-    transition: color 0.15s ease-out;
-  }
+  /* `.case-nav-back` IS GONE, class and rule both. Its colour, size, weight,
+     hover and focus ring were PROMOTED to `.link-quiet` in shared.css when the
+     Projects grid's closing footnote became the same construction's second
+     consumer -- exactly as `.home-tile` and `[data-reveal]` were promoted out
+     of the pages that happened to need them first. The declarations moved
+     verbatim, so the back link renders identically in both themes (verified
+     against the Worker build: #6e6e73 / navy-300, 13px, 600, `color 0.15s`,
+     2px focus ring at 3px offset).
 
-  .case-nav-back:hover {
-    color: var(--fg-strong);
-  }
+     The markup now wears `.link-quiet` alone. Do not reintroduce a
+     `.case-nav-back` rule here -- a page-scoped copy of a shared quiet link is
+     what this move exists to prevent. The back link's focus ring travelled
+     with it, which is why only `.case-nav-next` is named below. */
 
-  .case-nav-back:focus-visible,
   .case-nav-next:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;

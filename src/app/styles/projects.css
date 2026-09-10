@@ -213,6 +213,75 @@
   }
 
   /* ---------------------------------------------------------------------- *
+   * The grid's closing footnote
+   *
+   * Extends `.link-quiet` (shared.css) rather than restating it: the colour,
+   * the hover to `--fg-strong`, the focus ring and the transition all still
+   * come from there, and this declares ONLY what differs.
+   *
+   * WHY IT DIFFERS. It shipped as a plain `.link-quiet` at 13px and was
+   * reported as almost missed on a real read of the page. That is a defect
+   * rather than a matter of taste -- "quiet" was the brief, "invisible" was
+   * not -- and it had two causes worth separating:
+   *
+   *   1. NO MARK. A logo is a far stronger visual anchor than any amount of
+   *      extra type weight, and it is the one that costs nothing in emphasis:
+   *      the link still has no ground, no border and no radius, so it cannot
+   *      compete with the filled `Case study` pills in the cards above it.
+   *      The octocat does the finding; the type stays quiet.
+   *   2. TOO SMALL. 13px is the size of the `{n} of {m} projects` count, which
+   *      is metadata nobody has to locate. This is a link somebody is meant to
+   *      notice. The two were matched for symmetry, and the symmetry was worth
+   *      less than the legibility. They still share a left edge, which is the
+   *      half of that pairing that was actually doing work.
+   *
+   * The colour stays `--fg-muted`. It is tempting to reach for `--fg-body`
+   * here, and it is a TRAP: `--fg-body` and `--fg-strong` are the identical
+   * value in the light theme, so `.link-quiet`'s hover would resolve to no
+   * visible change at all on four of the site's pages. Muted resting keeps
+   * the hover real in both themes, and at 15px beside a mark it reads
+   * perfectly well -- 4.91:1 in light, 9.3:1 in dark.
+   * ---------------------------------------------------------------------- */
+
+  /* `inline-block`, NOT `inline-flex`. The mark sits INSIDE the phrase here
+     ("More on [octocat]GitHub[arrow]"), so the line has to lay out as ordinary
+     inline text -- a flex container would make "More on" and the welded unit
+     two flex items, strip the space between them, and then space them by
+     `gap` instead. Inline-block rather than plain inline so the margin above
+     it applies. */
+  .projects-more {
+    display: inline-block;
+    font-size: 15px;
+  }
+
+  /* The mark is an inline TEXT COMPANION here, not a flex item, so it needs
+     the same two things `.link-glyph` needs and for the same reasons
+     (shared.css carries the full derivation):
+
+     BASELINE. An inline SVG's baseline is its bottom margin edge, so left
+     alone the mark sits ON the baseline instead of beside the word. Roboto's
+     optical centre is cap-height/2 = 0.3555em, so the shift is
+     0.3555em - height/2, and the octocat's box is 1.1em:
+       0.3555 - 0.55 = -0.1945em
+
+     SIDE BEARING. There is no space character between the mark and its word --
+     they are welded inside one nowrap span -- so the margin is the only thing
+     setting that gap. The target is the same ~0.35em the affordance glyphs
+     use, less the mark's own internal padding. The octocat fills 0.975 of its
+     viewBox, so it carries (1 - 0.975) / 2 x 1.1em = 0.014em a side:
+       0.35 - 0.014 = 0.336em, rounded to 0.34em
+
+     SCOPED to `.projects-more` on purpose. The same class in a `.pill` is a
+     flex item, where `vertical-align` is ignored and this `margin-right` would
+     ADD to the pill's own 9px gap. If a second inline call site ever appears,
+     promote this pair to a `.brand-mark-inline` modifier rather than widening
+     the selector. */
+  .projects-more .brand-mark-github {
+    vertical-align: -0.1945em;
+    margin-right: 0.34em;
+  }
+
+  /* ---------------------------------------------------------------------- *
    * Private badge
    *
    * NOT USCG-specific. The organisation comes from the optional `org` field,

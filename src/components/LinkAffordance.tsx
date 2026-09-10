@@ -217,8 +217,35 @@ export function ArrowUpRight() {
  * bare flex items would render with NO space between "Résumé" and "(PDF)".
  * Wrapping the whole label in one element makes it a single flex item, and
  * the space between the words is laid out as ordinary inline text again.
+ *
+ * ---------------------------------------------------------------------------
+ * THE OPTIONAL LEADING `mark`
+ *
+ * A DESTINATION mark (`BrandMarks.tsx` -- the octocat, the LinkedIn glyph)
+ * identifies the noun it belongs to, and that noun is usually the label's last
+ * word rather than the whole phrase. "More on GitHub" wants the octocat
+ * against `GitHub`, not out in front modifying `More`.
+ *
+ * When it sits inside the phrase, the mark has to be welded too: it goes into
+ * the SAME nowrap span, ahead of the tail word, so mark + word + glyph are one
+ * atomic unit. Without that, a narrow line can break between the mark and the
+ * word it names -- the same orphan failure this component already exists to
+ * prevent, arriving from the other end.
+ *
+ * Marks that lead the WHOLE label (the pills on Home and the project cards)
+ * are a different construction and stay outside this component: they are flex
+ * items of the pill itself, spaced by `.pill`'s own `gap`. Pass `mark` only
+ * when the mark belongs mid-phrase.
  */
-export function AffordanceLabel({ label, glyph }: { label: string; glyph: ReactNode }) {
+export function AffordanceLabel({
+  label,
+  glyph,
+  mark,
+}: {
+  label: string;
+  glyph: ReactNode;
+  mark?: ReactNode;
+}) {
   const split = label.lastIndexOf(' ');
   const head = split === -1 ? '' : label.slice(0, split + 1);
   const tail = split === -1 ? label : label.slice(split + 1);
@@ -227,6 +254,7 @@ export function AffordanceLabel({ label, glyph }: { label: string; glyph: ReactN
     <span>
       {head}
       <span className="whitespace-nowrap">
+        {mark}
         {tail}
         {glyph}
       </span>

@@ -3,6 +3,9 @@
 import { useMemo, useState } from 'react';
 import type { Project } from '@/lib/projects';
 import { ALL_CATEGORIES, type CategoryChip } from '@/lib/projectCategories';
+import NewTabHint from '@/components/NewTabHint';
+import { AffordanceLabel, ArrowUpRight } from '@/components/LinkAffordance';
+import { GitHubMark } from '@/components/BrandMarks';
 import ProjectFilter from './ProjectFilter';
 import ProjectCard from './ProjectCard';
 
@@ -91,7 +94,7 @@ export default function FilterableProjectList({ projects, chips }: FilterablePro
           {filtered.length} of {projects.length} projects
         </p>
 
-        <div className="grid grid-cols-2 gap-4 pt-[22px] pb-20 max-[880px]:grid-cols-1">
+        <div className="grid grid-cols-2 gap-4 pt-[22px] max-[880px]:grid-cols-1">
           {filtered.length === 0 ? (
             <div className="text-muted col-span-2 py-14 text-center max-[880px]:col-span-1">
               <strong className="text-primary mb-1.5 block text-[17px] font-bold">
@@ -112,6 +115,101 @@ export default function FilterableProjectList({ projects, chips }: FilterablePro
           ) : (
             filtered.map((project) => <ProjectCard key={project.id} project={project} />)
           )}
+        </div>
+
+        {/* The grid's closing footnote. /projects is the catalog, not the whole
+            of the work, so it ends with one quiet pointer at the rest.
+
+            TERTIARY BY CONSTRUCTION: `.link-quiet` (shared.css) is a bare text
+            link with no ground and no radius, so it cannot compete with the
+            `Case study` pills inside the cards above it. It is the same
+            construction the case-study bottom nav wears -- shared code, not a
+            second quiet-link style.
+
+            CENTRED UNDER THE GRID, which is the third position this line has
+            had and the one that finally reads right.
+
+            Left-aligned it sat under the bottom-left card, and because the
+            last grid row is often half empty it read as something left over
+            from that card rather than as the end of the list. Centring makes
+            it an end-of-list marker: it belongs to the whole grid, not to
+            whichever card happens to be above it. It is also what `HomeWork`
+            already does with the `All projects` link that closes ITS grid, so
+            this is the site's existing answer to the same question rather than
+            a new one.
+
+            A hairline above it was tried and rejected: the footer's own rule
+            sits ~120px below, and two full-width hairlines that close together
+            read as a boxed-in strip rather than as a closing edge.
+
+            OUTSIDE the grid but INSIDE `.projects-enter-body`, so it rides
+            beat 4 of the entrance cascade rather than adding a beat of its
+            own -- tests/e2e/projects-entrance.spec.ts asserts the cascade is
+            exactly five `.projects-enter` elements, and a sixth would break
+            it. It also sits outside the `filtered` branch on purpose: it is
+            page furniture, so it survives a filter that empties the grid,
+            which is the moment a reader most needs somewhere else to go.
+
+            THE BAND IS SYMMETRIC, and it is expressed as ONE number for
+            exactly that reason. This used to be a 34px margin on the link plus
+            an 80px padding below it -- two values in two places whose only
+            relationship was accidental, and they were not equal: the link sat
+            2.4x closer to the grid than to the footer's hairline and read as
+            having drifted upward. `py-[57px]` on the wrapper states the
+            spacing once, so the two halves cannot fall out of step again.
+
+            57px is what centres the link in the band the eye actually sees --
+            bounded by the last card's edge above and the footer's rule below
+            -- while keeping the page's total height exactly what it was.
+
+            `text-center` rather than a flex row, because `.projects-more` is
+            an inline-block by design -- the mark sits inside the phrase, so
+            the link lays out as text and `text-align` is the matching tool.
+            The baseline strut costs about a pixel at the top and nothing that
+            matters at the bottom; measured at rest, 58px above and 57.5px
+            below.
+
+            It does NOT weaken the link's tie to the grid, which is the usual
+            objection to centring a closing element. The hairline is a divider,
+            not content: the footer's own copy sits another 56px past it, so
+            the link is 57px from the grid and ~113px from the nearest footer
+            text. Still twice as close to what it belongs to.
+
+            THE OCTOCAT IS WHAT MAKES IT FINDABLE. At 13px with no mark this
+            was reported as almost missed on a real read of the page. A logo
+            anchors the eye far harder than type weight does and spends none of
+            the emphasis a filled ground would, so the link gets easier to see
+            while staying a footnote. `.projects-more` carries the size and the
+            mark's inline metrics; see projects.css for why the colour
+            deliberately stays muted.
+
+            THE MARK IS INSIDE THE PHRASE, not ahead of it. It led the whole
+            line at first, which put the octocat against "More" -- a word that
+            does not have a logo. Passed as `AffordanceLabel`'s `mark`, it goes
+            into the same nowrap span as the tail word and the arrow, so
+            "[octocat]GitHub[arrow]" is one atomic unit and a narrow line can
+            only ever break at the space before it.
+
+            The arrow is the drawn `ArrowUpRight`, never a `→` character:
+            grammar v2 bans Unicode arrows and
+            tests/e2e/link-affordance.spec.ts fails on one. It stays even
+            though the octocat now names the destination -- the two say
+            different things, and the arrow is the one carrying "opens in a new
+            tab" for sighted readers. */}
+        <div className="py-[57px] text-center">
+          <a
+            href="https://github.com/osyounis"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-quiet projects-more"
+          >
+            <AffordanceLabel
+              label="More on GitHub"
+              mark={<GitHubMark />}
+              glyph={<ArrowUpRight />}
+            />
+            <NewTabHint />
+          </a>
         </div>
       </div>
     </>

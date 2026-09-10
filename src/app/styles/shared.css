@@ -236,6 +236,48 @@
     margin-right: 0.26em;
   }
 
+  /* ---------------------------------------------------------------------- *
+   * Destination marks
+   *
+   * The logos that say WHERE a link goes -- drawn in
+   * `src/components/BrandMarks.tsx`, which carries the full derivation. The
+   * short version: THE TWO BOXES DIFFER SO THAT THE INK DOES NOT. The octocat
+   * fills 0.975 of its viewBox and the LinkedIn glyph only 0.714, so a single
+   * shared box renders the octocat 37% larger -- fine a column apart on
+   * Contact, wrong side by side in one pill row.
+   *
+   *   github     1.1em box  ->  1.0725em of ink
+   *   linkedin   1.5em box  ->  1.0710em of ink
+   *
+   * 1.5em is a CEILING, not a preference: it is exactly a `.pill`'s line box,
+   * and a mark taller than that grows its pill and leaves it standing above
+   * its neighbours. The LinkedIn glyph needs the larger box, so it sets the
+   * ink target and the octocat's box is derived to match.
+   *
+   * `em`, not px, so both the ink match and the line-box ceiling survive a
+   * change of font-size. Guarded by tests/e2e/homepage.spec.ts.
+   *
+   * `fill: currentColor` is what makes a mark track its own link's colour
+   * through both themes and through the hover, rather than needing a token of
+   * its own. `flex: none` stops it being squeezed when a label wraps.
+   * ---------------------------------------------------------------------- */
+
+  .brand-mark {
+    display: inline-block;
+    flex: none;
+    fill: currentColor;
+  }
+
+  .brand-mark-github {
+    width: 1.1em;
+    height: 1.1em;
+  }
+
+  .brand-mark-linkedin {
+    width: 1.5em;
+    height: 1.5em;
+  }
+
   /* Pills. Radius 980px, never outlined; feedback lands on pointer-down. */
   .pill {
     display: inline-flex;
@@ -245,6 +287,16 @@
     padding: 14px 28px;
     font-size: 15px;
     font-weight: 600;
+    /* Only ever has an effect on a pill that carries a leading destination
+       mark -- a label-only pill is ONE in-flow flex item (the affordance
+       glyph is welded inside the label's span, and `NewTabHint` is `sr-only`,
+       which is absolutely positioned and therefore not a flex item at all),
+       and `gap` needs two. Verified against the Worker build before this was
+       added: every existing pill reported exactly one in-flow child.
+       9px is not a new number -- it is what `.case-btn-*` (case-study.css) and
+       `.contact-copy` (contact.css) had each already arrived at
+       independently for this exact situation. */
+    gap: 9px;
     transition:
       transform 100ms ease-out,
       background-color 200ms ease-out;
@@ -295,6 +347,54 @@
     background: var(--flagship-pill-bg);
     color: var(--flagship-pill-fg);
   }
+
+  /* ---------------------------------------------------------------------- *
+   * Quiet link
+   *
+   * The site's TERTIARY link: a bare text link that points somewhere without
+   * asking to be the thing you look at. No ground, no border, no radius --
+   * everything a `.pill` has and this deliberately does not.
+   *
+   * PROMOTED FROM `.case-nav-back` (case-study.css) when the Projects grid's
+   * closing footnote became its second consumer -- the same move `.home-tile`,
+   * `[data-reveal]` and `.nh-device` each made for the same reason. The
+   * declarations came across verbatim; nothing was retuned on the way, so the
+   * case-study bottom nav renders exactly as it did before.
+   *
+   * `--fg-muted`, not `--fg-quiet`: this is a LINK, and it has to read as
+   * interactive text rather than as metadata. `--fg-muted` is the muted step
+   * that clears AA on every ground in both themes (light #6e6e73 at 4.91:1 on
+   * the page ground; dark navy-300). `--fg-quiet` sits a step below and is
+   * reserved for bylines and stamps that are not clickable.
+   *
+   * The hover goes to `--fg-strong` rather than to the accent: an accent hover
+   * would make it read as a primary action on the way to being clicked, which
+   * is the emphasis this class exists to avoid. Darkening in place is the
+   * quieter answer and matches what the case-study nav has always done.
+   * ---------------------------------------------------------------------- */
+
+  .link-quiet {
+    color: var(--fg-muted);
+    font-size: 13px;
+    font-weight: 600;
+    transition: color 0.15s ease-out;
+  }
+
+  .link-quiet:hover {
+    color: var(--fg-strong);
+  }
+
+  .link-quiet:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* No `prefers-reduced-motion` override, and that is deliberate rather than an
+     omission. The only transitioned property here is `color` -- a
+     non-vestibular change that tells the user the link is live -- which
+     reduced motion keeps. `.nav-menu-item` a few rules up carries the same
+     note for the same reason. Adding `transition: none` here would suppress
+     feedback rather than motion. */
 
   /* Small blue eyebrow + large statement heading. No numbers, no rules.
      Sitewide pattern (docs/superpowers/mockups/home/APPROVED.md, "Section
