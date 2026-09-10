@@ -79,6 +79,36 @@ function cardFor(page: Page, id: string): Locator {
   return page.locator(`[data-testid="project-card"][aria-labelledby="project-card-${id}"]`)
 }
 
+/**
+ * Resolves once the page's entrance cascade has finished.
+ *
+ * MEASURE AFTER THIS, ALWAYS, for anything that spans the boundary of
+ * `.projects-enter-body`. That container animates `translate: 0 18px -> 0`,
+ * and the grid and the footnote ride inside it while the footer does not -- so
+ * a distance measured from the link to the footer's hairline mid-flight is
+ * short by whatever translate is left, while a distance measured entirely
+ * inside the container looks perfectly correct. That asymmetry is what makes
+ * it convincing: it reads as a real 18px layout defect rather than as a timing
+ * artifact, and chasing it into the CSS changes a stylesheet that was right.
+ *
+ * The neighbouring `projects-entrance.spec.ts` carries the same helper for the
+ * same reason, and `docs/DECISIONS.md` records the rule this follows: never
+ * paper over one of these with a fixed wait.
+ */
+async function settle(page: Page) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const els = Array.from(document.querySelectorAll('.projects-enter'))
+          if (els.length === 0) return false
+          return els.every((el) => el.getAnimations().every((a) => a.playState === 'finished'))
+        }),
+      { message: 'the entrance cascade never settled' }
+    )
+    .toBe(true)
+}
+
 function chipGroup(page: Page): Locator {
   return page.getByRole('group', { name: 'Filter projects by category' })
 }
@@ -396,3 +426,300 @@ test.describe('tier-action grammar', () => {
   })
 })
 
+
+/**
+ * The grid's closing footnote.
+ *
+ * `/projects` is the catalog, not the whole of the work, so the grid ends with
+ * one quiet pointer at the rest of it. It is deliberately TERTIARY: a text
+ * link, never a filled pill, so it cannot compete with the `Case study` pills
+ * inside the cards above it. Its treatment is `.link-quiet` (shared.css), the
+ * same 13px/600/`--fg-muted` construction the case-study back link wears --
+ * shared code, not a second quiet-link style.
+ *
+ * It also mirrors the `{n} of {m} projects` count that OPENS the same grid, at
+ * the same size, weight, colour and left edge. The count opens the grid and
+ * this closes it, which is why the alignment is asserted rather than left to
+ * drift.
+ */
+test.describe('the grid footnote', () => {
+  const footnote = (page: Page) => page.getByRole('link', { name: /More on GitHub/ })
+
+  test('points at the GitHub profile, in a new tab, with the drawn arrow', async ({ page }) => {
+    await page.goto('/projects')
+
+    const link = footnote(page)
+    await expect(link).toBeVisible()
+    await expect(link).toHaveAttribute('href', 'https://github.com/osyounis')
+    await expect(link).toHaveAttribute('target', '_blank')
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+    await expect(link).toHaveAccessibleName(/\(opens in a new tab\)$/)
+    // Grammar v2: a drawn arrow-up-right, never a Unicode character. The
+    // banned-character guard lives in link-affordance.spec.ts; this asserts the
+    // positive half -- that the glyph is actually there.
+    await expect(link.locator('svg.link-glyph-arrow')).toHaveCount(1)
+  })
+
+  test('is a quiet text link, not a pill', async ({ page }) => {
+    await page.goto('/projects')
+
+    const link = footnote(page)
+    await expect(link).toHaveClass(/link-quiet/)
+    // No pill class, and no pill ground: a filled background here is the
+    // regression this guards. It has to stay a text link -- the brief was
+    // "not a filled button" and that has not changed.
+    await expect(link).not.toHaveClass(/\bpill\b/)
+
+    const paint = await link.evaluate((el) => {
+      const cs = getComputedStyle(el)
+      return { background: cs.backgroundColor, fontSize: cs.fontSize, fontWeight: cs.fontWeight }
+    })
+    expect(paint.background).toBe('rgba(0, 0, 0, 0)')
+    // 15px, not the 13px it shipped at first. At 13px in the muted step, under
+    // a dense grid, it was genuinely easy to scroll past -- reported from a
+    // real read of the page, not theorised. Quiet is the brief; invisible is a
+    // defect, and those are not the same thing.
+    expect(paint.fontSize).toBe('15px')
+    expect(paint.fontWeight).toBe('600')
+  })
+
+  /**
+   * The octocat is what actually makes it findable. A mark is a far stronger
+   * visual anchor than any amount of extra type weight, and it costs none of
+   * the emphasis a filled ground would spend -- which is how this gets easier
+   * to see while staying a footnote rather than becoming a second CTA.
+   *
+   * Same construction as everywhere else the site names GitHub: a filled path
+   * on `currentColor`, sized by ink through `.brand-mark-github`, with the
+   * arrow-up-right beside it still doing the "leaves the site" work.
+   */
+  test('carries the GitHub mark, ink-matched to the rest of the family', async ({ page }) => {
+    await page.goto('/projects')
+
+    const link = footnote(page)
+    const mark = link.locator('svg:not(.link-glyph)')
+    await expect(mark).toHaveCount(1)
+    await expect(mark).toHaveAttribute('aria-hidden', 'true')
+
+    const measured = await link.evaluate((el) => {
+      const svg = el.querySelector<SVGSVGElement>('svg:not(.link-glyph)')!
+      const vh = Number(svg.getAttribute('viewBox')!.split(/[\s,]+/)[3])
+      const bb = svg.querySelector('path')!.getBBox()
+      const box = svg.getBoundingClientRect().height
+      return {
+        ink: +((bb.height / vh) * box).toFixed(2),
+        fill: getComputedStyle(svg).fill,
+        colour: getComputedStyle(el).color,
+      }
+    })
+
+    // Inherits the link's own colour rather than a literal, so it tracks both
+    // themes and the hover.
+    expect(measured.fill).toBe(measured.colour)
+    // The same ~16.1px ink the CTA pills' marks carry.
+    expect(measured.ink).toBeGreaterThan(15.5)
+    expect(measured.ink).toBeLessThan(16.7)
+  })
+
+  /**
+   * THE MARK SITS INSIDE THE PHRASE, not ahead of it: "More on [octocat]GitHub[arrow]".
+   *
+   * A logo identifies the noun it belongs to, and here that noun is the last
+   * word rather than the whole line -- leading the phrase with it made the
+   * mark modify "More", which is not a thing that has a logo.
+   *
+   * That puts three things on one word that must never be split across a line
+   * break: the mark, "GitHub", and the arrow. `AffordanceLabel` already owned
+   * half of that rule (it welds a trailing glyph to the last word); it now
+   * takes an optional leading `mark` into the same `nowrap` span, so the whole
+   * unit is atomic by construction rather than by hoping the line is wide
+   * enough.
+   */
+  test('the mark, the word and the arrow are one unbreakable unit', async ({ page }) => {
+    await page.goto('/projects')
+
+    const weld = await page.evaluate(() => {
+      const link = Array.from(document.querySelectorAll('a')).find((a) =>
+        (a.textContent ?? '').includes('More on GitHub')
+      )!
+      const nowrap = link.querySelector<HTMLElement>('.whitespace-nowrap')!
+      return {
+        text: nowrap.textContent!.trim(),
+        rects: nowrap.getClientRects().length,
+        whiteSpace: getComputedStyle(nowrap).whiteSpace,
+        // Mark first, arrow last, with the word between them.
+        firstChildIsMark: nowrap.firstElementChild?.classList.contains('brand-mark') ?? false,
+        lastChildIsGlyph: nowrap.lastElementChild?.classList.contains('link-glyph') ?? false,
+        // The head of the phrase stays OUTSIDE the welded span.
+        head: (link.childNodes[0].textContent ?? '').trim(),
+      }
+    })
+
+    expect(weld.whiteSpace).toBe('nowrap')
+    expect(weld.text).toBe('GitHub')
+    expect(weld.rects, 'the welded unit spans one line box').toBe(1)
+    expect(weld.firstChildIsMark).toBe(true)
+    expect(weld.lastChildIsGlyph).toBe(true)
+  })
+
+  /**
+   * The narrow case that proves the weld. At 320px the phrase has to break,
+   * and it must break at the space -- "More on" above, the whole
+   * mark-word-arrow unit below -- never between the mark and its word.
+   */
+  test('breaks at the space, never inside the welded unit', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 900 })
+    await page.goto('/projects')
+
+    const measured = await page.evaluate(() => {
+      const link = Array.from(document.querySelectorAll('a')).find((a) =>
+        (a.textContent ?? '').includes('More on GitHub')
+      )!
+      const nowrap = link.querySelector<HTMLElement>('.whitespace-nowrap')!
+      const mark = nowrap.querySelector('.brand-mark')!
+      const glyph = nowrap.querySelector('.link-glyph')!
+      return {
+        rects: nowrap.getClientRects().length,
+        // Mark and arrow share a line box whatever the width.
+        sameLine:
+          Math.abs(
+            mark.getBoundingClientRect().top - glyph.getBoundingClientRect().top
+          ) < 6,
+      }
+    })
+
+    expect(measured.rects).toBe(1)
+    expect(measured.sameLine).toBe(true)
+  })
+
+  /**
+   * CENTRED UNDER THE GRID, not aligned to the count that opens it.
+   *
+   * It was left-aligned first, on the argument that sharing the count's left
+   * edge made the two read as one column. On the page it did not: the last
+   * grid row is often half empty, so a link under the bottom-left card read as
+   * belonging to that card rather than to the list. Centred, it is an
+   * end-of-list marker -- the same thing `HomeWork` does to close its own
+   * grid.
+   *
+   * Asserted against the GRID's centre rather than the viewport's, so the test
+   * still means something if the page ever gains a gutter.
+   */
+  test('reads as a footnote to the grid: centred under it, below the last card', async ({
+    page,
+  }) => {
+    await page.goto('/projects')
+
+    const geometry = await page.evaluate(() => {
+      const count = document.querySelector('[role="status"]')!
+      const link = Array.from(document.querySelectorAll('a')).find((a) =>
+        (a.textContent ?? '').includes('More on GitHub')
+      )!
+      const cs = getComputedStyle(count)
+      const ls = getComputedStyle(link)
+      const grid = document.querySelector('[data-testid="project-card"]')!.parentElement!
+      const gridBox = grid.getBoundingClientRect()
+      const linkBox = link.getBoundingClientRect()
+      return {
+        gridCentre: gridBox.left + gridBox.width / 2,
+        linkCentre: linkBox.left + linkBox.width / 2,
+        wrapperBorderTop: getComputedStyle(link.parentElement!).borderTopWidth,
+        countLeft: Math.round(count.getBoundingClientRect().left),
+        linkLeft: Math.round(link.getBoundingClientRect().left),
+        countSize: cs.fontSize,
+        linkSize: ls.fontSize,
+        countWeight: cs.fontWeight,
+        linkWeight: ls.fontWeight,
+        // The footnote closes the grid, so it sits BELOW the last card.
+        linkTop: link.getBoundingClientRect().top,
+        lastCardBottom: Math.max(
+          ...Array.from(document.querySelectorAll('[data-testid="project-card"]')).map(
+            (c) => c.getBoundingClientRect().bottom
+          )
+        ),
+      }
+    })
+
+    // Centred on the grid, within a pixel of rounding.
+    expect(Math.abs(geometry.linkCentre - geometry.gridCentre)).toBeLessThanOrEqual(1)
+    // Deliberately LOUDER than the count, not equal to it.
+    expect(parseFloat(geometry.linkSize)).toBeGreaterThan(parseFloat(geometry.countSize))
+    expect(geometry.linkWeight).toBe(geometry.countWeight)
+    expect(geometry.linkTop).toBeGreaterThan(geometry.lastCardBottom)
+    // No hairline above it: the footer's own rule is close enough below that a
+    // second one reads as a boxed-in strip. Rejected on the page, kept out by
+    // this assertion.
+    expect(geometry.wrapperBorderTop).toBe('0px')
+  })
+
+  /**
+   * CENTRED VERTICALLY TOO, in the band between the last card and the footer's
+   * hairline -- not just horizontally.
+   *
+   * It shipped sitting 34px below the grid and 80px above the rule, a 2.4x
+   * asymmetry that reads as the link having drifted up rather than as a
+   * deliberate position. Reported off a real look at the page, then measured.
+   *
+   * The usual objection to centring a closing link is proximity: it should sit
+   * nearer what it closes than what follows, or it stops belonging to the
+   * grid. That does not apply here, and the reason is worth writing down --
+   * THE HAIRLINE IS A DIVIDER, NOT CONTENT. The footer's actual copy sits
+   * another 56px below it, so at 57/57 the link is 57px from the grid and
+   * ~113px from the nearest footer text: still twice as close to the thing it
+   * belongs to.
+   *
+   * The two gaps are asserted EQUAL rather than against literal pixel values,
+   * so the intent survives a change to the spacing without this test having to
+   * be retuned to match it.
+   */
+  test('sits centred in the band between the grid and the footer rule', async ({ page }) => {
+    await page.goto('/projects')
+    // The link is inside the animated container and the footer is not, so this
+    // measurement is only meaningful once the cascade has stopped moving.
+    await settle(page)
+
+    const band = await page.evaluate(() => {
+      const cards = Array.from(document.querySelectorAll('[data-testid="project-card"]'))
+      const cardBottom = Math.max(...cards.map((c) => c.getBoundingClientRect().bottom))
+      const link = document
+        .querySelector('a.projects-more')!
+        .getBoundingClientRect()
+      // The footer's hairline is the `border-top` of its inner row.
+      const rule = document.querySelector('footer > div')!.getBoundingClientRect()
+      return {
+        above: +(link.top - cardBottom).toFixed(1),
+        below: +(rule.top - link.bottom).toFixed(1),
+      }
+    })
+
+    expect(
+      Math.abs(band.above - band.below),
+      `link sits ${band.above}px below the grid and ${band.below}px above the footer rule`
+    ).toBeLessThanOrEqual(1)
+  })
+
+  /**
+   * The footnote is page furniture, not a search result. It survives a filter
+   * that empties the grid -- which is the moment a reader most needs somewhere
+   * else to go.
+   */
+  test('survives a filter that empties the grid', async ({ page }) => {
+    await page.goto('/projects')
+    await page.getByLabel('Search projects').fill('zzzznotathing')
+    await expect(page.locator('[data-testid="project-card"]')).toHaveCount(0)
+    await expect(footnote(page)).toBeVisible()
+  })
+
+  /**
+   * It rides the entrance cascade's beat 4 rather than adding a beat of its
+   * own. `tests/e2e/projects-entrance.spec.ts` asserts the cascade is exactly
+   * five `.projects-enter` elements; a footnote that carried the class would
+   * make it six and turn a layout addition into a broken cascade.
+   */
+  test('adds no beat to the entrance cascade', async ({ page }) => {
+    await page.goto('/projects')
+    const link = footnote(page)
+    await expect(link).not.toHaveClass(/projects-enter/)
+    await expect(link.locator('..')).not.toHaveClass(/projects-enter\b/)
+  })
+})

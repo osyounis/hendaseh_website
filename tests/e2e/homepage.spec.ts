@@ -173,18 +173,246 @@ test.describe('Homepage', () => {
     )
   })
 
-  test('CTA card offers email and LinkedIn', async ({ page }) => {
+  test('CTA card offers email, LinkedIn and GitHub', async ({ page }) => {
     await page.goto('/')
 
     await expect(page.getByRole('heading', { name: 'Have a role in mind?' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Email me' })).toHaveAttribute(
+
+    const card = page.locator('.home-cta-card')
+    await expect(card.getByRole('link', { name: 'Email me' })).toHaveAttribute(
       'href',
       'mailto:omar@hendaseh.com'
     )
-    await expect(page.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+    await expect(card.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
       'href',
       'https://www.linkedin.com/in/omar-younis/'
     )
+    await expect(card.getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/osyounis'
+    )
+  })
+
+  /**
+   * GitHub is the LinkedIn pill's peer, not a lesser third thing. Both are
+   * external destinations, so both take the same secondary pill, the same
+   * arrow-up-right, and the same "(opens in a new tab)" that the arrow only
+   * says visually. The assertion is on the RENDERED result rather than on the
+   * class attribute: a pill that carries `.pill-secondary` but resolves to a
+   * different ground (a page-scoped override creeping in, say) would pass a
+   * className check and still be wrong on screen.
+   */
+  test('the GitHub and LinkedIn pills are the same treatment', async ({ page }) => {
+    await page.goto('/')
+
+    const card = page.locator('.home-cta-card')
+    const linkedin = card.getByRole('link', { name: 'LinkedIn' })
+    const github = card.getByRole('link', { name: 'GitHub' })
+
+    for (const link of [linkedin, github]) {
+      await expect(link).toHaveAttribute('target', '_blank')
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      // The sr-only hint, welded on after the aria-hidden glyph.
+      await expect(link).toHaveAccessibleName(/\(opens in a new tab\)$/)
+      // One arrow-up-right, drawn -- never a Unicode character.
+      await expect(link.locator('svg.link-glyph-arrow')).toHaveCount(1)
+    }
+
+    const paint = (l: typeof linkedin) =>
+      l.evaluate((el) => {
+        const cs = getComputedStyle(el)
+        const glyph = getComputedStyle(el.querySelector('svg.link-glyph-arrow')!)
+        return {
+          background: cs.backgroundColor,
+          color: cs.color,
+          boxShadow: cs.boxShadow,
+          padding: cs.padding,
+          borderRadius: cs.borderRadius,
+          fontSize: cs.fontSize,
+          fontWeight: cs.fontWeight,
+          glyphHeight: glyph.height,
+          glyphMarginLeft: glyph.marginLeft,
+        }
+      })
+
+    expect(await paint(github)).toEqual(await paint(linkedin))
+  })
+
+  /**
+   * Both external pills carry their DESTINATION MARK -- the octocat and the
+   * LinkedIn glyph -- the same construction the case-study hero's GitHub
+   * button and the project cards' mini pills already use. The marks are filled
+   * paths, which is why every rule that sizes them is scoped
+   * `svg:not(.link-glyph)`: the affordance glyphs beside them are stroked
+   * outlines and would render as solid blobs under `fill: currentColor`.
+   */
+  test('both external CTA pills carry a filled destination mark', async ({ page }) => {
+    await page.goto('/')
+
+    const card = page.locator('.home-cta-card')
+    for (const name of ['LinkedIn', 'GitHub']) {
+      const mark = card.getByRole('link', { name }).locator('svg:not(.link-glyph)')
+      await expect(mark, `${name} has exactly one destination mark`).toHaveCount(1)
+      await expect(mark).toHaveAttribute('aria-hidden', 'true')
+      // Filled, and inheriting the pill's own colour rather than a literal.
+      expect(await mark.evaluate((el) => getComputedStyle(el).fill)).toBe(
+        await card.getByRole('link', { name }).evaluate((el) => getComputedStyle(el).color)
+      )
+    }
+
+    // The primary action carries NO mark: "Email me" is a verb, not a
+    // destination, and there is no brand to identify. It is also the one pill
+    // with no arrow-up-right, so the row reads as one action plus two
+    // destinations rather than as three inconsistent buttons.
+    await expect(
+      card.getByRole('link', { name: 'Email me' }).locator('svg')
+    ).toHaveCount(0)
+  })
+
+  /**
+   * THE TWO MARKS ARE MATCHED ON INK, NOT ON BOX -- the same law
+   * `LinkAffordance.tsx` states for the affordance glyphs, and the reason it
+   * exists is visible on /contact: both channel marks share one 26px box
+   * there, and because the octocat fills 0.975 of its viewBox while the
+   * LinkedIn glyph fills only 0.714 of its own, the octocat renders 37%
+   * larger. Two marks that size disparity apart, sitting side by side in a
+   * single row, reads as a mistake.
+   *
+   * So the boxes differ (16.5px and 22.5px) precisely so the INK does not.
+   * Asserting on ink is what makes this test fail if someone "tidies" the two
+   * boxes to one shared value.
+   */
+  test('the two destination marks are matched on ink, not on box', async ({ page }) => {
+    await page.goto('/')
+
+    const ink = await page.evaluate(() => {
+      const read = (name: string) => {
+        const link = Array.from(
+          document.querySelectorAll<HTMLAnchorElement>('.home-cta-card a')
+        ).find((a) => (a.textContent ?? '').includes(name))!
+        const svg = link.querySelector<SVGSVGElement>('svg:not(.link-glyph)')!
+        const vh = Number(svg.getAttribute('viewBox')!.split(/[\s,]+/)[3])
+        const bb = svg.querySelector('path')!.getBBox()
+        const box = svg.getBoundingClientRect().height
+        return { box: +box.toFixed(2), ink: +((bb.height / vh) * box).toFixed(2) }
+      }
+      return { linkedin: read('LinkedIn'), github: read('GitHub') }
+    })
+
+    // The boxes are deliberately NOT equal -- that is the whole mechanism.
+    expect(ink.linkedin.box).not.toBeCloseTo(ink.github.box, 0)
+    // The ink is.
+    expect(Math.abs(ink.linkedin.ink - ink.github.ink)).toBeLessThan(0.5)
+  })
+
+  /**
+   * A mark taller than the pill's own 22.5px line box grows that pill and
+   * leaves it standing taller than its neighbours. The LinkedIn glyph's inset
+   * viewBox needs the larger box of the two, so it is the one that would blow
+   * the budget -- which is why its 22.5px is a ceiling rather than a
+   * preference, and why the shared ink target is derived from it.
+   */
+  test('the marks do not change any pill height', async ({ page }) => {
+    await page.goto('/')
+
+    const heights = await page
+      .locator('.home-cta-card .pill')
+      .evaluateAll((els) => els.map((el) => +el.getBoundingClientRect().height.toFixed(2)))
+
+    expect(heights).toHaveLength(3)
+    expect(new Set(heights).size, `pill heights differ: ${heights.join(', ')}`).toBe(1)
+    // 22.5px line box + 14px padding top and bottom. A mark that grew the pill
+    // would push this past 50.5 and the assertion names the number rather than
+    // just comparing the three to each other.
+    expect(heights[0]).toBeCloseTo(50.5, 1)
+  })
+
+  /**
+   * THE CTA ROW CANNOT HOLD THREE PILLS ON A PHONE, and that is arithmetic
+   * rather than taste. Measured against the Worker build: the three pills are
+   * 118.2 + 129.3 + 118.3px and the two gaps 14px each, so the row needs
+   * 393.8px of card inner width. `.home-cta-card` is `px-10`, so at a 390px
+   * viewport it offers 270px. `flex-wrap`'s answer to that is `Email me` and
+   * `LinkedIn` on one line and `GitHub` orphaned alone on the next -- three
+   * peers rendered as two-plus-one.
+   *
+   * Below the breakpoint the row stacks instead, so all three read as equals.
+   * The assertion is that each pill starts its own line AND that they are the
+   * same width; either alone would pass for a layout that is still ragged.
+   */
+  test('the three CTA pills stack as equals on a phone', async ({ page }) => {
+    await page.setViewportSize(MOBILE_VIEWPORT)
+    await page.goto('/')
+
+    const boxes = await page.locator('.home-cta-card .pill').evaluateAll((els) =>
+      els.map((el) => {
+        const r = el.getBoundingClientRect()
+        return { top: Math.round(r.top), left: Math.round(r.left), width: Math.round(r.width) }
+      })
+    )
+
+    expect(boxes).toHaveLength(3)
+    // Three distinct tops: nobody shares a line with anybody.
+    expect(new Set(boxes.map((b) => b.top)).size).toBe(3)
+    // Same width and same left edge -- a column, not a ragged centred stack.
+    expect(new Set(boxes.map((b) => b.width)).size).toBe(1)
+    expect(new Set(boxes.map((b) => b.left)).size).toBe(1)
+  })
+
+  /**
+   * THE INVARIANT, guarded across the whole band rather than at two points.
+   *
+   * The row must be EITHER one line of three OR three lines of one. What it
+   * must never be is two-plus-one, and the only thing standing between those
+   * is a hand-derived breakpoint sitting in home.css next to a measurement
+   * that goes stale the moment the row's contents change.
+   *
+   * It already did. The breakpoint was 560px, derived when the pills were bare
+   * text; adding the two destination marks widened the row by 57px and moved
+   * the real threshold to 570.8px, so every viewport from 561 to 570 wrapped
+   * two-plus-one again. Neither the 390px stacking test nor the 1280px row
+   * test could see it -- both sit far outside the band that broke.
+   *
+   * This sweeps the band instead of trusting the number, so the next change to
+   * the row's contents fails here rather than on someone's phone.
+   */
+  test('the CTA row is never two-plus-one, at any width', async ({ page }) => {
+    await page.goto('/')
+
+    for (const width of [360, 390, 430, 500, 560, 570, 575, 580, 585, 600, 640, 768, 1024]) {
+      await page.setViewportSize({ width, height: 900 })
+
+      const lines = await page.locator('.home-cta-card .pill').evaluateAll((els) => {
+        const tops = els.map((el) => Math.round(el.getBoundingClientRect().top))
+        const counts = new Map<number, number>()
+        for (const t of tops) counts.set(t, (counts.get(t) ?? 0) + 1)
+        return [...counts.values()].sort((a, b) => b - a)
+      })
+
+      // Either [3] (one row) or [1,1,1] (a clean stack). [2,1] is the defect.
+      const shape = lines.join(',')
+      expect(
+        shape === '3' || shape === '1,1,1',
+        `at ${width}px the CTA row broke as ${shape} pills per line`
+      ).toBe(true)
+    }
+  })
+
+  /**
+   * The other half of the breakpoint: on a desktop viewport the three stay one
+   * row. Guards the guard above -- a `flex-direction: column` that leaked past
+   * its media query would satisfy the stacking test and silently rebuild the
+   * desktop CTA as a column.
+   */
+  test('the three CTA pills stay on one row on desktop', async ({ page }) => {
+    await page.goto('/')
+
+    const tops = await page
+      .locator('.home-cta-card .pill')
+      .evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().top)))
+
+    expect(tops).toHaveLength(3)
+    expect(new Set(tops).size).toBe(1)
   })
 
   test('desktop nav resolves all four links', async ({ page }) => {

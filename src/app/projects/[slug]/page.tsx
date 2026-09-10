@@ -12,7 +12,8 @@ import {
 import ScrollReveal from '@/components/projects/ScrollReveal';
 import CaseStudyClips from '@/components/projects/CaseStudyClips';
 import CaseStudyCaption from '@/components/projects/CaseStudyCaption';
-import NewTabHint from '@/components/NewTabHint';
+import NewTabHint from '@/components/NewTabHint'
+import { GitHubMark } from '@/components/BrandMarks';
 import {
   AffordanceLabel,
   ArrowUpRight,
@@ -44,11 +45,15 @@ interface PageProps {
  * whichever e2e test happened to hit it failed on any given run.
  */
 
-/* Octocat, 16x16 viewBox. Inlined rather than imported from `react-icons` so
-   the glyph is the exact path the approved mockup draws. The project cards
-   carry their own copy of this constant for the same reason. */
-const GITHUB_MARK =
-  'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z';
+/* The octocat now comes from `@/components/BrandMarks` -- it had been inlined
+   here, on /contact and in `ProjectCard.tsx`. The original reasoning (a local
+   path rather than `react-icons`, so no dependency update can change the glyph)
+   is unchanged; it just no longer costs three copies of the same string.
+
+   No `className` is passed, so the mark carries the shared defaults. The size
+   is still this page's: `.case-btn-white svg:not(.link-glyph)` is a compound
+   selector at (0,2,0) and outranks `.brand-mark-github`'s (0,1,0), so the mark
+   stays 18px. Verified against the built Worker before and after the move. */
 
 /** Per-element delay for the hero entrance cascade (see `.case-enter` in
  *  case-study.css). Hero only -- the body below is `[data-reveal]`, a separate
@@ -298,9 +303,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   rel="noopener noreferrer"
                   className="pill case-btn-white"
                 >
-                  <svg viewBox="0 0 16 16" aria-hidden="true">
-                    <path d={GITHUB_MARK} />
-                  </svg>
+                  <GitHubMark />
                   <AffordanceLabel label="GitHub" glyph={<ArrowUpRight />} />
                   <NewTabHint />
                 </a>
@@ -378,7 +381,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             study" always on the right. No border here — the footer's hairline
             is the only rule at the bottom of the page. */}
         <nav className="case-nav" aria-label="Case study">
-          <Link href="/projects" className="case-nav-back">
+          <Link href="/projects" className="link-quiet">
             <LeadingAffordanceLabel label="All projects" glyph={<ChevronLeft />} />
           </Link>
 

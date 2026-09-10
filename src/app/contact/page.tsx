@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
 } from '@/components/LinkAffordance';
 import NewTabHint from '@/components/NewTabHint';
+import { GitHubMark, LinkedInMark } from '@/components/BrandMarks';
 import CopyEmailButton from '@/components/contact/CopyEmailButton';
 
 /**
@@ -67,19 +68,23 @@ export const metadata: Metadata = {
   },
 };
 
-/* Destination marks. Inline rather than pulled from `react-icons` so each
-   glyph is the exact path the approved mockup draws, and so the icon set does
-   not change under the page when a dependency updates. `ProjectCard.tsx` and
-   the case-study template carry their own copies of the octocat for the same
-   stated reason. */
+/* The LinkedIn and GitHub marks now come from `@/components/BrandMarks`. They
+   had been inlined here, in `ProjectCard.tsx` and in the case-study template,
+   and this page's own comment used to explain that this was "for the same
+   stated reason" as the others -- which had quietly become an argument for
+   keeping four copies of the same path.
 
-/** LinkedIn wordmark glyph, 24x24 viewBox. */
-const LINKEDIN_MARK =
-  'M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.55V9h3.57v11.45Z';
+   The reason itself still stands and is unchanged: these are hand-held local
+   paths, NOT `react-icons`, so no dependency update can change the glyph under
+   the page. A local module keeps that guarantee with one copy.
 
-/** Octocat, 16x16 viewBox. */
-const GITHUB_MARK =
-  'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z';
+   `.contact-card-mark` is passed explicitly and REPLACES the shared defaults,
+   so these three `<svg>` elements render exactly as they did before -- 26px,
+   filled with `var(--contact-mark)` rather than `currentColor`. See the note
+   on the `className` prop in BrandMarks.tsx.
+
+   The document mark below stays inline: it has one consumer, and moving a
+   single-use constant into a shared module is the opposite trade. */
 
 /** Document with a folded corner, 24x24 viewBox. */
 const DOCUMENT_MARK =
@@ -157,9 +162,7 @@ export default function ContactPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <svg className="contact-card-mark" viewBox="0 0 24 24" aria-hidden="true">
-                <path d={LINKEDIN_MARK} />
-              </svg>
+              <LinkedInMark className="contact-card-mark" />
               <span className="contact-card-text">
                 <span className="contact-card-title">
                   <AffordanceLabel label="LinkedIn" glyph={<ArrowUpRight />} />
@@ -177,9 +180,7 @@ export default function ContactPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <svg className="contact-card-mark" viewBox="0 0 16 16" aria-hidden="true">
-                <path d={GITHUB_MARK} />
-              </svg>
+              <GitHubMark className="contact-card-mark" />
               <span className="contact-card-text">
                 <span className="contact-card-title">
                   <AffordanceLabel label="GitHub" glyph={<ArrowUpRight />} />

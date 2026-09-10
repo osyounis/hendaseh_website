@@ -437,6 +437,47 @@
     box-shadow: var(--cta-shadow);
   }
 
+  /* THE ACTION ROW STACKS ON A PHONE, and the breakpoint is arithmetic rather
+     than taste.
+
+     Measured against the built page: the three pills render 118.2px
+     (`Email me`), 160.8px (`LinkedIn`) and 143.8px (`GitHub`), and the row's
+     two gaps are 14px each -- 450.8px of content. `.home-cta-card` is `px-10`,
+     so the card gives up 80px to its own gutters, and `.page-wrap` another 40
+     (20px a side below 640px). Three pills therefore need a 570.8px viewport
+     before they can share a row at all; at 390px there are 270px available,
+     which is 8.5px more than the TWO pills this row shipped with.
+
+     Left to `flex-wrap`, the third pill lands alone on a second line: three
+     peers rendered as two-plus-one. Stacking them gives all three equal width
+     and equal rank, which is what they are -- one primary action and two
+     external profiles.
+
+     RE-MEASURE THIS NUMBER WHENEVER THE ROW'S CONTENTS CHANGE. It was 560px
+     against a 538px threshold when the pills were bare; adding the two
+     destination marks widened LinkedIn by 31.5px and GitHub by 25.5px and
+     pushed the threshold to 570.8 -- past the old breakpoint, which silently
+     reopened the two-plus-one wrap between 560 and 571px. A stale value here
+     does not fail loudly, it just looks wrong on one band of phone widths.
+
+     580px, not 640px: the threshold is 570.8 and 580 leaves ~9px for the
+     platform-to-platform variation in text measurement that this repo has
+     already been bitten by once (see SEQUENCE_TOLERANCE in
+     tests/e2e/homepage.spec.ts). Reusing the 640px `.page-wrap` step instead
+     would stack a row that still has 69px to spare at 640px.
+
+     LAYOUT ONLY. The pills keep their own geometry, colour, focus ring and
+     `:active` press -- `align-items: stretch` is what widens them, so nothing
+     here touches `.pill`'s padding. `justify-content: center` is left in place
+     by the JSX and simply becomes vertical centring in a column, which is a
+     no-op for a row that is exactly as tall as its contents. */
+  @media (max-width: 580px) {
+    .home-cta-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
   /* The tile is a WRAPPER around the icon, not the icon itself, and that is
      load-bearing rather than cosmetic. `padding: 9%` resolves against the
      CONTAINING BLOCK's width, never the element's own -- so the padded element
