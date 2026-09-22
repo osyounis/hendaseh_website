@@ -6,8 +6,8 @@ import Link from 'next/link';
  * tokens come for free; Next still answers 404 and injects `noindex` itself.
  * Card-tier slugs land here too (`dynamicParams = false` on /projects/[slug]).
  *
- * Deliberately quiet: one headline set like the home hero's name, one line of
- * direction, two ways out. No "404" eyebrow and no motion -- nothing here
+ * Deliberately quiet: a small muted "404", one headline set like the home
+ * hero's name, one line of direction, two ways out. No motion -- nothing here
  * answers a user action, so there is nothing to animate.
  *
  * `title` resolves through the root template to `Page Not Found - Omar
@@ -22,6 +22,16 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <section className="page-wrap flex min-h-[70svh] flex-col items-center justify-center py-20 text-center">
+      {/* The status code, for the engineers and recruiters who read it at a
+          glance. Deliberately NOT inside the h1: the heading a screen reader
+          announces stays the message, and this stays quiet beside it. */}
+      <p
+        data-testid="not-found-code"
+        className="text-muted mb-4 text-[clamp(17px,2vw,21px)] font-semibold tabular-nums"
+      >
+        404
+      </p>
+
       <h1 className="text-primary text-[clamp(40px,6.5vw,72px)] leading-[1.05] font-black tracking-[-0.02em] text-balance">
         This page can’t be found.
       </h1>

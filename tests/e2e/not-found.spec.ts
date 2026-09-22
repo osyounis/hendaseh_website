@@ -28,6 +28,13 @@ for (const url of MISSING) {
 
     await expect(page.locator('h1')).toHaveCount(1)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('This page can’t be found.')
+
+    // The status code is shown, quietly, ABOVE the headline -- and outside
+    // it, so the h1 a screen reader announces is still the message itself.
+    const code = page.getByTestId('not-found-code')
+    await expect(code).toHaveText('404')
+    const [codeBox, h1Box] = await Promise.all([code.boundingBox(), page.locator('h1').boundingBox()])
+    expect(codeBox!.y + codeBox!.height).toBeLessThanOrEqual(h1Box!.y)
   })
 }
 
