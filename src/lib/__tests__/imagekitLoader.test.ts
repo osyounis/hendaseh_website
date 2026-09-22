@@ -12,13 +12,24 @@ describe('imagekitLoader — production mode', () => {
   it('builds the tr: transform URL with the default quality', () => {
     vi.stubEnv('NODE_ENV', 'production')
     const result = imagekitLoader({ src: '/images/nahtadi/icon.png', width: 640, quality: undefined })
-    expect(result).toBe('https://ik.imagekit.io/osyounis/tr:w-640,q-75,f-auto/images/nahtadi/icon.png')
+    expect(result).toBe('https://ik.imagekit.io/osyounis/tr:w-640,c-at_max,q-75,f-auto/images/nahtadi/icon.png')
   })
 
   it('honors an explicit quality', () => {
     vi.stubEnv('NODE_ENV', 'production')
     const result = imagekitLoader({ src: '/images/nahtadi/icon.png', width: 640, quality: 90 })
-    expect(result).toBe('https://ik.imagekit.io/osyounis/tr:w-640,q-90,f-auto/images/nahtadi/icon.png')
+    expect(result).toBe('https://ik.imagekit.io/osyounis/tr:w-640,c-at_max,q-90,f-auto/images/nahtadi/icon.png')
+  })
+
+  // Load-bearing: `c-at_max` stops ImageKit upscaling. Next's srcSet offers
+  // widths up to 3840, and ImageKit answers 400 Bad Request when asked to
+  // upscale a tall source that far (a16-phone.png, 1179x2556, failed at
+  // w-3840). With at_max, an oversize width returns the original instead,
+  // and every width at or under the original is byte-identical to before.
+  it('never asks ImageKit to upscale (c-at_max)', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    const result = imagekitLoader({ src: '/images/case-studies/a16-phone.png', width: 3840, quality: undefined })
+    expect(result).toContain(',c-at_max,')
   })
 
   // Load-bearing: Next's default loader has a built-in bypass that skips

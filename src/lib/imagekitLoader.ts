@@ -18,5 +18,9 @@ export default function imagekitLoader({ src, width, quality }: ImageLoaderProps
   // the extension, so `foo.svg?v=2` is treated the same as `foo.svg`.
   if (src.split('?', 1)[0].toLowerCase().endsWith('.svg')) return src;
 
-  return `${ENDPOINT}/tr:w-${width},q-${quality ?? 75},f-auto${src}`;
+  // `c-at_max`: never upscale. Next's srcSet offers widths up to 3840 and
+  // ImageKit answers 400 when asked to upscale a tall source that far; with
+  // at_max an oversize width returns the original instead. At or below the
+  // source width the output is byte-identical to the plain `w-` transform.
+  return `${ENDPOINT}/tr:w-${width},c-at_max,q-${quality ?? 75},f-auto${src}`;
 }
