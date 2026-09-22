@@ -65,14 +65,18 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: ['Omar Younis', 'Software Engineer', 'iOS', 'Swift', 'SwiftUI', 'Machine Learning', 'Autonomous Systems', 'Data Engineering', 'Python', 'PyTorch', 'AWS', 'CUDA'],
   authors: [{ name: 'Omar Younis' }],
+  // All rendered from public/logos/hendaseh-mark.svg by `npm run
+  // generate:icons`. The Apple icon is opaque white on purpose: iOS paints any
+  // transparency black. favicon-512x512.png is the OG-card source, not an icon.
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon-64x64.png', sizes: '64x64', type: 'image/png' },
     ],
     apple: [
-      { url: '/favicon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
   openGraph: {
