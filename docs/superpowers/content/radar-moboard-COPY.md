@@ -408,6 +408,8 @@ restate a locked value unchanged; rows marked CHANGE **supersede** the matching 
 lift strings mechanically, never re-phrase. Layout ruled 2026-09-30: one player, scenario switch (tabs) + view
 switch (toggle buttons) on one row, stacking on phones ("A, revised").
 
+**Shipped on dev, 2026-09-30, commits ee074c7, be8f12a.**
+
 ### 7.0 — Facts, re-verified 2026-09-30 against `~/Documents/github/radar-moboard`
 
 | fact | value | source |
