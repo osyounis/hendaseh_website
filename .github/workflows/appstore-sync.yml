@@ -76,7 +76,8 @@ jobs:
             `src/lib/__tests__/reviews.test.ts`. Do not widen this to a
             worldwide figure.
 
-            No review was added or removed. The sync refuses to delete: if a
-            stored review cannot be found by id in any configured storefront it
-            fails the run instead, because Apple's feed is a rolling window and
+            No review was added or removed. The sync never writes the reviews
+            file: if a stored review cannot be found by id in any configured
+            storefront it raises a warning on the run instead, because Apple's
+            feed is a rolling window that also drops entries intermittently, and
             absence is not withdrawal.

@@ -22,8 +22,15 @@
  *  3. NEVER DELETE A STORED REVIEW. Apple's RSS returns a rolling window, so a
  *     review that has aged out is absent, not withdrawn. Every stored review is
  *     located BY ID across all configured storefronts; if one cannot be found,
- *     this exits 1 naming it and writes nothing. A sync that trusted the feed
- *     would silently empty the file.
+ *     this WARNS naming it and carries on. It never writes the reviews file at
+ *     all. A sync that trusted the feed would silently empty it.
+ *
+ *     A warning, not a failure, since 2026-09-30. The 2026-09-28 run exited 1
+ *     because the `jo` feed briefly omitted both Jordanian reviews; they were
+ *     back two days later. Failing protected nothing (this file is never
+ *     written) and skipped the rating sync, so a flaky feed meant a red run
+ *     every few weeks. Each feed's entry count is logged so the next warning
+ *     says whether a feed came back empty or partial.
  *
  * Usage: node scripts/appstore-sync.mjs [--dry-run] [--force-diff]
  */
@@ -113,6 +120,7 @@ const live = {
 // ---------------------------------------------------------------- reviews
 const reviewsDoc = JSON.parse(await readFile(REVIEWS, 'utf8'));
 const seen = new Map();
+const feedSizes = [];
 for (const country of STOREFRONTS) {
   const feed = await getJson(
     `https://itunes.apple.com/${country}/rss/customerreviews/id=${appId}/sortBy=mostRecent/json`,
@@ -125,17 +133,23 @@ for (const country of STOREFRONTS) {
     const id = e?.id?.label;
     if (id) seen.set(id, country);
   }
+  feedSizes.push(`${country}: ${entries.length} entries`);
 }
 
 const lost = reviewsDoc.reviews.filter((r) => !seen.has(r.id));
 if (lost.length > 0) {
-  die(
-    `${lost.length} stored review(s) could not be found by id in any configured storefront ` +
-      `(${STOREFRONTS.join(', ')}):\n\n` +
-      lost.map((r) => `  ${r.id}  ${r.author} — "${r.title}"  [stored as ${r.storefront}]`).join('\n') +
-      `\n\nThis is EXPECTED as reviews age out of Apple's rolling feed, and it is NOT a reason\n` +
-      `to delete them. Nothing was written. A human decides whether the review stays.`
+  const names = lost.map((r) => `${r.id}  ${r.author} — "${r.title}"  [stored as ${r.storefront}]`);
+  console.warn(
+    `\n⚠ ${lost.length} stored review(s) could not be found by id in any configured storefront ` +
+      `(${feedSizes.join(', ')}):\n\n` +
+      names.map((n) => `  ${n}`).join('\n') +
+      `\n\nApple's feeds are a rolling window and drop entries intermittently. This is NOT a reason\n` +
+      `to delete them, and the reviews file is never written. A human decides whether the review stays.\n`
   );
+  // Surfaced as an annotation on the run summary, so a green run still shows it.
+  if (process.env.GITHUB_ACTIONS) {
+    for (const n of names) console.log(`::warning title=Review missing from Apple's feed::${n}`);
+  }
 }
 
 // ------------------------------------------------------------------ diff
@@ -157,7 +171,10 @@ if (FORCE_DIFF)
 console.log(`app id ${appId}, storefronts ${STOREFRONTS.join(' + ')}`);
 console.log(`  live : rating ${live.rating}, count ${live.count}, version ${live.version}, price ${live.price}`);
 console.log(`  repo : rating ${stored.rating}, count ${stored.count}`);
-console.log(`  reviews: ${reviewsDoc.reviews.length} stored, all ${reviewsDoc.reviews.length} found by id`);
+console.log(`  feeds: ${feedSizes.join(', ')}`);
+console.log(
+  `  reviews: ${reviewsDoc.reviews.length} stored, ${reviewsDoc.reviews.length - lost.length} found by id`
+);
 
 if (drift.length === 0) {
   console.log('\nNo drift. Nothing to do.');
