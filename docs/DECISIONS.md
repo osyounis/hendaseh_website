@@ -260,3 +260,10 @@ The **page** carries `s-maxage` only. That directive is for shared caches — Cl
 - **It earns its keep.** It prints the **computed** `font-family` for both fonts, which is how the `next/font` variables-on-the-wrong-element defect was caught by eye. That failure mode is invisible unless you know to look.
 - **The cost is one prerendered static route.** Gating it would mean new conditional routing plus a test asserting the 404 in a production build — more code and more surface than the page itself.
 **Revisit when:** someone specifically wants it off production. This entry is then the starting point — the gate plus its test — not a re-litigation of whether to keep the page. **It is not an open question and should not be listed as one.**
+
+## 2026-09-30 — A review missing from Apple's feed is a warning, not a failed sync
+
+**Decision:** When `scripts/appstore-sync.mjs` cannot find a stored review by id in any configured storefront, it names the review in a `::warning::` annotation and carries on with the rating sync, exiting 0. It still never deletes or rewrites `src/data/nahtadiReviews.json`, and it now logs each storefront feed's entry count on every run. API failures (HTTP error, non-JSON, missing lookup fields) still fail the run with nothing written.
+**Why:** The 2026-09-28 scheduled run failed because the `jo` feed omitted both Jordanian reviews (`13621969408`, `13621477577`). A dry run on 2026-09-30 found both again. So the feed drops entries intermittently, not only when reviews age out of the window. The script never writes the reviews file, so failing the run protected nothing. It only skipped the rating check and made red runs routine, which is how a real failure gets ignored. The earlier failures on 2026-09-07 and 2026-09-14 were the missing `.nvmrc` (fixed in `3fd8dc0`) and are unrelated.
+**Revisit when:** A stored review stays missing across several consecutive runs. Then Omar decides whether it stays on the site; the warning is the prompt for that decision, not a prompt to delete it.
+
