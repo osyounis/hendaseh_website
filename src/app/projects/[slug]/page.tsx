@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { getProjectById, getCaseStudyProjects, getNextCaseStudy } from '@/lib/projects';
 import {
   getCaseStudy,
+  clipScenarios,
   type CaseStudyImageBlock,
   type CaseStudySection as CaseStudySectionData,
   type Prose,
@@ -345,11 +346,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 // owns the `<figure>` -- `data-reveal` has to go on something
                 // this file renders.
                 <div key={index} data-reveal="">
-                  <CaseStudyClips
-                    clips={block.clips}
-                    title={block.title}
-                    caption={block.caption}
-                  />
+                  <CaseStudyClips scenarios={clipScenarios(block)} title={block.title} />
                 </div>
               ) : (
                 <figure

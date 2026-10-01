@@ -2,7 +2,13 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync, existsSync } from 'node:fs'
 import path from 'node:path'
 import { getAllProjects, getCaseStudyProjects, getNextCaseStudy } from '../projects'
-import { getCaseStudy } from '../caseStudies'
+import {
+  getCaseStudy,
+  clipScenarios,
+  isScenarioBlock,
+  mediaCaptions,
+  type CaseStudyClipsBlock,
+} from '../caseStudies'
 
 /**
  * A PNG's own IHDR, read straight out of the header: an 8-byte signature, then
@@ -133,7 +139,11 @@ describe('case-study content', () => {
     // Every block, not the first: a clip or a detail added later without the
     // sentence is exactly what this exists to catch.
     media.forEach((block, i) => {
-      expect(block.caption, `radar-moboard media[${i}]`).toContain('All scenarios synthetic.')
+      // EVERY caption a block can show -- a scenario block shows one per
+      // scenario, and each must carry the marker on its own.
+      mediaCaptions(block).forEach((caption, j) => {
+        expect(caption, `radar-moboard media[${i}] caption ${j}`).toContain('All scenarios synthetic.')
+      })
     })
   })
 
@@ -149,7 +159,13 @@ describe('case-study content', () => {
         ]),
         // Media titles and captions are copy too, and they are the copy most
         // likely to be written in a hurry beside a new asset.
-        ...(cs.media ?? []).flatMap((block) => [block.title ?? '', block.caption]),
+        ...(cs.media ?? []).flatMap((block) => [
+          block.title ?? '',
+          ...mediaCaptions(block),
+          ...(block.kind === 'clips'
+            ? clipScenarios(block).flatMap((s) => [s.label, ...s.clips.map((c) => c.description)])
+            : []),
+        ]),
       ].join(' ')
       expect(copy, p.id).not.toContain('—')
     })
@@ -184,6 +200,32 @@ describe('case-study projects still carry what the template renders', () => {
       expect(Object.keys(p.links), p.id).not.toContain('embed')
     })
   })
+
+  it('never says radar-moboard is graded in CI', () => {
+    // CI runs the PUBLIC answer key only; the private key's problems skip there.
+    // "Graded in CI against two independent answer keys" was false for one of
+    // the two, so no catalog or case-study string may put CI next to grading.
+    const radar = getAllProjects().find((p) => p.id === 'radar-moboard')!
+    const strings = [radar.description, radar.stats, radar.cardStat ?? '', radar.tagline ?? '']
+    strings.forEach((s) => expect(s).not.toMatch(/\bCI\b/))
+    expect(radar.stats).not.toContain('1,589')
+
+    // The case study too: thesis, stats, and every prose run of every section.
+    const study = getCaseStudy('radar-moboard')!
+    const prose = [study.problem, study.approach, study.impact].flatMap((section) => [
+      section.eyebrow,
+      section.heading,
+      ...section.paragraphs.flatMap((paragraph) =>
+        paragraph.map((run) => (typeof run === 'string' ? run : run.em))
+      ),
+    ])
+    const studyStrings = [
+      study.thesis,
+      ...study.stats.flatMap((stat) => [stat.value, stat.label]),
+      ...prose,
+    ]
+    studyStrings.forEach((s) => expect(s).not.toMatch(/\bCI\b/))
+  })
 })
 
 describe('case-study media', () => {
@@ -191,13 +233,45 @@ describe('case-study media', () => {
     (getCaseStudy(p.id)!.media ?? []).map((block, index) => ({ id: p.id, index, block }))
   )
 
+  it('offers the same views, in the same order, in every scenario of a block', () => {
+    // "The view you chose survives a scenario switch" is only well defined if
+    // every scenario offers it. The type cannot say this; this does.
+    blocks.forEach(({ id, index, block }) => {
+      if (block.kind !== 'clips') return
+      const [first, ...rest] = clipScenarios(block)
+      const shape = (s: { clips: readonly { id: string; label: string }[] }) =>
+        s.clips.map((c) => `${c.id}:${c.label}`)
+      rest.forEach((s) =>
+        expect(shape(s), `${id} media[${index}] scenario "${s.id}"`).toEqual(shape(first!))
+      )
+    })
+  })
+
+  it('gives every scenario a unique id and a label that names the job', () => {
+    blocks.forEach(({ id, index, block }) => {
+      if (!isScenarioBlock(block)) return
+      const ids = block.scenarios.map((s) => s.id)
+      expect(new Set(ids).size, `${id} media[${index}] has duplicate scenario ids`).toBe(ids.length)
+      block.scenarios.forEach((s) => expect(s.label.trim().length, `${id} ${s.id}`).toBeGreaterThan(0))
+    })
+  })
+
+  it('ships radar-moboard as avoid and intercept, each from the board and the sea', () => {
+    const block = (getCaseStudy('radar-moboard')!.media ?? []).find(isScenarioBlock)
+    expect(block, 'radar-moboard has no scenario block').toBeDefined()
+    expect(block!.scenarios.map((s) => `${s.id}(${s.clips.map((c) => c.id).join('+')})`)).toEqual([
+      'avoid(board+seaview)',
+      'intercept(board+seaview)',
+    ])
+  })
+
   it('points every block at a file that exists', () => {
     expect(blocks.length).toBeGreaterThan(0)
     blocks.forEach(({ id, index, block }) => {
       const files =
         block.kind === 'image'
           ? [block.src]
-          : block.clips.flatMap((clip) => [clip.src, clip.poster])
+          : clipScenarios(block).flatMap((s) => s.clips.flatMap((clip) => [clip.src, clip.poster]))
       expect(files.length, `${id} media[${index}] has no files`).toBeGreaterThan(0)
       files.forEach((src) =>
         expect(existsSync(path.join('public', src)), `${id} media[${index}] -> ${src}`).toBe(true)
@@ -208,15 +282,16 @@ describe('case-study media', () => {
   it('gives every clip a label that names what it shows, and a unique id', () => {
     blocks.forEach(({ id, index, block }) => {
       if (block.kind !== 'clips') return
-      const ids = block.clips.map((clip) => clip.id)
-      expect(new Set(ids).size, `${id} media[${index}] has duplicate clip ids`).toBe(ids.length)
-      block.clips.forEach((clip) => {
-        expect(clip.label.trim().length).toBeGreaterThan(0)
-        // The control names what it SHOWS, never a file or a format. A label
-        // that leaked a filename is the failure this exists to catch.
-        expect(clip.label, `${id} clip ${clip.id}`).not.toMatch(/\.(mp4|webm|mov|png)$/i)
-        expect(clip.label.toLowerCase()).not.toContain('video')
-        expect(clip.description.trim().length).toBeGreaterThan(10)
+      clipScenarios(block).forEach((scenario) => {
+        const ids = scenario.clips.map((clip) => clip.id)
+        expect(new Set(ids).size, `${id} media[${index}] has duplicate clip ids`).toBe(ids.length)
+        scenario.clips.forEach((clip) => {
+          expect(clip.label.trim().length).toBeGreaterThan(0)
+          // The control names what it SHOWS, never a file or a format.
+          expect(clip.label, `${id} clip ${clip.id}`).not.toMatch(/\.(mp4|webm|mov|png)$/i)
+          expect(clip.label.toLowerCase()).not.toContain('video')
+          expect(clip.description.trim().length).toBeGreaterThan(10)
+        })
       })
     })
   })
@@ -242,14 +317,38 @@ describe('case-study media', () => {
 
   it('gives every media block a caption, and no title that merely repeats it', () => {
     blocks.forEach(({ id, index, block }) => {
-      expect(block.caption.trim().length, `${id} media[${index}]`).toBeGreaterThan(0)
-      if (block.title) {
-        expect(block.title.trim().length).toBeGreaterThan(0)
-        expect(
-          block.caption.toLowerCase().startsWith(block.title.toLowerCase()),
-          `${id} media[${index}] title just restates the caption's opening`
-        ).toBe(false)
-      }
+      mediaCaptions(block).forEach((caption) => {
+        expect(caption.trim().length, `${id} media[${index}]`).toBeGreaterThan(0)
+        if (block.title) {
+          expect(
+            caption.toLowerCase().startsWith(block.title.toLowerCase()),
+            `${id} media[${index}] title just restates the caption's opening`
+          ).toBe(false)
+        }
+      })
     })
+  })
+})
+
+describe('clipScenarios', () => {
+  const single: CaseStudyClipsBlock = {
+    kind: 'clips',
+    caption: 'One run. All scenarios synthetic.',
+    clips: [
+      {
+        id: 'board',
+        label: 'Board',
+        src: '/video/x.mp4',
+        poster: '/video/x.png',
+        description: 'A description long enough to pass.',
+      },
+    ],
+  }
+
+  it('reads a single-axis block as one unnamed scenario carrying the block caption', () => {
+    expect(clipScenarios(single)).toEqual([
+      { id: 'default', label: '', caption: single.caption, clips: single.clips },
+    ])
+    expect(mediaCaptions(single)).toEqual([single.caption])
   })
 })

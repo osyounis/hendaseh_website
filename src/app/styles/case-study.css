@@ -454,6 +454,38 @@
     line-height: 23px;
   }
 
+  /* The switches' row. Only a row holding TWO switches lays itself out: a
+     single switch is left to block flow exactly as it was before the row
+     existed (its own margin-bottom and `justify-self`), so a single-axis block
+     renders the same in every engine. The pair decides side-by-side or stacked
+     from the width IT has, not the viewport's: the tile's padding changes
+     across breakpoints, and a viewport query would have to restate each. */
+  .case-clip-controls {
+    container-type: inline-size;
+  }
+
+  .case-clip-row--pair {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .case-clip-row--pair .case-clip-switch {
+    margin-bottom: 0;
+  }
+
+  /* Two pills side by side need about 500px (17px labels, 20px padding, the
+     44px touch floor). Below 520px they stack -- scenario first, each full
+     width -- rather than either one shrinking under the floor to make room. */
+  @container (max-width: 520px) {
+    .case-clip-row--pair {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
   .case-clip-switch {
     position: relative;
     display: grid;
@@ -528,7 +560,8 @@
      already selected, so hovering never competes with the indicator. Gated to
      fine pointers because touch fires a false hover on tap. */
   @media (hover: hover) and (pointer: fine) {
-    .case-clip-tab[aria-selected='false']:hover {
+    .case-clip-tab[aria-selected='false']:hover,
+    .case-clip-tab[aria-pressed='false']:hover {
       background: var(--clip-switch-hover);
     }
   }

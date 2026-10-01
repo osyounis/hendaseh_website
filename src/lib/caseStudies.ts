@@ -154,6 +154,29 @@ export interface CaseStudyClip {
 }
 
 /**
+ * ONE SCENARIO IN A TWO-AXIS CLIP BLOCK: a different job or encounter, offered
+ * in the same views as every other scenario in the block.
+ *
+ * Added for radar-moboard's intercept (2026-09-30): avoid and intercept are two
+ * answers the trainer gives, and each can be watched from the board or from the
+ * sea. Scenario is the axis that changes what the panel IS -- a different run,
+ * so a different caption -- and view only changes the camera.
+ *
+ * THE VIEWS MUST MATCH ACROSS SCENARIOS: same ids, same labels, same order.
+ * "The view you chose survives a scenario switch" is only well defined if every
+ * scenario offers it. `caseStudies.test.ts` asserts this; the type cannot.
+ */
+export interface CaseStudyClipScenario {
+  /** Stable within its block; part of the tab and panel ids. */
+  readonly id: string;
+  /** What the reader picks. Short and parallel, like a clip label. */
+  readonly label: string;
+  /** Swaps with the scenario. Carries the synthetic-data sentence on its own. */
+  readonly caption: string;
+  readonly clips: readonly [CaseStudyClip, ...CaseStudyClip[]];
+}
+
+/**
  * ONE VIDEO AREA, WITH THE CLIPS AS CHOICES.
  *
  * Rare by design: a block earns motion only when it carries information a still
@@ -171,9 +194,36 @@ export interface CaseStudyClipsBlock extends CaseStudyMediaCommon {
   readonly kind: 'clips';
   /** In the order they are offered. The first is the default. */
   readonly clips: readonly [CaseStudyClip, ...CaseStudyClip[]];
+  /** Never on this shape: a block is one axis or two, not both. */
+  readonly scenarios?: never;
 }
 
-export type CaseStudyMedia = CaseStudyImageBlock | CaseStudyClipsBlock;
+/**
+ * TWO AXES IN ONE PLAYER: scenarios, each offering the same views.
+ *
+ * Still ONE video area with ONE <video>, never a tile per scenario (a second
+ * ~800px tile in an already long stack was considered and rejected, 2026-09-30).
+ * The title is fixed across scenarios because it is the scenario tablist's
+ * visible accessible name; a name that changed under its own control would be
+ * no name at all. The caption moves onto each scenario.
+ */
+export interface CaseStudyScenarioClipsBlock {
+  readonly kind: 'clips';
+  readonly title: string;
+  /** Two or more; the first is the default. */
+  readonly scenarios: readonly [
+    CaseStudyClipScenario,
+    CaseStudyClipScenario,
+    ...CaseStudyClipScenario[],
+  ];
+  readonly clips?: never;
+  readonly caption?: never;
+}
+
+export type CaseStudyMedia =
+  | CaseStudyImageBlock
+  | CaseStudyClipsBlock
+  | CaseStudyScenarioClipsBlock;
 
 export interface CaseStudy {
   /**
@@ -289,9 +339,9 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
     thesis:
       'Paper plots do not check themselves. This one is graded against two independent answer keys.',
     stats: [
-      { value: '12 days', label: 'Python prototype to TypeScript monorepo' },
       { value: '16 problems', label: 'graded against two independent answer keys' },
-      { value: '1,589 tests', label: 'green across both answer keys' },
+      { value: '1,689 tests', label: 'passing with both answer keys loaded' },
+      { value: 'Alter now', label: 'the lowest-speed intercept, every time' },
     ],
     problem: {
       eyebrow: 'THE PROBLEM',
@@ -314,7 +364,7 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         [
           'The rewrite is a four-package TypeScript monorepo. Geometry holds every construction and knows nothing about a screen, render turns a solved problem into a scene, app is the React front end, and export is the interface for handing a worked sheet back out. The port took ',
           { em: '12 days' },
-          ', and the language was new. Claude Code carried the debugging and refactoring and wrote a tutorial alongside each feature as it landed, 42 of them by the end.',
+          ', and the language was new. Claude Code carried the debugging and refactoring and wrote a tutorial alongside each feature as it landed, 44 of them by the end.',
         ],
         [
           'Correctness here is graded, not asserted. The suite runs the solver against ',
@@ -339,6 +389,16 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
       paragraphs: [
         [
           'Enter two radar observations of a contact, own ship\u2019s course and speed, and the closest point of approach you need. It returns the contact\u2019s true course and speed, the CPA and the time to it if nobody alters, and the course or speed change that opens the CPA to the distance required. It cites COLREGS Rule 19 for which way the turn should go, and leaves the decision with the mariner.',
+        ],
+        [
+          'It answers a second question as well, the one a boarding approach asks: be on the contact at a set time. Give it the two observations and that time, and it returns one course and one speed. The answer is always to ',
+          { em: 'alter now' },
+          ', at the second observation, and that is a result rather than a default. Any later plan covers the same ground in two legs instead of one straight one, in the same time, so it needs more speed. On the demonstration encounter that is 16.6 knots altering now, 20.1 knots ten minutes later and 53 knots at twenty-five.',
+        ],
+        [
+          'The intercept sits outside the answer keys, because neither of them contains an intercept problem. The nearest check is Pub. 217\u2019s Example 4(1), changing station with time specified, which is the same construction aimed at a different point. The book gives 062\u00b0 at 27 knots and the code gives 061.7\u00b0 at 26.85. That is ',
+          { em: 'one check, not an answer key' },
+          ', and it is not counted in the sixteen.',
         ],
         [
           'The board draws two ways. One is the familiar top-down plotting sheet. The other is ',
@@ -370,29 +430,60 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
       },
       {
         kind: 'clips',
-        // Rendered ABOVE the chooser, where it names the choice rather than
-        // describing the picture. Two unlabelled buttons over a video read as an
-        // unexplained pair; this is the sentence that makes them a choice, and
-        // it is the tablist's visible accessible name.
-        title: 'See the same run from either viewpoint.',
-        caption:
-          'The maneuver fires at the Mx ring, and the clock never stops between the two. All scenarios synthetic.',
-        clips: [
+        // Fixed across scenarios: it is the scenario tablist's visible
+        // accessible name, and it mirrors the two switches word for word. The
+        // caption is what changes, because each scenario is a different run.
+        title: 'Avoid or intercept, from the board or the sea.',
+        scenarios: [
           {
-            id: 'board',
-            label: 'Board view',
-            src: '/video/radar-moboard-board.mp4',
-            poster: '/video/radar-moboard-board-poster.png',
-            description:
-              'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
+            id: 'avoid',
+            label: 'Avoid',
+            caption:
+              'The maneuver fires at the Mx ring, and the clock never stops between the two views. All scenarios synthetic.',
+            clips: [
+              {
+                id: 'board',
+                label: 'Board view',
+                src: '/video/radar-moboard-board.mp4',
+                poster: '/video/radar-moboard-board-poster.png',
+                description:
+                  'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
+              },
+              {
+                id: 'seaview',
+                label: 'Sea view',
+                src: '/video/radar-moboard-seaview.mp4',
+                poster: '/video/radar-moboard-seaview-poster.png',
+                description:
+                  'The same run in the tilted sea view: own ship holds the centre with the required-CPA ring around it, and the contact crosses from ahead to astern as the maneuver takes effect.',
+              },
+            ],
           },
           {
-            id: 'seaview',
-            label: 'Sea view',
-            src: '/video/radar-moboard-seaview.mp4',
-            poster: '/video/radar-moboard-seaview-poster.png',
-            description:
-              'The same run in the tilted sea view: own ship holds the centre with the required-CPA ring around it, and the contact crosses from ahead to astern as the maneuver takes effect.',
+            // The app's own intercept demo, a DIFFERENT encounter from the
+            // shared avoidance scenario. No copy claims the two share a run.
+            id: 'intercept',
+            label: 'Intercept',
+            caption:
+              'Own ship alters at the second observation and is on the contact at 14:36. All scenarios synthetic.',
+            clips: [
+              {
+                id: 'board',
+                label: 'Board view',
+                src: '/video/radar-moboard-intercept-board.mp4',
+                poster: '/video/radar-moboard-intercept-board-poster.png',
+                description:
+                  'The maneuvering board for an intercept: own ship alters at the second observation to 016\u00b0 at 16.6 knots, and the contact runs down the new relative motion line straight into the centre, arriving at 14:36.',
+              },
+              {
+                id: 'seaview',
+                label: 'Sea view',
+                src: '/video/radar-moboard-intercept-seaview.mp4',
+                poster: '/video/radar-moboard-intercept-seaview-poster.png',
+                description:
+                  'The same intercept in the tilted sea view: own ship turns onto the new course and the contact closes until the two hulls meet. The view holds there while the clock runs on to 14:36.',
+              },
+            ],
           },
         ],
       },
@@ -563,4 +654,25 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
 
 export function getCaseStudy(id: string): CaseStudy | undefined {
   return CASE_STUDIES[id];
+}
+
+export function isScenarioBlock(block: CaseStudyMedia): block is CaseStudyScenarioClipsBlock {
+  return block.kind === 'clips' && block.scenarios !== undefined;
+}
+
+/**
+ * Every clip block, read as scenarios. A single-axis block is one unnamed
+ * scenario carrying the block's caption, so the player has exactly one shape to
+ * render and a single-axis block comes out as it always did.
+ */
+export function clipScenarios(
+  block: CaseStudyClipsBlock | CaseStudyScenarioClipsBlock
+): readonly CaseStudyClipScenario[] {
+  if (isScenarioBlock(block)) return block.scenarios;
+  return [{ id: 'default', label: '', caption: block.caption, clips: block.clips }];
+}
+
+/** Every caption a block can show, in the order it can show them. */
+export function mediaCaptions(block: CaseStudyMedia): readonly string[] {
+  return block.kind === 'image' ? [block.caption] : clipScenarios(block).map((s) => s.caption);
 }
