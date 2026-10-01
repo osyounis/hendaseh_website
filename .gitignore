@@ -190,3 +190,6 @@ assets/artwork/a16-summarizer-SUPERSEDED-w4.png
 # would sweep it into `npm run test:e2e`. Scenario parameters are recorded in
 # docs/superpowers/content/radar-moboard-COPY.md §3.
 capture/
+
+# Superpowers brainstorming companion: session mockups and state, local only.
+.superpowers/
