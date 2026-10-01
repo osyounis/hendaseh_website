@@ -719,3 +719,13 @@ for (const { slug, index: blockIndex, block, scenarios } of CLIP_BLOCKS) {
     })
   })
 }
+
+test('radar-moboard states the intercept, and keeps it outside the graded claim', async ({ page }) => {
+  await page.goto('/projects/radar-moboard')
+  await expect(page.getByText('44 of them by the end', { exact: false })).toBeVisible()
+  // The two emphasis runs of the new Impact paragraphs (COPY §7.3).
+  await expect(page.locator('strong', { hasText: /^alter now$/ })).toBeVisible()
+  await expect(page.locator('strong', { hasText: /^one check, not an answer key$/ })).toBeVisible()
+  // The stale count must be gone everywhere on the page.
+  await expect(page.getByText(/1,589/)).toHaveCount(0)
+})

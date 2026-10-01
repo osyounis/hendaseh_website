@@ -200,6 +200,16 @@ describe('case-study projects still carry what the template renders', () => {
       expect(Object.keys(p.links), p.id).not.toContain('embed')
     })
   })
+
+  it('never says radar-moboard is graded in CI', () => {
+    // CI runs the PUBLIC answer key only; the private key's problems skip there.
+    // "Graded in CI against two independent answer keys" was false for one of
+    // the two, so no catalog or case-study string may put CI next to grading.
+    const radar = getAllProjects().find((p) => p.id === 'radar-moboard')!
+    const strings = [radar.description, radar.stats, radar.cardStat ?? '', radar.tagline ?? '']
+    strings.forEach((s) => expect(s).not.toMatch(/\bCI\b/))
+    expect(radar.stats).not.toContain('1,589')
+  })
 })
 
 describe('case-study media', () => {

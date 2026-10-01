@@ -339,9 +339,9 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
     thesis:
       'Paper plots do not check themselves. This one is graded against two independent answer keys.',
     stats: [
-      { value: '12 days', label: 'Python prototype to TypeScript monorepo' },
       { value: '16 problems', label: 'graded against two independent answer keys' },
-      { value: '1,589 tests', label: 'green across both answer keys' },
+      { value: '1,689 tests', label: 'passing with both answer keys loaded' },
+      { value: 'Alter now', label: 'the lowest-speed intercept, every time' },
     ],
     problem: {
       eyebrow: 'THE PROBLEM',
@@ -364,7 +364,7 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         [
           'The rewrite is a four-package TypeScript monorepo. Geometry holds every construction and knows nothing about a screen, render turns a solved problem into a scene, app is the React front end, and export is the interface for handing a worked sheet back out. The port took ',
           { em: '12 days' },
-          ', and the language was new. Claude Code carried the debugging and refactoring and wrote a tutorial alongside each feature as it landed, 42 of them by the end.',
+          ', and the language was new. Claude Code carried the debugging and refactoring and wrote a tutorial alongside each feature as it landed, 44 of them by the end.',
         ],
         [
           'Correctness here is graded, not asserted. The suite runs the solver against ',
@@ -389,6 +389,16 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
       paragraphs: [
         [
           'Enter two radar observations of a contact, own ship\u2019s course and speed, and the closest point of approach you need. It returns the contact\u2019s true course and speed, the CPA and the time to it if nobody alters, and the course or speed change that opens the CPA to the distance required. It cites COLREGS Rule 19 for which way the turn should go, and leaves the decision with the mariner.',
+        ],
+        [
+          'It answers a second question as well, the one a boarding approach asks: be on the contact at a set time. Give it the two observations and that time, and it returns one course and one speed. The answer is always to ',
+          { em: 'alter now' },
+          ', at the second observation, and that is a result rather than a default. Any later plan covers the same ground in two legs instead of one straight one, in the same time, so it needs more speed. On the demonstration encounter that is 16.6 knots altering now, 20.1 knots ten minutes later and 53 knots at twenty-five.',
+        ],
+        [
+          'The intercept sits outside the answer keys, because neither of them contains an intercept problem. The nearest check is Pub. 217\u2019s Example 4(1), changing station with time specified, which is the same construction aimed at a different point. The book gives 062\u00b0 at 27 knots and the code gives 061.7\u00b0 at 26.85. That is ',
+          { em: 'one check, not an answer key' },
+          ', and it is not counted in the sixteen.',
         ],
         [
           'The board draws two ways. One is the familiar top-down plotting sheet. The other is ',
