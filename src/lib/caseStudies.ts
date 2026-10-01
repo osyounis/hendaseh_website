@@ -420,29 +420,60 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
       },
       {
         kind: 'clips',
-        // Rendered ABOVE the chooser, where it names the choice rather than
-        // describing the picture. Two unlabelled buttons over a video read as an
-        // unexplained pair; this is the sentence that makes them a choice, and
-        // it is the tablist's visible accessible name.
-        title: 'See the same run from either viewpoint.',
-        caption:
-          'The maneuver fires at the Mx ring, and the clock never stops between the two. All scenarios synthetic.',
-        clips: [
+        // Fixed across scenarios: it is the scenario tablist's visible
+        // accessible name, and it mirrors the two switches word for word. The
+        // caption is what changes, because each scenario is a different run.
+        title: 'Avoid or intercept, from the board or the sea.',
+        scenarios: [
           {
-            id: 'board',
-            label: 'Board view',
-            src: '/video/radar-moboard-board.mp4',
-            poster: '/video/radar-moboard-board-poster.png',
-            description:
-              'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
+            id: 'avoid',
+            label: 'Avoid',
+            caption:
+              'The maneuver fires at the Mx ring, and the clock never stops between the two views. All scenarios synthetic.',
+            clips: [
+              {
+                id: 'board',
+                label: 'Board view',
+                src: '/video/radar-moboard-board.mp4',
+                poster: '/video/radar-moboard-board-poster.png',
+                description:
+                  'The maneuvering board playing the encounter forward: the contact closes along the relative motion line, the maneuver fires at the Mx ring, and the new relative track opens the CPA to the required distance.',
+              },
+              {
+                id: 'seaview',
+                label: 'Sea view',
+                src: '/video/radar-moboard-seaview.mp4',
+                poster: '/video/radar-moboard-seaview-poster.png',
+                description:
+                  'The same run in the tilted sea view: own ship holds the centre with the required-CPA ring around it, and the contact crosses from ahead to astern as the maneuver takes effect.',
+              },
+            ],
           },
           {
-            id: 'seaview',
-            label: 'Sea view',
-            src: '/video/radar-moboard-seaview.mp4',
-            poster: '/video/radar-moboard-seaview-poster.png',
-            description:
-              'The same run in the tilted sea view: own ship holds the centre with the required-CPA ring around it, and the contact crosses from ahead to astern as the maneuver takes effect.',
+            // The app's own intercept demo, a DIFFERENT encounter from the
+            // shared avoidance scenario. No copy claims the two share a run.
+            id: 'intercept',
+            label: 'Intercept',
+            caption:
+              'Own ship alters at the second observation and is on the contact at 14:36. All scenarios synthetic.',
+            clips: [
+              {
+                id: 'board',
+                label: 'Board view',
+                src: '/video/radar-moboard-intercept-board.mp4',
+                poster: '/video/radar-moboard-intercept-board-poster.png',
+                description:
+                  'The maneuvering board for an intercept: own ship alters at the second observation to 016\u00b0 at 16.6 knots, and the contact runs down the new relative motion line straight into the centre, arriving at 14:36.',
+              },
+              {
+                id: 'seaview',
+                label: 'Sea view',
+                src: '/video/radar-moboard-intercept-seaview.mp4',
+                poster: '/video/radar-moboard-intercept-seaview-poster.png',
+                description:
+                  'The same intercept in the tilted sea view: own ship turns onto the new course and the contact closes until the two hulls meet. The view holds there while the clock runs on to 14:36.',
+              },
+            ],
           },
         ],
       },

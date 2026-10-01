@@ -5,6 +5,7 @@ import { getAllProjects, getCaseStudyProjects, getNextCaseStudy } from '../proje
 import {
   getCaseStudy,
   clipScenarios,
+  isScenarioBlock,
   mediaCaptions,
   type CaseStudyClipsBlock,
 } from '../caseStudies'
@@ -205,6 +206,38 @@ describe('case-study media', () => {
   const blocks = getCaseStudyProjects().flatMap((p) =>
     (getCaseStudy(p.id)!.media ?? []).map((block, index) => ({ id: p.id, index, block }))
   )
+
+  it('offers the same views, in the same order, in every scenario of a block', () => {
+    // "The view you chose survives a scenario switch" is only well defined if
+    // every scenario offers it. The type cannot say this; this does.
+    blocks.forEach(({ id, index, block }) => {
+      if (block.kind !== 'clips') return
+      const [first, ...rest] = clipScenarios(block)
+      const shape = (s: { clips: readonly { id: string; label: string }[] }) =>
+        s.clips.map((c) => `${c.id}:${c.label}`)
+      rest.forEach((s) =>
+        expect(shape(s), `${id} media[${index}] scenario "${s.id}"`).toEqual(shape(first!))
+      )
+    })
+  })
+
+  it('gives every scenario a unique id and a label that names the job', () => {
+    blocks.forEach(({ id, index, block }) => {
+      if (!isScenarioBlock(block)) return
+      const ids = block.scenarios.map((s) => s.id)
+      expect(new Set(ids).size, `${id} media[${index}] has duplicate scenario ids`).toBe(ids.length)
+      block.scenarios.forEach((s) => expect(s.label.trim().length, `${id} ${s.id}`).toBeGreaterThan(0))
+    })
+  })
+
+  it('ships radar-moboard as avoid and intercept, each from the board and the sea', () => {
+    const block = (getCaseStudy('radar-moboard')!.media ?? []).find(isScenarioBlock)
+    expect(block, 'radar-moboard has no scenario block').toBeDefined()
+    expect(block!.scenarios.map((s) => `${s.id}(${s.clips.map((c) => c.id).join('+')})`)).toEqual([
+      'avoid(board+seaview)',
+      'intercept(board+seaview)',
+    ])
+  })
 
   it('points every block at a file that exists', () => {
     expect(blocks.length).toBeGreaterThan(0)
