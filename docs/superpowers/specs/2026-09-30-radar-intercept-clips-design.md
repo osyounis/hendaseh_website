@@ -26,8 +26,7 @@ Ruled with Omar (2026-09-30):
 ## 2. Copy
 
 **Source of truth: `docs/superpowers/content/radar-moboard-COPY.md` §7** (locked
-2026-09-30). That file is gitignored; if it is missing, ask Omar, never reconstruct
-it. Lift every string mechanically. §7 supersedes the matching rows in §1–§3 of the
+2026-09-30), tracked alongside this spec. Lift every string mechanically. §7 supersedes the matching rows in §1–§3 of the
 same file.
 
 Summary of what changes, for orientation only (§7 holds the exact strings):

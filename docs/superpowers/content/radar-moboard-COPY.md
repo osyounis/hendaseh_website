@@ -397,3 +397,102 @@ marker as F1.
 - `1,589 tests` written next to the letters CI. CI runs the public fixture and
   reports 806.
 - Any GitHub link on this entry while the repository is private.
+
+---
+
+## §7 — Intercept update (W-INT, LOCKED 2026-09-30 on Omar's approval)
+
+**Status: LOCKED VERBATIM** (all chunks ruled by Omar, 2026-09-30). Rows marked KEEP
+restate a locked value unchanged; rows marked CHANGE **supersede** the matching row in
+§1/§2/§3, and this section wins on any conflict. Same rules as the top of this file:
+lift strings mechanically, never re-phrase. Layout ruled 2026-09-30: one player, scenario switch (tabs) + view
+switch (toggle buttons) on one row, stacking on phones ("A, revised").
+
+### 7.0 — Facts, re-verified 2026-09-30 against `~/Documents/github/radar-moboard`
+
+| fact | value | source |
+|---|---|---|
+| tests | **1,689 passed, 9 skipped** (1,698), private key present | `npx vitest run` at `6370331` |
+| the 9 skips | still the **two** cases: pub217-ex08 (8 fields, limiting courses not modelled) and rtps-07 `new_speed` (suspected transcription error) | verbose run |
+| CI | runs the public fixture only; **never quote 1,689 next to CI** (§6 already struck this for 1,589) | §6 |
+| tutorials | **44** (was 42) | `docs/tutorials/*.md` |
+| intercept demo | own ship 000° at 10 kt; contact 020° 6.0 nm at 14:00, 022° 5.6 nm at 14:06; T = 14:36 | `packages/render/test/intercept-problems.ts` |
+| intercept answer | alter at 14:06 (the second fix) to **016.3° at 16.6 kt**; the board labels it `016° 16.6 kt` | tutorial 42, the clip itself |
+| alter-now result | 16.6 kt now, **20.1 kt** ten minutes later, **53 kt** twenty-five minutes later | GEOMETRY.md "When to alter"; `packages/app/test/parse.test.ts` |
+| why alter-now | two legs between the same two points are never shorter than one straight leg in the same time, so altering now is the unique lowest-speed intercept | GEOMETRY.md |
+| the only check | Pub. 217 Example 4(1), *changing station with time specified*: book **062° at 27 kt**, code **061.7° at 26.85 kt**. Not a fixture, not in the 16 | GEOMETRY.md "The source" |
+| grading | **ungraded.** Neither answer key states an intercept | GEOMETRY.md, item 38 |
+| encounter | the intercept clips run the app's **intercept demo**, NOT the shared avoidance scenario of §3 | `capture/radar-intercept.mjs` |
+
+**Guardrail for every row below.** The intercept is never inside a sentence that
+claims grading. Public framing stops at "planning a boarding approach": no
+requester named, nothing implying adoption, sale or negotiation.
+
+### 7.1 — Thesis and stats
+
+| # | Slot | Proposal |
+|---|---|---|
+| B2 | thesis | **KEEP.** `Paper plots do not check themselves. This one is graded against two independent answer keys.` It is a grading claim; folding the intercept in would either drag it under "graded" or split the thesis in two. |
+| B3 | stat 1 | **CHANGE.** `12 days` moves to prose only (it already is, B8 ¶1). Replaced by the intercept stat, placed LAST: see B5b. |
+| B4 | stat (now 1st) | **KEEP.** `16 problems` · `graded against two independent answer keys` |
+| B5 | stat (now 2nd) | **CHANGE.** `1,689 tests` · `passing with both answer keys loaded` |
+| B5b | stat (now 3rd) | **APPROVED 2026-09-30.** `Alter now` · `the lowest-speed intercept, every time` |
+
+**7.1 ruled by Omar, 2026-09-30:** B2 keep, B4 keep, B5 `1,689 tests` · `passing with
+both answer keys loaded`, B5b option (ii). Option (i) (`16.6 kt` · `to intercept now,
+20.1 kt ten minutes later`) was rejected: `16 problems` and `16.6 kt` in one row read
+as an echo, and (ii) states the result rather than one instance of it. "Every time"
+rests on the two-legs argument in GEOMETRY.md, not on the demo.
+
+Final stat order: `16 problems` / `1,689 tests` / `Alter now`.
+
+### 7.2 — THE APPROACH (B8)
+
+| # | Proposal |
+|---|---|
+| B8 ¶1 | **CHANGE one number.** `42 of them by the end` → `44 of them by the end`. |
+| B8 ¶2–¶4 | **KEEP.** (Note, not a change: ¶2's "until the whole suite passes" is true of CI's run, which is the public suite with the private cases skipping. Flagged, not reopened.) |
+
+### 7.3 — THE IMPACT (B9)
+
+| # | Proposal |
+|---|---|
+| heading | **KEEP.** `It grades the plot, and it shows the motion.` A three-verb version ("grades the plot, plans the intercept, and shows the motion") was considered: the triad is the cadence the copy law bans. |
+| ¶1 | **KEEP.** |
+| ¶1b (NEW, after ¶1) | emphasis run `alter now` |
+| ¶1c (NEW, after ¶1b) | emphasis run `one check, not an answer key` |
+| ¶2, ¶3 | **KEEP.** ¶3's modelling limits (steady course and speed, instantaneous turns) already cover the intercept. |
+
+**¶1b**
+> It answers a second question as well, the one a boarding approach asks: be on the contact at a set time. Give it the two observations and that time, and it returns one course and one speed. The answer is always to **alter now**, at the second observation, and that is a result rather than a default. Any later plan covers the same ground in two legs instead of one straight one, in the same time, so it needs more speed. On the demonstration encounter that is 16.6 knots altering now, 20.1 knots ten minutes later and 53 knots at twenty-five.
+
+**¶1c**
+> The intercept sits outside the answer keys, because neither of them contains an intercept problem. The nearest check is Pub. 217's Example 4(1), changing station with time specified, which is the same construction aimed at a different point. The book gives 062° at 27 knots and the code gives 061.7° at 26.85. That is **one check, not an answer key**, and it is not counted in the sixteen.
+
+**7.2 and 7.3 APPROVED by Omar as written, 2026-09-30.**
+
+### 7.4 — The clip block
+
+| slot | Proposal |
+|---|---|
+| title (block level, names the choice; the scenario tablist's accessible name) | **CHANGE.** `Avoid or intercept, from the board or the sea.` |
+| scenario tab 1 / 2 | `Avoid` / `Intercept` |
+| view toggle 1 / 2 | **KEEP.** `Board view` / `Sea view` |
+| caption, Avoid | **CHANGE two words.** `The maneuver fires at the Mx ring, and the clock never stops between the two views. All scenarios synthetic.` ("between the two" was unambiguous with one pair of clips; with four it is not.) |
+| caption, Intercept | `Own ship alters at the second observation and is on the contact at 14:36. All scenarios synthetic.` |
+| description, Avoid board / sea | **KEEP** (locked in `caseStudies.ts`). |
+| description, Intercept board | `The maneuvering board for an intercept: own ship alters at the second observation to 016° at 16.6 knots, and the contact runs down the new relative motion line straight into the centre, arriving at 14:36.` |
+| description, Intercept sea | `The same intercept in the tilted sea view: own ship turns onto the new course and the contact closes until the two hulls meet. The view holds there while the clock runs on to 14:36.` |
+
+**7.4 APPROVED by Omar as written, 2026-09-30.** The title is fixed across scenarios (it is the scenario tablist's accessible name); captions swap with the scenario.
+
+### 7.5 — Catalog (§1)
+
+| # | Proposal |
+|---|---|
+| A3 tagline | **KEEP**, or option: `A maneuvering board that grades your plot, from two radar observations to the maneuver that opens the CPA or closes on the contact.` (124 ch, 18 over the current; card fit to be measured). Verified: the project OG card (`src/lib/ogCards.ts`) renders the title only, so a tagline change does NOT stale `public/og/radar-moboard.png`. |
+| A4 cardStat | **CHANGE.** `1,689 tests` |
+| A5 description | **CHANGE, and it fixes a pre-existing error.** The last sentence says `Graded in CI against two independent answer keys.` CI runs the public key only (§6), so "in CI" is false for the private one. Proposed final two sentences: `... and the course or speed change that opens the CPA to the distance required. It also finds the one course and speed that put own ship on a contact at a set time. Graded against two independent answer keys.` (The intercept sentence precedes "Graded", and "Graded" no longer claims CI.) |
+| A9 stats | **CHANGE.** `16 problems • two answer keys • 1,689 tests` |
+
+**7.5 APPROVED by Omar, 2026-09-30:** A3 tagline KEEP (it is also the meta description; the 124-ch option would be the catalog's longest and sits at the ~125 social cutoff). A4, A5, A9 as proposed.
