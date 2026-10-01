@@ -5,17 +5,26 @@ import { PauseGlyph, PlayGlyph, ReplayGlyph } from '@/components/home/TransportG
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import CaseStudyCaption from '@/components/projects/CaseStudyCaption';
 import ClipSwitch from '@/components/projects/ClipSwitch';
-import type { CaseStudyClip } from '@/lib/caseStudies';
+import type { CaseStudyClipScenario } from '@/lib/caseStudies';
 
 /** Must match the outgoing half of the fade in case-study.css. The swap lands
  *  at the bottom of it, while the clip is invisible. */
 const FADE_OUT_MS = 200;
 
 interface CaseStudyClipsProps {
-  clips: readonly CaseStudyClip[];
+  /** From `clipScenarios()`. One entry for a single-axis block. */
+  scenarios: readonly CaseStudyClipScenario[];
   title?: string;
-  caption: string;
 }
+
+/** What the reader has chosen: a scenario and a view. */
+interface Choice {
+  scenario: string;
+  view: string;
+}
+
+/** The single <video> is keyed on this, so it changes on EITHER axis. */
+const keyOf = (choice: Choice) => `${choice.scenario}:${choice.view}`;
 
 /**
  * ONE VIDEO AREA IN THE TILE, WITH THE CLIPS AS CHOICES.
@@ -34,6 +43,13 @@ interface CaseStudyClipsProps {
  * for metadata, and the previous clip cannot keep playing because it no longer
  * exists. It is also why the swap always resets to the new clip's own poster
  * rather than inheriting a frame or a playhead.
+ *
+ * TWO AXES, STILL ONE ELEMENT. A block may offer scenarios (radar-moboard: avoid
+ * or intercept) as well as views (board or sea). The element is keyed on the
+ * pair, so a change on EITHER axis replaces it, and the view the reader chose is
+ * kept when the scenario changes. Scenario is the tablist -- it changes what the
+ * panel is, and its caption -- and view becomes a pair of pressed buttons, since
+ * two tablists pointing at one panel is a broken tabs pattern.
  *
  * The chooser (manual activation, the interruptible indicator) is ClipSwitch.
  *
@@ -67,33 +83,35 @@ interface CaseStudyClipsProps {
  * `muted` and `playsInline` are both load-bearing on iOS Safari: without either
  * it refuses to play inline and takes the video fullscreen instead.
  */
-export default function CaseStudyClips({ clips, title, caption }: CaseStudyClipsProps) {
+export default function CaseStudyClips({ scenarios, title }: CaseStudyClipsProps) {
   const reduced = useReducedMotion();
   const uid = useId();
+  const views = scenarios[0]!.clips;
+  const hasScenarios = scenarios.length > 1;
+  const hasViews = views.length > 1;
+  const showControls = hasScenarios || hasViews;
+  const first: Choice = { scenario: scenarios[0]!.id, view: views[0]!.id };
+
   /**
-   * TWO IDS, AND THE SPLIT IS DELIBERATE.
+   * TWO CHOICES, AND THE SPLIT IS DELIBERATE.
    *
-   * `selectedId` is what the reader has chosen and updates on the press. It
-   * drives `aria-selected`, the roving tabindex and the indicator, so the
-   * control answers instantly and the indicator sets off the moment it is
-   * clicked rather than waiting out the fade.
-   *
-   * `mountedId` is which clip is actually in the DOM, and it lags by the
-   * fade-out so the swap happens while the stage is at zero opacity. Driving
-   * both from one id would either delay the indicator by 150ms or swap the
-   * video in plain sight.
+   * `selected` updates on the press and drives the switches, so they answer
+   * instantly. `mounted` is what is actually in the DOM, and lags by the
+   * fade-out so the swap happens while the stage is at zero opacity.
    */
-  const [selectedId, setSelectedId] = useState(clips[0]!.id);
-  const [mountedId, setMountedId] = useState(clips[0]!.id);
-  const active = clips.find((c) => c.id === mountedId) ?? clips[0]!;
+  const [selected, setSelected] = useState<Choice>(first);
+  const [mounted, setMounted] = useState<Choice>(first);
+  const mountedKey = keyOf(mounted);
+  const scenario = scenarios.find((s) => s.id === mounted.scenario) ?? scenarios[0]!;
+  const active = scenario.clips.find((c) => c.id === mounted.view) ?? scenario.clips[0]!;
 
   const ref = useRef<HTMLVideoElement>(null);
-  /** The clip id that has already auto-started, so scrolling back past a clip
-   *  the reader stopped does not restart it, while a NEW choice does start. */
+  /** The choice that has already auto-started, so scrolling back past a clip the
+   *  reader stopped does not restart it, while a NEW choice does start. */
   const autoStartedFor = useRef<string | null>(null);
-  /** The same value as `selectedId`, readable from inside the swap timeout,
-   *  where the state variable would be a stale closure. */
-  const pending = useRef(clips[0]!.id);
+  /** The newest choice, readable from inside the swap timeout, where state
+   *  would be a stale closure. */
+  const pending = useRef<Choice>(first);
   const swapTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [swapping, setSwapping] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -102,6 +120,7 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
   const panelId = `${uid}-clip-panel`;
   const titleId = `${uid}-clip-title`;
   const tabId = (id: string) => `${uid}-clip-tab-${id}`;
+  const scenarioTabId = (id: string) => `${uid}-scenario-tab-${id}`;
 
   useEffect(() => () => clearTimeout(swapTimer.current), []);
 
@@ -119,8 +138,8 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
     if (typeof IntersectionObserver === 'undefined') {
       // No observer (an old browser, or a harness stubbing it out): fall back to
       // the old behaviour rather than to a clip that never plays.
-      if (autoStartedFor.current !== mountedId) {
-        autoStartedFor.current = mountedId;
+      if (autoStartedFor.current !== mountedKey) {
+        autoStartedFor.current = mountedKey;
         void start(video);
       }
       return;
@@ -131,46 +150,47 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
         // the bottom edge and finish before the reader has read the caption.
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
-        if (autoStartedFor.current === mountedId) return;
-        autoStartedFor.current = mountedId;
+        if (autoStartedFor.current === mountedKey) return;
+        autoStartedFor.current = mountedKey;
         void start(video);
       },
       { threshold: 0.5 }
     );
     observer.observe(video);
     return () => observer.disconnect();
-  }, [reduced, mountedId]);
+  }, [reduced, mountedKey]);
 
-  const mount = (id: string) => {
+  const mount = (choice: Choice) => {
     // Reset the transport here rather than in an effect: the element is about to
     // be replaced, so it will never fire the `pause` that would otherwise clear
     // this, and a stale "Replay" on a fresh poster would be a lie.
-    setMountedId(id);
+    setMounted(choice);
     setPlaying(false);
     setEnded(false);
   };
 
-  const select = (id: string) => {
-    if (id === pending.current) return;
-    pending.current = id;
-    // Immediately, always: the indicator sets off and the control reports the
-    // new selection on the press, not after the fade.
-    setSelectedId(id);
+  const select = (change: Partial<Choice>) => {
+    const next = { ...pending.current, ...change };
+    if (keyOf(next) === keyOf(pending.current)) return;
+    pending.current = next;
+    // Immediately, always: the switches answer on the press, not after the fade.
+    setSelected(next);
 
     if (reduced) {
       // No slide, no fade, no wait -- the clip simply changes.
       clearTimeout(swapTimer.current);
       setSwapping(false);
-      mount(id);
+      mount(next);
       return;
     }
 
     setSwapping(true);
     clearTimeout(swapTimer.current);
     swapTimer.current = setTimeout(() => {
-      // `pending.current`, not the captured `id`: if the reader chose again
-      // while this was fading out, the newest choice is the one that lands, and
-      // the sequence in flight is retargeted rather than doubled.
+      // `pending.current`, not `next`: a second choice made during the fade --
+      // on either switch -- is the one that lands, and the sequence in flight is
+      // retargeted rather than doubled. A pair passed through on the way is
+      // never mounted, so never fetched.
       mount(pending.current);
       setSwapping(false);
     }, FADE_OUT_MS);
@@ -191,42 +211,65 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
     }
   };
 
+  // Names WHICH clip, and on a scenario block which scenario: "Board view" is
+  // offered twice, so the view alone would not say what the button acts on.
+  const subject = (hasScenarios ? `${scenario.label}, ${active.label}` : active.label).toLowerCase();
   const control = ended
-    ? { Glyph: ReplayGlyph, word: `Replay ${active.label.toLowerCase()}` }
+    ? { Glyph: ReplayGlyph, word: `Replay ${subject}` }
     : playing
-      ? { Glyph: PauseGlyph, word: `Pause ${active.label.toLowerCase()}` }
-      : { Glyph: PlayGlyph, word: `Play ${active.label.toLowerCase()}` };
+      ? { Glyph: PauseGlyph, word: `Pause ${subject}` }
+      : { Glyph: PlayGlyph, word: `Play ${subject}` };
 
   return (
     <figure className="case-figure">
-      {/* Only when there is something to choose. A single-clip block renders the
-          same area with no control. */}
-      {clips.length > 1 && (
+      {showControls && (
         <>
           {title && (
             <p className="case-clip-title" id={titleId}>
               {title}
             </p>
           )}
-          <ClipSwitch
-            mode="tabs"
-            options={clips}
-            selectedId={selectedId}
-            onSelect={select}
-            labelledBy={title ? titleId : undefined}
-            label="Choose a viewpoint"
-            tabId={tabId}
-            panelId={panelId}
-          />
+          {/* The row decides side-by-side or stacked from its OWN width (a
+              container query in case-study.css), scenario first in both. */}
+          <div className="case-clip-controls">
+            <div className="case-clip-row">
+              {hasScenarios && (
+                <ClipSwitch
+                  mode="tabs"
+                  options={scenarios}
+                  selectedId={selected.scenario}
+                  onSelect={(id) => select({ scenario: id })}
+                  labelledBy={title ? titleId : undefined}
+                  label="Choose a scenario"
+                  tabId={scenarioTabId}
+                  panelId={panelId}
+                />
+              )}
+              {hasViews && (
+                <ClipSwitch
+                  mode={hasScenarios ? 'toggle' : 'tabs'}
+                  options={views}
+                  selectedId={selected.view}
+                  onSelect={(id) => select({ view: id })}
+                  labelledBy={!hasScenarios && title ? titleId : undefined}
+                  label={hasScenarios ? 'View' : 'Choose a viewpoint'}
+                  tabId={tabId}
+                  panelId={panelId}
+                />
+              )}
+            </div>
+          </div>
         </>
       )}
 
       <div
         className="case-clip-stage"
         data-swapping={swapping ? 'true' : undefined}
-        role={clips.length > 1 ? 'tabpanel' : undefined}
-        id={clips.length > 1 ? panelId : undefined}
-        aria-labelledby={clips.length > 1 ? tabId(selectedId) : undefined}
+        role={showControls ? 'tabpanel' : undefined}
+        id={showControls ? panelId : undefined}
+        aria-labelledby={
+          showControls ? (hasScenarios ? scenarioTabId(selected.scenario) : tabId(selected.view)) : undefined
+        }
       >
         <div className="case-video-frame">
           {/* NOT KEYED, and that is the whole reason it exists. The <video>
@@ -242,7 +285,7 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
               // it. See the block comment above: this is what guarantees the
               // unchosen clip is never fetched and the previous one cannot keep
               // running.
-              key={active.id}
+              key={mountedKey}
               ref={ref}
               className="case-video"
               src={active.src}
@@ -279,10 +322,9 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
         </div>
       </div>
 
-      {/* The title has moved ABOVE the chooser, where it names the choice. A
-          single-clip block has no chooser, so it keeps the title on the caption
-          exactly as every still block does. */}
-      <CaseStudyCaption title={clips.length > 1 ? undefined : title} caption={caption} />
+      {/* The scenario's caption: it describes the run on screen, so it follows
+          the MOUNTED choice and changes with the picture, not ahead of it. */}
+      <CaseStudyCaption title={showControls ? undefined : title} caption={scenario.caption} />
     </figure>
   );
 }

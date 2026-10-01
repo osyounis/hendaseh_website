@@ -454,6 +454,35 @@
     line-height: 23px;
   }
 
+  /* The switches' row. It decides side-by-side or stacked from the width IT
+     has, not the viewport's: the tile's padding changes across breakpoints, and
+     a viewport query would have to restate every one of them. */
+  .case-clip-controls {
+    container-type: inline-size;
+    margin-bottom: 16px;
+  }
+
+  .case-clip-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .case-clip-row .case-clip-switch {
+    margin-bottom: 0;
+  }
+
+  /* Two pills side by side need about 500px (17px labels, 20px padding, the
+     44px touch floor). Below 520px they stack -- scenario first, each full
+     width -- rather than either one shrinking under the floor to make room. */
+  @container (max-width: 520px) {
+    .case-clip-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
   .case-clip-switch {
     position: relative;
     display: grid;

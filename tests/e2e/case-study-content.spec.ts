@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { getCaseStudyProjects } from '@/lib/projects'
-import { getCaseStudy } from '@/lib/caseStudies'
+import { getCaseStudy, clipScenarios, mediaCaptions } from '@/lib/caseStudies'
 
 /**
  * Content coverage for /projects/[slug], added by B-B when the last two case
@@ -74,8 +74,11 @@ for (const project of CASE_STUDIES) {
       ).toEqual(
         blocks.map((b) =>
           // A clip block's title is rendered above its chooser, where it names
-          // the choice, so only its caption reaches the caption element.
-          b.kind === 'clips' ? b.caption : [b.title, b.caption].filter(Boolean).join('\n')
+          // the choice, so only its (default scenario's) caption reaches the
+          // caption element.
+          b.kind === 'clips'
+            ? clipScenarios(b)[0]!.caption
+            : [b.title, b.caption].filter(Boolean).join('\n')
         )
       )
 
@@ -92,7 +95,7 @@ for (const project of CASE_STUDIES) {
           await expect(tile.locator('video.case-video')).toHaveCount(1)
           await expect(tile.locator('video.case-video')).toHaveAttribute(
             'src',
-            block.clips[0].src
+            clipScenarios(block)[0]!.clips[0].src
           )
         }
       }
@@ -215,7 +218,9 @@ test('every private-work figure states on the page that its data is synthetic', 
     // of these pages is real, so a clip or a detail added later without the
     // sentence is exactly the case this must catch.
     for (const block of blocks) {
-      expect(block.caption, `${slug} caption lost its synthetic marker`).toContain(sentence)
+      for (const caption of mediaCaptions(block)) {
+        expect(caption, `${slug} caption lost its synthetic marker`).toContain(sentence)
+      }
     }
 
     await page.goto(`/projects/${slug}`)
@@ -242,20 +247,20 @@ test('the sitemap lists all four case studies and no card-tier slug', async ({ r
  * looked for two video tiles would now be asserting the old design.
  */
 const CLIP_BLOCKS = CASE_STUDIES.flatMap((p) =>
-  (getCaseStudy(p.id)!.media ?? [])
-    .filter((b) => b.kind === 'clips')
-    .map((b) => ({ slug: p.id, block: b }))
+  (getCaseStudy(p.id)!.media ?? []).flatMap((b) =>
+    b.kind === 'clips' ? [{ slug: p.id, block: b, clips: clipScenarios(b)[0]!.clips }] : []
+  )
 )
 
 test('only radar-moboard ships clips, and both of them live in one block', async () => {
   expect(
-    CLIP_BLOCKS.map((c) => `${c.slug}:${c.block.clips.map((clip) => clip.id).join('+')}`)
+    CLIP_BLOCKS.map((c) => `${c.slug}:${c.clips.map((clip) => clip.id).join('+')}`)
   ).toEqual(['radar-moboard:board+seaview'])
 })
 
-for (const { slug: projectId, block } of CLIP_BLOCKS) {
+for (const { slug: projectId, block, clips } of CLIP_BLOCKS) {
   const project = { id: projectId }
-  const [first, second] = block.clips
+  const [first, second] = clips
 
   test.describe(`/projects/${project.id} clips`, () => {
     const stage = (page: import('@playwright/test').Page) => page.locator('.case-clip-stage')
@@ -274,10 +279,10 @@ for (const { slug: projectId, block } of CLIP_BLOCKS) {
       await expect(clip(page)).toHaveAttribute('poster', first.poster)
 
       const tabs = page.getByRole('tab')
-      await expect(tabs).toHaveCount(block.clips.length)
+      await expect(tabs).toHaveCount(clips.length)
       // Labelled for what they SHOW. A filename or a bare "Video" here is the
       // regression this catches.
-      expect(await tabs.allInnerTexts()).toEqual(block.clips.map((c) => c.label))
+      expect(await tabs.allInnerTexts()).toEqual(clips.map((c) => c.label))
       await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
       await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'false')
 

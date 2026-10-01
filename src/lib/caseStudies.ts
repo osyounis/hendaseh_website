@@ -154,6 +154,29 @@ export interface CaseStudyClip {
 }
 
 /**
+ * ONE SCENARIO IN A TWO-AXIS CLIP BLOCK: a different job or encounter, offered
+ * in the same views as every other scenario in the block.
+ *
+ * Added for radar-moboard's intercept (2026-09-30): avoid and intercept are two
+ * answers the trainer gives, and each can be watched from the board or from the
+ * sea. Scenario is the axis that changes what the panel IS -- a different run,
+ * so a different caption -- and view only changes the camera.
+ *
+ * THE VIEWS MUST MATCH ACROSS SCENARIOS: same ids, same labels, same order.
+ * "The view you chose survives a scenario switch" is only well defined if every
+ * scenario offers it. `caseStudies.test.ts` asserts this; the type cannot.
+ */
+export interface CaseStudyClipScenario {
+  /** Stable within its block; part of the tab and panel ids. */
+  readonly id: string;
+  /** What the reader picks. Short and parallel, like a clip label. */
+  readonly label: string;
+  /** Swaps with the scenario. Carries the synthetic-data sentence on its own. */
+  readonly caption: string;
+  readonly clips: readonly [CaseStudyClip, ...CaseStudyClip[]];
+}
+
+/**
  * ONE VIDEO AREA, WITH THE CLIPS AS CHOICES.
  *
  * Rare by design: a block earns motion only when it carries information a still
@@ -171,9 +194,36 @@ export interface CaseStudyClipsBlock extends CaseStudyMediaCommon {
   readonly kind: 'clips';
   /** In the order they are offered. The first is the default. */
   readonly clips: readonly [CaseStudyClip, ...CaseStudyClip[]];
+  /** Never on this shape: a block is one axis or two, not both. */
+  readonly scenarios?: never;
 }
 
-export type CaseStudyMedia = CaseStudyImageBlock | CaseStudyClipsBlock;
+/**
+ * TWO AXES IN ONE PLAYER: scenarios, each offering the same views.
+ *
+ * Still ONE video area with ONE <video>, never a tile per scenario (a second
+ * ~800px tile in an already long stack was considered and rejected, 2026-09-30).
+ * The title is fixed across scenarios because it is the scenario tablist's
+ * visible accessible name; a name that changed under its own control would be
+ * no name at all. The caption moves onto each scenario.
+ */
+export interface CaseStudyScenarioClipsBlock {
+  readonly kind: 'clips';
+  readonly title: string;
+  /** Two or more; the first is the default. */
+  readonly scenarios: readonly [
+    CaseStudyClipScenario,
+    CaseStudyClipScenario,
+    ...CaseStudyClipScenario[],
+  ];
+  readonly clips?: never;
+  readonly caption?: never;
+}
+
+export type CaseStudyMedia =
+  | CaseStudyImageBlock
+  | CaseStudyClipsBlock
+  | CaseStudyScenarioClipsBlock;
 
 export interface CaseStudy {
   /**
@@ -563,4 +613,25 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
 
 export function getCaseStudy(id: string): CaseStudy | undefined {
   return CASE_STUDIES[id];
+}
+
+export function isScenarioBlock(block: CaseStudyMedia): block is CaseStudyScenarioClipsBlock {
+  return block.kind === 'clips' && block.scenarios !== undefined;
+}
+
+/**
+ * Every clip block, read as scenarios. A single-axis block is one unnamed
+ * scenario carrying the block's caption, so the player has exactly one shape to
+ * render and a single-axis block comes out as it always did.
+ */
+export function clipScenarios(
+  block: CaseStudyClipsBlock | CaseStudyScenarioClipsBlock
+): readonly CaseStudyClipScenario[] {
+  if (isScenarioBlock(block)) return block.scenarios;
+  return [{ id: 'default', label: '', caption: block.caption, clips: block.clips }];
+}
+
+/** Every caption a block can show, in the order it can show them. */
+export function mediaCaptions(block: CaseStudyMedia): readonly string[] {
+  return block.kind === 'image' ? [block.caption] : clipScenarios(block).map((s) => s.caption);
 }
