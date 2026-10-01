@@ -232,7 +232,7 @@ export default function CaseStudyClips({ scenarios, title }: CaseStudyClipsProps
           {/* The row decides side-by-side or stacked from its OWN width (a
               container query in case-study.css), scenario first in both. */}
           <div className="case-clip-controls">
-            <div className="case-clip-row">
+            <div className={hasScenarios && hasViews ? 'case-clip-row case-clip-row--pair' : 'case-clip-row'}>
               {hasScenarios && (
                 <ClipSwitch
                   mode="tabs"
