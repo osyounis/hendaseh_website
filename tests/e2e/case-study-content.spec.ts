@@ -441,24 +441,46 @@ for (const { slug, index: blockIndex, block, scenarios } of CLIP_BLOCKS) {
         indicator.evaluate((el) => new DOMMatrixReadOnly(getComputedStyle(el).transform).m41)
 
       const home = await at()
-      await tabs.nth(1).click()
-      await page.waitForTimeout(110)
-      const midway = await at()
+      // THE WHOLE TIME-CRITICAL SEQUENCE RUNS IN ONE evaluate. Done through
+      // Playwright, every step is a round trip, and under full-suite load those
+      // round trips let the 280ms slide finish before the reversal landed -- the
+      // indicator was then legitimately at the far end, which looked like a
+      // snap. In-page, the only clock is the page's own, and the midway point is
+      // found by position (a fraction of the travel) rather than by a fixed
+      // delay, so a late timer cannot overshoot it.
+      const run = await page.evaluate(async () => {
+        const sw = document.querySelectorAll('.case-clip-switch')[0]
+        const el = sw.querySelector('.case-clip-indicator') as HTMLElement
+        const tabEls = sw.querySelectorAll('[role=tab]')
+        const pos = () => new DOMMatrixReadOnly(getComputedStyle(el).transform).m41
+        const frame = () => new Promise<void>((r) => requestAnimationFrame(() => r()))
+        const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
+        const start = pos()
+        const target = el.getBoundingClientRect().width
+        ;(tabEls[1] as HTMLElement).click()
+        let midway = pos()
+        const t0 = performance.now()
+        while (midway < start + target * 0.3 && performance.now() - t0 < 1000) {
+          await frame()
+          midway = pos()
+        }
+        ;(tabEls[0] as HTMLElement).click()
+        const justAfter = pos()
+        const samples: number[] = []
+        for (let i = 0; i < 8; i++) {
+          await frame()
+          samples.push(pos())
+          await wait(20)
+        }
+        return { midway, target, justAfter, samples }
+      })
+      const { midway, target, justAfter, samples } = run
       expect(midway, 'the indicator never left its first tab').toBeGreaterThan(home + 1)
-      const target = await indicator.evaluate((el) => el.getBoundingClientRect().width)
       expect(midway, 'the indicator had already arrived; catch it earlier').toBeLessThan(home + target - 1)
-
-      await tabs.nth(0).click()
       // Snapped, queued or restarted would each visit an anchor; retargeting
       // from the presentation value visits neither.
-      const justAfter = await at()
       expect(justAfter, 'the indicator snapped home on reversal').toBeGreaterThan(home + 1)
       expect(justAfter, 'the indicator snapped to the far tab on reversal').toBeLessThan(home + target - 2)
-      const samples: number[] = []
-      for (let i = 0; i < 8; i++) {
-        samples.push(await at())
-        await page.waitForTimeout(20)
-      }
       expect(Math.max(...samples), 'the indicator queued or restarted').toBeLessThan(home + target - 2)
 
       await expect.poll(at, { timeout: 3000 }).toBeLessThan(home + 1)
