@@ -464,6 +464,8 @@ for (const { slug, index: blockIndex, block, scenarios } of CLIP_BLOCKS) {
       await expect.poll(at, { timeout: 3000 }).toBeLessThan(home + 1)
       await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
       await expect(clip(page)).toHaveAttribute('src', V0.src)
+      await expect(clip(page)).toHaveAttribute('poster', V0.poster)
+      await expect(caption(page)).toHaveText(S0.caption)
     })
 
     test('swaps the clip while it is invisible, and never empties the frame', async ({ page }) => {
@@ -522,11 +524,17 @@ for (const { slug, index: blockIndex, block, scenarios } of CLIP_BLOCKS) {
       // Two choices inside ONE fade, on two different switches: Intercept, then
       // Sea view. The pair passed through on the way (intercept + board) must
       // never mount, so it must never be fetched.
-      await page.evaluate(() => {
+      // The second click is spaced INSIDE the 200ms fade (in the same evaluate,
+      // so Playwright round-trips cannot push it past the fade), so the
+      // intermediate pair exists in state and must still never mount.
+      await page.evaluate(async () => {
         ;(document.querySelectorAll('[role=tablist] [role=tab]')[1] as HTMLElement).click()
+        await new Promise((r) => setTimeout(r, 60))
         ;(document.querySelectorAll('[role=group] .case-clip-tab')[1] as HTMLElement).click()
       })
       await expect(clip(page)).toHaveAttribute('src', clipAt(S1, V1.id).src)
+      await expect(clip(page)).toHaveAttribute('poster', clipAt(S1, V1.id).poster)
+      await expect(caption(page)).toHaveText(S1.caption)
       await expect(clip(page)).toHaveCount(1)
       await page.waitForTimeout(1200)
       expect(requested, 'a pair passed through mid-fade was fetched').not.toContain(clipAt(S1, V0.id).src)
