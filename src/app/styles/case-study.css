@@ -528,7 +528,8 @@
      already selected, so hovering never competes with the indicator. Gated to
      fine pointers because touch fires a false hover on tap. */
   @media (hover: hover) and (pointer: fine) {
-    .case-clip-tab[aria-selected='false']:hover {
+    .case-clip-tab[aria-selected='false']:hover,
+    .case-clip-tab[aria-pressed='false']:hover {
       background: var(--clip-switch-hover);
     }
   }

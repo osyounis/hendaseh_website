@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { PauseGlyph, PlayGlyph, ReplayGlyph } from '@/components/home/TransportGlyphs';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import CaseStudyCaption from '@/components/projects/CaseStudyCaption';
+import ClipSwitch from '@/components/projects/ClipSwitch';
 import type { CaseStudyClip } from '@/lib/caseStudies';
 
 /** Must match the outgoing half of the fade in case-study.css. The swap lands
@@ -34,21 +35,7 @@ interface CaseStudyClipsProps {
  * exists. It is also why the swap always resets to the new clip's own poster
  * rather than inheriting a frame or a playhead.
  *
- * MANUAL ACTIVATION, not selection-follows-focus. The WAI-ARIA tabs pattern
- * prefers automatic activation, but explicitly makes an exception where showing
- * a panel is expensive -- and every activation here starts a video download.
- * Arrow keys move focus along the control; Enter or Space (a button's own
- * behaviour) commits.
- *
- * THE INDICATOR IS INTERRUPTIBLE, AND THAT IS THE POINT OF THE MOTION. Its
- * travel is a CSS transition on `transform`, driven by an inline value derived
- * from the selected index. A transition retargets from the value currently on
- * screen, so selecting the other tab while the indicator is still moving turns
- * it around from wherever it is; it cannot snap back, queue behind the first
- * move, or restart. Keyframes restart from zero, which is exactly the failure
- * this avoids. Equal-width tabs are what let the travel be pure `transform`:
- * the indicator is one tab wide and steps by 100% of itself, so nothing
- * animates width and no scaleX distorts the pill's corners.
+ * The chooser (manual activation, the interruptible indicator) is ClipSwitch.
  *
  * THE STAGE FADES THROUGH RATHER THAN CROSS-FADING. A true cross-fade needs the
  * outgoing and incoming clips on screen together, and only one <video> is ever
@@ -101,7 +88,6 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
   const active = clips.find((c) => c.id === mountedId) ?? clips[0]!;
 
   const ref = useRef<HTMLVideoElement>(null);
-  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   /** The clip id that has already auto-started, so scrolling back past a clip
    *  the reader stopped does not restart it, while a NEW choice does start. */
   const autoStartedFor = useRef<string | null>(null);
@@ -116,7 +102,6 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
   const panelId = `${uid}-clip-panel`;
   const titleId = `${uid}-clip-title`;
   const tabId = (id: string) => `${uid}-clip-tab-${id}`;
-  const selectedIndex = clips.findIndex((c) => c.id === selectedId);
 
   useEffect(() => () => clearTimeout(swapTimer.current), []);
 
@@ -191,27 +176,6 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
     }, FADE_OUT_MS);
   };
 
-  const onTabKeyDown = (event: React.KeyboardEvent, index: number) => {
-    const last = clips.length - 1;
-    const next =
-      event.key === 'ArrowRight' || event.key === 'ArrowDown'
-        ? index === last
-          ? 0
-          : index + 1
-        : event.key === 'ArrowLeft' || event.key === 'ArrowUp'
-          ? index === 0
-            ? last
-            : index - 1
-          : event.key === 'Home'
-            ? 0
-            : event.key === 'End'
-              ? last
-              : null;
-    if (next === null) return;
-    event.preventDefault();
-    tabs.current[next]?.focus();
-  };
-
   const toggle = () => {
     const video = ref.current;
     if (!video) return;
@@ -244,43 +208,16 @@ export default function CaseStudyClips({ clips, title, caption }: CaseStudyClips
               {title}
             </p>
           )}
-          <div
-            className="case-clip-switch"
-            role="tablist"
-            // Named by the visible sentence above it rather than by an invisible
-            // aria-label, so the name a screen reader hears is the one on screen.
-            aria-labelledby={title ? titleId : undefined}
-            aria-label={title ? undefined : 'Choose a viewpoint'}
-            style={{ '--tab-count': clips.length } as CSSProperties}
-          >
-            {/* Decorative: `aria-selected` on the tabs is what states the
-                selection. This only shows it. */}
-            <span
-              className="case-clip-indicator"
-              aria-hidden="true"
-              style={{ transform: `translateX(${selectedIndex * 100}%)` }}
-            />
-            {clips.map((clip, index) => (
-              <button
-                key={clip.id}
-                ref={(el) => {
-                  tabs.current[index] = el;
-                }}
-                type="button"
-                role="tab"
-                id={tabId(clip.id)}
-                aria-selected={clip.id === selectedId}
-                aria-controls={panelId}
-                // Roving tabindex: the control is one tab stop, not one per option.
-                tabIndex={clip.id === selectedId ? 0 : -1}
-                className="case-clip-tab"
-                onClick={() => select(clip.id)}
-                onKeyDown={(event) => onTabKeyDown(event, index)}
-              >
-                {clip.label}
-              </button>
-            ))}
-          </div>
+          <ClipSwitch
+            mode="tabs"
+            options={clips}
+            selectedId={selectedId}
+            onSelect={select}
+            labelledBy={title ? titleId : undefined}
+            label="Choose a viewpoint"
+            tabId={tabId}
+            panelId={panelId}
+          />
         </>
       )}
 
