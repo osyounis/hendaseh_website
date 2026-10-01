@@ -594,6 +594,32 @@ for (const { slug, index: blockIndex, block, scenarios } of CLIP_BLOCKS) {
       expect(await clip(page).evaluate((v: HTMLVideoElement) => v.currentTime)).toBeLessThan(0.3)
     })
 
+    test('a choice undone mid-fade keeps the transport truthful about the clip that is still playing', async ({
+      page,
+    }) => {
+      await page.goto(`/projects/${slug}`)
+      await stage(page).scrollIntoViewIfNeeded()
+      await expect(transport(page)).toHaveText(new RegExp(`Pause ${named(S0, V0)}`, 'i'), {
+        timeout: 10_000,
+      })
+
+      // One evaluate so the two presses are 60ms apart, inside the 200ms fade:
+      // the pending choice is back on what is already mounted, so the swap
+      // timeout must not reset the transport of a <video> that is not replaced.
+      await page.evaluate(async () => {
+        const buttons = document.querySelectorAll<HTMLButtonElement>(
+          '[role="group"][aria-label="View"] button'
+        )
+        buttons[1]!.click()
+        await new Promise((r) => setTimeout(r, 60))
+        buttons[0]!.click()
+      })
+      await page.waitForTimeout(350)
+
+      await expect(transport(page)).toHaveText(new RegExp(`Pause ${named(S0, V0)}`, 'i'))
+      expect(await clip(page).evaluate((v: HTMLVideoElement) => v.paused)).toBe(false)
+    })
+
     test('scenario is one tab stop with manual activation, then the view, then the transport', async ({
       page,
     }) => {
@@ -728,4 +754,12 @@ test('radar-moboard states the intercept, and keeps it outside the graded claim'
   await expect(page.locator('strong', { hasText: /^one check, not an answer key$/ })).toBeVisible()
   // The stale count must be gone everywhere on the page.
   await expect(page.getByText(/1,589/)).toHaveCount(0)
+  // The three stats, in the authored order (COPY §7.1), value and label both.
+  const stats = getCaseStudy('radar-moboard')!.stats
+  const rendered = page.locator('.case-stat')
+  await expect(rendered).toHaveCount(stats.length)
+  for (const [i, stat] of stats.entries()) {
+    await expect(rendered.nth(i).locator('.case-stat-value')).toHaveText(stat.value)
+    await expect(rendered.nth(i).locator('.case-stat-label')).toHaveText(stat.label)
+  }
 })

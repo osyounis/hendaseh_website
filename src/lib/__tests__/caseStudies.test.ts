@@ -209,6 +209,22 @@ describe('case-study projects still carry what the template renders', () => {
     const strings = [radar.description, radar.stats, radar.cardStat ?? '', radar.tagline ?? '']
     strings.forEach((s) => expect(s).not.toMatch(/\bCI\b/))
     expect(radar.stats).not.toContain('1,589')
+
+    // The case study too: thesis, stats, and every prose run of every section.
+    const study = getCaseStudy('radar-moboard')!
+    const prose = [study.problem, study.approach, study.impact].flatMap((section) => [
+      section.eyebrow,
+      section.heading,
+      ...section.paragraphs.flatMap((paragraph) =>
+        paragraph.map((run) => (typeof run === 'string' ? run : run.em))
+      ),
+    ])
+    const studyStrings = [
+      study.thesis,
+      ...study.stats.flatMap((stat) => [stat.value, stat.label]),
+      ...prose,
+    ]
+    studyStrings.forEach((s) => expect(s).not.toMatch(/\bCI\b/))
   })
 })
 
