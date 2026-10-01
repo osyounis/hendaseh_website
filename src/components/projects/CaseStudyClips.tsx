@@ -112,6 +112,8 @@ export default function CaseStudyClips({ scenarios, title }: CaseStudyClipsProps
   /** The newest choice, readable from inside the swap timeout, where state
    *  would be a stale closure. */
   const pending = useRef<Choice>(first);
+  /** The key actually in the DOM, readable from inside the swap timeout. */
+  const mountedKeyRef = useRef(keyOf(first));
   const swapTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [swapping, setSwapping] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -161,6 +163,7 @@ export default function CaseStudyClips({ scenarios, title }: CaseStudyClipsProps
   }, [reduced, mountedKey]);
 
   const mount = (choice: Choice) => {
+    mountedKeyRef.current = keyOf(choice);
     // Reset the transport here rather than in an effect: the element is about to
     // be replaced, so it will never fire the `pause` that would otherwise clear
     // this, and a stale "Replay" on a fresh poster would be a lie.
@@ -191,7 +194,10 @@ export default function CaseStudyClips({ scenarios, title }: CaseStudyClipsProps
       // on either switch -- is the one that lands, and the sequence in flight is
       // retargeted rather than doubled. A pair passed through on the way is
       // never mounted, so never fetched.
-      mount(pending.current);
+      // A choice undone mid-fade lands back on what is already mounted. The
+      // element is not replaced, so it keeps playing and fires no `play` to
+      // correct a transport reset here: leave the transport alone.
+      if (keyOf(pending.current) !== mountedKeyRef.current) mount(pending.current);
       setSwapping(false);
     }, FADE_OUT_MS);
   };
