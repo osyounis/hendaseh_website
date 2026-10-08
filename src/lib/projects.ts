@@ -63,6 +63,22 @@ export function getProjectHref(p: Project): string | null {
   return p.detailPath ?? `/projects/${p.id}`;
 }
 
+/**
+ * `cardStat` with its `{stars}` token filled in from `githubStars`.
+ *
+ * THROWS rather than rendering a blank or literal token: a card that names a
+ * star count it does not have fails the build, and Cloudflare keeps the last
+ * good deploy live. A stale count is acceptable; a missing one never ships.
+ */
+export function getCardStat(p: Project): string | undefined {
+  if (p.cardStat === undefined) return undefined;
+  if (!p.cardStat.includes('{stars}')) return p.cardStat;
+  if (p.githubStars === undefined) {
+    throw new Error(`projects.json: "${p.id}" uses {stars} in cardStat but has no githubStars.`);
+  }
+  return p.cardStat.replaceAll('{stars}', String(p.githubStars));
+}
+
 /** Parsed once at module load, like the catalog. A malformed reviews file is a
  *  build failure, not a runtime surprise. */
 const nahtadiReviews = NahtadiReviewsFileSchema.parse(nahtadiReviewsData).reviews;
