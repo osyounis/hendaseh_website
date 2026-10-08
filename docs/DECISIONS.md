@@ -267,3 +267,20 @@ The **page** carries `s-maxage` only. That directive is for shared caches — Cl
 **Why:** The 2026-09-28 scheduled run failed because the `jo` feed omitted both Jordanian reviews (`13621969408`, `13621477577`). A dry run on 2026-09-30 found both again. So the feed drops entries intermittently, not only when reviews age out of the window. The script never writes the reviews file, so failing the run protected nothing. It only skipped the rating check and made red runs routine, which is how a real failure gets ignored. The earlier failures on 2026-09-07 and 2026-09-14 were the missing `.nvmrc` (fixed in `3fd8dc0`) and are unrelated.
 **Revisit when:** A stored review stays missing across several consecutive runs. Then Omar decides whether it stays on the site; the warning is the prompt for that decision, not a prompt to delete it.
 
+
+## 2026-10-08 — Star counts sync weekly by reviewed PR; stale beats missing
+
+**Decision:** Visible GitHub star counts live in a structured `githubStars`
+field, displayed through a `{stars}` token in `cardStat` by `getCardStat`.
+`scripts/github-stars-sync.mjs` runs weekly from
+`.github/workflows/github-stars-sync.yml` and opens a PR into `dev`. It never
+pushes and never merges. It validates every repo before writing anything, and
+it refuses a private or renamed repo, a non-integer count, or a collapse (to 0,
+or by more than half). Every sync PR, and every `appstore-sync` PR, requests
+`osyounis` as reviewer and assignee, which is how Omar is notified.
+
+**Why:** The live site must never show a blank or guessed number. It renders
+only what is committed, and a missing count fails the build, so Cloudflare
+keeps the last good deploy. Build-time and client-side fetching were rejected:
+both bring back rate limits and blank-on-failure. Spec:
+`docs/superpowers/specs/2026-10-08-github-stars-sync-design.md`.
