@@ -49,9 +49,9 @@ const CHAPTERS: Chapter[] = [
         '.',
       ],
       [
-        "My graduate project was the first CUDA implementation of Brent's root-finding method, ",
+        "My graduate project was a CUDA implementation of Brent's root-finding method, with no prior implementation found in a literature review. At the kernel it ran ",
         { em: '35 times faster' },
-        ' at the kernel. It taught me to think in hardware, memory layout, and where performance actually comes from.',
+        '. It taught me to think in hardware, memory layout, and where performance actually comes from.',
       ],
     ],
   },

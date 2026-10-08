@@ -16,8 +16,9 @@ const H1 = 'I build software people rely on.'
 // them. A reworded sentence, a dropped fact, or a stray em dash all fail here.
 const LEDE =
   "I'm Omar Younis, a software engineer in Sunnyvale, California. I've shipped an iOS app to " +
-  "the App Store, written the first CUDA implementation of Brent's method, put ML models into " +
-  'production, and built software the Coast Guard runs at every air station. Before that, I ' +
+  "the App Store, written a CUDA implementation of Brent's method with no prior one found in a " +
+  'literature review, put ML models into production, and built software the Coast Guard runs ' +
+  'at every air station. Before that, I ' +
   "spent seven years as a mechanical engineer. Now I'm pointed at AI and autonomous systems."
 
 const RESUME_HREF = '/omar_younis_resume_2026.pdf'
