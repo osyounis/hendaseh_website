@@ -30,7 +30,7 @@ const HIGHLIGHTS: Highlight[] = [
     when: 'SEP 2022 – PRESENT',
     role: 'Software Engineer',
     volunteer: true,
-    body: 'Cut pilot training qualification tracking from six weeks to two days with a reporting tool now used at every U.S. Coast Guard air station. Awarded the Auxiliary Achievement Medal by the Commandant of the Coast Guard. Sole maintainer since 2022.',
+    body: 'Cut a pilot training report from weeks to three minutes, and the flight schedule it feeds from six weeks to two days, with a tool now used at every U.S. Coast Guard air station. Awarded the Auxiliary Achievement Medal by the Commandant of the Coast Guard. Sole maintainer since 2022.',
   },
   {
     org: 'Qualcomm',
@@ -60,7 +60,7 @@ const HIGHLIGHTS: Highlight[] = [
     org: 'Independent Projects',
     when: '2023 – PRESENT',
     role: 'Software Engineer',
-    body: "Shipped Nahtadi to the App Store with a 5.0 rating average. Wrote the first CUDA implementation of Brent's method. Fine-tuned a 1.5B-parameter LLM and ran it entirely on an iPhone 14 Pro's A16 chip.",
+    body: "Shipped Nahtadi to the App Store with a 5.0 rating average. Wrote a CUDA implementation of Brent's method; a literature review found no prior one. Fine-tuned a 1.5B-parameter LLM and ran it entirely on an iPhone 14 Pro's A16 chip.",
   },
 ];
 

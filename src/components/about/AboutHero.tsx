@@ -40,9 +40,9 @@ export default function AboutHero() {
 
             <p className="about-intro about-enter" style={ENTER('0.28s')}>
               I&apos;m Omar Younis, a software engineer in Sunnyvale, California. I&apos;ve shipped
-              an iOS app to the <strong>App Store</strong>, written the{' '}
-              <strong>first CUDA implementation</strong> of Brent&apos;s method, put ML models into
-              production, and built software the{' '}
+              an iOS app to the <strong>App Store</strong>, written a{' '}
+              <strong>CUDA implementation</strong> of Brent&apos;s method with no prior one found in a
+              literature review, put ML models into production, and built software the{' '}
               <strong>Coast Guard runs at every air station</strong>. Before that, I spent seven
               years as a mechanical engineer. Now I&apos;m pointed at{' '}
               <strong>AI and autonomous systems</strong>.

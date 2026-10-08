@@ -44,9 +44,9 @@
     {
       "id": "brent-cuda",
       "title": "Brent's Method on CUDA",
-      "tagline": "The first CUDA implementation of Brent's root-finding method. One solver per GPU thread with bit-identical fp64 results.",
+      "tagline": "A CUDA implementation of Brent's method, with no prior one found in a literature review. CPU and GPU agree to within 1e-10.",
       "cardStat": "35.31× kernel",
-      "description": "First CUDA implementation of Brent's root-finding method using batch/ensemble parallelism: one independent Brent's instance per GPU thread. Delivers a 35.31× kernel and 8.79× end-to-end speedup over a single-threaded CPU baseline on an NVIDIA RTX 3080, with CPU/GPU bit-identical fp64 results validated to <1e-10 against a Python ground-truth reference across Python, C++, and CUDA. M.S. graduate project.",
+      "description": "A CUDA implementation of Brent's root-finding method, with no prior implementation found in a literature review, using batch/ensemble parallelism: one independent Brent's instance per GPU thread. Delivers a 35.31× kernel and 8.79× end-to-end speedup over a single-threaded CPU baseline on an NVIDIA RTX 3080. FMA contraction is disabled on both sides (-ffp-contract=off, --fmad=false) so CPU and GPU fp64 results agree to within 1e-10, validated against a Python ground-truth reference across Python, C++, and CUDA. M.S. graduate project.",
       "technologies": [
         "CUDA",
         "C++",
@@ -154,8 +154,8 @@
       "id": "islamic-prayer-time",
       "title": "Prayer-Time Algorithm Library",
       "tagline": "The zero-dependency Python library behind Nahtadi. Astronomical algorithms with more than eight calculation methods.",
-      "cardStat": "105 tests · 90%+ cov",
-      "description": "Zero-dependency, pure-Python scientific-computing library (the engine behind Nahtadi) for calculating Muslim prayer times and Qibla direction from astronomical algorithms (Julian Day, spherical trigonometry, high-latitude adjustments) across 8+ calculation methods. 105 unit tests at 90%+ coverage with GitHub Actions CI.",
+      "cardStat": "207 tests",
+      "description": "Zero-dependency, pure-Python scientific-computing library (the engine behind Nahtadi) for calculating Muslim prayer times and Qibla direction from astronomical algorithms (Julian Day, spherical trigonometry, high-latitude adjustments) across 8+ calculation methods. 207 unit tests with GitHub Actions CI.",
       "technologies": [
         "Python",
         "Astronomical Algorithms",
@@ -171,7 +171,7 @@
       "tier": "card",
       "featured": true,
       "private": false,
-      "stats": "105 tests • 90%+ coverage • 8+ methods",
+      "stats": "207 tests • 8+ methods",
       "category": "scientific-computing",
       "image": "/images/projects/islamic-prayer-time/card.png",
       "imageAlt": "Stylized icon of a minaret clock tower with a crescent moon, representing the Islamic Prayer Time algorithm library",
@@ -224,7 +224,7 @@
       "id": "cycloidal-drive-creator",
       "title": "Cycloidal Drive Creator",
       "tagline": "Generates parametric equations for cycloidal drive rotors that import straight into SolidWorks.",
-      "cardStat": "28★ · MIT",
+      "cardStat": "32★ · MIT",
       "description": "Python application that generates parametric equations for cycloidal drive rotors (mechanical speed reducers). Creates rotor profiles that can be directly imported into SolidWorks CAD software via \"Equation Driven Curve\" feature.",
       "technologies": [
         "Python",
@@ -241,7 +241,7 @@
       "tier": "card",
       "featured": false,
       "private": false,
-      "stats": "29 commits • 28 stars • MIT",
+      "stats": "29 commits • 32 stars • MIT",
       "category": "engineering-tools",
       "image": "/images/projects/cycloidal-drive-creator/card.png",
       "imageAlt": "Stylized icon of a layered mechanical gear assembly, representing the Cycloidal Drive Creator's parametric rotor profiles",
@@ -293,9 +293,9 @@
     {
       "id": "coast-guard-pilot-tracker",
       "title": "CG Pilot Training Tracker",
-      "tagline": "A training-data report adopted at every Coast Guard air station. Over a week of compiling became three minutes.",
+      "tagline": "Adopted at every Coast Guard air station. The report takes three minutes, not weeks; the schedule it feeds, two days, not six weeks.",
       "cardStat": "Auxiliary Achievement Medal",
-      "description": "A reporting tool for Coast Guard aviation training currency, built in Python and VBA. It consolidates three exports into one graded sheet: nine qualification currencies and eight recency counters per pilot, each colour-graded against its own interval. Compiling the report went from over a week to three minutes, and building the flight schedule on top of it went from six weeks to two days. Adopted at every U.S. Coast Guard air station and still in daily use. Unpaid volunteer work.",
+      "description": "A reporting tool for Coast Guard aviation training currency, built in Python and VBA. It consolidates three exports into one graded sheet: nine qualification currencies and eight recency counters per pilot, each colour-graded against its own interval. Compiling the report went from weeks to three minutes, and building the flight schedule on top of it went from six weeks to two days. Adopted at every U.S. Coast Guard air station and still in daily use. Unpaid volunteer work.",
       "technologies": [
         "Python",
         "VBA",

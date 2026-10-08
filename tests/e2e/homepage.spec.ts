@@ -1,6 +1,8 @@
 import { test, expect, type Page } from '@playwright/test'
 
 const TAGLINE = 'Software Engineer · iOS, ML & Autonomous Systems'
+const HERO_LEDE =
+  'Seven years as a mechanical engineer, now building software from GPU kernels to the App Store.'
 /*
  * Ticker geometry. Kept in step with src/components/home/HomeTicker.tsx, which
  * derives its copy count from the same 4K target; the assertions below measure
@@ -90,6 +92,7 @@ test.describe('Homepage', () => {
 
     await expect(page.getByRole('heading', { name: 'Omar Younis', level: 1 })).toBeVisible()
     await expect(page.getByTestId('hero-tagline')).toHaveText(TAGLINE)
+    await expect(page.getByTestId('hero-lede')).toHaveText(HERO_LEDE)
 
     await expect(page.getByRole('link', { name: 'View projects' })).toHaveAttribute(
       'href',

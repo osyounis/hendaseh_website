@@ -261,7 +261,7 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
   'brent-cuda': {
     hero: { from: '#166534', to: '#0d2b1c' },
     thesis:
-      "One independent root-finder per GPU thread. The first CUDA implementation of Brent's method.",
+      "One independent root-finder per GPU thread. A CUDA implementation of Brent's method; a literature review found no prior one.",
     stats: [
       { value: '35.31×', label: 'kernel speedup vs single-thread CPU' },
       { value: '8.79×', label: 'end-to-end on an RTX 3080' },
@@ -290,14 +290,14 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         ],
         [
           'The hard part was ',
-          { em: 'bit-level discipline' },
-          ': keeping fp64 results identical across all three implementations, so the GPU version is a drop-in replacement rather than an approximation.',
+          { em: 'numerical discipline' },
+          ': the compile flags are pinned, -ffp-contract=off for g++ and --fmad=false for nvcc, so neither compiler fuses a multiply-add the other does not. That keeps the implementations numerically aligned, validated to within 1e-10, so the GPU version can stand in for the CPU one.',
         ],
       ],
     },
     impact: {
       eyebrow: 'THE IMPACT',
-      heading: '35 times faster, provably identical.',
+      heading: '35 times faster, numerically aligned.',
       paragraphs: [
         [
           'On an NVIDIA RTX 3080 the CUDA kernel solves batches ',
@@ -582,9 +582,9 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
   'coast-guard-pilot-tracker': {
     hero: { from: '#17395C', to: '#0A1D30' },
     thesis:
-      'Compiling aircrew flight currency took over a week by hand. One graded sheet does it in three minutes.',
+      'Compiling aircrew flight currency took weeks by hand. One graded sheet does it in three minutes.',
     stats: [
-      { value: '3 minutes', label: 'to compile a report that took over a week' },
+      { value: '3 minutes', label: 'to compile a report that took weeks' },
       { value: '6 weeks to 2 days', label: 'to build the flight schedule, wall to wall' },
       { value: 'Fleetwide', label: 'every U.S. Coast Guard air station' },
     ],
@@ -597,7 +597,7 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
         ],
         [
           'Done properly for a whole air station, compiling that picture took ',
-          { em: 'over a week' },
+          { em: 'weeks' },
           ', and the flight schedule built on top of it took six weeks wall to wall. Long enough that the answer had aged by the time it arrived, which is the failure mode that matters: a currency report nobody can produce often enough is a currency report nobody trusts.',
         ],
       ],
@@ -626,7 +626,7 @@ const CASE_STUDIES: Readonly<Record<string, CaseStudy>> = {
       heading: 'Two days, at every air station.',
       paragraphs: [
         [
-          'The report now takes three minutes to generate instead of over a week, and the flight schedule it feeds went from six weeks to two days end to end. It was adopted at ',
+          'The report now takes three minutes to generate instead of weeks, and the flight schedule it feeds went from six weeks to two days end to end. It was adopted at ',
           { em: 'every U.S. Coast Guard air station' },
           ' and is still in daily use. The work was recognised with the Coast Guard Auxiliary Achievement Medal, awarded by the Commandant of the U.S. Coast Guard in March 2023; the citation credits a training records program that spread fleetwide.',
         ],

@@ -121,6 +121,16 @@ export default function HomeHero() {
           Software Engineer · <span className="text-accent">iOS, ML &amp; Autonomous Systems</span>
         </p>
 
+        {/* The ME background as a bridge, not a headline: one quiet line under the
+            locked tagline, which stays untouched. Approved by Omar 2026-10-08. */}
+        <p
+          data-testid="hero-lede"
+          className="text-secondary mx-auto mt-[14px] max-w-[38rem] text-[clamp(15px,1.5vw,18px)] leading-[1.5] [text-wrap:balance]"
+        >
+          Seven years as a mechanical engineer, now building software from GPU kernels to the App
+          Store.
+        </p>
+
         <div className="mt-9 flex flex-wrap justify-center gap-[14px]">
           <Link href="/projects" className="pill pill-primary">
             View projects
