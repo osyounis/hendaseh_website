@@ -153,7 +153,7 @@
     {
       "id": "islamic-prayer-time",
       "title": "Prayer-Time Algorithm Library",
-      "tagline": "The zero-dependency Python library behind Nahtadi. Astronomical algorithms with more than eight calculation methods.",
+      "tagline": "The zero-dependency Python library behind Nahtadi. Astronomical algorithms with 8+ calculation methods.",
       "cardStat": "207 tests",
       "description": "Zero-dependency, pure-Python scientific-computing library (the engine behind Nahtadi) for calculating Muslim prayer times and Qibla direction from astronomical algorithms (Julian Day, spherical trigonometry, high-latitude adjustments) across 8+ calculation methods. 207 unit tests with GitHub Actions CI.",
       "technologies": [
@@ -293,7 +293,7 @@
     {
       "id": "coast-guard-pilot-tracker",
       "title": "CG Pilot Training Tracker",
-      "tagline": "Adopted at every Coast Guard air station. The report takes three minutes, not weeks; the schedule it feeds, two days, not six weeks.",
+      "tagline": "A Coast Guard report that took weeks now takes three minutes, and the schedule it feeds went from six weeks to two days.",
       "cardStat": "Auxiliary Achievement Medal",
       "description": "A reporting tool for Coast Guard aviation training currency, built in Python and VBA. It consolidates three exports into one graded sheet: nine qualification currencies and eight recency counters per pilot, each colour-graded against its own interval. Compiling the report went from weeks to three minutes, and building the flight schedule on top of it went from six weeks to two days. Adopted at every U.S. Coast Guard air station and still in daily use. Unpaid volunteer work.",
       "technologies": [
