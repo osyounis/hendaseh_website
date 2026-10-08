@@ -63,6 +63,10 @@ jobs:
           commit-message: 'chore: sync App Store facts from Apple'
           title: 'chore: App Store facts have drifted'
           labels: automation
+          # Requesting a review is how Omar is notified (GitHub Mobile push +
+          # email); a bot-opened PR otherwise lands silently.
+          reviewers: osyounis
+          assignees: osyounis
           delete-branch: true
           body: |
             Apple's public lookup API disagrees with `src/data/projects.json`.
