@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import NewTabHint from '@/components/NewTabHint';
 import { AffordanceLabel, ArrowUpRight, ChevronRight } from '@/components/LinkAffordance';
-import { getProjectById, getProjectHref, type Project } from '@/lib/projects';
+import { getCardStat, getProjectById, getProjectHref, type Project } from '@/lib/projects';
 
 /**
  * Tier-semantic sizes: showcase projects get a wide tile with a full uncropped
@@ -39,7 +39,7 @@ export default function HomeWork() {
     if (!href) {
       throw new Error(`HomeWork: "${id}" has no case-study page (tier "${project.tier}").`);
     }
-    return { id, title: project.title, stat: project.cardStat!, body: project.tagline!, href };
+    return { id, title: project.title, stat: getCardStat(project)!, body: project.tagline!, href };
   });
 
   // TIER DRIVES THE ACTION, not the row's size. `getProjectHref` returns a
@@ -54,7 +54,7 @@ export default function HomeWork() {
     if (!href) {
       throw new Error(`HomeWork: "${id}" has neither a case study nor a GitHub link.`);
     }
-    return { id, title: project.title, stat: project.cardStat!, href, external: !caseStudy };
+    return { id, title: project.title, stat: getCardStat(project)!, href, external: !caseStudy };
   });
 
   return (

@@ -53,6 +53,14 @@ export const ProjectSchema = z
       .optional(),
     appStoreLive: z.boolean().optional(),
     appStoreRating: z.object({ value: z.string(), count: z.number().int().positive() }).optional(),
+    /**
+     * Stars on the project's `links.github` repo, written ONLY by
+     * scripts/github-stars-sync.mjs (weekly, via a reviewed PR). A project opts
+     * into the sync by having this field. It is displayed through a `{stars}`
+     * token in `cardStat`, filled in by `getCardStat` in projects.ts, so the
+     * script writes a number and never edits prose.
+     */
+    githubStars: z.number().int().nonnegative().optional(),
   })
   .strict();
 

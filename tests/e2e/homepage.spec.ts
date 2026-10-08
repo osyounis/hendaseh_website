@@ -87,6 +87,13 @@ const settleMenu = async (page: Page) => {
 }
 
 test.describe('Homepage', () => {
+  test('the Cycloidal row renders its synced star count, never a raw token', async ({ page }) => {
+    await page.goto('/')
+    const row = page.getByRole('link', { name: /Cycloidal Drive Creator/ })
+    await expect(row).toContainText(/\d+★ · MIT/)
+    await expect(page.locator('body')).not.toContainText('{stars}')
+  })
+
   test('hero renders the name, tagline and both CTAs', async ({ page }) => {
     await page.goto('/')
 

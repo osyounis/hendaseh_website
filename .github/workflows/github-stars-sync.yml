@@ -1,0 +1,64 @@
+# Weekly GitHub star-count sync.
+#
+# NEVER PUSHES. It runs the script, and if the script wrote anything, hands the
+# working tree to create-pull-request, which requests Omar's review so he gets a
+# GitHub Mobile push and an email. A human merges. On any doubt about any repo the
+# script exits non-zero and this job fails with nothing written: a stale count
+# beats a missing or guessed one. A failed scheduled run emails whoever last
+# edited this schedule.
+#
+# The cron and the "Run workflow" button only exist once this file is on main.
+name: GitHub star-count sync
+
+on:
+  schedule:
+    - cron: '47 6 * * 1' # Mondays 06:47 UTC, 30 min after appstore-sync.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: github-stars-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      # No npm ci: the script has no dependencies (fetch and node:fs are built in).
+      - name: Sync star counts
+        id: sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/github-stars-sync.mjs
+
+      - name: Open a pull request if a count changed
+        # Same commit pin as appstore-sync.yml, for the same reason: this job
+        # holds write permissions and a tag is mutable. v7.0.11.
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          branch: automation/github-stars-sync
+          base: dev
+          commit-message: 'chore: sync GitHub star counts'
+          title: 'chore: GitHub star counts have changed'
+          labels: automation
+          reviewers: osyounis
+          assignees: osyounis
+          delete-branch: true
+          body: |
+            GitHub's API reports different star counts from `src/data/projects.json`.
+
+            ${{ steps.sync.outputs.drift || '_(see the job log)_' }}
+
+            Every repo was validated before anything was written. Merging this
+            into `dev` and then `dev` into `main` updates the live site. Until
+            then, the site keeps showing the previous counts.

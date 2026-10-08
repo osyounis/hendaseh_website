@@ -3,7 +3,7 @@ import Link from 'next/link';
 import NewTabHint from '@/components/NewTabHint';
 import { AffordanceLabel, ArrowUpRight, ChevronRight } from '@/components/LinkAffordance';
 import { GitHubMark } from '@/components/BrandMarks';
-import { getProjectHref, type Project } from '@/lib/projects';
+import { getCardStat, getProjectHref, type Project } from '@/lib/projects';
 
 /**
  * One project card.
@@ -63,7 +63,7 @@ export default function ProjectCard({ project }: { project: Project }) {
   // without either simply shows no stat rather than borrowing one.
   const stat = project.appStoreRating
     ? `${project.appStoreRating.value}★ App Store`
-    : project.cardStat;
+    : getCardStat(project);
 
   return (
     <article

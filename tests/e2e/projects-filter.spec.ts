@@ -723,3 +723,10 @@ test.describe('the grid footnote', () => {
     await expect(link.locator('..')).not.toHaveClass(/projects-enter\b/)
   })
 })
+
+test('star counts render as numbers on /projects, never a raw {stars} token', async ({ page }) => {
+  await page.goto('/projects')
+  const card = page.getByTestId('project-card').filter({ hasText: 'Cycloidal Drive Creator' })
+  await expect(card).toContainText(/\d+★ · MIT/)
+  await expect(page.locator('main')).not.toContainText('{stars}')
+})
