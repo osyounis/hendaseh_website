@@ -21,15 +21,27 @@ const repo = (full_name: string, stargazers_count: unknown, priv = false) => ({
   stargazers_count,
 })
 
+/**
+ * The counts every stub is written against. The copied catalog is reset to these
+ * before each run, because the real projects.json is a moving target: the sync
+ * itself rewrites it. Reading the live counts made every star-sync PR fail its
+ * own CI (PR #79: the catalog went 32 -> 33 and the "current" stub went stale).
+ */
+const BASELINE: Record<string, number> = {
+  'cycloidal-drive-creator': 32,
+  'image-watermark-remover': 10,
+}
+
 function run(stub: Stub, opts: { dryRun?: boolean; edit?: (doc: any) => void } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'stars-'))
   cpSync(join(REPO, 'src/data'), join(dir, 'src/data'), { recursive: true })
-  if (opts.edit) {
-    const p = join(dir, 'src/data/projects.json')
-    const doc = JSON.parse(readFileSync(p, 'utf8'))
-    opts.edit(doc)
-    writeFileSync(p, JSON.stringify(doc, null, 2) + '\n')
+  const p = join(dir, 'src/data/projects.json')
+  const doc = JSON.parse(readFileSync(p, 'utf8'))
+  for (const [id, stars] of Object.entries(BASELINE)) {
+    doc.projects.find((proj: any) => proj.id === id).githubStars = stars
   }
+  opts.edit?.(doc)
+  writeFileSync(p, JSON.stringify(doc, null, 2) + '\n')
   writeFileSync(join(dir, 'stub.json'), JSON.stringify(stub))
   const before = readFileSync(join(dir, 'src/data/projects.json'), 'utf8')
   const res = spawnSync(
